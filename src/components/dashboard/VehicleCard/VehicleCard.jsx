@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { formatBidAmount, getStatusColor } from "@/lib/utils";
-import BidDialog from "../BidDialog/BidDialog";
 import { useState } from "react";
+import BidDialog from "@/components/common/BidDialog/BidDialog";
 const VehicleCard = ({ vehicle, onBidSuccess }) => {
   const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
 

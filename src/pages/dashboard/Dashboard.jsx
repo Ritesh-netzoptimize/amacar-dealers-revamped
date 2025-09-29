@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import DashboardStats from "../../components/dashboard/DashboardStats/DashboardStats";
 import RecentVehiclesSection from "../../components/dashboard/RecentVehiclesSection/RecentVehiclesSection";
+import RecentCustomers from "@/components/dashboard/RecentCustomers/RecentCustomers";
 
 const Dashboard = () => {
   // Animation variants
@@ -82,6 +83,14 @@ const Dashboard = () => {
            variants={statsVariants}
          >
            <RecentVehiclesSection />
+         </motion.div>
+
+         {/* Recent Customers Section */}
+         <motion.div 
+           className="mt-12"
+           variants={statsVariants}
+         >
+           <RecentCustomers />
          </motion.div>
        </div>
      </motion.div>
