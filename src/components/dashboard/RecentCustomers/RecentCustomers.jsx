@@ -9,8 +9,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const RecentCustomers = () => {
+  const navigate = useNavigate();
   // Static customer data - will replace with API later
   const recentCustomers = [
     { 
@@ -249,7 +251,7 @@ const RecentCustomers = () => {
           variant="outline"
           size="sm"
           className="px-6 py-2 text-sm font-medium hover:bg-neutral-50 transition-colors duration-200"
-          onClick={() => console.log('View All Customers')}
+          onClick={() => navigate('/new-customers')}
         >
           View All Customers
         </Button>

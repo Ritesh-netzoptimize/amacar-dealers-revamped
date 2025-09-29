@@ -4,8 +4,10 @@ import { toast } from 'react-hot-toast';
 import VehicleCard from '../VehicleCard/VehicleCard';
 import RecentActivity from '../RecentActivity/RecentActivity';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const RecentVehiclesSection = () => {
+  const navigate = useNavigate();
   // Handle bid success
   const handleBidSuccess = (vehicleId, bidAmount) => {
     const vehicle = vehicles.find(v => v.id === vehicleId);
@@ -175,7 +177,7 @@ const RecentVehiclesSection = () => {
               variant="outline"
               size="lg"
               className="px-8 py-3 text-sm font-medium hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
-              onClick={() => console.log('View All Vehicles')}
+              onClick={() => navigate('/live-auctions')}
             >
               View All Vehicles
               <ArrowRight className="w-4 h-4 ml-2" />
