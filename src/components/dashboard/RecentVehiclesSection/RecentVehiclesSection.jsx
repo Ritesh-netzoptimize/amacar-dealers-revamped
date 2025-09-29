@@ -45,7 +45,7 @@ const RecentVehiclesSection = () => {
     {
       id: 4,
       name: '2020 Mercedes-Benz C-Class',
-      status: 'Expired',
+      status: 'Live',
       currentBid: 28500,
       timeLeft: 'Ended',
       images: [

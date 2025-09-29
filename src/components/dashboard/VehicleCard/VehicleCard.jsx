@@ -84,7 +84,7 @@ const VehicleCard = ({ vehicle }) => {
 
           <div className="space-y-2 mb-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-neutral-600">Current Bid</span>
+              <span className="text-sm text-neutral-600">Cash offer</span>
               <span className="text-lg font-bold text-neutral-900">
                 {formatBidAmount(vehicle.currentBid)}
               </span>
