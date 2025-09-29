@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DashboardStats from '@/components/common/DashboardStats/DashboardStats';
+import LiveAuctionsContainer from '@/components/live-auctions/LiveAuctionsContainer';
 
 const LiveAuctions = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -106,51 +107,16 @@ const LiveAuctions = () => {
           <DashboardStats />
         </motion.div>
 
-        {/* Main Content Area */}
+        {/* Live Auctions Grid */}
         <motion.div 
           className="mt-12"
           variants={statsVariants}
         >
-          <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-8">
-            <div className="text-center py-12">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
-                className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4"
-              >
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                >
-                  <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </motion.div>
-              </motion.div>
-              <motion.h3 
-                className="text-xl font-semibold text-neutral-900 mb-2"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.8 }}
-              >
-                Live Auctions Coming Soon
-              </motion.h3>
-              <motion.p 
-                className="text-neutral-600 max-w-md mx-auto"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 1.0 }}
-              >
-                We're working on bringing you real-time live auction functionality. 
-                Check back soon for exciting bidding opportunities!
-              </motion.p>
-            </div>
-          </div>
+          <LiveAuctionsContainer />
         </motion.div>
       </div>
     </motion.div>
   );
 };
 
-export default LiveAuctions
+export default LiveAuctions;
