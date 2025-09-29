@@ -135,6 +135,15 @@ const RecentVehiclesSection = () => {
           <h2 className="text-2xl font-bold text-neutral-900 mb-1">Recent Vehicles</h2>
           <p className="text-neutral-600">Discover the latest auction vehicles</p>
         </div>
+        <Button
+          variant="outline"
+          size="lg"
+          className="px-8 py-3 text-sm font-medium hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
+          onClick={() => navigate('/live-auctions')}
+        >
+          View All Vehicles
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
       </motion.div>
 
       {/* Main Content Grid */}
@@ -167,22 +176,6 @@ const RecentVehiclesSection = () => {
               </motion.div>
             ))}
           </div>
-
-          {/* View All Button */}
-          <motion.div 
-            className="flex justify-center mt-8"
-            variants={sectionVariants}
-          >
-            <Button
-              variant="outline"
-              size="lg"
-              className="px-8 py-3 text-sm font-medium hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
-              onClick={() => navigate('/live-auctions')}
-            >
-              View All Vehicles
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </motion.div>
         </motion.div>
 
         {/* Right Section - Recent Activity */}

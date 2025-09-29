@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import DashboardStats from "../../components/dashboard/DashboardStats/DashboardStats";
 import RecentVehiclesSection from "../../components/dashboard/RecentVehiclesSection/RecentVehiclesSection";
 import RecentCustomers from "@/components/dashboard/RecentCustomers/RecentCustomers";
+import QuickActions from "@/components/dashboard/QuickActions/QuickActions";
 
 const Dashboard = () => {
   // Animation variants
@@ -91,6 +92,14 @@ const Dashboard = () => {
            variants={statsVariants}
          >
            <RecentCustomers />
+         </motion.div>
+
+         {/* Quick Actions Section */}
+         <motion.div 
+           className="mt-12"
+           variants={statsVariants}
+         >
+           <QuickActions />
          </motion.div>
        </div>
      </motion.div>

@@ -250,7 +250,7 @@ const RecentCustomers = () => {
         <Button
           variant="outline"
           size="sm"
-          className="px-6 py-2 text-sm font-medium hover:bg-neutral-50 transition-colors duration-200"
+          className="cursor-pointer p-6 text-sm font-medium hover:bg-neutral-50 transition-colors duration-200"
           onClick={() => navigate('/new-customers')}
         >
           View All Customers
