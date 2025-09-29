@@ -1,70 +1,10 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Gavel, X, Eye, Clock, DollarSign } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselDots } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
 
-const LiveAuctionsContainer = () => {
-  // Static data for now - will replace with API later
-  const liveAuctions = [
-    { 
-      id: 1,
-      name: "2014 Jeep Grand Cherokee",
-      images: [
-        "https://images.unsplash.com/photo-1549317336-206569e8475c?w=600&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1549317336-206569e8475c?w=600&h=400&fit=crop&auto=format&q=80",
-        "https://images.unsplash.com/photo-1549317336-206569e8475c?w=600&h=400&fit=crop&auto=format&q=80"
-      ],
-      make: "Jeep",
-      model: "Grand Cherokee",
-      year: 2014,
-      cashOffer: "$7,725",
-      highestBid: "$8,200",
-      endsAt: "Oct 30, 2025 14:00"
-    },
-    { 
-      id: 2,
-      name: "2020 Lexus RX 350",
-      images: [
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&h=400&fit=crop&auto=format&q=80"
-      ],
-      make: "Lexus",
-      model: "RX 350",
-      year: 2020,
-      cashOffer: "$35,000",
-      highestBid: "$36,500",
-      endsAt: "Oct 31, 2025 16:00"
-    },
-    { 
-      id: 3,
-      name: "2019 BMW X5",
-      images: [
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=600&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=600&h=400&fit=crop&auto=format&q=80",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=600&h=400&fit=crop&auto=format&q=80"
-      ],
-      make: "BMW",
-      model: "X5",
-      year: 2019,
-      cashOffer: "$42,500",
-      highestBid: "$44,000",
-      endsAt: "Nov 1, 2025 10:00"
-    },
-    { 
-      id: 4,
-      name: "2021 Mercedes-Benz C-Class",
-      images: [
-        "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=600&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=600&h=400&fit=crop&auto=format&q=80"
-      ],
-      make: "Mercedes-Benz",
-      model: "C-Class",
-      year: 2021,
-      cashOffer: "$28,500",
-      highestBid: "$29,200",
-      endsAt: "Nov 2, 2025 12:00"
-    }
-  ];
+const LiveAuctionsContainer = ({ auctions = [] }) => {
 
   // Animation variants
   const containerVariants = {
@@ -114,7 +54,7 @@ const LiveAuctionsContainer = () => {
     >
       {/* Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {liveAuctions.map((vehicle) => (
+        {auctions.map((vehicle) => (
           <motion.div
             key={vehicle.id}
             variants={cardVariants}
@@ -324,20 +264,6 @@ const LiveAuctionsContainer = () => {
         ))}
       </div>
 
-      {/* Load More Button - Ready for Pagination */}
-      <motion.div 
-        className="flex justify-center mt-8"
-        variants={cardVariants}
-      >
-        <Button
-          variant="outline"
-          size="lg"
-          className="px-8 py-4 text-sm font-semibold border-2 border-neutral-200 hover:border-neutral-300 hover:bg-gradient-to-r hover:from-neutral-50 hover:to-neutral-100 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer shadow-sm hover:shadow-md"
-          onClick={() => console.log('Load More Vehicles')}
-        >
-          Load More Vehicles
-        </Button>
-      </motion.div>
     </motion.div>
   );
 };
