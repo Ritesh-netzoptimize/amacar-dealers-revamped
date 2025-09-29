@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Gavel, DollarSign, Clock, Flame, XCircle } from 'lucide-react';
-import StatsCard from '../StatsCard/StatsCard';
+import StatsCard from '../../dashboard/StatsCard/StatsCard';
 
 const DashboardStats = () => {
   // Static data for now - will replace with API later
