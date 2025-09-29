@@ -10,8 +10,18 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { formatBidAmount, getStatusColor } from "@/lib/utils";
-const VehicleCard = ({ vehicle }) => {
-  
+import BidDialog from "../BidDialog/BidDialog";
+import { useState } from "react";
+const VehicleCard = ({ vehicle, onBidSuccess }) => {
+  const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
+
+  const handleBidClick = () => {
+    setIsBidDialogOpen(true);
+  };
+
+  const handleBidSuccess = (bidAmount) => {
+    onBidSuccess?.(vehicle.id, bidAmount);
+  };
 
   return (
     <motion.div
@@ -86,7 +96,7 @@ const VehicleCard = ({ vehicle }) => {
             <div className="flex items-center justify-between">
               <span className="text-sm text-neutral-600">Cash offer</span>
               <span className="text-lg font-bold text-neutral-900">
-                {formatBidAmount(vehicle.currentBid)}
+                {formatBidAmount(vehicle.cashOffer)}
               </span>
             </div>
 
@@ -110,17 +120,25 @@ const VehicleCard = ({ vehicle }) => {
             View Details
           </Button>
 
-          <Button
-            variant="default"
-            size="sm"
-            className="flex-1 h-10 cursor-pointer bg-[var(--brand-orange)] text-white shadow-sm hover:shadow-md transition-all duration-200 font-medium hover:scale-[1.02] active:scale-[0.98]"
-            onClick={() => console.log("Bid Now:", vehicle.id)}
-          >
-            <Gavel className="w-4 h-4 mr-2" />
-            Bid Now
-          </Button>
+            <Button
+              variant="default"
+              size="sm"
+              className="flex-1 h-10 cursor-pointer bg-[var(--brand-orange)] text-white shadow-sm hover:shadow-md transition-all duration-200 font-medium hover:scale-[1.02] active:scale-[0.98]"
+              onClick={handleBidClick}
+            >
+              <Gavel className="w-4 h-4 mr-2" />
+              Bid Now
+            </Button>
         </div>
       </div>
+
+      {/* Bid Dialog */}
+      <BidDialog
+        isOpen={isBidDialogOpen}
+        onClose={() => setIsBidDialogOpen(false)}
+        vehicle={vehicle}
+        onBidSuccess={handleBidSuccess}
+      />
     </motion.div>
   );
 };

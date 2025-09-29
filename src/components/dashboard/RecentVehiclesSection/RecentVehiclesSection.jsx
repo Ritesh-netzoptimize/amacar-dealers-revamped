@@ -1,17 +1,32 @@
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import VehicleCard from '../VehicleCard/VehicleCard';
 import RecentActivity from '../RecentActivity/RecentActivity';
 import { Button } from '@/components/ui/button';
 
 const RecentVehiclesSection = () => {
+  // Handle bid success
+  const handleBidSuccess = (vehicleId, bidAmount) => {
+    const vehicle = vehicles.find(v => v.id === vehicleId);
+    if (vehicle) {
+      toast.success(
+        `Bid of $${bidAmount.toLocaleString()} placed successfully for ${vehicle.name}!`,
+        {
+          duration: 4000,
+          position: 'top-right',
+        }
+      );
+    }
+  };
+
   // Static vehicle data - will replace with API later
   const vehicles = [
     {
       id: 1,
       name: '2014 Jeep Grand Cherokee',
       status: 'Live',
-      currentBid: 18500,
+      cashOffer: 18500,
       timeLeft: '2h 15m left',
       images: [
         'https://images.unsplash.com/photo-1549317336-206569e8475c?w=500&h=300&fit=crop',
@@ -23,7 +38,7 @@ const RecentVehiclesSection = () => {
       id: 2,
       name: '2019 BMW X5',
       status: 'Hot',
-      currentBid: 42500,
+      cashOffer: 42500,
       timeLeft: '45m left',
       images: [
         'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=500&h=300&fit=crop',
@@ -34,7 +49,7 @@ const RecentVehiclesSection = () => {
       id: 3,
       name: '2017 Audi A4',
       status: 'Live',
-      currentBid: 22500,
+      cashOffer: 22500,
       timeLeft: '1d 3h left',
       images: [
         'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=500&h=300&fit=crop',
@@ -46,7 +61,7 @@ const RecentVehiclesSection = () => {
       id: 4,
       name: '2020 Mercedes-Benz C-Class',
       status: 'Live',
-      currentBid: 28500,
+      cashOffer: 28500,
       timeLeft: 'Ended',
       images: [
         'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=500&h=300&fit=crop',
@@ -57,7 +72,7 @@ const RecentVehiclesSection = () => {
       id: 5,
       name: '2018 Ford F-150',
       status: 'Live',
-      currentBid: 32000,
+      cashOffer: 32000,
       timeLeft: '5h 30m left',
       images: [
         'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=500&h=300&fit=crop',
@@ -69,7 +84,7 @@ const RecentVehiclesSection = () => {
       id: 6,
       name: '2016 Honda Accord',
       status: 'Hot',
-      currentBid: 15500,
+      cashOffer: 15500,
       timeLeft: '1h 20m left',
       images: [
         'https://images.unsplash.com/photo-1549317336-206569e8475c?w=500&h=300&fit=crop',
@@ -143,7 +158,10 @@ const RecentVehiclesSection = () => {
                   }
                 }}
               >
-                <VehicleCard vehicle={vehicle} />
+                <VehicleCard 
+                  vehicle={vehicle} 
+                  onBidSuccess={handleBidSuccess}
+                />
               </motion.div>
             ))}
           </div>
