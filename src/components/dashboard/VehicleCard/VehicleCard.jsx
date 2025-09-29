@@ -31,7 +31,7 @@ const VehicleCard = ({ vehicle }) => {
             loop: true,
             align: "start",
             skipSnaps: false,
-            dragFree: true,
+            dragFree: false,
           }}
         >
           <CarouselContent>
