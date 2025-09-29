@@ -1,11 +1,53 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import DashboardStats from "../../components/dashboard/DashboardStats/DashboardStats";
 import RecentVehiclesSection from "../../components/dashboard/RecentVehiclesSection/RecentVehiclesSection";
 import RecentCustomers from "@/components/dashboard/RecentCustomers/RecentCustomers";
 import QuickActions from "@/components/dashboard/QuickActions/QuickActions";
+import DashboardSkeleton from "@/components/skeletons/dashboard/DashboardSkeleton";
 
 const Dashboard = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate data loading - replace with actual API calls
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        // TODO: Replace with actual API calls
+        // Example:
+        // const [statsData, vehiclesData, customersData] = await Promise.all([
+        //   fetchStats(),
+        //   fetchRecentVehicles(),
+        //   fetchRecentCustomers()
+        // ]);
+        
+        // Simulate API calls for different sections
+        await Promise.all([
+          // Simulate stats loading
+          new Promise(resolve => setTimeout(resolve, 800)),
+          // Simulate vehicles loading
+          new Promise(resolve => setTimeout(resolve, 1200)),
+          // Simulate customers loading
+          new Promise(resolve => setTimeout(resolve, 1000)),
+          // Simulate quick actions loading
+          new Promise(resolve => setTimeout(resolve, 600))
+        ]);
+        
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        setIsLoading(false);
+      }
+    };
+
+    loadDashboardData();
+  }, []);
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
+
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
