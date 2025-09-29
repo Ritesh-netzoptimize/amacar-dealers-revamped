@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import DashboardStats from "../../components/dashboard/DashboardStats/DashboardStats";
+import RecentVehiclesSection from "../../components/dashboard/RecentVehiclesSection/RecentVehiclesSection";
 
 const Dashboard = () => {
   // Animation variants
@@ -70,13 +71,21 @@ const Dashboard = () => {
           </motion.p>
         </motion.div>
 
-        {/* Statistics Cards */}
-        <motion.div variants={statsVariants}>
-          <DashboardStats />
-        </motion.div>
-      </div>
-    </motion.div>
-  );
-};
+         {/* Statistics Cards */}
+         <motion.div variants={statsVariants}>
+           <DashboardStats />
+         </motion.div>
+
+         {/* Recent Vehicles Section */}
+         <motion.div 
+           className="mt-12"
+           variants={statsVariants}
+         >
+           <RecentVehiclesSection />
+         </motion.div>
+       </div>
+     </motion.div>
+   );
+ };
 
 export default Dashboard;
