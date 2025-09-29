@@ -122,7 +122,7 @@ const LiveAuctionsContainer = () => {
             className="bg-white rounded-3xl shadow-sm border border-neutral-100 overflow-hidden hover:shadow-xl hover:border-neutral-200 transition-all duration-500 group"
           >
             {/* Mobile Layout: Stacked */}
-            <div className="lg:hidden">
+            <div className="lg:hidden flex flex-col min-h-full">
               {/* Image Carousel */}
               <div className="relative h-56 bg-gradient-to-br from-neutral-50 to-neutral-100">
                 <Carousel 
@@ -154,7 +154,7 @@ const LiveAuctionsContainer = () => {
               </div>
 
               {/* Vehicle Information */}
-              <div className="p-5">
+              <div className="p-5 flex flex-col flex-grow">
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-xl font-bold text-neutral-900 mb-2 group-hover:text-orange-600 transition-colors duration-300">
@@ -188,41 +188,41 @@ const LiveAuctionsContainer = () => {
                       <p className="text-sm font-semibold text-orange-800">{vehicle.endsAt}</p>
                     </div>
                   </div>
+                </div>
 
-                  {/* CTA Buttons */}
-                  <div className="space-y-3 pt-5">
-                    <div className="flex gap-3">
-                      <Button
-                        variant="outline"
-                        onClick={() => handlePassVehicle(vehicle.id)}
-                        className="flex-1 border-2 border-neutral-200 hover:border-red-300 hover:bg-red-50 text-neutral-700 hover:text-red-600 font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                      >
-                        <X className="w-4 h-4 mr-2" />
-                        Pass
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => handleViewVehicle(vehicle.id)}
-                        className="flex-1 border-2 border-neutral-200 hover:border-blue-300 hover:bg-blue-50 text-neutral-700 hover:text-blue-600 font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                      >
-                        <Eye className="w-4 h-4 mr-2" />
-                        View
-                      </Button>
-                    </div>
+                {/* CTA Buttons - Pinned to Bottom */}
+                <div className="space-y-3 pt-5 mt-auto">
+                  <div className="flex gap-3">
                     <Button
-                      onClick={() => handleBidNow(vehicle.id)}
-                      className="w-full bg-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] text-white font-semibold py-4 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                      variant="outline"
+                      onClick={() => handlePassVehicle(vehicle.id)}
+                      className="flex-1 border-2 border-neutral-200 hover:border-red-300 hover:bg-red-50 text-neutral-700 hover:text-red-600 font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
                     >
-                      <Gavel className="w-4 h-4 mr-2" />
-                      Bid Now
+                      <X className="w-4 h-4 mr-2" />
+                      Pass
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleViewVehicle(vehicle.id)}
+                      className="flex-1 border-2 border-neutral-200 hover:border-blue-300 hover:bg-blue-50 text-neutral-700 hover:text-blue-600 font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      View
                     </Button>
                   </div>
+                  <Button
+                    onClick={() => handleBidNow(vehicle.id)}
+                    className="w-full bg-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] text-white font-semibold py-4 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                  >
+                    <Gavel className="w-4 h-4 mr-2" />
+                    Bid Now
+                  </Button>
                 </div>
               </div>
             </div>
 
             {/* Desktop Layout: Split */}
-            <div className="hidden lg:flex h-fit">
+            <div className="hidden lg:flex h-full">
               {/* Left Section - Image Carousel */}
               <div className="w-1/2 relative bg-gradient-to-br from-neutral-50 to-neutral-100">
                 <Carousel 
@@ -254,8 +254,8 @@ const LiveAuctionsContainer = () => {
               </div>
 
               {/* Right Section - Vehicle Information */}
-              <div className="w-1/2 p-5 flex flex-col justify-between bg-white/80 backdrop-blur-sm">
-                <div className="space-y-4">
+              <div className="w-1/2 p-5 flex flex-col min-h-full bg-white/80 backdrop-blur-sm">
+                <div className="space-y-4 flex-grow">
                   <div>
                     <h3 className="text-2xl font-bold text-neutral-900 mb-2 group-hover:text-orange-600 transition-colors duration-300">
                       {vehicle.name}
@@ -290,8 +290,8 @@ const LiveAuctionsContainer = () => {
                   </div>
                 </div>
 
-                {/* CTA Buttons */}
-                <div className="space-y-3 pt-5">
+                {/* CTA Buttons - Pinned to Bottom */}
+                <div className="space-y-3 pt-5 mt-auto">
                   <div className="flex gap-3">
                     <Button
                       variant="outline"
