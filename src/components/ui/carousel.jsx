@@ -190,4 +190,36 @@ const CarouselNext = React.forwardRef(({ className, variant = "outline", size = 
 })
 CarouselNext.displayName = "CarouselNext"
 
-export { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext };
+
+const CarouselDots = ({ className }) => {
+  const { api } = useCarousel();
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!api) return;
+
+    const onSelect = () => setSelectedIndex(api.selectedScrollSnap());
+    onSelect(); // initialize
+    api.on("select", onSelect);
+
+    return () => api.off("select", onSelect);
+  }, [api]);
+
+  if (!api) return null;
+
+  return (
+    <div className={className || "flex justify-center gap-2 mt-2"}>
+      {Array.from({ length: api.scrollSnapList().length }).map((_, idx) => (
+        <button
+          key={idx}
+          className={`w-2 h-2 rounded-full transition-colors duration-200 mr-2 last:mr-0 cursor-pointer ${
+            idx === selectedIndex ? "bg-[var(--brand-orange)]" : "bg-neutral-300"
+          }`}
+          onClick={() => api.scrollTo(idx)}
+        />
+      ))}
+    </div>
+  );
+};
+
+export { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, CarouselDots };

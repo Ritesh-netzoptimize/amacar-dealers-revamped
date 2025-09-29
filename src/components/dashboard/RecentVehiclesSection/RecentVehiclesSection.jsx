@@ -121,13 +121,13 @@ const RecentVehiclesSection = () => {
       </motion.div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Left Section - Vehicle Cards */}
         <motion.div 
-          className="lg:col-span-2"
+          className="lg:col-span-3"
           variants={sectionVariants}
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {vehicles.slice(0, 6).map((vehicle, index) => (
               <motion.div
                 key={vehicle.id}
