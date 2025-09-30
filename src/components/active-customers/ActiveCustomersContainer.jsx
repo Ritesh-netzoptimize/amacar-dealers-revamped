@@ -113,28 +113,25 @@ const ActiveCustomersContainer = ({
 
       {/* Desktop Table Layout */}
       <div className="hidden md:block overflow-x-auto">
-        <Table className="w-full min-w-[1000px]">
+        <Table className="w-full min-w-[1200px]">
           <TableHeader>
             <TableRow className="border-neutral-200 hover:bg-transparent">
-              <TableHead className="text-neutral-600 font-medium w-[16%]">
+              <TableHead className="text-neutral-600 font-medium w-[20%] pl-6">
                 Customer Name
               </TableHead>
-              <TableHead className="text-neutral-600 font-medium w-[16%]">
+              <TableHead className="text-neutral-600 font-medium w-[18%]">
                 Vehicle
               </TableHead>
-              {/* <TableHead className="text-neutral-600 font-medium w-[12%]">
-                Distance
-              </TableHead> */}
-              <TableHead className="text-neutral-600 font-medium w-[10%]">
+              <TableHead className="text-neutral-600 font-medium w-[12%]">
                 Offer Price
               </TableHead>
-              <TableHead className="text-neutral-600 font-medium w-[16%]">
+              <TableHead className="text-neutral-600 font-medium w-[20%]">
                 Address
               </TableHead>
-              <TableHead className="text-neutral-600 font-medium w-[10%]">
+              <TableHead className="text-neutral-600 font-medium w-[15%]">
                 Join Date
               </TableHead>
-              <TableHead className="text-neutral-600 font-medium text-right w-[20%]">
+              <TableHead className="text-neutral-600 font-medium text-right w-[15%] pr-6">
                 Actions
               </TableHead>
             </TableRow>
@@ -145,7 +142,7 @@ const ActiveCustomersContainer = ({
                 key={customer.id}
                 className="border-neutral-100 hover:bg-neutral-50 transition-colors duration-200"
               >
-                <TableCell className="py-3">
+                <TableCell className="py-4 pl-6">
                   <div>
                     <div className="font-semibold text-neutral-900 text-sm">
                       {customer.name}
@@ -155,36 +152,31 @@ const ActiveCustomersContainer = ({
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="py-3">
+                <TableCell className="py-4">
                   <div className="text-sm text-neutral-700">
                     {customer.vehicle}
                   </div>
                 </TableCell>
-                {/* <TableCell className="py-3">
-                  <div className="text-xs text-neutral-600">
-                    {customer.distance}
-                  </div>
-                </TableCell> */}
-                <TableCell className="py-3">
+                <TableCell className="py-4">
                   <div className="font-semibold text-green-600 text-sm">
                     {customer.offer}
                   </div>
                 </TableCell>
-                <TableCell className="py-3">
+                <TableCell className="py-4">
                   <div
-                    className="text-xs text-neutral-600 max-w-[120px] truncate"
+                    className="text-xs text-neutral-600 max-w-[180px] truncate"
                     title={customer.address}
                   >
                     {customer.address}
                   </div>
                 </TableCell>
-                <TableCell className="py-3">
+                <TableCell className="py-4">
                   <div className="text-xs text-neutral-600">
                     {new Date(customer.joinDate).toLocaleDateString()} {new Date(customer.joinDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </TableCell>
-                <TableCell className="py-3 text-right">
-                  <div className="flex gap-4 justify-end items-center">
+                <TableCell className="py-4 text-right pr-6">
+                  <div className="flex gap-2 justify-end items-center">
                     
                     {/* <Button
                       variant="default"
@@ -207,7 +199,7 @@ const ActiveCustomersContainer = ({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"
-                        className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50"
+                        className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-1 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50"
                       >
                         <DropdownMenuItem
                           onClick={() => handleViewCustomer(customer.id)}
@@ -248,9 +240,9 @@ const ActiveCustomersContainer = ({
             key={customer.id}
             variants={itemVariants}
             whileHover={{ y: -2 }}
-            className="bg-neutral-50 rounded-xl p-4 border border-neutral-200 hover:shadow-md transition-all duration-200"
+            className="bg-neutral-50 rounded-xl p-5 border border-neutral-200 hover:shadow-md transition-all duration-200"
           >
-            <div className="space-y-3">
+            <div className="space-y-4">
               {/* Customer Name */}
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold text-neutral-900 text-base">
@@ -266,41 +258,35 @@ const ActiveCustomersContainer = ({
               </div>
 
               {/* Vehicle Info */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-neutral-600">Vehicle</span>
-                  <span className="text-sm font-medium text-neutral-800">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-xs text-neutral-600 font-medium">Vehicle</span>
+                  <span className="text-sm font-medium text-neutral-800 text-right">
                     {customer.vehicle}
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-neutral-600">Distance</span>
-                  <span className="text-xs text-neutral-700">
-                    {customer.distance}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-neutral-600">Offer Price</span>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-xs text-neutral-600 font-medium">Offer Price</span>
                   <span className="text-sm font-bold text-green-600">
                     {customer.offer}
                   </span>
                 </div>
-                <div className="flex justify-between items-start">
-                  <span className="text-xs text-neutral-600">Address</span>
-                  <span className="text-xs text-neutral-700 text-right max-w-[200px]">
+                <div className="flex justify-between items-start py-2">
+                  <span className="text-xs text-neutral-600 font-medium">Address</span>
+                  <span className="text-xs text-neutral-700 text-right max-w-[220px] leading-relaxed">
                     {customer.address}
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-neutral-600">Join Date</span>
-                  <span className="text-xs text-neutral-700">
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-xs text-neutral-600 font-medium">Join Date</span>
+                  <span className="text-xs text-neutral-700 text-right">
                     {new Date(customer.joinDate).toLocaleDateString()} {new Date(customer.joinDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-2 pt-3">
+              <div className="flex gap-2 pt-4 border-t border-neutral-200">
                 {/* <Button
                   variant="default"
                   size="sm"

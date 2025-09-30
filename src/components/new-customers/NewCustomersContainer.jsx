@@ -113,7 +113,7 @@ const NewCustomersContainer = ({
 
       {/* Desktop Table Layout */}
       <div className="hidden md:block overflow-x-auto">
-        <Table className="w-full min-w-[1000px]">
+        <Table className="w-full min-w-[1000px] ">
           <TableHeader>
             <TableRow className="border-neutral-200 hover:bg-transparent">
               <TableHead className="text-neutral-600 font-medium w-[16%]">
@@ -145,7 +145,7 @@ const NewCustomersContainer = ({
                 key={customer.id}
                 className="border-neutral-100 hover:bg-neutral-50 transition-colors duration-200"
               >
-                <TableCell className="py-3">
+                <TableCell className="py-4.5">
                   <div>
                     <div className="font-semibold text-neutral-900 text-sm">
                       {customer.name}
