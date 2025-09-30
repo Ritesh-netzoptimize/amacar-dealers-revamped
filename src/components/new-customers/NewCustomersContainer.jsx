@@ -185,6 +185,16 @@ const NewCustomersContainer = ({
                 </TableCell>
                 <TableCell className="py-3 text-right">
                   <div className="flex gap-4 justify-end items-center">
+                    
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => handleScheduleAppointment(customer.id)}
+                      className="h-8 px-3 text-xs bg-white border-2 border-white cursor-pointer hover:bg-white text-[var(--brand-orange)]"
+                    >
+                      <Calendar className="w-3 h-3 mr-1" />
+                      Schedule
+                    </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
@@ -222,15 +232,7 @@ const NewCustomersContainer = ({
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => handleScheduleAppointment(customer.id)}
-                      className="h-8 px-3 text-xs bg-white border-2 border-white cursor-pointer hover:bg-white text-[var(--brand-orange)]"
-                    >
-                      <Calendar className="w-3 h-3 mr-1" />
-                      Schedule
-                    </Button>
+
                   </div>
                 </TableCell>
               </TableRow>
