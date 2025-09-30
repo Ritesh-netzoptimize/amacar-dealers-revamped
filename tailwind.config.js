@@ -9,16 +9,16 @@ export default {
         scrollbar: false,
         colors: {
           primary: {
-            50: '#fef7ed',
-            100: '#fdedd3',
-            200: '#fbd7a5',
-            300: '#f8b86d',
-            400: '#f6851f',
-            500: '#f6851f',
-            600: '#e06d0a',
-            700: '#b9550b',
-            800: '#95440f',
-            900: '#783810',
+            50:  '#f0f3f6', // very light
+            100: '#d9e0e8',
+            200: '#b8c5d4',
+            300: '#97aabf',
+            400: '#67859e',
+            500: '#2C3E50', // base color
+            600: '#243546',
+            700: '#1c2b3a',
+            800: '#15222e',
+            900: '#0d161f', // darkest shade
           },
           success: '#10b981',
           warning: '#f59e0b',
