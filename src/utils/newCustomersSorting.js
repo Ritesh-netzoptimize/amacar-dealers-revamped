@@ -24,7 +24,34 @@ export const sortByNameDesc = (customers) => {
  * @returns {Array} Sorted customers
  */
 export const sortByJoinDateAsc = (customers) => {
-  return [...customers].sort((a, b) => new Date(a.joinDate) - new Date(b.joinDate));
+  // console.log('🔄 Starting ASCENDING date sort...');
+  // console.log('📊 Total customers to sort:', customers.length);
+  
+  return [...customers].sort((a, b) => {
+    const dateA = new Date(a.joinDate);
+    const dateB = new Date(b.joinDate);
+    
+    // console.log(`📅 Comparing: ${a.name} (${a.joinDate}) vs ${b.name} (${b.joinDate})`);
+    // console.log(`🕐 Parsed dates: ${dateA.toISOString()} vs ${dateB.toISOString()}`);
+    
+    // Handle invalid dates
+    if (isNaN(dateA.getTime()) && isNaN(dateB.getTime())) {
+      // console.log('❌ Both dates invalid, returning 0');
+      return 0;
+    }
+    if (isNaN(dateA.getTime())) {
+      // console.log('❌ Date A invalid, returning 1 (B comes first)');
+      return 1;
+    }
+    if (isNaN(dateB.getTime())) {
+      // console.log('❌ Date B invalid, returning -1 (A comes first)');
+      return -1;
+    }
+    
+    const result = dateA - dateB;
+    // console.log(`✅ Result: ${result} (${result < 0 ? 'A comes first' : result > 0 ? 'B comes first' : 'Equal'})`);
+    return result;
+  });
 };
 
 /**
@@ -33,7 +60,34 @@ export const sortByJoinDateAsc = (customers) => {
  * @returns {Array} Sorted customers
  */
 export const sortByJoinDateDesc = (customers) => {
-  return [...customers].sort((a, b) => new Date(b.joinDate) - new Date(a.joinDate));
+  // console.log('🔄 Starting DESCENDING date sort...');
+  // console.log('📊 Total customers to sort:', customers.length);
+  
+  return [...customers].sort((a, b) => {
+    const dateA = new Date(a.joinDate);
+    const dateB = new Date(b.joinDate);
+    
+    // console.log(`📅 Comparing: ${a.name} (${a.joinDate}) vs ${b.name} (${b.joinDate})`);
+    // console.log(`🕐 Parsed dates: ${dateA.toISOString()} vs ${dateB.toISOString()}`);
+    
+    // Handle invalid dates
+    if (isNaN(dateA.getTime()) && isNaN(dateB.getTime())) {
+      // console.log('❌ Both dates invalid, returning 0');
+      return 0;
+    }
+    if (isNaN(dateA.getTime())) {
+      // console.log('❌ Date A invalid, returning 1 (B comes first)');
+      return 1;
+    }
+    if (isNaN(dateB.getTime())) {
+      // console.log('❌ Date B invalid, returning -1 (A comes first)');
+      return -1;
+    }
+    
+    const result = dateB - dateA;
+    // console.log(`✅ Result: ${result} (${result < 0 ? 'A comes first' : result > 0 ? 'B comes first' : 'Equal'})`);
+    return result;
+  });
 };
 
 /**
@@ -113,30 +167,47 @@ export const sortByVehicleDesc = (customers) => {
  * @returns {Array} Sorted customers
  */
 export const sortNewCustomers = (customers, sortBy) => {
-  if (!customers || customers.length === 0) return [];
+  // console.log('🎯 Main sorting function called with:', sortBy);
+  // console.log('📋 Input customers:', customers.length);
+  
+  if (!customers || customers.length === 0) {
+    // console.log('⚠️ No customers to sort, returning empty array');
+    return [];
+  }
 
   switch (sortBy) {
     case 'name-asc':
+      // console.log('📝 Sorting by name (ascending)');
       return sortByNameAsc(customers);
     case 'name-desc':
+      // console.log('📝 Sorting by name (descending)');
       return sortByNameDesc(customers);
     case 'join-date-asc':
+      // console.log('📅 Sorting by join date (ascending)');
       return sortByJoinDateAsc(customers);
     case 'join-date-desc':
+      // console.log('📅 Sorting by join date (descending)');
       return sortByJoinDateDesc(customers);
     case 'offer-asc':
+      // console.log('💰 Sorting by offer (ascending)');
       return sortByOfferAsc(customers);
     case 'offer-desc':
+      // console.log('💰 Sorting by offer (descending)');
       return sortByOfferDesc(customers);
     case 'mileage-asc':
+      // console.log('🛣️ Sorting by mileage (ascending)');
       return sortByMileageAsc(customers);
     case 'mileage-desc':
+      // console.log('🛣️ Sorting by mileage (descending)');
       return sortByMileageDesc(customers);
     case 'vehicle-asc':
+      // console.log('🚗 Sorting by vehicle (ascending)');
       return sortByVehicleAsc(customers);
     case 'vehicle-desc':
+      // console.log('🚗 Sorting by vehicle (descending)');
       return sortByVehicleDesc(customers);
     default:
+      // console.log('❓ Unknown sort type, returning original array');
       return customers;
   }
 };
@@ -173,7 +244,9 @@ export const getSortDirectionOptions = () => {
  * @returns {string} Combined sort value
  */
 export const parseSortConfig = (field, direction) => {
-  return `${field}-${direction}`;
+  const result = `${field}-${direction}`;
+  // console.log('🔧 Creating sort config:', { field, direction, result });
+  return result;
 };
 
 /**
@@ -182,6 +255,19 @@ export const parseSortConfig = (field, direction) => {
  * @returns {Object} Parsed field and direction
  */
 export const parseSortValue = (sortValue) => {
-  const [field, direction] = sortValue.split('-');
+  // console.log('🔍 Parsing sort value:', sortValue);
+  
+  // Handle the case where we have field-direction format
+  // e.g., "join-date-desc" should become field: "join-date", direction: "desc"
+  const lastDashIndex = sortValue.lastIndexOf('-');
+  if (lastDashIndex === -1) {
+    // console.log('⚠️ No dash found, using default direction');
+    return { field: sortValue, direction: 'desc' };
+  }
+  
+  const field = sortValue.substring(0, lastDashIndex);
+  const direction = sortValue.substring(lastDashIndex + 1);
+  
+  // console.log('✅ Parsed:', { field, direction });
   return { field, direction };
 };
