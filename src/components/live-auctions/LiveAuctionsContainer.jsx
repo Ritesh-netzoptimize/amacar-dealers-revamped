@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Gavel, X, Eye, Clock, DollarSign } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselDots } from '@/components/ui/carousel';
 import { Button } from '@/components/ui/button';
+import BidDialog from '@/components/common/BidDialog/BidDialog';
 
 const LiveAuctionsContainer = ({ auctions = [] }) => {
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
 
   // Animation variants
   const containerVariants = {
@@ -30,9 +33,19 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
     }
   };
 
-  const handleBidNow = (vehicleId) => {
-    console.log('Bid Now:', vehicleId);
-    // TODO: Implement bidding functionality
+  const handleBidNow = (vehicle) => {
+    setSelectedVehicle(vehicle);
+    setIsBidDialogOpen(true);
+  };
+
+  const handleBidSuccess = (bidAmount) => {
+    console.log('Bid successful:', bidAmount);
+    // TODO: Update the vehicle's highest bid or handle success
+  };
+
+  const handleCloseBidDialog = () => {
+    setIsBidDialogOpen(false);
+    setSelectedVehicle(null);
   };
 
   const handlePassVehicle = (vehicleId) => {
@@ -150,7 +163,7 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                     </Button>
                   </div>
                   <Button
-                    onClick={() => handleBidNow(vehicle.id)}
+                    onClick={() => handleBidNow(vehicle)}
                     className="w-full bg-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] text-white font-semibold py-4 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
                   >
                     <Gavel className="w-4 h-4 mr-2" />
@@ -205,9 +218,9 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
               </div>
 
               {/* Right Section - Vehicle Information (3/4 width) */}
-              <div className="w-3/4 p-8 flex flex-col bg-white/95 backdrop-blur-sm min-h-80">
+              <div className="w-3/4 p-8 flex flex-col justify-between bg-white/95 backdrop-blur-sm min-h-80">
                 {/* Header with Vehicle Title and CTA Buttons */}
-                <div className="flex items-start justify-between mb-8">
+                <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-2xl font-semibold text-neutral-800 mb-1 group-hover:text-orange-500 transition-colors duration-300">
                       {vehicle.name}
@@ -222,14 +235,14 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                     <Button
                       variant="outline"
                       onClick={() => handlePassVehicle(vehicle.id)}
-                      className="h-10 px-4 border border-neutral-200 hover:border-red-200 hover:bg-red-50 text-neutral-600 hover:text-red-500 font-medium rounded-lg transition-colors duration-300"
+                      className="h-10 px-4 border border-neutral-200 hover:border-red-200 hover:bg-red-50 text-neutral-600 hover:text-red-500 font-medium rounded-lg transition-colors duration-300 cursor-pointer"
                     >
                       <X className="w-4 h-4 mr-1" />
                       Pass
                     </Button>
                     <Button
-                      onClick={() => handleBidNow(vehicle.id)}
-                      className="h-10 px-5 bg-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-colors duration-300"
+                      onClick={() => handleBidNow(vehicle)}
+                      className="h-10 px-5 bg-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-colors duration-300 cursor-pointer"
                     >
                       <Gavel className="w-4 h-4 mr-1" />
                       Bid Now
@@ -237,8 +250,8 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                   </div>
                 </div>
 
-                {/* Auction Details Grid */}
-                <div className="grid grid-cols-3 gap-6">
+                {/* Auction Details Grid - Bottom */}
+                <div className="grid grid-cols-3 gap-6 mt-auto">
                   <div className="flex flex-col items-center p-5 border border-neutral-100 rounded-2xl hover:border-orange-200 hover:bg-orange-50/20 transition-all duration-300">
                     <div className="flex items-center mb-3">
                       <DollarSign className="w-4 h-4 mr-2 text-neutral-400" />
@@ -267,6 +280,15 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
         ))}
       </div>
 
+      {/* Bid Dialog */}
+      {selectedVehicle && (
+        <BidDialog
+          isOpen={isBidDialogOpen}
+          onClose={handleCloseBidDialog}
+          vehicle={selectedVehicle}
+          onBidSuccess={handleBidSuccess}
+        />
+      )}
     </motion.div>
   );
 };

@@ -33,13 +33,23 @@ const BidDialog = ({
     }
   };
 
+  const parseCurrencyString = (currencyString) => {
+    if (typeof currencyString === 'number') return currencyString;
+    if (typeof currencyString === 'string') {
+      // Remove $ and commas, then parse
+      return parseFloat(currencyString.replace(/[$,]/g, ''));
+    }
+    return 0;
+  };
+
   const validateBid = (amount) => {
     const numericAmount = parseFloat(amount);
     if (!amount || isNaN(numericAmount) || numericAmount <= 0) {
       return 'Please enter a valid bid amount';
     }
-    if (numericAmount <= vehicle.cashOffer) {
-      return `Bid amount must be greater than the current cash offer of ${formatBidAmount(vehicle.cashOffer)}`;
+    const cashOfferAmount = parseCurrencyString(vehicle.cashOffer);
+    if (numericAmount <= cashOfferAmount) {
+      return `Bid amount must be greater than the current cash offer of ${formatBidAmount(cashOfferAmount)}`;
     }
     return null;
   };
@@ -121,7 +131,7 @@ const BidDialog = ({
             <div className="flex justify-between items-center">
               <span className="text-sm text-neutral-600">Current Cash Offer</span>
               <span className="text-lg font-bold text-neutral-900">
-                {formatBidAmount(vehicle.cashOffer)}
+                {formatBidAmount(parseCurrencyString(vehicle.cashOffer))}
               </span>
             </div>
             <div className="flex justify-between items-center mt-2">

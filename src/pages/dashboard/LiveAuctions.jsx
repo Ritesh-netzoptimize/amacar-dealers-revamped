@@ -27,7 +27,8 @@ const LiveAuctions = () => {
       year: 2014,
       cashOffer: "$7,725",
       highestBid: "$8,200",
-      endsAt: "Oct 30, 2025 14:00"
+      endsAt: "Oct 30, 2025 14:00",
+      timeLeft: "2h 15m"
     },
     { 
       id: 2,
@@ -41,7 +42,8 @@ const LiveAuctions = () => {
       year: 2020,
       cashOffer: "$35,000",
       highestBid: "$36,500",
-      endsAt: "Oct 31, 2025 16:00"
+      endsAt: "Oct 31, 2025 16:00",
+      timeLeft: "1d 4h"
     },
     { 
       id: 3,
@@ -56,7 +58,8 @@ const LiveAuctions = () => {
       year: 2019,
       cashOffer: "$42,500",
       highestBid: "$44,000",
-      endsAt: "Nov 1, 2025 10:00"
+      endsAt: "Nov 1, 2025 10:00",
+      timeLeft: "2d 8h"
     },
     { 
       id: 4,
@@ -70,7 +73,8 @@ const LiveAuctions = () => {
       year: 2021,
       cashOffer: "$28,500",
       highestBid: "$29,200",
-      endsAt: "Nov 2, 2025 12:00"
+      endsAt: "Nov 2, 2025 12:00",
+      timeLeft: "3d 10h"
     },
     { 
       id: 5,
@@ -84,7 +88,8 @@ const LiveAuctions = () => {
       year: 2022,
       cashOffer: "$32,000",
       highestBid: "$33,500",
-      endsAt: "Nov 3, 2025 15:00"
+      endsAt: "Nov 3, 2025 15:00",
+      timeLeft: "4d 13h"
     },
     { 
       id: 6,
@@ -98,7 +103,8 @@ const LiveAuctions = () => {
       year: 2020,
       cashOffer: "$38,000",
       highestBid: "$39,800",
-      endsAt: "Nov 4, 2025 11:00"
+      endsAt: "Nov 4, 2025 11:00",
+      timeLeft: "5d 9h"
     }
   ];
 
