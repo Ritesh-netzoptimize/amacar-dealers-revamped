@@ -86,7 +86,7 @@ const Pagination = ({
           <PaginationPrevious
             onClick={handlePrevious}
             className={cn(
-              "h-10 px-4 rounded-lg border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300 transition-all duration-200 font-medium text-sm",
+              "cursor-pointer h-10 px-4 rounded-lg border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300 transition-all duration-200 font-medium text-sm",
               currentPage === 1 && "pointer-events-none opacity-40 cursor-not-allowed"
             )}
             style={{ pointerEvents: currentPage === 1 ? 'none' : 'auto' }}
@@ -107,7 +107,7 @@ const Pagination = ({
                 className={cn(
                   "h-10 w-10 rounded-lg border transition-all duration-200 font-medium text-sm flex items-center justify-center cursor-pointer",
                   page === currentPage
-                    ? "bg-[var(--brand-orange)] text-white border-[var(--brand-orange)] shadow-sm"
+                    ? "text-[var(--brand-orange)] border-[var(--brand-orange)] shadow-sm"
                     : "bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300"
                 )}
               >
@@ -122,7 +122,7 @@ const Pagination = ({
           <PaginationNext
             onClick={handleNext}
             className={cn(
-              "h-10 px-4 rounded-lg border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300 transition-all duration-200 font-medium text-sm",
+              "cursor-pointer h-10 px-4 rounded-lg border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300 transition-all duration-200 font-medium text-sm",
               currentPage === totalPages && "pointer-events-none opacity-40 cursor-not-allowed"
             )}
             style={{ pointerEvents: currentPage === totalPages ? 'none' : 'auto' }}

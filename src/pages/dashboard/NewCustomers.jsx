@@ -1,12 +1,59 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-    import Pagination from '@/components/common/Pagination/Pagination';
+import { motion, AnimatePresence } from 'framer-motion';
+import Pagination from '@/components/common/Pagination/Pagination';
 import NewCustomersContainer from '@/components/new-customers/NewCustomersContainer';
 
 const NewCustomers = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // Animation variants
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+        staggerChildren: 0.1
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      y: -20,
+      transition: { duration: 0.3 }
+    }
+  };
+
+  const headerVariants = {
+    initial: { opacity: 0, y: 30 },
+    animate: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.5, ease: "easeOut" }
+    }
+  };
+
+  const contentVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.5, ease: "easeOut", delay: 0.2 }
+    }
+  };
+
+  const paginationVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.4, ease: "easeOut" }
+    }
+  };
 
   // Extended dummy customer data for pagination testing
   const allCustomers = [
@@ -172,43 +219,71 @@ const NewCustomers = () => {
   };
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
-    // Scroll to top when page changes
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Add a small delay for smooth transition
+    setTimeout(() => {
+      setCurrentPage(page);
+      // Scroll to top when page changes
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   };
 
   return (
-    <div className=" min-h-screen bg-gray-50 pt-28 px-8 md:px-12">
+    <motion.div 
+      className="min-h-screen bg-gray-50 pt-28 px-8 md:px-12"
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
       <div className="max-w-8xl">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-neutral-900">New Customers</h1>
+        {/* Header Section */}
+        <motion.div 
+          className="mb-6"
+          variants={headerVariants}
+        >
+          <h1 className="text-3xl font-bold text-neutral-900">New Customers</h1>
           <p className="text-neutral-600 mt-1">Manage and view all new customer offers and details</p>
-        </div>
+        </motion.div>
         
-        <NewCustomersContainer 
-          customers={currentCustomers}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalCount={allCustomers.length}
-          onPageChange={handlePageChange}
-          onViewCustomer={handleViewCustomer}
-          onViewVehicle={handleViewVehicle}
-          onScheduleAppointment={handleScheduleAppointment}
-          onContact={handleContact}
-        />
+        {/* Content Section */}
+        <motion.div
+          variants={contentVariants}
+          key={currentPage} // Re-animate when page changes
+        >
+          <NewCustomersContainer 
+            customers={currentCustomers}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalCount={allCustomers.length}
+            onPageChange={handlePageChange}
+            onViewCustomer={handleViewCustomer}
+            onViewVehicle={handleViewVehicle}
+            onScheduleAppointment={handleScheduleAppointment}
+            onContact={handleContact}
+          />
+        </motion.div>
 
         {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-8 pt-6 border-t border-neutral-100">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          {totalPages > 1 && (
+            <motion.div 
+              className="flex justify-center mt-8 pt-6 border-t border-neutral-100"
+              variants={paginationVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                className="w-full max-w-md mb-4"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
