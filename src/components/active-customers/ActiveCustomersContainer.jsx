@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 
-const NewCustomersContainer = ({
+const ActiveCustomersContainer = ({
   customers = [],
   currentPage = 1,
   totalPages = 1,
@@ -98,10 +98,10 @@ const NewCustomersContainer = ({
           </div>
           <div>
             <h3 className="text-lg font-semibold text-neutral-900">
-              New Customers
+              Active Customers
             </h3>
             <p className="text-sm text-neutral-600">
-              All customer offers and details
+              All active customers and details
             </p>
           </div>
         </div>
@@ -122,9 +122,9 @@ const NewCustomersContainer = ({
               <TableHead className="text-neutral-600 font-medium w-[16%]">
                 Vehicle
               </TableHead>
-              <TableHead className="text-neutral-600 font-medium w-[12%]">
+              {/* <TableHead className="text-neutral-600 font-medium w-[12%]">
                 Distance
-              </TableHead>
+              </TableHead> */}
               <TableHead className="text-neutral-600 font-medium w-[10%]">
                 Offer Price
               </TableHead>
@@ -160,11 +160,11 @@ const NewCustomersContainer = ({
                     {customer.vehicle}
                   </div>
                 </TableCell>
-                <TableCell className="py-3">
+                {/* <TableCell className="py-3">
                   <div className="text-xs text-neutral-600">
                     {customer.distance}
                   </div>
-                </TableCell>
+                </TableCell> */}
                 <TableCell className="py-3">
                   <div className="font-semibold text-green-600 text-sm">
                     {customer.offer}
@@ -186,7 +186,7 @@ const NewCustomersContainer = ({
                 <TableCell className="py-3 text-right">
                   <div className="flex gap-4 justify-end items-center">
                     
-                    <Button
+                    {/* <Button
                       variant="default"
                       size="sm"
                       onClick={() => handleScheduleAppointment(customer.id)}
@@ -194,7 +194,7 @@ const NewCustomersContainer = ({
                     >
                       <Calendar className="w-3 h-3 mr-1" />
                       Schedule
-                    </Button>
+                    </Button> */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
@@ -301,7 +301,7 @@ const NewCustomersContainer = ({
 
               {/* Action Buttons */}
               <div className="flex gap-2 pt-3">
-                <Button
+                {/* <Button
                   variant="default"
                   size="sm"
                   onClick={() => handleScheduleAppointment(customer.id)}
@@ -309,7 +309,7 @@ const NewCustomersContainer = ({
                 >
                   <Calendar className="w-4 h-4 mr-2" />
                   Schedule
-                </Button>
+                </Button> */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -356,4 +356,4 @@ const NewCustomersContainer = ({
   );
 };
 
-export default NewCustomersContainer;
+export default ActiveCustomersContainer;
