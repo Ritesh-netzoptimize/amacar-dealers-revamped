@@ -1,5 +1,13 @@
-import { motion } from 'framer-motion';
-import { Eye, Phone, User, Calendar, Car } from 'lucide-react';
+import { motion } from "framer-motion";
+import {
+  Eye,
+  Phone,
+  User,
+  Calendar,
+  Car,
+  MoreHorizontal,
+  MapPin,
+} from "lucide-react";
 import {
   Table,
   TableBody,
@@ -7,20 +15,26 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
-const NewCustomersContainer = ({ 
-  customers = [], 
-  currentPage = 1, 
-  totalPages = 1, 
+const NewCustomersContainer = ({
+  customers = [],
+  currentPage = 1,
+  totalPages = 1,
   totalCount = 0,
   onPageChange = () => {},
   onViewCustomer = () => {},
   onViewVehicle = () => {},
   onScheduleAppointment = () => {},
-  onContact = () => {}
+  onContact = () => {},
 }) => {
   const navigate = useNavigate();
   const itemsPerPage = 10;
@@ -36,9 +50,9 @@ const NewCustomersContainer = ({
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
+        delayChildren: 0.2,
+      },
+    },
   };
 
   const itemVariants = {
@@ -48,9 +62,9 @@ const NewCustomersContainer = ({
       y: 0,
       transition: {
         duration: 0.5,
-        ease: "easeOut"
-      }
-    }
+        ease: "easeOut",
+      },
+    },
   };
 
   const handleViewCustomer = (customerId) => {
@@ -83,89 +97,136 @@ const NewCustomersContainer = ({
             <User className="w-5 h-5 text-orange-600" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-neutral-900">New Customers</h3>
-            <p className="text-sm text-neutral-600">All customer offers and details</p>
+            <h3 className="text-lg font-semibold text-neutral-900">
+              New Customers
+            </h3>
+            <p className="text-sm text-neutral-600">
+              All customer offers and details
+            </p>
           </div>
         </div>
         <div className="text-sm text-neutral-500">
-          Showing {startIndex + 1}-{Math.min(endIndex, totalCount)} of {totalCount} customers
+          Showing {startIndex + 1}-{Math.min(endIndex, totalCount)} of{" "}
+          {totalCount} customers
         </div>
       </div>
 
       {/* Desktop Table Layout */}
       <div className="hidden md:block overflow-x-auto">
-        <Table className="w-full min-w-[900px]">
+        <Table className="w-full min-w-[1000px]">
           <TableHeader>
             <TableRow className="border-neutral-200 hover:bg-transparent">
-              <TableHead className="text-neutral-600 font-medium w-[18%]">Customer Name</TableHead>
-              <TableHead className="text-neutral-600 font-medium w-[18%]">Vehicle</TableHead>
-              <TableHead className="text-neutral-600 font-medium w-[12%]">Mileage</TableHead>
-              <TableHead className="text-neutral-600 font-medium w-[12%]">Offer Price</TableHead>
-              <TableHead className="text-neutral-600 font-medium w-[12%]">Join Date</TableHead>
-              <TableHead className="text-neutral-600 font-medium text-right w-[28%]">Actions</TableHead>
+              <TableHead className="text-neutral-600 font-medium w-[16%]">
+                Customer Name
+              </TableHead>
+              <TableHead className="text-neutral-600 font-medium w-[16%]">
+                Vehicle
+              </TableHead>
+              <TableHead className="text-neutral-600 font-medium w-[12%]">
+                Mileage
+              </TableHead>
+              <TableHead className="text-neutral-600 font-medium w-[10%]">
+                Offer Price
+              </TableHead>
+              <TableHead className="text-neutral-600 font-medium w-[16%]">
+                Address
+              </TableHead>
+              <TableHead className="text-neutral-600 font-medium w-[10%]">
+                Join Date
+              </TableHead>
+              <TableHead className="text-neutral-600 font-medium text-right w-[20%]">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {customers.map((customer, index) => (
-              <TableRow 
+              <TableRow
                 key={customer.id}
                 className="border-neutral-100 hover:bg-neutral-50 transition-colors duration-200"
               >
-                <TableCell className="font-medium text-neutral-900">
+                <TableCell className="py-3">
                   <div>
-                    <div className="font-semibold">{customer.name}</div>
-                    <div className="text-xs text-neutral-500">{customer.email}</div>
+                    <div className="font-semibold text-neutral-900 text-sm">
+                      {customer.name}
+                    </div>
+                    <div className="text-xs text-neutral-500 mt-0.5">
+                      {customer.email}
+                    </div>
                   </div>
                 </TableCell>
-                <TableCell className="text-neutral-700">
-                  {customer.vehicle}
+                <TableCell className="py-3">
+                  <div className="text-sm text-neutral-700">
+                    {customer.vehicle}
+                  </div>
                 </TableCell>
-                <TableCell className="text-neutral-600">
-                  {customer.mileage}
+                <TableCell className="py-3">
+                  <div className="text-xs text-neutral-600">
+                    {customer.mileage}
+                  </div>
                 </TableCell>
-                <TableCell className="font-semibold text-green-600">
-                  {customer.offer}
+                <TableCell className="py-3">
+                  <div className="font-semibold text-green-600 text-sm">
+                    {customer.offer}
+                  </div>
                 </TableCell>
-                <TableCell className="text-neutral-600 text-sm">
-                  {new Date(customer.joinDate).toLocaleDateString()}
+                <TableCell className="py-3">
+                  <div
+                    className="text-xs text-neutral-600 max-w-[120px] truncate"
+                    title={customer.address}
+                  >
+                    {customer.address}
+                  </div>
                 </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex gap-2 justify-end items-center flex-wrap">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleViewCustomer(customer.id)}
-                      className="h-8 px-3 text-xs min-w-[70px] flex-shrink-0"
-                    >
-                      <Eye className="w-3 h-3 mr-1" />
-                      View
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleViewVehicle(customer.id)}
-                      className="h-8 px-3 text-xs min-w-[80px] flex-shrink-0"
-                    >
-                      <Car className="w-3 h-3 mr-1" />
-                      Vehicle
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleScheduleAppointment(customer.id)}
-                      className="h-8 px-3 text-xs min-w-[85px] flex-shrink-0"
-                    >
-                      <Calendar className="w-3 h-3 mr-1" />
-                      Schedule
-                    </Button>
+                <TableCell className="py-3">
+                  <div className="text-xs text-neutral-600">
+                    {new Date(customer.joinDate).toLocaleDateString()}
+                  </div>
+                </TableCell>
+                <TableCell className="py-3 text-right">
+                  <div className="flex gap-4 justify-end items-center">
+                    <DropdownMenu >
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 w-8 p-0 hover:bg-neutral-100 cursor-pointer"
+                        >
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem
+                          onClick={() => handleViewCustomer(customer.id)}
+                          className="cursor-pointer"
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          View Customer
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleViewVehicle(customer.id)}
+                          className="cursor-pointer"
+                        >
+                          <Car className="w-4 h-4 mr-2" />
+                          View Vehicle
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleContact(customer.id)}
+                          className="cursor-pointer"
+                        >
+                          <Phone className="w-4 h-4 mr-2" />
+                          Contact
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button
                       variant="default"
                       size="sm"
-                      onClick={() => handleContact(customer.id)}
-                      className="h-8 px-3 text-xs min-w-[80px] flex-shrink-0 bg-[var(--brand-orange)] text-white hover:bg-orange-600"
+                      onClick={() => handleScheduleAppointment(customer.id)}
+                      className="h-8 px-3 text-xs bg-white border-2 border-white cursor-pointer hover:bg-white text-[var(--brand-orange)]"
                     >
-                      <Phone className="w-3 h-3 mr-1" />
-                      Contact
+                      <Calendar className="w-3 h-3 mr-1" />
+                      Schedule
                     </Button>
                   </div>
                 </TableCell>
@@ -202,75 +263,87 @@ const NewCustomersContainer = ({
               {/* Vehicle Info */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-neutral-600">Vehicle</span>
+                  <span className="text-xs text-neutral-600">Vehicle</span>
                   <span className="text-sm font-medium text-neutral-800">
                     {customer.vehicle}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-neutral-600">Mileage</span>
-                  <span className="text-sm text-neutral-700">
+                  <span className="text-xs text-neutral-600">Mileage</span>
+                  <span className="text-xs text-neutral-700">
                     {customer.mileage}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-neutral-600">Offer Price</span>
-                  <span className="text-lg font-bold text-green-600">
+                  <span className="text-xs text-neutral-600">Offer Price</span>
+                  <span className="text-sm font-bold text-green-600">
                     {customer.offer}
                   </span>
                 </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-xs text-neutral-600">Address</span>
+                  <span className="text-xs text-neutral-700 text-right max-w-[200px]">
+                    {customer.address}
+                  </span>
+                </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-neutral-600">Join Date</span>
-                  <span className="text-sm text-neutral-700">
+                  <span className="text-xs text-neutral-600">Join Date</span>
+                  <span className="text-xs text-neutral-700">
                     {new Date(customer.joinDate).toLocaleDateString()}
                   </span>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="grid grid-cols-2 gap-3 pt-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleViewCustomer(customer.id)}
-                  className="h-10 text-sm flex items-center justify-center min-w-0"
-                >
-                  <Eye className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <span className="truncate">View Customer</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleViewVehicle(customer.id)}
-                  className="h-10 text-sm flex items-center justify-center min-w-0"
-                >
-                  <Car className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <span className="truncate">View Vehicle</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleScheduleAppointment(customer.id)}
-                  className="h-10 text-sm flex items-center justify-center min-w-0"
-                >
-                  <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <span className="truncate">Schedule</span>
-                </Button>
+              <div className="flex gap-2 pt-3">
                 <Button
                   variant="default"
                   size="sm"
-                  onClick={() => handleContact(customer.id)}
-                  className="h-10 text-sm flex items-center justify-center min-w-0 bg-[var(--brand-orange)] text-white hover:bg-orange-600"
+                  onClick={() => handleScheduleAppointment(customer.id)}
+                  className="flex-1 h-10 text-sm bg-[var(--brand-orange)] text-white hover:bg-orange-600"
                 >
-                  <Phone className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <span className="truncate">Contact</span>
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Schedule
                 </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-10 w-10 p-0 hover:bg-neutral-100"
+                    >
+                      <MoreHorizontal className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem
+                      onClick={() => handleViewCustomer(customer.id)}
+                      className="cursor-pointer"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      View Customer
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => handleViewVehicle(customer.id)}
+                      className="cursor-pointer"
+                    >
+                      <Car className="w-4 h-4 mr-2" />
+                      View Vehicle
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => handleContact(customer.id)}
+                      className="cursor-pointer"
+                    >
+                      <Phone className="w-4 h-4 mr-2" />
+                      Contact
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </motion.div>
         ))}
       </div>
-
     </motion.div>
   );
 };

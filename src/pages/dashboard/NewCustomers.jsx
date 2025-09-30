@@ -18,6 +18,7 @@ const NewCustomers = () => {
       offer: "$7,725",
       email: "neeraj@example.com",
       phone: "+1 (555) 123-4567",
+      address: "123 Main St, New York, NY 10001",
       joinDate: "2024-01-15"
     },
     { 
@@ -28,6 +29,7 @@ const NewCustomers = () => {
       offer: "$7,725",
       email: "ritesh@example.com",
       phone: "+1 (555) 234-5678",
+      address: "456 Oak Ave, Los Angeles, CA 90210",
       joinDate: "2024-01-14"
     },
     { 
@@ -38,6 +40,7 @@ const NewCustomers = () => {
       offer: "$7,725",
       email: "random@example.com",
       phone: "+1 (555) 345-6789",
+      address: "789 Pine Rd, Chicago, IL 60601",
       joinDate: "2024-01-13"
     },
     { 
@@ -48,6 +51,7 @@ const NewCustomers = () => {
       offer: "$7,725",
       email: "kl.rahul@example.com",
       phone: "+1 (555) 456-7890",
+      address: "321 Elm St, Houston, TX 77001",
       joinDate: "2024-01-12"
     },
     { 
@@ -58,6 +62,7 @@ const NewCustomers = () => {
       offer: "$7,725",
       email: "ritesh.chopra@example.com",
       phone: "+1 (555) 567-8901",
+      address: "654 Maple Dr, Phoenix, AZ 85001",
       joinDate: "2024-01-11"
     },
     { 
@@ -68,6 +73,7 @@ const NewCustomers = () => {
       offer: "$12,500",
       email: "sarah.j@example.com",
       phone: "+1 (555) 678-9012",
+      address: "987 Cedar Ln, Philadelphia, PA 19101",
       joinDate: "2024-01-10"
     },
     { 
@@ -78,6 +84,7 @@ const NewCustomers = () => {
       offer: "$15,200",
       email: "m.chen@example.com",
       phone: "+1 (555) 789-0123",
+      address: "147 Birch St, San Antonio, TX 78201",
       joinDate: "2024-01-09"
     },
     { 
@@ -88,6 +95,7 @@ const NewCustomers = () => {
       offer: "$18,750",
       email: "emily.r@example.com",
       phone: "+1 (555) 890-1234",
+      address: "258 Willow Way, San Diego, CA 92101",
       joinDate: "2024-01-08"
     },
     { 
@@ -98,6 +106,7 @@ const NewCustomers = () => {
       offer: "$14,300",
       email: "d.kim@example.com",
       phone: "+1 (555) 901-2345",
+      address: "369 Spruce Ave, Dallas, TX 75201",
       joinDate: "2024-01-07"
     },
     { 
@@ -108,6 +117,7 @@ const NewCustomers = () => {
       offer: "$22,100",
       email: "lisa.t@example.com",
       phone: "+1 (555) 012-3456",
+      address: "741 Poplar Blvd, San Jose, CA 95101",
       joinDate: "2024-01-06"
     },
     { 
@@ -118,6 +128,7 @@ const NewCustomers = () => {
       offer: "$9,800",
       email: "j.wilson@example.com",
       phone: "+1 (555) 123-4567",
+      address: "852 Ash St, Austin, TX 78701",
       joinDate: "2024-01-05"
     },
     { 
@@ -128,6 +139,7 @@ const NewCustomers = () => {
       offer: "$11,200",
       email: "maria.g@example.com",
       phone: "+1 (555) 234-5678",
+      address: "963 Hickory Rd, Jacksonville, FL 32201",
       joinDate: "2024-01-04"
     }
   ];
