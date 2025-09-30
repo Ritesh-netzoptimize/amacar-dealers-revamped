@@ -180,12 +180,12 @@ const NewCustomersContainer = ({
                 </TableCell>
                 <TableCell className="py-3">
                   <div className="text-xs text-neutral-600">
-                    {new Date(customer.joinDate).toLocaleDateString()}
+                    {new Date(customer.joinDate).toLocaleDateString()} {new Date(customer.joinDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </TableCell>
                 <TableCell className="py-3 text-right">
                   <div className="flex gap-4 justify-end items-center">
-                    <DropdownMenu >
+                    <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
                           variant="outline"
@@ -196,34 +196,31 @@ const NewCustomersContainer = ({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
-  align="end"
-  className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50"
->
-  <DropdownMenuItem
-   
-    onClick={() => handleViewCustomer(customer.id)}
-    className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
-  >
-    <Eye className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-    <span>View Customer</span>
-  </DropdownMenuItem>
-  <DropdownMenuItem
-   
-    onClick={() => handleViewVehicle(customer.id)}
-    className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
-  >
-    <Car className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-    <span>View Vehicle</span>
-  </DropdownMenuItem>
-  <DropdownMenuItem
-   
-    onClick={() => handleContact(customer.id)}
-    className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
-  >
-    <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-    <span>Contact</span>
-  </DropdownMenuItem>
-</DropdownMenuContent>
+                        align="end"
+                        className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50"
+                      >
+                        <DropdownMenuItem
+                          onClick={() => handleViewCustomer(customer.id)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                        >
+                          <Eye className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                          <span>View Customer</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleViewVehicle(customer.id)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                        >
+                          <Car className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                          <span>View Vehicle</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleContact(customer.id)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                        >
+                          <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                          <span>Contact</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
                     </DropdownMenu>
                     <Button
                       variant="default"
@@ -295,7 +292,7 @@ const NewCustomersContainer = ({
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-neutral-600">Join Date</span>
                   <span className="text-xs text-neutral-700">
-                    {new Date(customer.joinDate).toLocaleDateString()}
+                    {new Date(customer.joinDate).toLocaleDateString()} {new Date(customer.joinDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
               </div>
@@ -321,7 +318,10 @@ const NewCustomersContainer = ({
                       <MoreHorizontal className="w-4 h-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-52 p-1 shadow-lg border border-neutral-200 bg-white rounded-lg">
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-52 p-1 shadow-lg border border-neutral-200 bg-white rounded-lg"
+                  >
                     <DropdownMenuItem
                       onClick={() => handleViewCustomer(customer.id)}
                       className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-colors duration-150 focus:bg-neutral-50 focus:text-neutral-900 focus:outline-none"

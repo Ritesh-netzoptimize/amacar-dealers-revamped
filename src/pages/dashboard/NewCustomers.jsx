@@ -70,7 +70,7 @@ const NewCustomers = () => {
       email: "neeraj@example.com",
       phone: "+1 (555) 123-4567",
       address: "123 Main St, New York, NY 10001",
-      joinDate: "2024-01-15"
+      joinDate: "2024-01-15T09:30:00"
     },
     { 
       id: 2,
@@ -81,7 +81,7 @@ const NewCustomers = () => {
       email: "ritesh@example.com",
       phone: "+1 (555) 234-5678",
       address: "456 Oak Ave, Los Angeles, CA 90210",
-      joinDate: "2024-01-14"
+      joinDate: "2024-01-14T14:15:00"
     },
     { 
       id: 3,
@@ -92,7 +92,7 @@ const NewCustomers = () => {
       email: "random@example.com",
       phone: "+1 (555) 345-6789",
       address: "789 Pine Rd, Chicago, IL 60601",
-      joinDate: "2024-01-13"
+      joinDate: "2024-01-13T16:45:00"
     },
     { 
       id: 4,
@@ -103,7 +103,7 @@ const NewCustomers = () => {
       email: "kl.rahul@example.com",
       phone: "+1 (555) 456-7890",
       address: "321 Elm St, Houston, TX 77001",
-      joinDate: "2024-01-12"
+      joinDate: "2024-01-12T11:20:00"
     },
     { 
       id: 5,
@@ -114,7 +114,7 @@ const NewCustomers = () => {
       email: "ritesh.chopra@example.com",
       phone: "+1 (555) 567-8901",
       address: "654 Maple Dr, Phoenix, AZ 85001",
-      joinDate: "2024-01-11"
+      joinDate: "2024-01-11T08:45:00"
     },
     { 
       id: 6,
@@ -125,7 +125,7 @@ const NewCustomers = () => {
       email: "sarah.j@example.com",
       phone: "+1 (555) 678-9012",
       address: "987 Cedar Ln, Philadelphia, PA 19101",
-      joinDate: "2024-01-10"
+      joinDate: "2024-01-10 10:00:00"
     },
     { 
       id: 7,
@@ -136,7 +136,7 @@ const NewCustomers = () => {
       email: "m.chen@example.com",
       phone: "+1 (555) 789-0123",
       address: "147 Birch St, San Antonio, TX 78201",
-      joinDate: "2024-01-09"
+      joinDate: "2024-01-09 10:00:00"
     },
     { 
       id: 8,
@@ -147,7 +147,7 @@ const NewCustomers = () => {
       email: "emily.r@example.com",
       phone: "+1 (555) 890-1234",
       address: "258 Willow Way, San Diego, CA 92101",
-      joinDate: "2024-01-08"
+      joinDate: "2024-01-08 10:00:00"
     },
     { 
       id: 9,
@@ -158,7 +158,7 @@ const NewCustomers = () => {
       email: "d.kim@example.com",
       phone: "+1 (555) 901-2345",
       address: "369 Spruce Ave, Dallas, TX 75201",
-      joinDate: "2024-01-07"
+      joinDate: "2024-01-07 10:00:00"
     },
     { 
       id: 10,
@@ -169,7 +169,7 @@ const NewCustomers = () => {
       email: "lisa.t@example.com",
       phone: "+1 (555) 012-3456",
       address: "741 Poplar Blvd, San Jose, CA 95101",
-      joinDate: "2024-01-06"
+      joinDate: "2024-01-06 10:00:00"
     },
     { 
       id: 11,
@@ -180,7 +180,7 @@ const NewCustomers = () => {
       email: "j.wilson@example.com",
       phone: "+1 (555) 123-4567",
       address: "852 Ash St, Austin, TX 78701",
-      joinDate: "2024-01-05"
+      joinDate: "2024-01-05 10:00:00"
     },
     { 
       id: 12,
@@ -191,7 +191,7 @@ const NewCustomers = () => {
       email: "maria.g@example.com",
       phone: "+1 (555) 234-5678",
       address: "963 Hickory Rd, Jacksonville, FL 32201",
-      joinDate: "2024-01-04"
+      joinDate: "2024-01-04 10:00:00"
     }
   ];
 
