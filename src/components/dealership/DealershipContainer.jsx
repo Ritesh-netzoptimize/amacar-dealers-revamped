@@ -15,6 +15,9 @@ import {
   Trash2,
   UserCheck,
   UserX,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import {
   useReactTable,
@@ -314,7 +317,6 @@ const DealershipContainer = ({
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
             className="w-full px-4 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
-            whileFocus={{ scale: 1.02 }}
           />
         </div>
       </motion.div>
@@ -325,21 +327,37 @@ const DealershipContainer = ({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="border-neutral-200 hover:bg-transparent">
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className={`text-neutral-600 font-medium cursor-pointer hover:text-neutral-900 ${header.column.id === 'actions' ? 'text-right' : ''}`}
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    <div className={`flex items-center gap-2 ${header.column.id === 'actions' ? 'justify-end' : ''}`}>
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{
-                        asc: "↑",
-                        desc: "↓",
-                      }[header.column.getIsSorted()] ?? null}
-                    </div>
-                  </TableHead>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  const isSortable = header.column.id !== 'actions';
+                  const isSorted = header.column.getIsSorted();
+                  
+                  return (
+                    <TableHead
+                      key={header.id}
+                      className={`text-neutral-600 font-medium transition-colors duration-200 ${
+                        isSortable 
+                          ? 'cursor-pointer hover:text-neutral-900 hover:bg-neutral-50 group' 
+                          : 'cursor-default'
+                      } ${header.column.id === 'actions' ? 'text-right' : ''}`}
+                      onClick={isSortable ? header.column.getToggleSortingHandler() : undefined}
+                    >
+                      <div className={`flex items-center gap-2 ${header.column.id === 'actions' ? 'justify-end' : ''}`}>
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {isSortable && (
+                          <div className="flex items-center">
+                            {isSorted === 'asc' ? (
+                              <ArrowUp className="w-3 h-3 text-orange-500" />
+                            ) : isSorted === 'desc' ? (
+                              <ArrowDown className="w-3 h-3 text-orange-500" />
+                            ) : (
+                              <ArrowUpDown className="w-3 h-3 text-neutral-400 group-hover:text-neutral-600 transition-colors duration-200" />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             ))}
           </TableHeader>
@@ -362,6 +380,15 @@ const DealershipContainer = ({
             ))}
           </TableBody>
         </Table>
+        <motion.div 
+          className="mt-3 text-xs text-neutral-500 flex items-center gap-1"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+        >
+          <ArrowUpDown className="w-3 h-3" />
+          <span>Click column headers to sort</span>
+        </motion.div>
       </div>
 
       {/* Mobile Card Layout */}
