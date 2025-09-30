@@ -159,7 +159,7 @@ const DealershipContainer = ({
       columnHelper.accessor("salesManager", {
         header: "Sales Manager",
         cell: ({ getValue }) => (
-          <div className="text-sm text-neutral-700 max-w-[120px] truncate" title={getValue()}>
+          <div className="text-sm text-neutral-700 w-[140px] whitespace-nowrap overflow-hidden" title={getValue()}>
             {getValue()}
           </div>
         ),
@@ -323,7 +323,7 @@ const DealershipContainer = ({
 
       {/* Desktop Table Layout */}
       <div className="hidden lg:block overflow-x-auto">
-        <Table className="w-full min-w-[900px]">
+        <Table className="w-full min-w-[1000px]">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="border-neutral-200 hover:bg-transparent">
@@ -338,7 +338,7 @@ const DealershipContainer = ({
                         isSortable 
                           ? 'cursor-pointer hover:text-neutral-900 hover:bg-neutral-50 group' 
                           : 'cursor-default'
-                      } ${header.column.id === 'actions' ? 'text-right' : ''}`}
+                      } ${header.column.id === 'actions' ? 'text-right' : ''} ${header.column.id === 'salesManager' ? 'w-[140px]' : ''}`}
                       onClick={isSortable ? header.column.getToggleSortingHandler() : undefined}
                     >
                       <div className={`flex items-center gap-2 ${header.column.id === 'actions' ? 'justify-end' : ''}`}>
