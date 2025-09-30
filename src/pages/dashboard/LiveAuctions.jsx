@@ -3,10 +3,13 @@ import { motion } from 'framer-motion';
 import DashboardStats from '@/components/common/DashboardStats/DashboardStats';
 import LiveAuctionsContainer from '@/components/live-auctions/LiveAuctionsContainer';
 import Pagination from '@/components/common/Pagination';
+import FilterTabs from '@/components/filters/LiveAuctionFilterTabs';
 
 const LiveAuctions = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [isFilterLoading, setIsFilterLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeFilter, setActiveFilter] = useState('allTime');
   const itemsPerPage = 4; // Show 4 vehicles per page
 
   // Static data for now - will replace with API later
@@ -99,11 +102,53 @@ const LiveAuctions = () => {
     }
   ];
 
+  // Filter auctions based on active filter
+  const getFilteredAuctions = () => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const thisWeek = new Date(today.getTime() - (today.getDay() * 24 * 60 * 60 * 1000));
+    const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    return liveAuctions.filter(auction => {
+      const auctionDate = new Date(auction.endsAt);
+      
+      switch (activeFilter) {
+        case 'today':
+          return auctionDate >= today && auctionDate < new Date(today.getTime() + 24 * 60 * 60 * 1000);
+        case 'thisWeek':
+          return auctionDate >= thisWeek && auctionDate < new Date(thisWeek.getTime() + 7 * 24 * 60 * 60 * 1000);
+        case 'thisMonth':
+          return auctionDate >= thisMonth && auctionDate < new Date(thisMonth.getTime() + 30 * 24 * 60 * 60 * 1000);
+        case 'passed':
+          return auctionDate < now;
+        case 'allTime':
+        default:
+          return true;
+      }
+    });
+  };
+
+  const filteredAuctions = getFilteredAuctions();
+
   // Calculate pagination
-  const totalPages = Math.ceil(liveAuctions.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredAuctions.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentAuctions = liveAuctions.slice(startIndex, endIndex);
+  const currentAuctions = filteredAuctions.slice(startIndex, endIndex);
+
+  // Handle filter change with loading simulation
+  const handleFilterChange = async (filterId) => {
+    if (isFilterLoading) return;
+    
+    setIsFilterLoading(true);
+    setCurrentPage(1);
+    
+    // Simulate API call for filter change
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    setActiveFilter(filterId);
+    setIsFilterLoading(false);
+  };
 
   // Simulate data loading - replace with actual API calls
   useEffect(() => {
@@ -206,9 +251,42 @@ const LiveAuctions = () => {
           <DashboardStats />
         </motion.div>
 
+        {/* Filter Tabs */}
+        <motion.div 
+          className="mt-8"
+          variants={statsVariants}
+        >
+          <FilterTabs 
+            activeFilter={activeFilter}
+            onFilterChange={handleFilterChange}
+            isLoading={isFilterLoading}
+            className="mb-6"
+          />
+          
+          {/* Results Count */}
+          <motion.div 
+            className="flex items-center justify-between mb-4"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            <p className="text-sm text-neutral-600">
+              Showing {filteredAuctions.length} auction{filteredAuctions.length !== 1 ? 's' : ''}
+              {activeFilter !== 'allTime' && (
+                <span className="ml-1 text-neutral-500">
+                  ({activeFilter === 'today' ? 'today' : 
+                    activeFilter === 'thisWeek' ? 'this week' : 
+                    activeFilter === 'thisMonth' ? 'this month' : 
+                    'passed'})
+                </span>
+              )}
+            </p>
+          </motion.div>
+        </motion.div>
+
         {/* Live Auctions Grid */}
         <motion.div 
-          className="mt-12"
+          className="mt-8"
           variants={statsVariants}
         >
           <LiveAuctionsContainer auctions={currentAuctions} />

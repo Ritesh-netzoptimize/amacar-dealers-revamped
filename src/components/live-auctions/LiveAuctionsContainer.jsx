@@ -177,7 +177,7 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                   <CarouselContent>
                     {vehicle.images.map((image, index) => (
                       <CarouselItem key={index}>
-                        <div className="w-full h-[36vh] relative overflow-hidden">
+                        <div className="w-full h-[48vh] relative overflow-hidden">
                           <img
                             src={image}
                             alt={`${vehicle.name} - Image ${index + 1}`}
