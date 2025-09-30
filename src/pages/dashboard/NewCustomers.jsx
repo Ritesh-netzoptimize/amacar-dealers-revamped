@@ -3,10 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Pagination from '@/components/common/Pagination/Pagination';
 import NewCustomersContainer from '@/components/new-customers/NewCustomersContainer';
+import NewCustomersSort from '@/components/sorts/NewCustomersSort';
+import { sortNewCustomers } from '@/utils/newCustomersSorting';
 
 const NewCustomers = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState('join-date-desc');
+  const [isSorting, setIsSorting] = useState(false);
   const itemsPerPage = 10;
 
   // Animation variants
@@ -191,11 +195,15 @@ const NewCustomers = () => {
     }
   ];
 
-  // Calculate pagination
-  const totalPages = Math.ceil(allCustomers.length / itemsPerPage);
+  // Sort and paginate customers
+  const sortedCustomers = useMemo(() => {
+    return sortNewCustomers(allCustomers, sortBy);
+  }, [allCustomers, sortBy]);
+
+  const totalPages = Math.ceil(sortedCustomers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentCustomers = allCustomers.slice(startIndex, endIndex);
+  const currentCustomers = sortedCustomers.slice(startIndex, endIndex);
 
   // Handler functions
   const handleViewCustomer = (customerId) => {
@@ -227,6 +235,19 @@ const NewCustomers = () => {
     }, 100);
   };
 
+  const handleSortChange = (newSortBy) => {
+    if (newSortBy !== sortBy) {
+      setIsSorting(true);
+      setSortBy(newSortBy);
+      setCurrentPage(1); // Reset to first page when sorting changes
+      
+      // Simulate sorting delay for better UX
+      setTimeout(() => {
+        setIsSorting(false);
+      }, 500);
+    }
+  };
+
   return (
     <motion.div 
       className="min-h-screen bg-gray-50 pt-28 px-8 md:px-12"
@@ -241,8 +262,20 @@ const NewCustomers = () => {
           className="mb-6"
           variants={headerVariants}
         >
-          <h1 className="text-3xl font-bold text-neutral-900">New Customers</h1>
-          <p className="text-neutral-600 mt-1">Manage and view all new customer offers and details</p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-neutral-900">New Customers</h1>
+              <p className="text-neutral-600 mt-1">Manage and view all new customer offers and details</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <NewCustomersSort
+                sortBy={sortBy}
+                onSortChange={handleSortChange}
+                isSorting={isSorting}
+                className="w-full sm:w-auto"
+              />
+            </div>
+          </div>
         </motion.div>
         
         {/* Content Section */}
