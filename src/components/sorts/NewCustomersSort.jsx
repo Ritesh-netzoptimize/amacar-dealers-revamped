@@ -94,25 +94,19 @@ const NewCustomersSort = ({
           }`}
         >
           <div className="flex items-center gap-2">
-            {isSorting ? (
-              <RefreshCw className="w-4 h-4 text-orange-500 animate-spin" />
-            ) : (
-              (() => {
-                const FieldIcon = getFieldIcon(selectedField.icon);
-                return <FieldIcon className="w-4 h-4 text-neutral-500 group-hover:text-orange-500 transition-colors" />;
-              })()
-            )}
+            {(() => {
+              const FieldIcon = getFieldIcon(selectedField.icon);
+              return <FieldIcon className="w-4 h-4 text-neutral-500 group-hover:text-orange-500 transition-colors" />;
+            })()}
             <span className="text-sm font-medium text-neutral-700">
-              {isSorting ? 'Sorting...' : selectedField.label}
+              {selectedField.label}
             </span>
           </div>
-          {!isSorting && (
-            <ChevronDown
-              className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${
-                isDropdownOpen ? 'rotate-180' : ''
-              }`}
-            />
-          )}
+          <ChevronDown
+            className={`w-4 h-4 text-neutral-400 transition-transform duration-200 ${
+              isDropdownOpen ? 'rotate-180' : ''
+            }`}
+          />
         </button>
 
         {/* Field Dropdown Menu */}
