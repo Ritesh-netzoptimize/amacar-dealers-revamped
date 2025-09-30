@@ -80,14 +80,14 @@ const Pagination = ({
 
   return (
     <PaginationRoot className={cn("w-full", className)}>
-      <PaginationContent className="flex items-center justify-center gap-1">
+      <PaginationContent className="flex items-center justify-center gap-2">
         {/* Previous Button */}
         <PaginationItem>
           <PaginationPrevious
             onClick={handlePrevious}
             className={cn(
-              "cursor-pointer transition-all duration-200 hover:scale-105",
-              currentPage === 1 && "pointer-events-none opacity-50"
+              "h-10 px-4 rounded-lg border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300 transition-all duration-200 font-medium text-sm",
+              currentPage === 1 && "pointer-events-none opacity-40 cursor-not-allowed"
             )}
             style={{ pointerEvents: currentPage === 1 ? 'none' : 'auto' }}
           />
@@ -97,16 +97,18 @@ const Pagination = ({
         {pageNumbers.map((page, index) => (
           <PaginationItem key={index}>
             {page === 'ellipsis' ? (
-              <PaginationEllipsis className="text-neutral-400" />
+              <div className="h-10 w-10 flex items-center justify-center text-neutral-400 text-sm">
+                ...
+              </div>
             ) : (
               <PaginationLink
                 onClick={() => handlePageClick(page)}
                 isActive={page === currentPage}
                 className={cn(
-                  "cursor-pointer transition-all duration-200 hover:scale-105 min-w-[40px] h-10 flex items-center justify-center",
+                  "h-10 w-10 rounded-lg border transition-all duration-200 font-medium text-sm flex items-center justify-center cursor-pointer",
                   page === currentPage
-                    ? "bg-[var(--brand-orange)] text-white border-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] hover:border-[var(--color-primary-600)]"
-                    : "hover:bg-neutral-100 hover:text-neutral-900"
+                    ? "bg-[var(--brand-orange)] text-white border-[var(--brand-orange)] shadow-sm"
+                    : "bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300"
                 )}
               >
                 {page}
@@ -120,8 +122,8 @@ const Pagination = ({
           <PaginationNext
             onClick={handleNext}
             className={cn(
-              "cursor-pointer transition-all duration-200 hover:scale-105",
-              currentPage === totalPages && "pointer-events-none opacity-50"
+              "h-10 px-4 rounded-lg border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300 transition-all duration-200 font-medium text-sm",
+              currentPage === totalPages && "pointer-events-none opacity-40 cursor-not-allowed"
             )}
             style={{ pointerEvents: currentPage === totalPages ? 'none' : 'auto' }}
           />
