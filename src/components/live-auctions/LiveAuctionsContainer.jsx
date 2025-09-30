@@ -184,17 +184,14 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                             onClick={() => handleViewVehicle(vehicle.id)}
                           />
                           {/* Overlay for better UX */}
-                          <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/10 transition-all duration-300 flex items-center justify-center">
+                          <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/50 transition-all duration-300 flex items-center justify-center">
                             <div className="opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleViewVehicle(vehicle.id)}
-                                className="bg-white/90 hover:bg-white text-neutral-700 hover:text-neutral-900 border-white/50 shadow-lg"
-                              >
-                                <Eye className="w-4 h-4 mr-2" />
-                                View Details
-                              </Button>
+                              <div className="flex items-center gap-2 cursor-pointer" onClick={() => handleViewVehicle(vehicle.id)}>
+                                <Eye className="w-4 h-4 text-white" />
+                                <span className="text-white text-base font-semibold tracking-wide">
+                                  View Details
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -229,14 +226,6 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                     >
                       <X className="w-4 h-4 mr-1" />
                       Pass
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleViewVehicle(vehicle.id)}
-                      className="h-10 px-4 border border-neutral-200 hover:border-blue-200 hover:bg-blue-50 text-neutral-600 hover:text-blue-500 font-medium rounded-lg transition-colors duration-300"
-                    >
-                      <Eye className="w-4 h-4 mr-1" />
-                      View
                     </Button>
                     <Button
                       onClick={() => handleBidNow(vehicle.id)}
