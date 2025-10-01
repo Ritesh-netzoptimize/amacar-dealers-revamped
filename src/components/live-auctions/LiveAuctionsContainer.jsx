@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Gavel, X, Eye, Clock, DollarSign } from 'lucide-react';
-import { Carousel, CarouselContent, CarouselItem, CarouselDots } from '@/components/ui/carousel';
-import { Button } from '@/components/ui/button';
-import BidDialog from '@/components/common/BidDialog/BidDialog';
-import PassDialog from '@/components/common/PassDialog/PassDialog';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Gavel, X, Eye, Clock, DollarSign } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselDots,
+} from "@/components/ui/carousel";
+import { Button } from "@/components/ui/button";
+import BidDialog from "@/components/common/BidDialog/BidDialog";
+import PassDialog from "@/components/common/PassDialog/PassDialog";
 
 const LiveAuctionsContainer = ({ auctions = [] }) => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
@@ -13,7 +18,7 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
   const [passLoading, setPassLoading] = useState(false);
   const [passSuccess, setPassSuccess] = useState(false);
   const [passError, setPassError] = useState(false);
-  const [passErrorMessage, setPassErrorMessage] = useState('');
+  const [passErrorMessage, setPassErrorMessage] = useState("");
 
   // Animation variants
   const containerVariants = {
@@ -22,9 +27,9 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
+        delayChildren: 0.2,
+      },
+    },
   };
 
   const cardVariants = {
@@ -34,9 +39,9 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
       y: 0,
       transition: {
         duration: 0.5,
-        ease: "easeOut"
-      }
-    }
+        ease: "easeOut",
+      },
+    },
   };
 
   const handleBidNow = (vehicle) => {
@@ -45,7 +50,7 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
   };
 
   const handleBidSuccess = (bidAmount) => {
-    console.log('Bid successful:', bidAmount);
+    console.log("Bid successful:", bidAmount);
     // TODO: Update the vehicle's highest bid or handle success
   };
 
@@ -61,13 +66,13 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
     setPassLoading(false);
     setPassSuccess(false);
     setPassError(false);
-    setPassErrorMessage('');
+    setPassErrorMessage("");
   };
 
   const handlePassConfirm = async (vehicle) => {
     setPassLoading(true);
     setPassError(false);
-    setPassErrorMessage('');
+    setPassErrorMessage("");
 
     try {
       // Simulate API call
@@ -77,20 +82,19 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
           if (Math.random() > 0.1) {
             resolve();
           } else {
-            reject(new Error('Failed to pass vehicle. Please try again.'));
+            reject(new Error("Failed to pass vehicle. Please try again."));
           }
         }, 2000);
       });
 
       setPassSuccess(true);
-      
+
       // Close dialog after success
       setTimeout(() => {
         handleClosePassDialog();
         // TODO: Remove vehicle from auctions list or update its status
-        console.log('Vehicle passed successfully:', vehicle.id);
+        console.log("Vehicle passed successfully:", vehicle.id);
       }, 1500);
-
     } catch (error) {
       setPassError(true);
       setPassErrorMessage(error.message);
@@ -105,11 +109,11 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
     setPassLoading(false);
     setPassSuccess(false);
     setPassError(false);
-    setPassErrorMessage('');
+    setPassErrorMessage("");
   };
 
   const handleViewVehicle = (vehicleId) => {
-    console.log('View Vehicle:', vehicleId);
+    console.log("View Vehicle:", vehicleId);
     // TODO: Implement view vehicle functionality
   };
 
@@ -132,13 +136,13 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
             <div className="lg:hidden flex flex-col min-h-full">
               {/* Image Carousel */}
               <div className="relative h-56 bg-gradient-to-br from-neutral-50 to-neutral-100">
-                <Carousel 
-                  className="w-full h-full" 
-                  opts={{ 
+                <Carousel
+                  className="w-full h-full"
+                  opts={{
                     loop: true,
                     align: "start",
                     skipSnaps: false,
-                    dragFree: false
+                    dragFree: false,
                   }}
                 >
                   <CarouselContent>
@@ -176,23 +180,35 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                     <div className="flex items-center justify-between p-3 border border-neutral-200 rounded-lg hover:border-orange-300 transition-colors duration-300">
                       <div className="flex items-center">
                         <DollarSign className="w-4 h-4 mr-2 text-neutral-600" />
-                        <span className="text-sm font-medium text-neutral-600">Cash Offer</span>
+                        <span className="text-sm font-medium text-neutral-600">
+                          Cash Offer
+                        </span>
                       </div>
-                      <p className="text-lg font-bold text-neutral-900">{vehicle.cashOffer}</p>
+                      <p className="text-lg font-bold text-neutral-900">
+                        {vehicle.cashOffer}
+                      </p>
                     </div>
                     <div className="flex items-center justify-between p-3 border border-neutral-200 rounded-lg hover:border-green-300 transition-colors duration-300">
                       <div className="flex items-center">
                         <DollarSign className="w-4 h-4 mr-2 text-green-600" />
-                        <span className="text-sm font-medium text-neutral-600">Highest Bid</span>
+                        <span className="text-sm font-medium text-neutral-600">
+                          Highest Bid
+                        </span>
                       </div>
-                      <p className="text-lg font-bold text-green-600">{vehicle.highestBid}</p>
+                      <p className="text-lg font-bold text-green-600">
+                        {vehicle.highestBid}
+                      </p>
                     </div>
                     <div className="flex items-center justify-between p-3 border border-neutral-200 rounded-lg hover:border-orange-300 transition-colors duration-300">
                       <div className="flex items-center">
                         <Clock className="w-4 h-4 mr-2 text-orange-600" />
-                        <span className="text-sm font-medium text-neutral-600">Ends At</span>
+                        <span className="text-sm font-medium text-neutral-600">
+                          Ends At
+                        </span>
                       </div>
-                      <p className="text-sm font-semibold text-orange-800">{vehicle.endsAt}</p>
+                      <p className="text-sm font-semibold text-orange-800">
+                        {vehicle.endsAt}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -229,22 +245,22 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
             </div>
 
             {/* Desktop Layout: Full Width Row */}
-            <div className="hidden lg:flex min-h-80">
-              {/* Left Section - Image Carousel (1/4 width) */}
-              <div className="w-1/4 relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image">
-                <Carousel 
-                  className="w-full h-full" 
-                  opts={{ 
+            <div className="hidden lg:flex min-h-[180px] bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+              {/* Left Section - Image Carousel (1/8 width) */}
+              <div className="w-1/8 relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden">
+                <Carousel
+                  className="w-full h-full"
+                   opts={{
                     loop: true,
                     align: "start",
                     skipSnaps: false,
-                    dragFree: false
+                    dragFree: false,
                   }}
                 >
                   <CarouselContent>
                     {vehicle.images.map((image, index) => (
                       <CarouselItem key={index}>
-                        <div className="w-full h-80 relative overflow-hidden cursor-pointer">
+                        <div className="w-full h-[180px] relative overflow-hidden cursor-pointer">
                           <img
                             src={image}
                             alt={`${vehicle.name} - Image ${index + 1}`}
@@ -252,12 +268,15 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                             onClick={() => handleViewVehicle(vehicle.id)}
                           />
                           {/* Overlay for better UX */}
-                          <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/50 transition-all duration-300 flex items-center justify-center">
-                            <div className="opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
-                              <div className="flex items-center gap-2 cursor-pointer" onClick={() => handleViewVehicle(vehicle.id)}>
-                                <Eye className="w-4 h-4 text-white" />
-                                <span className="text-white text-base font-semibold tracking-wide">
-                                  View Details
+                          <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                            <div className="opacity-0 group-hover/image:opacity-100 transition-opacity duration-200">
+                              <div
+                                className="flex items-center gap-1.5 cursor-pointer"
+                                onClick={() => handleViewVehicle(vehicle.id)}
+                              >
+                                <Eye className="w-3.5 h-3.5 text-white" />
+                                <span className="text-white text-sm font-medium tracking-wide">
+                                  View
                                 </span>
                               </div>
                             </div>
@@ -267,66 +286,100 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                     ))}
                   </CarouselContent>
                   {vehicle.images.length > 1 && (
-                    <CarouselDots className="absolute bottom-3 left-1/2 -translate-x-1/2" />
+                    <CarouselDots className="absolute bottom-2 left-1/2 -translate-x-1/2" />
                   )}
                 </Carousel>
               </div>
 
-              {/* Right Section - Vehicle Information (3/4 width) */}
-              <div className="w-3/4 p-8 flex flex-col justify-between bg-white/95 backdrop-blur-sm min-h-80">
+              {/* Right Section - Vehicle Information (7/8 width) */}
+              <div className="w-7/8 px-8 py-4 flex flex-col justify-between">
                 {/* Header with Vehicle Title and CTA Buttons */}
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="text-2xl font-semibold text-neutral-800 mb-1 group-hover:text-orange-500 transition-colors duration-300">
+                    <h3 className="text-lg font-semibold text-neutral-800 group-hover:text-orange-500 transition-colors duration-200">
                       {vehicle.name}
                     </h3>
-                    <p className="text-base text-neutral-400 font-normal">
+                    <p className="text-sm text-neutral-500 font-normal">
                       {vehicle.year} {vehicle.make} {vehicle.model}
                     </p>
                   </div>
-                  
+
                   {/* CTA Buttons - Top Right */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       onClick={() => handlePassVehicle(vehicle)}
-                      className="h-10 px-4 border border-neutral-200 hover:border-red-200 hover:bg-red-50 text-neutral-600 hover:text-red-500 font-medium rounded-lg transition-colors duration-300 cursor-pointer"
+                      className="h-8 px-3 border border-neutral-200 hover:border-red-200 hover:bg-red-50/50 text-neutral-600 hover:text-red-500 font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
                     >
-                      <X className="w-4 h-4 mr-1" />
+                      <X className="w-3.5 h-3.5 mr-1" />
                       Pass
                     </Button>
                     <Button
                       onClick={() => handleBidNow(vehicle)}
-                      className="h-10 px-5 bg-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-colors duration-300 cursor-pointer"
+                      className="h-8 px-4 bg-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] text-white font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
                     >
-                      <Gavel className="w-4 h-4 mr-1" />
-                      Bid Now
+                      <Gavel className="w-3.5 h-3.5 mr-1" />
+                      Bid
                     </Button>
                   </div>
                 </div>
 
                 {/* Auction Details Grid - Bottom */}
-                <div className="grid grid-cols-3 gap-6 mt-auto">
-                  <div className="flex flex-col items-center p-5 border border-neutral-100 rounded-2xl hover:border-orange-200 hover:bg-orange-50/20 transition-all duration-300">
-                    <div className="flex items-center mb-3">
-                      <DollarSign className="w-4 h-4 mr-2 text-neutral-400" />
-                      <span className="text-sm font-normal text-neutral-500">Cash Offer</span>
+                <div className="grid grid-cols-5 gap-3 justify-end">
+                  <div className="flex flex-col  p-3  rounded-lg transition-all duration-200">
+                    <div className="flex items-center mb-1">
+                      <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
+                      <span className="text-xs font-normal text-neutral-500">
+                        Cash Offer
+                      </span>
                     </div>
-                    <p className="text-xl font-semibold text-neutral-800">{vehicle.cashOffer}</p>
+                    <p className="text-base font-semibold ">
+                      {vehicle.cashOffer}
+                    </p>
                   </div>
-                  <div className="flex flex-col items-center p-5 border border-neutral-100 rounded-2xl hover:border-green-200 hover:bg-green-50/20 transition-all duration-300">
-                    <div className="flex items-center mb-3">
-                      <DollarSign className="w-4 h-4 mr-2 text-green-500" />
-                      <span className="text-sm font-normal text-neutral-500">Highest Bid</span>
+                  <div className="flex flex-col  p-3  rounded-lg transition-all duration-200">
+                    <div className="flex items-center mb-1">
+                      <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
+                      <span className="text-xs font-normal text-neutral-500">
+                        Mileage
+                      </span>
                     </div>
-                    <p className="text-xl font-semibold text-green-600">{vehicle.highestBid}</p>
+                    <p className="text-base font-semibold ">
+                      {vehicle.mileage}
+                    </p>
                   </div>
-                  <div className="flex flex-col items-center p-5 border border-neutral-100 rounded-2xl hover:border-orange-200 hover:bg-orange-50/20 transition-all duration-300">
-                    <div className="flex items-center mb-3">
-                      <Clock className="w-4 h-4 mr-2 text-orange-500" />
-                      <span className="text-sm font-normal text-neutral-500">Ends At</span>
+                  <div className="flex flex-col  p-3  rounded-lg transition-all duration-200">
+                    <div className="flex items-center mb-1">
+                      <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
+                      <span className="text-xs font-normal text-neutral-500">
+                        VIN
+                      </span>
                     </div>
-                    <p className="text-base font-medium text-orange-600 text-center">{vehicle.endsAt}</p>
+                    <p className="text-base font-semibold ">
+                      {vehicle.VIN}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end p-3 rounded-lg transition-all duration-200">
+                    <div className="flex items-center mb-1">
+                      <DollarSign className="w-3.5 h-3.5 mr-1 text-green-500" />
+                      <span className="text-xs font-normal text-neutral-500">
+                        Highest Bid
+                      </span>
+                    </div>
+                    <p className="text-base font-semibold ">
+                      {vehicle.highestBid}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end p-3 rounded-lg transition-all duration-200">
+                    <div className="flex items-center mb-1">
+                      <Clock className="w-3.5 h-3.5 mr-1 text-orange-500" />
+                      <span className="text-xs font-normal text-neutral-500">
+                        Ends At
+                      </span>
+                    </div>
+                    <p className="text-sm font-medium  text-center">
+                      {vehicle.endsAt}
+                    </p>
                   </div>
                 </div>
               </div>
