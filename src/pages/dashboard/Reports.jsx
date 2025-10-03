@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import ReportStats from "@/components/reports/ReportStats";
 import PieChartContainer from "@/components/reports/PieChartContainer";
 import AverageBarChartContainer from "@/components/reports/AverageBarChartContainer";
+import { DealerVsMarketAvgBid } from "@/components/reports/DealerVsMarketAvgBid";
 
 const Reports = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -125,6 +126,13 @@ const Reports = () => {
           <motion.div className="mt-12" variants={statsVariants}>
             <AverageBarChartContainer />
           </motion.div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
+            {/* Horizontal bar chart section */}
+            <motion.div className="mt-4" variants={statsVariants}>
+              <DealerVsMarketAvgBid />
+            </motion.div>
         </div>
       </div>
     </motion.div>
