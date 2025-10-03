@@ -35,8 +35,8 @@ const QuickActions = () => {
       description: 'Track your successful auction wins',
       icon: Trophy,
       route: '/won-auctions',
-      color: 'bg-[var(--brand-orange)]',
-      hoverColor: 'hover:bg-[var(--brand-orange)]',
+      color: 'bg-[var(--brand-orange)] ',
+      hoverColor: 'hover:bg-[var(--brand-orange)] ',
       iconBg: 'bg-orange-100',
       iconColor: 'text-[var(--brand-orange)]'
     }

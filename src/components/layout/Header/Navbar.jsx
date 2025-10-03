@@ -34,7 +34,7 @@ export default function Navbar () {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
                 <Car className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+              <span className="text-xl sm:text-2xl font-bold bg-[var(--brand-orange)] bg-clip-text text-transparent">
                 Amacar
               </span>
             </motion.div>
@@ -54,7 +54,7 @@ export default function Navbar () {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+                className="px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
               >
                 Dashboard →
               </motion.button>
@@ -87,7 +87,7 @@ export default function Navbar () {
                   {link}
                 </motion.a>
               ))}
-              <button className="mt-2 w-full px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-semibold">
+              <button className="mt-2 w-full px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold">
                 Dashboard →
               </button>
             </motion.div>

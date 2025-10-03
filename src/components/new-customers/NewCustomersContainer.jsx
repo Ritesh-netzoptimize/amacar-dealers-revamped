@@ -305,7 +305,7 @@ const NewCustomersContainer = ({
                   variant="default"
                   size="sm"
                   onClick={() => handleScheduleAppointment(customer.id)}
-                  className="flex-1 h-10 text-sm bg-[var(--brand-orange)] text-white hover:bg-orange-600"
+                  className="flex-1 h-10 text-sm bg-[var(--brand-orange)]  text-white hover:bg-orange-600"
                 >
                   <Calendar className="w-4 h-4 mr-2" />
                   Schedule

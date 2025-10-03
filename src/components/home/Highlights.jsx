@@ -32,7 +32,7 @@ export default function Highlights () {
                   whileHover={{ scale: 1.02 }}
                   className="p-8 bg-white rounded-2xl shadow-lg"
                 >
-                  <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center text-orange-500 mb-6">
+                  <div className="w-14 h-14 bg-[var(--brand-orange)] rounded-xl flex items-center justify-center text-white mb-6">
                     {item.icon}
                   </div>
                   <h3 className="text-xl font-bold text-neutral-900 mb-3">

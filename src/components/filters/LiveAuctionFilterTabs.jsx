@@ -74,7 +74,7 @@ const FilterTabs = ({ activeFilter, onFilterChange, className = '', isLoading = 
             border-2 min-w-[120px] flex items-center justify-center gap-2
             disabled:opacity-50 disabled:cursor-not-allowed
             ${activeFilter === filter.id 
-              ? 'bg-[var(--brand-orange)] text-white border-[var(--brand-orange)] shadow-lg' 
+              ? 'bg-[var(--brand-orange)]  text-white border-[var(--brand-orange)] shadow-lg' 
               : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 border-orange-200 hover:border-orange-300'
             }
           `}

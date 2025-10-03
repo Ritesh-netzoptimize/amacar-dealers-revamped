@@ -213,7 +213,7 @@ const CarouselDots = ({ className }) => {
         <button
           key={idx}
           className={`w-2 h-2 rounded-full transition-colors duration-200 mr-2 last:mr-0 cursor-pointer ${
-            idx === selectedIndex ? "bg-[var(--brand-orange)]" : "bg-neutral-300"
+            idx === selectedIndex ? "bg-[var(--brand-orange)] " : "bg-neutral-300"
           }`}
           onClick={() => api.scrollTo(idx)}
         />

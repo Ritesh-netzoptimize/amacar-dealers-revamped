@@ -192,7 +192,7 @@ const MyBidsContainer = ({ auctions = [] }) => {
                   <div className="flex items-center gap-2">
                     <Button
                       onClick={() => handleViewVehicle(vehicle.id)}
-                      className="h-8 px-4 bg-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] text-white font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
+                      className="h-8 px-4 bg-[var(--brand-orange)]  hover:bg-[var(--color-primary-600)] text-white font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
                     >
                       View Vehicle
                     </Button>

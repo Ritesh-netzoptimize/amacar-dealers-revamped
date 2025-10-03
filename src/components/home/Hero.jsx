@@ -40,7 +40,7 @@ export default function Hero () {
               </motion.div>
     
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 mb-6 leading-tight">
-                <span className="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
+                <span className="bg-[var(--brand-orange)] bg-clip-text text-transparent">
                   Real Leads. Real-Time Bidding.
                 </span>
                 <br />
@@ -55,7 +55,7 @@ export default function Hero () {
               <motion.button
                 whileHover={{ scale: 1.05, boxShadow: "0 10px 40px rgba(246, 133, 31, 0.3)" }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                className="px-8 py-4 bg-[var(--brand-orange)]  text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
               >
                 Dashboard →
               </motion.button>

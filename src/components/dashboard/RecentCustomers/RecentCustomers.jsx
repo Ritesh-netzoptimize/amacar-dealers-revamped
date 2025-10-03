@@ -156,7 +156,7 @@ const RecentCustomers = () => {
                         e.stopPropagation();
                         handleContact(customer.id);
                       }}
-                      className="h-8 px-3 text-xs bg-[var(--brand-orange)] text-white"
+                      className="h-8 px-3 text-xs bg-[var(--brand-orange)]  text-white"
                     >
                       <Phone className="w-3 h-3 mr-1" />
                       Contact
@@ -231,7 +231,7 @@ const RecentCustomers = () => {
                     e.stopPropagation();
                     handleContact(customer.id);
                   }}
-                  className="flex-1 h-10 text-sm bg-[var(--brand-orange)] text-white"
+                  className="flex-1 h-10 text-sm bg-[var(--brand-orange)]  text-white"
                 >
                   <Phone className="w-4 h-4 mr-2" />
                   Contact

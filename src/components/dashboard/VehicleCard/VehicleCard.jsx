@@ -123,7 +123,7 @@ const VehicleCard = ({ vehicle, onBidSuccess }) => {
             <Button
               variant="default"
               size="sm"
-              className="flex-1 h-10 cursor-pointer bg-[var(--brand-orange)] text-white shadow-sm hover:shadow-md transition-all duration-200 font-medium hover:scale-[1.02] active:scale-[0.98]"
+              className="flex-1 h-10 cursor-pointer bg-[var(--brand-orange)]  text-white shadow-sm hover:shadow-md transition-all duration-200 font-medium hover:scale-[1.02] active:scale-[0.98]"
               onClick={handleBidClick}
             >
               <Gavel className="w-4 h-4 mr-2" />
