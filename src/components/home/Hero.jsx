@@ -4,6 +4,7 @@ import { ChevronDown, Play, X } from 'lucide-react';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import LoginModal from '../ui/LoginUI/LoginModal';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function Hero () {
@@ -12,6 +13,7 @@ export default function Hero () {
     const [showVideo, setShowVideo] = useState(false);
     const { user } = useSelector((state) => state.user);
     const [loginModalOpen, setLoginModalOpen] = useState(false);
+    const navigate = useNavigate();
     const handleForgotPassword = () => {
       setLoginModalOpen(true);
     };
@@ -60,6 +62,7 @@ export default function Hero () {
     
               {user ? (
                 <motion.button
+                onClick={() => navigate("/dashboard")}
                   whileHover={{ scale: 1.05, boxShadow: "0 10px 40px rgba(246, 133, 31, 0.3)" }}
                   whileTap={{ scale: 0.95 }}
                   className="px-8 py-4 bg-[var(--brand-orange)]  text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"

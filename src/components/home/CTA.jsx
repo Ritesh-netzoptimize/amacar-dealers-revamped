@@ -1,10 +1,11 @@
 import { AnimatedSection } from "../common/AnimatedSection/AnimatedSection";
 import {motion} from 'framer-motion';
 import { useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 
 export default function CTA () {
     const {user} = useSelector((state) => state.user);
-
+    const navigate = useNavigate();
     return (
       <section className="py-20 bg-gradient-to-br from-orange-500 to-orange-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -18,6 +19,7 @@ export default function CTA () {
             </p>
             {user ? (
               <motion.button
+              onClick={() => navigate("/dashboard")}
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}
                 whileTap={{ scale: 0.95 }}
                 className="px-10 py-5 bg-white text-orange-600 text-lg font-bold rounded-xl shadow-2xl hover:shadow-3xl transition-all"
