@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DashboardStats from '@/components/dashboard/DashboardStats/DashboardStats';
-import MyBidsContainer from '@/components/won-auctions/MyBidsContainer';
+import MyBidsContainer from '@/components/my-bids/MyBidsContainer';
 import Pagination from '@/components/common/Pagination/Pagination';
 import FilterTabs from '@/components/filters/LiveAuctionFilterTabs';
 
@@ -271,7 +271,7 @@ const MyBids = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            Won Auctions
+            My Bids
           </motion.h1>
           <motion.p 
             className="text-neutral-600"
@@ -279,7 +279,7 @@ const MyBids = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            View your won auctions and track their status.
+            View your bids and track their status.
           </motion.p>
         </motion.div>
 
@@ -321,7 +321,7 @@ const MyBids = () => {
           </motion.div>
         </motion.div>
 
-        {/* Won Auctions Grid */}
+        {/* My Bids Grid */}
         <motion.div 
           className="mt-8"
           variants={statsVariants}
