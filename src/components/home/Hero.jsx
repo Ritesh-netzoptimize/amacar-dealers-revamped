@@ -2,13 +2,19 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ChevronDown, Play, X } from 'lucide-react';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import LoginModal from '../ui/LoginUI/LoginModal';
 
 
 export default function Hero () {
     const { scrollY } = useScroll();
     const y = useTransform(scrollY, [0, 500], [0, 150]);
     const [showVideo, setShowVideo] = useState(false);
-  
+    const { user } = useSelector((state) => state.user);
+    const [loginModalOpen, setLoginModalOpen] = useState(false);
+    const handleForgotPassword = () => {
+      setLoginModalOpen(true);
+    };
     return (
       <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-neutral-50 via-orange-50/30 to-neutral-50 pt-20">
         <motion.div
@@ -52,13 +58,24 @@ export default function Hero () {
                 Plus, unlock advanced dealer tools that help you source quality inventory and close more deals, faster.
               </p>
     
-              <motion.button
-                whileHover={{ scale: 1.05, boxShadow: "0 10px 40px rgba(246, 133, 31, 0.3)" }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-[var(--brand-orange)]  text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
-              >
-                Dashboard →
-              </motion.button>
+              {user ? (
+                <motion.button
+                  whileHover={{ scale: 1.05, boxShadow: "0 10px 40px rgba(246, 133, 31, 0.3)" }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 bg-[var(--brand-orange)]  text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                >
+                  Dashboard →
+                </motion.button>
+              ) : (
+                <motion.button
+                onClick={() => setLoginModalOpen(true)}
+                  whileHover={{ scale: 1.05, boxShadow: "0 10px 40px rgba(246, 133, 31, 0.3)" }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 bg-[var(--brand-orange)]  text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                >
+                  Login →
+                </motion.button>
+              )}
             </motion.div>
 
             {/* Right Column - Video Thumbnail */}
@@ -133,6 +150,14 @@ export default function Hero () {
               </div>
             </motion.div>
           </motion.div>
+        )}
+
+        {loginModalOpen && (
+          <LoginModal 
+            isOpen={loginModalOpen} 
+            onClose={() => setLoginModalOpen(false)} 
+            onForgotPassword={handleForgotPassword}
+          />
         )}
       </div>
     );
