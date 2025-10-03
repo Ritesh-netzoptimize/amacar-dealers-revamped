@@ -35,7 +35,7 @@ import {
 } from "@/redux/slices/userSlice";
 import useAuth from "@/hooks/useAuth";
 import useEmailValidation from "@/hooks/useEmailValidation";
-import ReusableTooltip from "@/components/ui/ReusableTooltip";
+import ReusableTooltip from "@/components/common/Tooltip/ReusableTooltip";
 
 export default function LoginModal({
   isOpen,
@@ -46,7 +46,6 @@ export default function LoginModal({
   const dispatch = useDispatch();
   const { values, errors, setValue, setError, resetForm } = useAuth();
   const { status, error } = useSelector((state) => state.user);
-  const { userInfo } = useSelector((state) => state.carDetailsAndQuestions);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -338,28 +337,6 @@ export default function LoginModal({
     }
   }, [values.email]);
 
-  // Prefill email when modal opens and user info is available
-  useEffect(() => {
-    if (isOpen && userInfo && !values.email) {
-      console.log("LoginModal userInfo:", userInfo);
-      // Try different possible email field names from the API response
-      const email = userInfo.user_email || userInfo.email || userInfo.username;
-      console.log("LoginModal extracted email:", email);
-      if (email) {
-        console.log("LoginModal prefilling email:", email);
-        setValue("email", email);
-      } else {
-        console.log("LoginModal no email found in userInfo");
-      }
-    }
-  }, [isOpen, userInfo, setValue, values.email]);
-
-  // Check if email is prefilled from user info
-  const isEmailPrefilled =
-    userInfo &&
-    (userInfo.user_email || userInfo.email || userInfo.username) &&
-    values.email ===
-      (userInfo.user_email || userInfo.email || userInfo.username);
 
   // Memoized email change handler to prevent cursor jumping
   const handleEmailChange = useCallback(
@@ -504,13 +481,10 @@ export default function LoginModal({
                         <div className="relative">
                           <div
                             className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 ${
-                              isEmailPrefilled
-                                ? "text-orange-500"
-                                : emailValidation.isValid === true
+                              emailValidation.isValid === true
                                 ? "text-green-500"
                                 : (emailValidation.isDisposable === true ||
-                                    (isRegisterMode && emailValidation.isRegistered === true) ||
-                                    (!isRegisterMode && emailValidation.isRegistered === false))
+                                    emailValidation.isRegistered === false)
                                 ? "text-red-500"
                                 : "text-slate-400"
                             }`}
@@ -524,12 +498,9 @@ export default function LoginModal({
                             value={values.email || ""}
                             onChange={handleEmailChange}
                             placeholder="user@example.com"
-                            disabled={isEmailPrefilled}
                             className={`h-11 w-full rounded-xl border pl-9 pr-10 text-sm outline-none ring-0 transition-all duration-200 ${
-                              isEmailPrefilled
-                                ? "border-orange-200 bg-orange-50 text-orange-800 cursor-not-allowed"
-                                : emailValidation.isValid === true &&
-                                  !emailValidation.isValidating
+                              emailValidation.isValid === true &&
+                              !emailValidation.isValidating
                                 ? "border-green-300 bg-green-50 focus:shadow-[0_0_0_4px_rgba(34,197,94,0.08)]"
                                 : (emailValidation.isDisposable === true ||
                                     emailValidation.isRegistered === false) &&
@@ -773,8 +744,7 @@ export default function LoginModal({
                   )}
 
                   {/* Forgot Password Link (Login Mode Only) */}
-                  {!isRegisterMode &&
-                    phase === "form" &&
+                  {phase === "form" &&
                     !isForgotPasswordMode && (
                       <div className="text-center">
                         <button
