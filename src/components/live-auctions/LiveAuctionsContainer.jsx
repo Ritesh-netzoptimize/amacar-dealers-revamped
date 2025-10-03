@@ -119,207 +119,100 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
       initial="hidden"
       animate="visible"
     >
-      {/* Full Width Rows Layout */}
-      <div className="space-y-6">
+      {/* Grid Layout for Maximum Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
         {auctions.map((vehicle) => (
           <motion.div
             key={vehicle.id}
             variants={cardVariants}
-            className="bg-white rounded-3xl border-b-2 border-neutral-200 overflow-hidden hover:shadow-xl hover:border-neutral-200 transition-all duration-500 group"
+            className="bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:border-orange-200 transition-all duration-300 group"
           >
-            {/* Mobile Layout: Stacked */}
-            <div className="lg:hidden flex flex-col min-h-full">
+            {/* Compact Card Layout */}
+            <div className="flex flex-col h-full">
               {/* Image Gallery */}
-              <div className="relative h-56 bg-gradient-to-br from-neutral-50 to-neutral-100">
+              <div className="relative h-48 bg-gradient-to-br from-neutral-50 to-neutral-100">
                 <PhotoSwipeGallery
                   images={vehicle.images}
                   vehicleName={vehicle.name}
                   className="w-full h-full"
-                  imageClassName="w-full h-56"
+                  imageClassName="w-full h-48 object-cover"
                   showOverlay={true}
                 />
+                {/* Status Badge */}
+                <div className="absolute top-3 left-3 bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                  Live
+                </div>
               </div>
 
               {/* Vehicle Information */}
-              <div className="p-5 flex flex-col flex-grow">
-                <div className="space-y-4">
+              <div className="p-4 flex flex-col flex-grow">
+                <div className="space-y-3">
                   <div>
-                    <h3 className="text-xl font-bold text-neutral-900 mb-2 group-hover:text-orange-600 transition-colors duration-300">
+                    <h3 className="text-lg font-semibold text-neutral-900 mb-1 group-hover:text-orange-600 transition-colors duration-200 line-clamp-2">
                       {vehicle.name}
                     </h3>
-                    <p className="text-sm text-neutral-500 font-medium">
+                    <p className="text-sm text-neutral-500">
                       {vehicle.year} {vehicle.make} {vehicle.model}
                     </p>
                   </div>
 
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-3 border border-neutral-200 rounded-lg hover:border-orange-300 transition-colors duration-300">
-                      <div className="flex items-center">
-                        <DollarSign className="w-4 h-4 mr-2 text-neutral-600" />
-                        <span className="text-sm font-medium text-neutral-600">
-                          Cash Offer
-                        </span>
+                  {/* Compact Info Grid */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-neutral-50 rounded-lg p-3">
+                      <div className="flex items-center mb-1">
+                        <DollarSign className="w-3.5 h-3.5 mr-1.5 text-neutral-500" />
+                        <span className="text-xs text-neutral-600">Cash Offer</span>
                       </div>
-                      <p className="text-lg font-bold text-neutral-900">
+                      <p className="text-sm font-semibold text-neutral-900">
                         {vehicle.cashOffer}
                       </p>
                     </div>
-                    <div className="flex items-center justify-between p-3 border border-neutral-200 rounded-lg hover:border-green-300 transition-colors duration-300">
-                      <div className="flex items-center">
-                        <DollarSign className="w-4 h-4 mr-2 text-green-600" />
-                        <span className="text-sm font-medium text-neutral-600">
-                          Highest Bid
-                        </span>
+                    <div className="bg-green-50 rounded-lg p-3">
+                      <div className="flex items-center mb-1">
+                        <DollarSign className="w-3.5 h-3.5 mr-1.5 text-green-600" />
+                        <span className="text-xs text-neutral-600">Highest Bid</span>
                       </div>
-                      <p className="text-lg font-bold text-green-600">
+                      <p className="text-sm font-semibold text-green-700">
                         {vehicle.highestBid}
                       </p>
                     </div>
-                    <div className="flex items-center justify-between p-3 border border-neutral-200 rounded-lg hover:border-orange-300 transition-colors duration-300">
+                  </div>
+
+                  {/* Time Remaining */}
+                  <div className="bg-orange-50 rounded-lg p-3">
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center">
-                        <Clock className="w-4 h-4 mr-2 text-orange-600" />
-                        <span className="text-sm font-medium text-neutral-600">
-                          Ends At
-                        </span>
+                        <Clock className="w-3.5 h-3.5 mr-1.5 text-orange-600" />
+                        <span className="text-xs text-neutral-600">Ends At</span>
                       </div>
-                      <p className="text-sm font-semibold text-orange-800">
+                      <p className="text-sm font-semibold text-orange-700">
                         {vehicle.endsAt}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* CTA Buttons - Pinned to Bottom */}
-                <div className="space-y-3 pt-5 mt-auto">
-                  <div className="flex gap-3">
-                    <Button
-                      variant="outline"
-                      onClick={() => handlePassVehicle(vehicle)}
-                      className="flex-1 border-2 border-neutral-200 hover:border-red-300 hover:bg-red-50 text-neutral-700 hover:text-red-600 font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                    >
-                      <X className="w-4 h-4 mr-2" />
-                      Pass
-                    </Button>
-                   
-                  </div>
+                {/* CTA Buttons */}
+                <div className="flex gap-2 pt-4 mt-auto">
+                  <Button
+                    variant="outline"
+                    onClick={() => handlePassVehicle(vehicle)}
+                    className="flex-1 h-9 text-xs border-neutral-200 hover:border-red-300 hover:bg-red-50 text-neutral-600 hover:text-red-600 font-medium rounded-lg transition-all duration-200"
+                  >
+                    <X className="w-3.5 h-3.5 mr-1" />
+                    Pass
+                  </Button>
                   <Button
                     onClick={() => handleBidNow(vehicle)}
-                    className="w-full bg-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] text-white font-semibold py-4 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                    className="flex-1 h-9 text-xs bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-all duration-200"
                   >
-                    <Gavel className="w-4 h-4 mr-2" />
-                    Bid Now
+                    <Gavel className="w-3.5 h-3.5 mr-1" />
+                    Bid
                   </Button>
                 </div>
               </div>
             </div>
 
-            {/* Desktop Layout: Full Width Row */}
-            <div className="hidden lg:flex min-h-[150px] bg-white/90 backdrop-blur-sm rounded-xl transition-all duration-300">
-              {/* Left Section - Image Gallery (1/8 width) */}
-              <div className="w-1/8 h-32 pl-6 py-2 m-auto !bg-none  relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden">
-                <PhotoSwipeGallery
-                  images={vehicle.images}
-                  vehicleName={vehicle.name}
-                  className="w-full h-full"
-                  imageClassName="w-full rounded-md object-container"
-                  showOverlay={true}
-                  // onImageClick={() => handleViewVehicle(vehicle.id)}
-                />
-              </div>
-
-              {/* Right Section - Vehicle Information (7/8 width) */}
-              <div className="w-7/8 px-8 py-6 flex flex-col justify-between">
-                {/* Header with Vehicle Title and CTA Buttons */}
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold text-neutral-800 group-hover:text-orange-500 transition-colors duration-200">
-                      {vehicle.name}
-                    </h3>
-                    <p className="text-sm text-neutral-500 font-normal">
-                      {vehicle.year} {vehicle.make} {vehicle.model}
-                    </p>
-                  </div>
-
-                  {/* CTA Buttons - Top Right */}
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => handlePassVehicle(vehicle)}
-                      className="h-8 px-3 border border-neutral-200 hover:border-red-200 hover:bg-red-50/50 text-neutral-600 hover:text-red-500 font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
-                    >
-                      <X className="w-3.5 h-3.5 mr-1" />
-                      Pass
-                    </Button>
-                    <Button
-                      onClick={() => handleBidNow(vehicle)}
-                      className="h-8 px-4 bg-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] text-white font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
-                    >
-                      <Gavel className="w-3.5 h-3.5 mr-1" />
-                      Bid
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Auction Details Grid - Bottom */}
-                <div className="grid grid-cols-5 gap-3 justify-end">
-                  <div className="flex flex-col rounded-lg transition-all duration-200">
-                    <div className="flex items-center mb-1">
-                      <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
-                      <span className="text-xs font-normal text-neutral-500">
-                        Cash Offer
-                      </span>
-                    </div>
-                    <p className="text-base font-semibold ">
-                      {vehicle.cashOffer}
-                    </p>
-                  </div>
-                  <div className="flex flex-col rounded-lg transition-all duration-200">
-                    <div className="flex items-center mb-1">
-                      <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
-                      <span className="text-xs font-normal text-neutral-500">
-                        Mileage
-                      </span>
-                    </div>
-                    <p className="text-base font-semibold ">
-                      {vehicle.mileage}
-                    </p>
-                  </div>
-                  <div className="flex flex-col rounded-lg transition-all duration-200">
-                    <div className="flex items-center mb-1">
-                      <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
-                      <span className="text-xs font-normal text-neutral-500">
-                        VIN
-                      </span>
-                    </div>
-                    <p className="text-base font-semibold ">
-                      {vehicle.VIN}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-end rounded-lg transition-all duration-200">
-                    <div className="flex items-center mb-1">
-                      <DollarSign className="w-3.5 h-3.5 mr-1 text-green-500" />
-                      <span className="text-xs font-normal text-neutral-500">
-                        Highest Bid
-                      </span>
-                    </div>
-                    <p className="text-base font-semibold ">
-                      {vehicle.highestBid}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-end rounded-lg transition-all duration-200">
-                    <div className="flex items-center mb-1">
-                      <Clock className="w-3.5 h-3.5 mr-1 text-orange-500" />
-                      <span className="text-xs font-normal text-neutral-500">
-                        Ends At
-                      </span>
-                    </div>
-                    <p className="text-sm font-medium  text-center">
-                      {vehicle.endsAt}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </motion.div>
         ))}
       </div>

@@ -18,9 +18,8 @@ const WonAuctions = () => {
       id: 1,
       name: "2014 Jeep Grand Cherokee",
       images: [
-        "https://images.unsplash.com/photo-1549317336-206569e8475c?w=600&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1549317336-206569e8475c?w=600&h=400&fit=crop&auto=format&q=80",
-        "https://images.unsplash.com/photo-1549317336-206569e8475c?w=600&h=400&fit=crop&auto=format&q=80"
+        "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&h=400&fit=crop&auto=format&q=80"
       ],
       make: "Jeep",
       model: "Grand Cherokee",
@@ -37,8 +36,9 @@ const WonAuctions = () => {
       id: 2,
       name: "2020 Lexus RX 350",
       images: [
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&h=400&fit=crop&auto=format&q=80"
+        "https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=600&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=600&h=400&fit=crop&auto=format&q=80",
+        "https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=600&h=400&fit=crop&auto=format&q=80"
       ],
       make: "Lexus",
       model: "RX 350",

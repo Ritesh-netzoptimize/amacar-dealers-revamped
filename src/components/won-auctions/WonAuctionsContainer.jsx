@@ -162,14 +162,14 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
             </div>
 
             {/* Desktop Layout: Full Width Row */}
-            <div className="hidden lg:flex min-h-[180px] bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="hidden lg:flex max-h-[160px] bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
               {/* Left Section - Image Gallery (1/8 width) */}
-              <div className="w-1/8 relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden">
+              <div className="w-56 rounded-xl relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden">
                 <PhotoSwipeGallery
                   images={vehicle.images}
                   vehicleName={vehicle.name}
                   className="w-full h-full"
-                  imageClassName="w-full h-[180px]"
+                  imageClassName="w-full h-full rounded-xl"
                   showOverlay={true}
                   // onImageClick={() => handleViewVehicle(vehicle.id)}
                 />

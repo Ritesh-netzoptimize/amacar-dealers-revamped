@@ -10,6 +10,7 @@ import {
   X,
   Gavel,
   Percent,
+  Check,
 } from "lucide-react";
 import PhotoSwipeGallery from "@/components/ui/PhotoSwipeGallery";
 import { Button } from "@/components/ui/button";
@@ -163,14 +164,14 @@ const HighestBidsContainer = ({ auctions = [] }) => {
             </div>
 
             {/* Desktop Layout: Full Width Row */}
-            <div className="hidden lg:flex min-h-[180px] bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="hidden lg:flex max-h-[160px] bg-white/90 backdrop-blur-sm rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
               {/* Left Section - Image Gallery (1/8 width) */}
-              <div className="w-1/8 relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden">
+              <div className="w-56 rounded-xl relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden">
                 <PhotoSwipeGallery
                   images={vehicle.images}
                   vehicleName={vehicle.name}
                   className="w-full h-full"
-                  imageClassName="w-full h-[180px]"
+                  imageClassName="w-full h-full rounded-xl"
                   showOverlay={true}
                   // onImageClick={() => handleViewVehicle(vehicle.id)}
                 />
@@ -191,13 +192,12 @@ const HighestBidsContainer = ({ auctions = [] }) => {
 
                   {/* CTA Buttons - Top Right */}
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => handleViewCustomer(vehicle.highestBidder)}
-                      className="h-8 px-3 border border-neutral-200 hover:border-orange-200 hover:bg-orange-50/50 text-neutral-600 hover:text-orange-500 font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
+                    <div
+                      className="flex items-center justify-center h-8 px-4  text-green-600 font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
                     >
-                      View Bidder
-                    </Button>
+                      <Check className="w-4 h-4 mr-2 text-green-600" />
+                      Offer accepted
+                    </div>
                     <Button
                       onClick={() => handleViewVehicle(vehicle.id)}
                       className="h-8 px-4 bg-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] text-white font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
