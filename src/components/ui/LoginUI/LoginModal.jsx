@@ -281,14 +281,14 @@ export default function LoginModal({
     setShowPassword(false);
     setShowNewPassword(false);
     
-    // Reset email validation state
-    setShouldResetEmailValidation(true);
-    
     // Clear all form values and errors (this also clears tooltip errors)
     resetForm();
     
     // Clear Redux error state
     dispatch(clearError());
+    
+    // Reset email validation state - force reset
+    setShouldResetEmailValidation(true);
     
     console.log('✅ [LoginModal] Modal reset complete - all states cleared');
   }
@@ -351,6 +351,14 @@ export default function LoginModal({
     }
   }, [isOpen]);
 
+  // Force email validation reset when modal opens or phase changes
+  useEffect(() => {
+    if (isOpen) {
+      console.log('🔄 [LoginModal] Forcing email validation reset');
+      setShouldResetEmailValidation(true);
+    }
+  }, [isOpen, phase]);
+
   // Cleanup when modal closes
   useEffect(() => {
     if (!isOpen) {
@@ -367,6 +375,12 @@ export default function LoginModal({
       setShouldResetEmailValidation(true);
     }
   }, [values.email]);
+
+  // Force reset email validation when phase changes
+  useEffect(() => {
+    console.log('🔄 [LoginModal] Phase changed - resetting email validation');
+    setShouldResetEmailValidation(true);
+  }, [phase]);
 
 
   // Memoized email change handler to prevent cursor jumping
@@ -512,34 +526,47 @@ export default function LoginModal({
                         <div className="relative">
                           <div
                             className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 ${
-                              emailValidation.isValid === true
+                              // Only show green if explicitly valid and not validating
+                              emailValidation.isValid === true &&
+                              !emailValidation.isValidating &&
+                              values.email
                                 ? "text-green-500"
-                                : (emailValidation.isDisposable === true ||
-                                    emailValidation.isRegistered === false)
+                                : // Only show red if explicitly invalid and not validating
+                                (emailValidation.isDisposable === true ||
+                                    emailValidation.isRegistered === false) &&
+                                  !emailValidation.isValidating &&
+                                  values.email
                                 ? "text-red-500"
-                                : "text-slate-400"
+                                : // Default neutral state
+                                "text-slate-400"
                             }`}
                           >
                             <Mail className="h-4 w-4" />
                           </div>
                           <input
-                            key="email-input"
+                            key={`email-input-${phase}-${isOpen}`}
                             id="email"
                             type="email"
                             value={values.email || ""}
                             onChange={handleEmailChange}
                             placeholder="user@example.com"
                             className={`h-11 w-full rounded-xl border pl-9 pr-10 text-sm outline-none ring-0 transition-all duration-200 ${
+                              // Only show green if explicitly valid and not validating
                               emailValidation.isValid === true &&
-                              !emailValidation.isValidating
+                              !emailValidation.isValidating &&
+                              values.email
                                 ? "border-green-300 bg-green-50 focus:shadow-[0_0_0_4px_rgba(34,197,94,0.08)]"
-                                : (emailValidation.isDisposable === true ||
+                                : // Only show red if explicitly invalid and not validating
+                                (emailValidation.isDisposable === true ||
                                     emailValidation.isRegistered === false) &&
-                                  !emailValidation.isValidating
+                                  !emailValidation.isValidating &&
+                                  values.email
                                 ? "border-red-300 bg-red-50 focus:shadow-[0_0_0_4px_rgba(239,68,68,0.08)]"
-                                : errors.email && !emailValidation.isValidating
+                                : // Show red for form validation errors
+                                errors.email && !emailValidation.isValidating
                                 ? "border-red-300 bg-red-50 focus:shadow-[0_0_0_4px_rgba(239,68,68,0.08)]"
-                                : "border-slate-200 bg-white focus:shadow-[0_0_0_4px_rgba(15,23,42,0.08)]"
+                                : // Default neutral state
+                                "border-slate-200 bg-white focus:shadow-[0_0_0_4px_rgba(15,23,42,0.08)]"
                             }`}
                           />
                           {/* Validation status indicator - show in both modes */}
