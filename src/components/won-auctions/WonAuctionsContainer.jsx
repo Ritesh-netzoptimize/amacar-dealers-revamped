@@ -7,15 +7,15 @@ import {
   User,
   Trophy,
   Calendar,
-  MapPin,
   X,
   Gavel,
 } from "lucide-react";
 import PhotoSwipeGallery from "@/components/ui/PhotoSwipeGallery";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const WonAuctionsContainer = ({ auctions = [] }) => {
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
+    const navigate = useNavigate();
 
   // Animation variants
   const containerVariants = {
@@ -42,13 +42,11 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
   };
 
   const handleViewVehicle = (vehicleId) => {
-    console.log("View Vehicle:", vehicleId);
-    // TODO: Implement view vehicle functionality
+    navigate(`/vehicles/${vehicleId}`);
   };
 
   const handleViewCustomer = (customerId) => {
-    console.log("View Customer:", customerId);
-    // TODO: Implement view customer functionality
+    navigate(`/customers/${customerId}`);
   };
 
   return (
@@ -144,7 +142,7 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
                   <div className="flex gap-3">
                     <Button
                       variant="outline"
-                      onClick={() => handleViewCustomer(vehicle.wonBy)}
+                      onClick={() => handleViewCustomer(vehicle.id)}
                       className="flex-1 border-2 border-neutral-200 hover:border-blue-300 hover:bg-blue-50 text-neutral-700 hover:text-blue-600 font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
                     >
                       <User className="w-4 h-4 mr-2" />
@@ -194,18 +192,16 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
-                      onClick={() => handlePassVehicle(vehicle)}
-                      className="h-8 px-3 border border-neutral-200 hover:border-red-200 hover:bg-red-50/50 text-neutral-600 hover:text-red-500 font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
+                      onClick={() => handleViewCustomer(vehicle.id)}
+                      className="h-8 px-3 border border-neutral-200 hover:border-orange-200 hover:bg-orange-50/50 text-neutral-600 hover:text-orange-500 font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
                     >
-                      <X className="w-3.5 h-3.5 mr-1" />
-                      Pass
+                      View Customer
                     </Button>
                     <Button
-                      onClick={() => handleBidNow(vehicle)}
+                      onClick={() => handleViewVehicle(vehicle.id)}
                       className="h-8 px-4 bg-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] text-white font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
                     >
-                      <Gavel className="w-3.5 h-3.5 mr-1" />
-                      Bid
+                      View Vehicle
                     </Button>
                   </div>
                 </div>
@@ -256,13 +252,13 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
                   </div>
                   <div className="flex flex-col items-end p-3 rounded-lg transition-all duration-200">
                     <div className="flex items-center mb-1">
-                      <Clock className="w-3.5 h-3.5 mr-1 text-orange-500" />
+                      <Calendar className="w-3.5 h-3.5 mr-1 text-orange-500" />
                       <span className="text-xs font-normal text-neutral-500">
-                        Ends At
+                        Accepted On
                       </span>
                     </div>
                     <p className="text-sm font-medium  text-center">
-                      {vehicle.endsAt}
+                      {vehicle.acceptedOn}
                     </p>
                   </div>
                 </div>
@@ -271,7 +267,8 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
           </motion.div>
         ))}
       </div>
-    </motion.div>
+
+    </motion.div>    
   );
 };
 
