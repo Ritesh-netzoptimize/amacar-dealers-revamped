@@ -220,12 +220,12 @@ const LiveAuctions = () => {
         <LiveAuctionsSkeleton />
       ) : (
         <motion.div 
-          className="min-h-screen bg-gray-50 pt-20 px-4 md:px-6"
+          className="min-h-screen bg-gray-50 pt-10 md:pt-24 px-4 md:px-6"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          <div className="p-6">
+          <div className="px-4 md:px-6">
             {/* Header Section */}
             <motion.div 
               className="mb-8"

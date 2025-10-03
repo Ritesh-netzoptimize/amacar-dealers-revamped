@@ -2,8 +2,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const DashboardSkeleton = () => {
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 px-4 md:px-6">
-      <div className="p-6">
+    <div className="min-h-screen bg-gray-50 pt-10 md:pt-24 px-4 md:px-6">
+      <div className="px-4 md:px-6">
         {/* Header Section */}
         <div className="mb-8">
           <Skeleton className="h-8 w-64 mb-2" />

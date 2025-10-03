@@ -88,12 +88,12 @@ const Reports = () => {
 
   return (
     <motion.div
-      className="min-h-screen bg-gray-50 pt-20 px-4 md:px-6"
+      className="min-h-screen bg-gray-50 pt-10 md:pt-24 px-4 md:px-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      <div className="p-6">
+      <div className="px-4 md:px-6">
         <motion.div className="mb-8" variants={headerVariants}>
           <motion.h1
             className="text-3xl font-bold text-neutral-900 mb-2"

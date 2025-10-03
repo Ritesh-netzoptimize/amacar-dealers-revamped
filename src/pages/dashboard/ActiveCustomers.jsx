@@ -263,13 +263,13 @@ const ActiveCustomers = () => {
 
   return (
     <motion.div
-      className="min-h-screen bg-gray-50 pt-28 px-8 md:px-12"
+      className="min-h-screen bg-gray-50 pt-10 md:pt-24 px-4 md:px-6"
       variants={pageVariants}
       initial="initial"
       animate="animate"
       exit="exit"
     >
-      <div className="max-w-8xl">
+      <div className="max-w-8xl px-4 md:px-6">
         {/* Header Section */}
         {!isLoading && (
           <motion.div className="mb-6" variants={headerVariants}>

@@ -263,45 +263,7 @@ const DealershipContainer = ({
       initial="hidden"
       animate="visible"
     >
-      {/* Header */}
-      <motion.div 
-        className="flex items-center justify-between mb-6"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <motion.div 
-          className="flex items-center gap-3"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1, duration: 0.4 }}
-        >
-          <motion.div 
-            className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center"
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Building2 className="w-5 h-5 text-orange-600" />
-          </motion.div>
-          <div>
-            <h3 className="text-lg font-semibold text-neutral-900">
-              Dealerships
-            </h3>
-            <p className="text-sm text-neutral-600">
-              All dealership partners and details
-            </p>
-          </div>
-        </motion.div>
-        <motion.div 
-          className="text-sm text-neutral-500"
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
-        >
-          Showing {startIndex + 1}-{Math.min(endIndex, totalCount)} of{" "}
-          {totalCount} dealerships
-        </motion.div>
-      </motion.div>
+     
 
       {/* Search and Filters */}
       <motion.div 

@@ -128,8 +128,8 @@ const Appointments = () => {
   }
 
   return (
-    <div className="lg:mt-16 min-h-screen bg-gradient-hero px-4 sm:px-6 lg:px-8 py-8 sm:py-6 lg:py-8">
-      <div className="max-w-8xl mx-auto">
+    <div className="min-h-screen bg-gradient-hero pt-10 md:pt-24 px-4 md:px-6">
+      <div className="max-w-8xl mx-auto px-4 md:px-6">
         <motion.div
           variants={containerVariants}
           initial="hidden"

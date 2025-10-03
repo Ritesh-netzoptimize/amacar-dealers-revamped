@@ -30,7 +30,7 @@ const DealershipSkeleton = () => {
 
   return (
     <motion.div
-      className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6"
+      className="bg-white rounded-2xl shadow-sm border border-neutral-200 pt-10 md:pt-24 px-4 md:px-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"

@@ -267,7 +267,7 @@ const MyBids = () => {
 
   return (
     <motion.div
-      className="min-h-screen bg-gray-50 pt-20 px-4 md:px-6"
+      className="min-h-screen bg-gray-50 pt-10 md:pt-24 px-4 md:px-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -275,7 +275,7 @@ const MyBids = () => {
       {isLoading ? (
         <MyBidsSkeleton />
       ) : (
-        <div className="p-6">
+        <div className="px-4 md:px-6">
           {/* Header Section */}
           <motion.div className="mb-8" variants={headerVariants}>
             <motion.h1
@@ -297,63 +297,63 @@ const MyBids = () => {
           </motion.div>
 
           {/* Statistics Cards */}
-            <motion.div variants={statsVariants}>
-              <DashboardStats />
-            </motion.div>
+          <motion.div variants={statsVariants}>
+            <DashboardStats />
+          </motion.div>
 
           {/* Filter Tabs */}
-            <motion.div className="mt-8" variants={statsVariants}>
-              <FilterTabs
-                activeFilter={activeFilter}
-                onFilterChange={handleFilterChange}
-                isLoading={isFilterLoading}
-                className="mb-6"
-              />
+          <motion.div className="mt-8" variants={statsVariants}>
+            <FilterTabs
+              activeFilter={activeFilter}
+              onFilterChange={handleFilterChange}
+              isLoading={isFilterLoading}
+              className="mb-6"
+            />
 
-              {/* Results Count */}
-              <motion.div
-                className="flex items-center justify-between mb-4"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-              >
-                <p className="text-sm text-neutral-600">
-                  Showing {filteredAuctions.length} auction
-                  {filteredAuctions.length !== 1 ? "s" : ""}
-                  {activeFilter !== "allTime" && (
-                    <span className="ml-1 text-neutral-500">
-                      (
-                      {activeFilter === "today"
-                        ? "today"
-                        : activeFilter === "thisWeek"
-                        ? "this week"
-                        : activeFilter === "thisMonth"
-                        ? "this month"
-                        : "passed"}
-                      )
-                    </span>
-                  )}
-                </p>
-              </motion.div>
+            {/* Results Count */}
+            <motion.div
+              className="flex items-center justify-between mb-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            >
+              <p className="text-sm text-neutral-600">
+                Showing {filteredAuctions.length} auction
+                {filteredAuctions.length !== 1 ? "s" : ""}
+                {activeFilter !== "allTime" && (
+                  <span className="ml-1 text-neutral-500">
+                    (
+                    {activeFilter === "today"
+                      ? "today"
+                      : activeFilter === "thisWeek"
+                      ? "this week"
+                      : activeFilter === "thisMonth"
+                      ? "this month"
+                      : "passed"}
+                    )
+                  </span>
+                )}
+              </p>
             </motion.div>
+          </motion.div>
 
           {/* My Bids Grid */}
           <motion.div className="mt-8" variants={statsVariants}>
-              <MyBidsContainer auctions={currentAuctions} />
+            <MyBidsContainer auctions={currentAuctions} />
           </motion.div>
 
           {/* Pagination */}
-            <motion.div
-              className="flex justify-center mt-8"
-              variants={statsVariants}
-            >
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-                className="w-full max-w-md mt-6 mb-4"
-              />
-            </motion.div>
+          <motion.div
+            className="flex justify-center mt-8"
+            variants={statsVariants}
+          >
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              className="w-full max-w-md mt-6 mb-4"
+            />
+          </motion.div>
         </div>
       )}
     </motion.div>
