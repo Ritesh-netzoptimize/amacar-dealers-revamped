@@ -1,13 +1,6 @@
 import { motion } from "framer-motion";
 import { Eye, Gavel, Calendar } from "lucide-react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselDots,
-  CarouselItem,
-  // CarouselNext,
-  // CarouselPrevious,
-} from "@/components/ui/carousel";
+import PhotoSwipeGallery from "@/components/ui/PhotoSwipeGallery";
 import { Button } from "@/components/ui/button";
 import { formatBidAmount, getStatusColor } from "@/lib/utils";
 import { useState } from "react";
@@ -31,47 +24,17 @@ const VehicleCard = ({ vehicle, onBidSuccess }) => {
       whileHover={{ y: -4 }}
       transition={{ duration: 0.3 }}
     >
-      {/* Image Carousel */}
+      {/* Image Gallery */}
       <div className="relative h-56 bg-neutral-100 group/carousel">
-        {" "}
-        {/* ⬅ slightly taller image */}
-        <Carousel
+        <PhotoSwipeGallery
+          images={vehicle.images}
+          vehicleName={vehicle.name}
           className="w-full h-full"
-          opts={{
-            loop: true,
-            align: "start",
-            skipSnaps: false,
-            dragFree: false,
-          }}
-        >
-          <CarouselContent>
-            {vehicle.images.map((image, index) => (
-              <CarouselItem key={index}>
-                <div className="w-full h-56 relative overflow-hidden">
-                  <img
-                    src={image}
-                    alt={`${vehicle.name} - Image ${index + 1}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          {/* Navigation Dots */}
-    {vehicle.images.length > 1 && (
-      <CarouselDots className="absolute bottom-2 left-1/2 -translate-x-1/2" />
-    )}
-          {/* {vehicle.images.length > 1 && (
-            <>
-              <CarouselPrevious className="left-3 top-1/2 -translate-y-1/2 h-8 w-8 bg-white/90 hover:bg-white border-0 shadow-lg opacity-100 transition-opacity
- duration-200 hover:scale-110" />
-              <CarouselNext className="right-3 top-1/2 -translate-y-1/2 h-8 w-8 bg-white/90 hover:bg-white border-0 shadow-lg opacity-100 transition-opacity
- duration-200 hover:scale-110" />
-            </>
-          )} */}
-        </Carousel>
+          imageClassName="w-full h-56"
+          showOverlay={true}
+        />
         {/* Status Badge */}
-        <div className="absolute top-3 left-3">
+        <div className="absolute top-3 left-3 z-10">
           <span
             className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
               vehicle.status

@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Gavel, X, Eye, Clock, DollarSign } from "lucide-react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselDots,
-} from "@/components/ui/carousel";
+import PhotoSwipeGallery from "@/components/ui/PhotoSwipeGallery";
 import { Button } from "@/components/ui/button";
 import BidDialog from "@/components/common/BidDialog/BidDialog";
 import PassDialog from "@/components/common/PassDialog/PassDialog";
@@ -134,34 +129,15 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
           >
             {/* Mobile Layout: Stacked */}
             <div className="lg:hidden flex flex-col min-h-full">
-              {/* Image Carousel */}
+              {/* Image Gallery */}
               <div className="relative h-56 bg-gradient-to-br from-neutral-50 to-neutral-100">
-                <Carousel
+                <PhotoSwipeGallery
+                  images={vehicle.images}
+                  vehicleName={vehicle.name}
                   className="w-full h-full"
-                  opts={{
-                    loop: true,
-                    align: "start",
-                    skipSnaps: false,
-                    dragFree: false,
-                  }}
-                >
-                  <CarouselContent>
-                    {vehicle.images.map((image, index) => (
-                      <CarouselItem key={index}>
-                        <div className="w-full h-56 relative overflow-hidden">
-                          <img
-                            src={image}
-                            alt={`${vehicle.name} - Image ${index + 1}`}
-                            className="w-full h-full object-cover object-center"
-                          />
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  {vehicle.images.length > 1 && (
-                    <CarouselDots className="absolute bottom-3 left-1/2 -translate-x-1/2" />
-                  )}
-                </Carousel>
+                  imageClassName="w-full h-56"
+                  showOverlay={true}
+                />
               </div>
 
               {/* Vehicle Information */}
@@ -224,14 +200,7 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                       <X className="w-4 h-4 mr-2" />
                       Pass
                     </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleViewVehicle(vehicle.id)}
-                      className="flex-1 border-2 border-neutral-200 hover:border-blue-300 hover:bg-blue-50 text-neutral-700 hover:text-blue-600 font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                    >
-                      <Eye className="w-4 h-4 mr-2" />
-                      View
-                    </Button>
+                   
                   </div>
                   <Button
                     onClick={() => handleBidNow(vehicle)}
@@ -246,49 +215,16 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
 
             {/* Desktop Layout: Full Width Row */}
             <div className="hidden lg:flex min-h-[180px] bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
-              {/* Left Section - Image Carousel (1/8 width) */}
+              {/* Left Section - Image Gallery (1/8 width) */}
               <div className="w-1/8 relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden">
-                <Carousel
+                <PhotoSwipeGallery
+                  images={vehicle.images}
+                  vehicleName={vehicle.name}
                   className="w-full h-full"
-                   opts={{
-                    loop: true,
-                    align: "start",
-                    skipSnaps: false,
-                    dragFree: false,
-                  }}
-                >
-                  <CarouselContent>
-                    {vehicle.images.map((image, index) => (
-                      <CarouselItem key={index}>
-                        <div className="w-full h-[180px] relative overflow-hidden cursor-pointer">
-                          <img
-                            src={image}
-                            alt={`${vehicle.name} - Image ${index + 1}`}
-                            className="w-full h-full object-cover object-center"
-                            onClick={() => handleViewVehicle(vehicle.id)}
-                          />
-                          {/* Overlay for better UX */}
-                          <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/40 transition-all duration-300 flex items-center justify-center">
-                            <div className="opacity-0 group-hover/image:opacity-100 transition-opacity duration-200">
-                              <div
-                                className="flex items-center gap-1.5 cursor-pointer"
-                                onClick={() => handleViewVehicle(vehicle.id)}
-                              >
-                                <Eye className="w-3.5 h-3.5 text-white" />
-                                <span className="text-white text-sm font-medium tracking-wide">
-                                  View
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  {vehicle.images.length > 1 && (
-                    <CarouselDots className="absolute bottom-2 left-1/2 -translate-x-1/2" />
-                  )}
-                </Carousel>
+                  imageClassName="w-full h-[180px]"
+                  showOverlay={true}
+                  // onImageClick={() => handleViewVehicle(vehicle.id)}
+                />
               </div>
 
               {/* Right Section - Vehicle Information (7/8 width) */}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, Clock, DollarSign, User, Trophy, Calendar, MapPin } from 'lucide-react';
-import { Carousel, CarouselContent, CarouselItem, CarouselDots } from '@/components/ui/carousel';
+import PhotoSwipeGallery from '@/components/ui/PhotoSwipeGallery';
 import { Button } from '@/components/ui/button';
 
 const WonAuctionsContainer = ({ auctions = [] }) => {
@@ -58,34 +58,15 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
           >
             {/* Mobile Layout: Stacked */}
             <div className="lg:hidden flex flex-col min-h-full">
-              {/* Image Carousel */}
+              {/* Image Gallery */}
               <div className="relative h-56 bg-gradient-to-br from-neutral-50 to-neutral-100">
-                <Carousel 
-                  className="w-full h-full" 
-                  opts={{ 
-                    loop: true,
-                    align: "start",
-                    skipSnaps: false,
-                    dragFree: false
-                  }}
-                >
-                  <CarouselContent>
-                    {vehicle.images.map((image, index) => (
-                      <CarouselItem key={index}>
-                        <div className="w-full h-56 relative overflow-hidden">
-                          <img
-                            src={image}
-                            alt={`${vehicle.name} - Image ${index + 1}`}
-                            className="w-full h-full object-cover object-center"
-                          />
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  {vehicle.images.length > 1 && (
-                    <CarouselDots className="absolute bottom-3 left-1/2 -translate-x-1/2" />
-                  )}
-                </Carousel>
+                <PhotoSwipeGallery
+                  images={vehicle.images}
+                  vehicleName={vehicle.name}
+                  className="w-full h-full"
+                  imageClassName="w-full h-56"
+                  showOverlay={true}
+                />
               </div>
 
               {/* Vehicle Information */}
@@ -158,46 +139,16 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
 
             {/* Desktop Layout: Full Width Row */}
             <div className="hidden lg:flex min-h-80">
-              {/* Left Section - Image Carousel (1/4 width) */}
+              {/* Left Section - Image Gallery (1/4 width) */}
               <div className="w-1/4 relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image">
-                <Carousel 
-                  className="w-full h-full" 
-                  opts={{ 
-                    loop: true,
-                    align: "start",
-                    skipSnaps: false,
-                    dragFree: false
-                  }}
-                >
-                  <CarouselContent>
-                    {vehicle.images.map((image, index) => (
-                      <CarouselItem key={index}>
-                        <div className="w-full h-80 relative overflow-hidden cursor-pointer">
-                          <img
-                            src={image}
-                            alt={`${vehicle.name} - Image ${index + 1}`}
-                            className="w-full h-full object-cover object-center"
-                            onClick={() => handleViewVehicle(vehicle.id)}
-                          />
-                          {/* Overlay for better UX */}
-                          <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/50 transition-all duration-300 flex items-center justify-center">
-                            <div className="opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
-                              <div className="flex items-center gap-2 cursor-pointer" onClick={() => handleViewVehicle(vehicle.id)}>
-                                <Eye className="w-4 h-4 text-white" />
-                                <span className="text-white text-base font-semibold tracking-wide">
-                                  View Details
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  {vehicle.images.length > 1 && (
-                    <CarouselDots className="absolute bottom-3 left-1/2 -translate-x-1/2" />
-                  )}
-                </Carousel>
+                <PhotoSwipeGallery
+                  images={vehicle.images}
+                  vehicleName={vehicle.name}
+                  className="w-full h-full"
+                  imageClassName="w-full h-80"
+                  showOverlay={true}
+                  onImageClick={() => handleViewVehicle(vehicle.id)}
+                />
               </div>
 
               {/* Right Section - Vehicle Information (3/4 width) */}
