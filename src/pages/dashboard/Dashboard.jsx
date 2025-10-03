@@ -137,12 +137,12 @@ const Dashboard = () => {
          </motion.div>
 
          {/* Quick Actions Section */}
-         <motion.div 
+         {/* <motion.div 
            className="mt-12"
            variants={statsVariants}
          >
            <QuickActions />
-         </motion.div>
+         </motion.div> */}
        </div>
      </motion.div>
    );

@@ -125,9 +125,11 @@ const Reports = () => {
             <PieChartContainer />
           </motion.div>
 
-          {/* Multi Bar Chart section */}
-          <motion.div className="mt-4" variants={statsVariants}>
-            <MultiBarChart />
+         
+
+          {/* smart insights section */}
+          <motion.div className="mt-12" variants={statsVariants}>
+            <SmartInsights />
           </motion.div>
         </div>
 
@@ -137,9 +139,9 @@ const Reports = () => {
             <MultiLineChart />
           </motion.div>
 
-          {/* smart insights section */}
-          <motion.div className="mt-4" variants={statsVariants}>
-            <SmartInsights />
+           {/* Multi Bar Chart section */}
+           <motion.div className="mt-4" variants={statsVariants}>
+            <MultiBarChart />
           </motion.div>
         </div>
 
@@ -150,7 +152,7 @@ const Reports = () => {
           </motion.div>
 
           {/* Average bar chart section */}
-          <motion.div className="mt-12" variants={statsVariants}>
+          <motion.div className="mt-4" variants={statsVariants}>
             <AverageBarChartContainer />
           </motion.div>
         </div>
