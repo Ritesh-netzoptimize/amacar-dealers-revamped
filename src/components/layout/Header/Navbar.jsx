@@ -29,7 +29,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -65,16 +64,33 @@ export default function Navbar() {
               </motion.a>
             ))}
             {user ? (
-              <button onClick={() => navigate("/dashboard")} className="px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all">
-                Dashboard →
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+                >
+                  Dashboard 
+                </button>
+
+                <button className="w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white">
+                  Logout
+                </button>
+              </div>
             ) : (
-              <button onClick={() => {
-                setLoginModalOpen(true);
-                setIsMobileMenuOpen(false);
-              }} className="px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all">
-                Login →
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setLoginModalOpen(true);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+                >
+                  Login
+                </button>
+                <button className="w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white">
+                  Join as dealer
+                </button>
+              </div>
             )}
           </div>
 
@@ -110,19 +126,27 @@ export default function Navbar() {
               </motion.a>
             ))}
             {user ? (
-              <button onClick={() => navigate("/dashboard")} className="mt-2 w-full px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold">
-                Dashboard →
-              </button>
-            ) : (
               <button
-                onClick={() => {
-                  setLoginModalOpen(true);
-                  setIsMobileMenuOpen(false);
-                }}
+                onClick={() => navigate("/dashboard")}
                 className="mt-2 w-full px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold"
               >
-                Login →
+                Dashboard 
               </button>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => {
+                    setLoginModalOpen(true);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="mt-2 w-full px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold"
+                >
+                  Login →
+                </button>
+                <button className="mt-2 w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold">
+                  Join as dealer
+                </button>
+              </div>
             )}
           </motion.div>
         )}
