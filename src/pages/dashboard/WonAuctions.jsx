@@ -28,6 +28,7 @@ const WonAuctions = () => {
       cashOffer: "$7,725",
       highestBid: "$8,200",
       finalPrice: "$8,200",
+      VIN: "12345678901234567",
       wonBy: "Bidder #1",
       endsAt: "Oct 30, 2025 14:00",
       timeLeft: "0"
@@ -45,6 +46,7 @@ const WonAuctions = () => {
       cashOffer: "$35,000",
       highestBid: "$36,500",
       finalPrice: "$36,500",
+      VIN: "12345678901234567",
       wonBy: "Bidder #2",
       endsAt: "Oct 31, 2025 16:00",
       timeLeft: "0"
@@ -63,6 +65,7 @@ const WonAuctions = () => {
       cashOffer: "$42,500",
       highestBid: "$44,000",
       finalPrice: "$44,000",
+      VIN: "12345678901234567",
       wonBy: "Bidder #3",
       endsAt: "Nov 1, 2025 10:00",
       timeLeft: "0"
@@ -80,6 +83,7 @@ const WonAuctions = () => {
       cashOffer: "$28,500",
       highestBid: "$29,200",
       finalPrice: "$29,200",
+      VIN: "12345678901234567",
       wonBy: "Bidder #4",
       endsAt: "Nov 2, 2025 12:00",
       timeLeft: "0"
@@ -97,6 +101,7 @@ const WonAuctions = () => {
       cashOffer: "$32,000",
       highestBid: "$33,500",
       finalPrice: "$33,500",
+      VIN: "12345678901234567",
       wonBy: "Bidder #5",
       endsAt: "Nov 3, 2025 15:00",
       timeLeft: "0"
@@ -114,6 +119,7 @@ const WonAuctions = () => {
       cashOffer: "$38,000",
       highestBid: "$39,800",
       finalPrice: "$39,800",
+      VIN: "12345678901234567",
       wonBy: "Bidder #6",
       endsAt: "Nov 4, 2025 11:00",
       timeLeft: "0"

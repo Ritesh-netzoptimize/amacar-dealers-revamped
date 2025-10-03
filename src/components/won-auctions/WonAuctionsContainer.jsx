@@ -1,8 +1,18 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Eye, Clock, DollarSign, User, Trophy, Calendar, MapPin } from 'lucide-react';
-import PhotoSwipeGallery from '@/components/ui/PhotoSwipeGallery';
-import { Button } from '@/components/ui/button';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  Eye,
+  Clock,
+  DollarSign,
+  User,
+  Trophy,
+  Calendar,
+  MapPin,
+  X,
+  Gavel,
+} from "lucide-react";
+import PhotoSwipeGallery from "@/components/ui/PhotoSwipeGallery";
+import { Button } from "@/components/ui/button";
 
 const WonAuctionsContainer = ({ auctions = [] }) => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
@@ -14,9 +24,9 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
+        delayChildren: 0.2,
+      },
+    },
   };
 
   const cardVariants = {
@@ -26,18 +36,18 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
       y: 0,
       transition: {
         duration: 0.5,
-        ease: "easeOut"
-      }
-    }
+        ease: "easeOut",
+      },
+    },
   };
 
   const handleViewVehicle = (vehicleId) => {
-    console.log('View Vehicle:', vehicleId);
+    console.log("View Vehicle:", vehicleId);
     // TODO: Implement view vehicle functionality
   };
 
   const handleViewCustomer = (customerId) => {
-    console.log('View Customer:', customerId);
+    console.log("View Customer:", customerId);
     // TODO: Implement view customer functionality
   };
 
@@ -85,30 +95,46 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
                     <div className="flex items-center justify-between p-3 border border-neutral-200 rounded-lg hover:border-orange-300 transition-colors duration-300">
                       <div className="flex items-center">
                         <DollarSign className="w-4 h-4 mr-2 text-neutral-600" />
-                        <span className="text-sm font-medium text-neutral-600">Cash Offer</span>
+                        <span className="text-sm font-medium text-neutral-600">
+                          Cash Offer
+                        </span>
                       </div>
-                      <p className="text-lg font-bold text-neutral-900">{vehicle.cashOffer}</p>
+                      <p className="text-lg font-bold text-neutral-900">
+                        {vehicle.cashOffer}
+                      </p>
                     </div>
                     <div className="flex items-center justify-between p-3 border border-neutral-200 rounded-lg hover:border-green-300 transition-colors duration-300">
                       <div className="flex items-center">
                         <DollarSign className="w-4 h-4 mr-2 text-green-600" />
-                        <span className="text-sm font-medium text-neutral-600">Final Price</span>
+                        <span className="text-sm font-medium text-neutral-600">
+                          Final Price
+                        </span>
                       </div>
-                      <p className="text-lg font-bold text-green-600">{vehicle.finalPrice}</p>
+                      <p className="text-lg font-bold text-green-600">
+                        {vehicle.finalPrice}
+                      </p>
                     </div>
                     <div className="flex items-center justify-between p-3 border border-neutral-200 rounded-lg hover:border-blue-300 transition-colors duration-300">
                       <div className="flex items-center">
                         <Trophy className="w-4 h-4 mr-2 text-blue-600" />
-                        <span className="text-sm font-medium text-neutral-600">Won By</span>
+                        <span className="text-sm font-medium text-neutral-600">
+                          Won By
+                        </span>
                       </div>
-                      <p className="text-sm font-semibold text-blue-800">{vehicle.wonBy}</p>
+                      <p className="text-sm font-semibold text-blue-800">
+                        {vehicle.wonBy}
+                      </p>
                     </div>
                     <div className="flex items-center justify-between p-3 border border-neutral-200 rounded-lg hover:border-orange-300 transition-colors duration-300">
                       <div className="flex items-center">
                         <Calendar className="w-4 h-4 mr-2 text-orange-600" />
-                        <span className="text-sm font-medium text-neutral-600">Accepted On</span>
+                        <span className="text-sm font-medium text-neutral-600">
+                          Accepted On
+                        </span>
                       </div>
-                      <p className="text-sm font-semibold text-orange-800">{vehicle.endsAt}</p>
+                      <p className="text-sm font-semibold text-orange-800">
+                        {vehicle.endsAt}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -138,81 +164,106 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
             </div>
 
             {/* Desktop Layout: Full Width Row */}
-            <div className="hidden lg:flex min-h-80">
-              {/* Left Section - Image Gallery (1/4 width) */}
-              <div className="w-1/4 relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image">
+            <div className="hidden lg:flex min-h-[180px] bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+              {/* Left Section - Image Gallery (1/8 width) */}
+              <div className="w-1/8 relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden">
                 <PhotoSwipeGallery
                   images={vehicle.images}
                   vehicleName={vehicle.name}
                   className="w-full h-full"
-                  imageClassName="w-full h-80"
+                  imageClassName="w-full h-[180px]"
                   showOverlay={true}
-                  onImageClick={() => handleViewVehicle(vehicle.id)}
+                  // onImageClick={() => handleViewVehicle(vehicle.id)}
                 />
               </div>
 
-              {/* Right Section - Vehicle Information (3/4 width) */}
-              <div className="w-3/4 p-8 flex flex-col justify-between bg-white/95 backdrop-blur-sm min-h-80">
+              {/* Right Section - Vehicle Information (7/8 width) */}
+              <div className="w-7/8 px-8 py-4 flex flex-col justify-between">
                 {/* Header with Vehicle Title and CTA Buttons */}
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="text-2xl font-semibold text-neutral-800 mb-1 group-hover:text-orange-500 transition-colors duration-300">
+                    <h3 className="text-lg font-semibold text-neutral-800 group-hover:text-orange-500 transition-colors duration-200">
                       {vehicle.name}
                     </h3>
-                    <p className="text-base text-neutral-400 font-normal">
+                    <p className="text-sm text-neutral-500 font-normal">
                       {vehicle.year} {vehicle.make} {vehicle.model}
                     </p>
                   </div>
-                  
+
                   {/* CTA Buttons - Top Right */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
-                      onClick={() => handleViewCustomer(vehicle.wonBy)}
-                      className="h-10 px-4 border border-neutral-200 hover:border-blue-200 hover:bg-blue-50 text-neutral-600 hover:text-blue-500 font-medium rounded-lg transition-colors duration-300 cursor-pointer"
+                      onClick={() => handlePassVehicle(vehicle)}
+                      className="h-8 px-3 border border-neutral-200 hover:border-red-200 hover:bg-red-50/50 text-neutral-600 hover:text-red-500 font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
                     >
-                      <User className="w-4 h-4 mr-1" />
-                      View Customer
+                      <X className="w-3.5 h-3.5 mr-1" />
+                      Pass
                     </Button>
                     <Button
-                      onClick={() => handleViewVehicle(vehicle.id)}
-                      className="h-10 px-5 bg-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-colors duration-300 cursor-pointer"
+                      onClick={() => handleBidNow(vehicle)}
+                      className="h-8 px-4 bg-[var(--brand-orange)] hover:bg-[var(--color-primary-600)] text-white font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
                     >
-                      <Eye className="w-4 h-4 mr-1" />
-                      View Vehicle
+                      <Gavel className="w-3.5 h-3.5 mr-1" />
+                      Bid
                     </Button>
                   </div>
                 </div>
 
                 {/* Auction Details Grid - Bottom */}
-                <div className="grid grid-cols-4 gap-4 mt-auto">
-                  <div className="flex flex-col items-center p-4 border border-neutral-100 rounded-2xl hover:border-orange-200 hover:bg-orange-50/20 transition-all duration-300">
-                    <div className="flex items-center mb-2">
-                      <DollarSign className="w-4 h-4 mr-2 text-neutral-400" />
-                      <span className="text-xs font-normal text-neutral-500">Cash Offer</span>
+                <div className="grid grid-cols-5 gap-3 justify-end">
+                  <div className="flex flex-col  p-3  rounded-lg transition-all duration-200">
+                    <div className="flex items-center mb-1">
+                      <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
+                      <span className="text-xs font-normal text-neutral-500">
+                        Cash Offer
+                      </span>
                     </div>
-                    <p className="text-lg font-semibold text-neutral-800">{vehicle.cashOffer}</p>
+                    <p className="text-base font-semibold ">
+                      {vehicle.cashOffer}
+                    </p>
                   </div>
-                  <div className="flex flex-col items-center p-4 border border-neutral-100 rounded-2xl hover:border-green-200 hover:bg-green-50/20 transition-all duration-300">
-                    <div className="flex items-center mb-2">
-                      <DollarSign className="w-4 h-4 mr-2 text-green-500" />
-                      <span className="text-xs font-normal text-neutral-500">Final Price</span>
+                  <div className="flex flex-col  p-3  rounded-lg transition-all duration-200">
+                    <div className="flex items-center mb-1">
+                      <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
+                      <span className="text-xs font-normal text-neutral-500">
+                        Won By
+                      </span>
                     </div>
-                    <p className="text-lg font-semibold text-green-600">{vehicle.finalPrice}</p>
+                    <p className="text-base font-semibold ">
+                      {vehicle.wonBy}
+                    </p>
                   </div>
-                  <div className="flex flex-col items-center p-4 border border-neutral-100 rounded-2xl hover:border-blue-200 hover:bg-blue-50/20 transition-all duration-300">
-                    <div className="flex items-center mb-2">
-                      <Trophy className="w-4 h-4 mr-2 text-blue-500" />
-                      <span className="text-xs font-normal text-neutral-500">Won By</span>
+                  <div className="flex flex-col  p-3  rounded-lg transition-all duration-200">
+                    <div className="flex items-center mb-1">
+                      <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
+                      <span className="text-xs font-normal text-neutral-500">
+                        VIN
+                      </span>
                     </div>
-                    <p className="text-sm font-medium text-blue-600 text-center">{vehicle.wonBy}</p>
+                    <p className="text-base font-semibold ">{vehicle.VIN}</p>
                   </div>
-                  <div className="flex flex-col items-center p-4 border border-neutral-100 rounded-2xl hover:border-orange-200 hover:bg-orange-50/20 transition-all duration-300">
-                    <div className="flex items-center mb-2">
-                      <Calendar className="w-4 h-4 mr-2 text-orange-500" />
-                      <span className="text-xs font-normal text-neutral-500">Accepted On</span>
+                  <div className="flex flex-col items-end p-3 rounded-lg transition-all duration-200">
+                    <div className="flex items-center mb-1">
+                      <DollarSign className="w-3.5 h-3.5 mr-1 text-green-500" />
+                      <span className="text-xs font-normal text-neutral-500">
+                        Highest Bid
+                      </span>
                     </div>
-                    <p className="text-xs font-medium text-orange-600 text-center">{vehicle.endsAt}</p>
+                    <p className="text-base font-semibold ">
+                      {vehicle.highestBid}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end p-3 rounded-lg transition-all duration-200">
+                    <div className="flex items-center mb-1">
+                      <Clock className="w-3.5 h-3.5 mr-1 text-orange-500" />
+                      <span className="text-xs font-normal text-neutral-500">
+                        Ends At
+                      </span>
+                    </div>
+                    <p className="text-sm font-medium  text-center">
+                      {vehicle.endsAt}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -220,7 +271,6 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
           </motion.div>
         ))}
       </div>
-
     </motion.div>
   );
 };
