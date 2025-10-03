@@ -125,7 +125,7 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
           <motion.div
             key={vehicle.id}
             variants={cardVariants}
-            className="bg-white rounded-3xl shadow-sm border border-neutral-100 overflow-hidden hover:shadow-xl hover:border-neutral-200 transition-all duration-500 group"
+            className="bg-white rounded-3xl border-b-2 border-neutral-200 overflow-hidden hover:shadow-xl hover:border-neutral-200 transition-all duration-500 group"
           >
             {/* Mobile Layout: Stacked */}
             <div className="lg:hidden flex flex-col min-h-full">
@@ -214,21 +214,21 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
             </div>
 
             {/* Desktop Layout: Full Width Row */}
-            <div className="hidden lg:flex min-h-[180px] bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="hidden lg:flex min-h-[150px] bg-white/90 backdrop-blur-sm rounded-xl transition-all duration-300">
               {/* Left Section - Image Gallery (1/8 width) */}
-              <div className="w-1/8 relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden">
+              <div className="w-1/8 h-32 pl-6 py-2 m-auto !bg-none  relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden">
                 <PhotoSwipeGallery
                   images={vehicle.images}
                   vehicleName={vehicle.name}
                   className="w-full h-full"
-                  imageClassName="w-full h-[180px]"
+                  imageClassName="w-full rounded-md object-container"
                   showOverlay={true}
                   // onImageClick={() => handleViewVehicle(vehicle.id)}
                 />
               </div>
 
               {/* Right Section - Vehicle Information (7/8 width) */}
-              <div className="w-7/8 px-8 py-4 flex flex-col justify-between">
+              <div className="w-7/8 px-8 py-6 flex flex-col justify-between">
                 {/* Header with Vehicle Title and CTA Buttons */}
                 <div className="flex items-start justify-between">
                   <div>
@@ -262,7 +262,7 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
 
                 {/* Auction Details Grid - Bottom */}
                 <div className="grid grid-cols-5 gap-3 justify-end">
-                  <div className="flex flex-col  p-3  rounded-lg transition-all duration-200">
+                  <div className="flex flex-col rounded-lg transition-all duration-200">
                     <div className="flex items-center mb-1">
                       <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
                       <span className="text-xs font-normal text-neutral-500">
@@ -273,7 +273,7 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                       {vehicle.cashOffer}
                     </p>
                   </div>
-                  <div className="flex flex-col  p-3  rounded-lg transition-all duration-200">
+                  <div className="flex flex-col rounded-lg transition-all duration-200">
                     <div className="flex items-center mb-1">
                       <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
                       <span className="text-xs font-normal text-neutral-500">
@@ -284,7 +284,7 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                       {vehicle.mileage}
                     </p>
                   </div>
-                  <div className="flex flex-col  p-3  rounded-lg transition-all duration-200">
+                  <div className="flex flex-col rounded-lg transition-all duration-200">
                     <div className="flex items-center mb-1">
                       <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
                       <span className="text-xs font-normal text-neutral-500">
@@ -295,7 +295,7 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                       {vehicle.VIN}
                     </p>
                   </div>
-                  <div className="flex flex-col items-end p-3 rounded-lg transition-all duration-200">
+                  <div className="flex flex-col items-end rounded-lg transition-all duration-200">
                     <div className="flex items-center mb-1">
                       <DollarSign className="w-3.5 h-3.5 mr-1 text-green-500" />
                       <span className="text-xs font-normal text-neutral-500">
@@ -306,7 +306,7 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                       {vehicle.highestBid}
                     </p>
                   </div>
-                  <div className="flex flex-col items-end p-3 rounded-lg transition-all duration-200">
+                  <div className="flex flex-col items-end rounded-lg transition-all duration-200">
                     <div className="flex items-center mb-1">
                       <Clock className="w-3.5 h-3.5 mr-1 text-orange-500" />
                       <span className="text-xs font-normal text-neutral-500">

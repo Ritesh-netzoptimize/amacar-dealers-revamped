@@ -271,14 +271,14 @@ const LiveAuctions = () => {
 
         {/* Filter Tabs */}
         <motion.div 
-          className="mt-8"
+          className="mt-8 flex items-center justify-between"
           variants={statsVariants}
         >
           <FilterTabs 
             activeFilter={activeFilter}
             onFilterChange={handleFilterChange}
             isLoading={isFilterLoading}
-            className="mb-6"
+            className=""
           />
           
           {/* Results Count */}
