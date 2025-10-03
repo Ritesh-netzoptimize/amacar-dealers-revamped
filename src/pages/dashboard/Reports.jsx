@@ -125,10 +125,8 @@ const Reports = () => {
             <PieChartContainer />
           </motion.div>
 
-       
-
-           {/* Multi Bar Chart section */}
-           <motion.div className="mt-4" variants={statsVariants}>
+          {/* Multi Bar Chart section */}
+          <motion.div className="mt-4" variants={statsVariants}>
             <MultiBarChart />
           </motion.div>
         </div>
@@ -151,8 +149,8 @@ const Reports = () => {
             <DealerVsMarketAvgBid />
           </motion.div>
 
-            {/* Average bar chart section */}
-            <motion.div className="mt-12" variants={statsVariants}>
+          {/* Average bar chart section */}
+          <motion.div className="mt-12" variants={statsVariants}>
             <AverageBarChartContainer />
           </motion.div>
         </div>
