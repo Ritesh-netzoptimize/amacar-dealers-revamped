@@ -221,13 +221,15 @@ const userSlice = createSlice({
       state.error = null;
     },
     logout: (state) => {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('authUser');
-      localStorage.removeItem('authExpiration');
-      state.user = null;
-      state.error = null;
-      state.form.values = {};
-      state.form.errors = {};
+        console.log("Inside logout reducer first step")
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('authUser');
+        localStorage.removeItem('authExpiration');
+        state.user = null;
+        state.error = null;
+        state.form.values = {};
+        state.form.errors = {};
+        console.log("Inside logout reducer last step")
     },
     loadUser: (state) => {
       const token = localStorage.getItem('authToken');

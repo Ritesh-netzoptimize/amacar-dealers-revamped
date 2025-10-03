@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Car, Menu, X } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import LoginModal from "@/components/ui/LoginUI/LoginModal";
 import { useNavigate } from "react-router-dom";
+import LogoutModal from "@/components/ui/LogoutUI/LogoutModal";
+import { logout } from "@/redux/slices/userSlice";
 
 // Navbar Component
 export default function Navbar() {
@@ -17,8 +19,23 @@ export default function Navbar() {
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const { user } = useSelector((state) => state.user);
 
+  const dispatch = useDispatch();
+
   const handleForgotPassword = () => {
     console.log("Open forgot password modal");
+  };
+
+  const handleLogout = () => {
+    setLogoutModalOpen(true);
+    setOpen(false);
+  };
+
+  const handleConfirmLogout = async () => {
+    // console.log("Before calling dispatch logout")
+    await dispatch(logout());
+    // console.log("after calling dispatch logout")
+    navigate("/");
+    // setLogoutModalOpen(false);
   };
 
   useEffect(() => {
@@ -69,10 +86,13 @@ export default function Navbar() {
                   onClick={() => navigate("/dashboard")}
                   className="px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
                 >
-                  Dashboard 
+                  Dashboard
                 </button>
 
-                <button className="w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white">
+                <button
+                  onClick={handleLogout}
+                  className="w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white"
+                >
                   Logout
                 </button>
               </div>
@@ -80,6 +100,7 @@ export default function Navbar() {
               <div className="flex gap-2">
                 <button
                   onClick={() => {
+                    setOpen(false);
                     setLoginModalOpen(true);
                     setIsMobileMenuOpen(false);
                   }}
@@ -130,7 +151,7 @@ export default function Navbar() {
                 onClick={() => navigate("/dashboard")}
                 className="mt-2 w-full px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold"
               >
-                Dashboard 
+                Dashboard
               </button>
             ) : (
               <div className="flex flex-col gap-2">
@@ -157,6 +178,14 @@ export default function Navbar() {
           onClose={() => setLoginModalOpen(false)}
           onForgotPassword={handleForgotPassword}
         />
+
+        {logoutModalOpen && (
+          <LogoutModal
+            isOpen={logoutModalOpen}
+            onClose={() => setLogoutModalOpen(false)}
+            onConfirm={handleConfirmLogout}
+          />
+        )}
       </div>
     </motion.nav>
   );
