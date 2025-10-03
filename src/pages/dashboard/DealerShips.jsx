@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DealershipContainer from '@/components/dealership/DealershipContainer';
+import DealershipSkeleton from '@/components/skeletons/Dealership/DealershipSkeleton';
 import { dealershipsData } from '@/data/dealershipsData';
 import Pagination from '@/components/common/Pagination/Pagination';
 
@@ -43,22 +44,6 @@ const DealerShips = () => {
     },
   };
 
-  const loadingVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut",
-      },
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.8,
-      transition: { duration: 0.3 },
-    },
-  };
 
   // Load dealerships data
   useEffect(() => {
@@ -120,36 +105,14 @@ const DealerShips = () => {
 
   if (loading) {
     return (
-      <motion.div 
-        className="flex items-center justify-center h-64"
-        variants={loadingVariants}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
+      <motion.div
+        className="space-y-6 min-h-screen bg-gray-50 pt-28 px-8 md:px-12"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
       >
-        <motion.div 
-          className="flex flex-col items-center gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <motion.div 
-            className="relative"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          >
-            <div className="w-12 h-12 border-4 border-orange-100 rounded-full"></div>
-            <div className="absolute top-0 left-0 w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full"></div>
-          </motion.div>
-          <motion.p 
-            className="text-sm text-neutral-600"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            Loading dealerships...
-          </motion.p>
-        </motion.div>
+        <DealershipSkeleton />
       </motion.div>
     );
   }
