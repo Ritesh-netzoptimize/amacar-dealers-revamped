@@ -4,6 +4,9 @@ import ReportStats from "@/components/reports/ReportStats";
 import PieChartContainer from "@/components/reports/PieChartContainer";
 import AverageBarChartContainer from "@/components/reports/AverageBarChartContainer";
 import { DealerVsMarketAvgBid } from "@/components/reports/DealerVsMarketAvgBid";
+import SmartInsights from "@/components/reports/SmartInsights";
+import { MultiLineChart } from "@/components/reports/MultiLineChart";
+import { MultiBarChart } from "@/components/reports/MultiBarChart";
 
 const Reports = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -122,17 +125,36 @@ const Reports = () => {
             <PieChartContainer />
           </motion.div>
 
-          {/* Average bar chart section */}
-          <motion.div className="mt-12" variants={statsVariants}>
-            <AverageBarChartContainer />
+       
+
+           {/* Multi Bar Chart section */}
+           <motion.div className="mt-4" variants={statsVariants}>
+            <MultiBarChart />
           </motion.div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
-            {/* Horizontal bar chart section */}
-            <motion.div className="mt-4" variants={statsVariants}>
-              <DealerVsMarketAvgBid />
-            </motion.div>
+          {/* Line chart section */}
+          <motion.div className="mt-4" variants={statsVariants}>
+            <MultiLineChart />
+          </motion.div>
+
+          {/* smart insights section */}
+          <motion.div className="mt-4" variants={statsVariants}>
+            <SmartInsights />
+          </motion.div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
+          {/* Horizontal bar chart section */}
+          <motion.div className="mt-4" variants={statsVariants}>
+            <DealerVsMarketAvgBid />
+          </motion.div>
+
+            {/* Average bar chart section */}
+            <motion.div className="mt-12" variants={statsVariants}>
+            <AverageBarChartContainer />
+          </motion.div>
         </div>
       </div>
     </motion.div>
