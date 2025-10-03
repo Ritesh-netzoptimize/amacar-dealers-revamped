@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import DashboardStats from "@/components/common/DashboardStats/DashboardStats";
+import DashboardStats from "@/components/dashboard/DashboardStats/DashboardStats";
 import RecentVehiclesSection from "../../components/dashboard/RecentVehiclesSection/RecentVehiclesSection";
 import RecentCustomers from "@/components/dashboard/RecentCustomers/RecentCustomers";
 import QuickActions from "@/components/dashboard/QuickActions/QuickActions";

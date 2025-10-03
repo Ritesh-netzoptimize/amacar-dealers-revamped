@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import DashboardStats from '@/components/common/DashboardStats/DashboardStats';
+import DashboardStats from '@/components/dashboard/DashboardStats/DashboardStats';
 import LiveAuctionsContainer from '@/components/live-auctions/LiveAuctionsContainer';
 import Pagination from '@/components/common/Pagination/Pagination';
 import FilterTabs from '@/components/filters/LiveAuctionFilterTabs';
