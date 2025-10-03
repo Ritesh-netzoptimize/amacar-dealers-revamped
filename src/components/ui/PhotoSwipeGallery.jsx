@@ -69,7 +69,7 @@ const PhotoSwipeGallery = ({
         {/* Add all images to the gallery for PhotoSwipe navigation */}
         {images.slice(1).map((image, index) => (
           <Item
-            key={index + 1}
+            key={index}
             original={image}
             thumbnail={image}
             width="1200"
@@ -77,8 +77,23 @@ const PhotoSwipeGallery = ({
             alt={`${vehicleName} - Image ${index + 2}`}
           >
             {({ ref, open }) => (
-              <div ref={ref} onClick={open} style={{ display: 'none' }}>
-                <img src={image} alt={`${vehicleName} - Image ${index + 2}`} />
+              <div 
+                ref={ref} 
+                onClick={open} 
+                className="absolute inset-0 opacity-0 pointer-events-none -z-10"
+                style={{ 
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0
+                }}
+              >
+                <img 
+                  src={image} 
+                  alt={`${vehicleName} - Image ${index + 2}`}
+                  className="w-full h-full object-cover"
+                />
               </div>
             )}
           </Item>
