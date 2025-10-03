@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DashboardStats from '@/components/dashboard/DashboardStats/DashboardStats';
 import LiveAuctionsContainer from '@/components/live-auctions/LiveAuctionsContainer';
+import LiveAuctionsSkeleton from '@/components/skeletons/LiveAuctions/LiveAuctionsSkeleton';
 import Pagination from '@/components/common/Pagination/Pagination';
 import FilterTabs from '@/components/filters/LiveAuctionFilterTabs';
 
@@ -168,33 +169,13 @@ const LiveAuctions = () => {
     setIsFilterLoading(false);
   };
 
-  // Simulate data loading - replace with actual API calls
+  // Simulate data loading with 500ms timeout
   useEffect(() => {
-    const loadLiveAuctionsData = async () => {
-      try {
-        // TODO: Replace with actual API calls
-        // Example:
-        // const [statsData, auctionsData] = await Promise.all([
-        //   fetchLiveAuctionsStats(),
-        //   fetchLiveAuctions()
-        // ]);
-        
-        // Simulate API calls for different sections
-        await Promise.all([
-          // Simulate stats loading
-          new Promise(resolve => setTimeout(resolve, 800)),
-          // Simulate auctions loading
-          new Promise(resolve => setTimeout(resolve, 1200))
-        ]);
-        
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error loading live auctions data:', error);
-        setIsLoading(false);
-      }
-    };
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
 
-    loadLiveAuctionsData();
+    return () => clearTimeout(timer);
   }, []);
 
   // Animation variants
@@ -234,96 +215,102 @@ const LiveAuctions = () => {
   };
 
   return (
-    <motion.div 
-      className="min-h-screen bg-gray-50 pt-20 px-4 md:px-6"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      <div className="p-6">
-        {/* Header Section */}
+    <>
+      {isLoading ? (
+        <LiveAuctionsSkeleton />
+      ) : (
         <motion.div 
-          className="mb-8"
-          variants={headerVariants}
+          className="min-h-screen bg-gray-50 pt-20 px-4 md:px-6"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
         >
-          <motion.h1 
-            className="text-3xl font-bold text-neutral-900 mb-2"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            Live Auctions
-          </motion.h1>
-          <motion.p 
-            className="text-neutral-600"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            Monitor and participate in live vehicle auctions. Place your bids and track real-time activity.
-          </motion.p>
-        </motion.div>
+          <div className="p-6">
+            {/* Header Section */}
+            <motion.div 
+              className="mb-8"
+              variants={headerVariants}
+            >
+              <motion.h1 
+                className="text-3xl font-bold text-neutral-900 mb-2"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                Live Auctions
+              </motion.h1>
+              <motion.p 
+                className="text-neutral-600"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                Monitor and participate in live vehicle auctions. Place your bids and track real-time activity.
+              </motion.p>
+            </motion.div>
 
-        {/* Statistics Cards */}
-        <motion.div variants={statsVariants}>
-          <DashboardStats />
-        </motion.div>
+            {/* Statistics Cards */}
+            <motion.div variants={statsVariants}>
+              <DashboardStats />
+            </motion.div>
 
-        {/* Filter Tabs */}
-        <motion.div 
-          className="mt-8 flex items-center justify-between"
-          variants={statsVariants}
-        >
-          <FilterTabs 
-            activeFilter={activeFilter}
-            onFilterChange={handleFilterChange}
-            isLoading={isFilterLoading}
-            className=""
-          />
-          
-          {/* Results Count */}
-          <motion.div 
-            className="flex items-center justify-between mb-4"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-          >
-            <p className="text-sm text-neutral-600">
-              Showing {filteredAuctions.length} auction{filteredAuctions.length !== 1 ? 's' : ''}
-              {activeFilter !== 'allTime' && (
-                <span className="ml-1 text-neutral-500">
-                  ({activeFilter === 'today' ? 'today' : 
-                    activeFilter === 'thisWeek' ? 'this week' : 
-                    activeFilter === 'thisMonth' ? 'this month' : 
-                    'passed'})
-                </span>
-              )}
-            </p>
-          </motion.div>
-        </motion.div>
+            {/* Filter Tabs */}
+            <motion.div 
+              className="mt-8 flex items-center justify-between"
+              variants={statsVariants}
+            >
+              <FilterTabs 
+                activeFilter={activeFilter}
+                onFilterChange={handleFilterChange}
+                isLoading={isFilterLoading}
+                className=""
+              />
+              
+              {/* Results Count */}
+              <motion.div 
+                className="flex items-center justify-between mb-4"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+              >
+                <p className="text-sm text-neutral-600">
+                  Showing {filteredAuctions.length} auction{filteredAuctions.length !== 1 ? 's' : ''}
+                  {activeFilter !== 'allTime' && (
+                    <span className="ml-1 text-neutral-500">
+                      ({activeFilter === 'today' ? 'today' : 
+                        activeFilter === 'thisWeek' ? 'this week' : 
+                        activeFilter === 'thisMonth' ? 'this month' : 
+                        'passed'})
+                    </span>
+                  )}
+                </p>
+              </motion.div>
+            </motion.div>
 
-        {/* Live Auctions Grid */}
-        <motion.div 
-          className="mt-8"
-          variants={statsVariants}
-        >
-          <LiveAuctionsContainer auctions={currentAuctions} />
-        </motion.div>
+            {/* Live Auctions Grid */}
+            <motion.div 
+              className="mt-8"
+              variants={statsVariants}
+            >
+              <LiveAuctionsContainer auctions={currentAuctions} />
+            </motion.div>
 
-        {/* Pagination */}
-        <motion.div 
-          className="flex justify-center mt-8"
-          variants={statsVariants}
-        >
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            className="w-full max-w-md mt-6 mb-4"
-          />
+            {/* Pagination */}
+            <motion.div 
+              className="flex justify-center mt-8"
+              variants={statsVariants}
+            >
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                className="w-full max-w-md mt-6 mb-4"
+              />
+            </motion.div>
+          </div>
         </motion.div>
-      </div>
-    </motion.div>
+      )}
+    </>
   );
 };
 
