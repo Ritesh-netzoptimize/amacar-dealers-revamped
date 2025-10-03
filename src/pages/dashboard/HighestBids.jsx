@@ -277,36 +277,34 @@ const HighestBids = () => {
       initial="hidden"
       animate="visible"
     >
-      <div className="p-6">
-        {/* Header Section */}
-        <motion.div className="mb-8" variants={headerVariants}>
-          <motion.h1
-            className="text-3xl font-bold text-neutral-900 mb-2"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            Highest Bids
-          </motion.h1>
-          <motion.p
-            className="text-neutral-600"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            View your highest bids and track their status.
-          </motion.p>
-        </motion.div>
+      {!isLoading ? (
+        <div className="p-6">
+          {/* Header Section */}
+          <motion.div className="mb-8" variants={headerVariants}>
+            <motion.h1
+              className="text-3xl font-bold text-neutral-900 mb-2"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              Highest Bids
+            </motion.h1>
+            <motion.p
+              className="text-neutral-600"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              View your highest bids and track their status.
+            </motion.p>
+          </motion.div>
 
-        {/* Statistics Cards */}
-        {!isLoading && (
+          {/* Statistics Cards */}
           <motion.div variants={statsVariants}>
             <DashboardStats />
           </motion.div>
-        )}
 
-        {/* Filter Tabs */}
-        {!isLoading && (
+          {/* Filter Tabs */}
           <motion.div className="mt-8" variants={statsVariants}>
             <FilterTabs
               activeFilter={activeFilter}
@@ -315,19 +313,13 @@ const HighestBids = () => {
               className="mb-6"
             />
           </motion.div>
-        )}
 
-        {/* Highest Bids Grid */}
-        <motion.div className="mt-8" variants={statsVariants}>
-          {isLoading ? (
-            <HighestBidsSkeleton />
-          ) : (
+          {/* Highest Bids Grid */}
+          <motion.div className="mt-8" variants={statsVariants}>
             <HighestBidsContainer auctions={currentAuctions} />
-          )}
-        </motion.div>
+          </motion.div>
 
-        {/* Pagination */}
-        {!isLoading && (
+          {/* Pagination */}
           <motion.div
             className="flex justify-center mt-8"
             variants={statsVariants}
@@ -339,8 +331,10 @@ const HighestBids = () => {
               className="w-full max-w-md mt-6 mb-4"
             />
           </motion.div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <HighestBidsSkeleton />
+      )}
     </motion.div>
   );
 };

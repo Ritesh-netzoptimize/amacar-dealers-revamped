@@ -239,36 +239,36 @@ const WonAuctions = () => {
       initial="hidden"
       animate="visible"
     >
-      <div className="p-6">
-        {/* Header Section */}
-        <motion.div className="mb-8" variants={headerVariants}>
-          <motion.h1
-            className="text-3xl font-bold text-neutral-900 mb-2"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            Won Auctions
-          </motion.h1>
-          <motion.p
-            className="text-neutral-600"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            View your won auctions and track their status.
-          </motion.p>
-        </motion.div>
+      {isLoading ? (
+        <WonAuctionsSkeleton />
+      ) : (
+        <div className="p-6">
+          {/* Header Section */}
+          <motion.div className="mb-8" variants={headerVariants}>
+            <motion.h1
+              className="text-3xl font-bold text-neutral-900 mb-2"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              Won Auctions
+            </motion.h1>
+            <motion.p
+              className="text-neutral-600"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              View your won auctions and track their status.
+            </motion.p>
+          </motion.div>
 
-        {/* Statistics Cards */}
-        {!isLoading && (
+          {/* Statistics Cards */}
           <motion.div variants={statsVariants}>
             <DashboardStats />
           </motion.div>
-        )}
 
-        {/* Filter Tabs */}
-        {!isLoading && (
+          {/* Filter Tabs */}
           <motion.div className="mt-8" variants={statsVariants}>
             <FilterTabs
               activeFilter={activeFilter}
@@ -303,31 +303,25 @@ const WonAuctions = () => {
               </p>
             </motion.div>
           </motion.div>
-        )}
-        {/* Won Auctions Grid */}
-        <motion.div className="mt-8" variants={statsVariants}>
-          {isLoading ? (
-            <WonAuctionsSkeleton />
-          ) : (
+          {/* Won Auctions Grid */}
+          <motion.div className="mt-8" variants={statsVariants}>
             <WonAuctionsContainer auctions={currentAuctions} />
-          )}
-        </motion.div>
-
-        {/* Pagination */}
-        {!isLoading && (
-          <motion.div
-            className="flex justify-center mt-8"
-            variants={statsVariants}
-          >
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              className="w-full max-w-md mt-6 mb-4"
-            />
           </motion.div>
-        )}
-      </div>
+
+          {/* Pagination */}
+            <motion.div
+              className="flex justify-center mt-8"
+              variants={statsVariants}
+            >
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                className="w-full max-w-md mt-6 mb-4"
+              />
+            </motion.div>
+        </div>
+      )}
     </motion.div>
   );
 };

@@ -272,96 +272,90 @@ const MyBids = () => {
       initial="hidden"
       animate="visible"
     >
-      <div className="p-6">
-        {/* Header Section */}
-        <motion.div className="mb-8" variants={headerVariants}>
-          <motion.h1
-            className="text-3xl font-bold text-neutral-900 mb-2"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            My Bids
-          </motion.h1>
-          <motion.p
-            className="text-neutral-600"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            View your bids and track their status.
-          </motion.p>
-        </motion.div>
-
-        {/* Statistics Cards */}
-        {!isLoading && (
-          <motion.div variants={statsVariants}>
-            <DashboardStats />
-          </motion.div>
-        )}
-
-        {/* Filter Tabs */}
-        {!isLoading && (
-          <motion.div className="mt-8" variants={statsVariants}>
-            <FilterTabs
-              activeFilter={activeFilter}
-              onFilterChange={handleFilterChange}
-              isLoading={isFilterLoading}
-              className="mb-6"
-            />
-
-            {/* Results Count */}
-            <motion.div
-              className="flex items-center justify-between mb-4"
-              initial={{ opacity: 0, y: 10 }}
+      {isLoading ? (
+        <MyBidsSkeleton />
+      ) : (
+        <div className="p-6">
+          {/* Header Section */}
+          <motion.div className="mb-8" variants={headerVariants}>
+            <motion.h1
+              className="text-3xl font-bold text-neutral-900 mb-2"
+              initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <p className="text-sm text-neutral-600">
-                Showing {filteredAuctions.length} auction
-                {filteredAuctions.length !== 1 ? "s" : ""}
-                {activeFilter !== "allTime" && (
-                  <span className="ml-1 text-neutral-500">
-                    (
-                    {activeFilter === "today"
-                      ? "today"
-                      : activeFilter === "thisWeek"
-                      ? "this week"
-                      : activeFilter === "thisMonth"
-                      ? "this month"
-                      : "passed"}
-                    )
-                  </span>
-                )}
-              </p>
+              My Bids
+            </motion.h1>
+            <motion.p
+              className="text-neutral-600"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              View your bids and track their status.
+            </motion.p>
+          </motion.div>
+
+          {/* Statistics Cards */}
+            <motion.div variants={statsVariants}>
+              <DashboardStats />
             </motion.div>
-          </motion.div>
-        )}
 
-        {/* My Bids Grid */}
-        <motion.div className="mt-8" variants={statsVariants}>
-          {isLoading ? (
-            <MyBidsSkeleton />
-          ) : (
-            <MyBidsContainer auctions={currentAuctions} />
-          )}
-        </motion.div>
+          {/* Filter Tabs */}
+            <motion.div className="mt-8" variants={statsVariants}>
+              <FilterTabs
+                activeFilter={activeFilter}
+                onFilterChange={handleFilterChange}
+                isLoading={isFilterLoading}
+                className="mb-6"
+              />
 
-        {/* Pagination */}
-        {!isLoading && (
-          <motion.div
-            className="flex justify-center mt-8"
-            variants={statsVariants}
-          >
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              className="w-full max-w-md mt-6 mb-4"
-            />
+              {/* Results Count */}
+              <motion.div
+                className="flex items-center justify-between mb-4"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+              >
+                <p className="text-sm text-neutral-600">
+                  Showing {filteredAuctions.length} auction
+                  {filteredAuctions.length !== 1 ? "s" : ""}
+                  {activeFilter !== "allTime" && (
+                    <span className="ml-1 text-neutral-500">
+                      (
+                      {activeFilter === "today"
+                        ? "today"
+                        : activeFilter === "thisWeek"
+                        ? "this week"
+                        : activeFilter === "thisMonth"
+                        ? "this month"
+                        : "passed"}
+                      )
+                    </span>
+                  )}
+                </p>
+              </motion.div>
+            </motion.div>
+
+          {/* My Bids Grid */}
+          <motion.div className="mt-8" variants={statsVariants}>
+              <MyBidsContainer auctions={currentAuctions} />
           </motion.div>
-        )}
-      </div>
+
+          {/* Pagination */}
+            <motion.div
+              className="flex justify-center mt-8"
+              variants={statsVariants}
+            >
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+                className="w-full max-w-md mt-6 mb-4"
+              />
+            </motion.div>
+        </div>
+      )}
     </motion.div>
   );
 };
