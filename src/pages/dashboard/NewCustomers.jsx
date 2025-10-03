@@ -6,6 +6,8 @@ import NewCustomersContainer from "@/components/new-customers/NewCustomersContai
 import NewCustomersSort from "@/components/sorts/NewCustomersSort";
 import { sortNewCustomers } from "@/utils/newCustomersSorting";
 import NewCustomersSkeleton from "@/components/skeletons/NewCustomers/NewCustomersSkeleton";
+import api from "@/lib/api";
+import toast from "react-hot-toast";
 
 const NewCustomers = () => {
   const navigate = useNavigate();
@@ -13,16 +15,50 @@ const NewCustomers = () => {
   const [sortBy, setSortBy] = useState("join-date-desc");
   const [isSorting, setIsSorting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [customers, setCustomers] = useState([]);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    per_page: 10,
+    total: 0,
+    total_pages: 0,
+    has_next: false,
+    has_prev: false
+  });
+  const [error, setError] = useState(null);
   const itemsPerPage = 10;
 
-  // Simulate loading with 500ms timeout
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
+  // Fetch new customers from API
+  const fetchNewCustomers = async (page = 1, perPage = 10) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const response = await api.get('/new-customers', {
+        params: {
+          page,
+          per_page: perPage
+        }
+      });
 
-    return () => clearTimeout(timer);
-  }, []);
+      if (response.data.success) {
+        setCustomers(response.data.data);
+        setPagination(response.data.pagination);
+      } else {
+        throw new Error('Failed to fetch new customers');
+      }
+    } catch (error) {
+      console.error('Error fetching new customers:', error);
+      setError(error.message || 'Failed to fetch new customers');
+      toast.error('Failed to load new customers. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch data on component mount and when page changes
+  useEffect(() => {
+    fetchNewCustomers(currentPage, itemsPerPage);
+  }, [currentPage]);
 
   // Animation variants
   const pageVariants = {
@@ -70,151 +106,36 @@ const NewCustomers = () => {
     },
   };
 
-  // Extended dummy customer data for pagination testing
-  const allCustomers = [
-    {
-      id: 1,
-      name: "Neeraj Kumar",
-      vehicle: "Jeep Grand Cherokee",
-      distance: "520 miles",
-      offer: "$7,725",
-      email: "neeraj@example.com",
-      phone: "+1 (555) 123-4567",
-      address: "123 Main St, New York, NY 10001",
-      joinDate: "2024-01-15T09:30:00",
-    },
-    {
-      id: 2,
-      name: "Ritesh",
-      vehicle: "Jeep Grand Cherokee",
-      distance: "20,000 miles",
-      offer: "$7,725",
-      email: "ritesh@example.com",
-      phone: "+1 (555) 234-5678",
-      address: "456 Oak Ave, Los Angeles, CA 90210",
-      joinDate: "2024-01-14T14:15:00",
-    },
-    {
-      id: 3,
-      name: "random email",
-      vehicle: "Jeep Grand Cherokee",
-      distance: "25,600 miles",
-      offer: "$7,725",
-      email: "random@example.com",
-      phone: "+1 (555) 345-6789",
-      address: "789 Pine Rd, Chicago, IL 60601",
-      joinDate: "2024-01-13T16:45:00",
-    },
-    {
-      id: 4,
-      name: "KL rahul",
-      vehicle: "Jeep Grand Cherokee",
-      distance: "2,500 miles",
-      offer: "$7,725",
-      email: "kl.rahul@example.com",
-      phone: "+1 (555) 456-7890",
-      address: "321 Elm St, Houston, TX 77001",
-      joinDate: "2024-01-12T11:20:00",
-    },
-    {
-      id: 5,
-      name: "ritesh chopra",
-      vehicle: "Jeep Grand Cherokee",
-      distance: "25,000 miles",
-      offer: "$7,725",
-      email: "ritesh.chopra@example.com",
-      phone: "+1 (555) 567-8901",
-      address: "654 Maple Dr, Phoenix, AZ 85001",
-      joinDate: "2024-01-11T08:45:00",
-    },
-    {
-      id: 6,
-      name: "Sarah Johnson",
-      vehicle: "BMW X5",
-      distance: "15,200 miles",
-      offer: "$12,500",
-      email: "sarah.j@example.com",
-      phone: "+1 (555) 678-9012",
-      address: "987 Cedar Ln, Philadelphia, PA 19101",
-      joinDate: "2024-01-10T10:00:00",
-    },
-    {
-      id: 7,
-      name: "Michael Chen",
-      vehicle: "Audi Q7",
-      distance: "8,900 miles",
-      offer: "$15,200",
-      email: "m.chen@example.com",
-      phone: "+1 (555) 789-0123",
-      address: "147 Birch St, San Antonio, TX 78201",
-      joinDate: "2024-01-09T10:00:00",
-    },
-    {
-      id: 8,
-      name: "Emily Rodriguez",
-      vehicle: "Mercedes GLE",
-      distance: "12,300 miles",
-      offer: "$18,750",
-      email: "emily.r@example.com",
-      phone: "+1 (555) 890-1234",
-      address: "258 Willow Way, San Diego, CA 92101",
-      joinDate: "2024-01-08T10:00:00",
-    },
-    {
-      id: 9,
-      name: "David Kim",
-      vehicle: "Lexus RX",
-      distance: "6,500 miles",
-      offer: "$14,300",
-      email: "d.kim@example.com",
-      phone: "+1 (555) 901-2345",
-      address: "369 Spruce Ave, Dallas, TX 75201",
-      joinDate: "2024-01-07T10:00:00",
-    },
-    {
-      id: 10,
-      name: "Lisa Thompson",
-      vehicle: "Cadillac Escalade",
-      distance: "18,700 miles",
-      offer: "$22,100",
-      email: "lisa.t@example.com",
-      phone: "+1 (555) 012-3456",
-      address: "741 Poplar Blvd, San Jose, CA 95101",
-      joinDate: "2024-01-06T10:00:00",
-    },
-    {
-      id: 11,
-      name: "James Wilson",
-      vehicle: "Ford F-150",
-      distance: "30,200 miles",
-      offer: "$9,800",
-      email: "j.wilson@example.com",
-      phone: "+1 (555) 123-4567",
-      address: "852 Ash St, Austin, TX 78701",
-      joinDate: "2024-01-05T10:00:00",
-    },
-    {
-      id: 12,
-      name: "Maria Garcia",
-      vehicle: "Honda Pilot",
-      distance: "22,100 miles",
-      offer: "$11,200",
-      email: "maria.g@example.com",
-      phone: "+1 (555) 234-5678",
-      address: "963 Hickory Rd, Jacksonville, FL 32201",
-      joinDate: "2024-01-04T10:00:00",
-    },
-  ];
+  // Transform API data to match component expectations
+  const transformedCustomers = useMemo(() => {
+    return customers.map(customer => ({
+      id: customer.id,
+      name: customer.name,
+      email: customer.email,
+      phone: customer.phone,
+      avatar: customer.avatar,
+      address: customer.location?.address || 'Address not available',
+      distance: `${Math.round(customer.distance)} miles`,
+      vehicle: customer.vehicle?.title || 'Vehicle not available',
+      year: customer.vehicle?.year || '',
+      make: customer.vehicle?.make || '',
+      model: customer.vehicle?.model || '',
+      vin: customer.vehicle?.vin || '',
+      mileage: customer.vehicle?.mileage || '0',
+      offer: `$${customer.vehicle?.cash_offer?.toLocaleString() || '0'}`,
+      images: customer.vehicle?.images || [],
+      primaryImage: customer.vehicle?.primary_image || '',
+      joinDate: customer.created_at,
+      lastActivity: customer.last_activity,
+      lat: customer.location?.lat,
+      lon: customer.location?.lon
+    }));
+  }, [customers]);
 
-  // Sort and paginate customers
+  // Sort customers (client-side sorting for now)
   const sortedCustomers = useMemo(() => {
-    return sortNewCustomers(allCustomers, sortBy);
-  }, [allCustomers, sortBy]);
-
-  const totalPages = Math.ceil(sortedCustomers.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentCustomers = sortedCustomers.slice(startIndex, endIndex);
+    return sortNewCustomers(transformedCustomers, sortBy);
+  }, [transformedCustomers, sortBy]);
 
   // Handler functions
   const handleViewCustomer = (customerId) => {
@@ -255,7 +176,7 @@ const NewCustomers = () => {
       // Simulate sorting delay for better UX
       setTimeout(() => {
         setIsSorting(false);
-      }, 500);
+      }, 300);
     }
   };
 
@@ -299,12 +220,27 @@ const NewCustomers = () => {
         >
           {isLoading || isSorting ? (
             <NewCustomersSkeleton />
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Failed to load customers
+                </h3>
+                <p className="text-gray-600 mb-4">{error}</p>
+                <button
+                  onClick={() => fetchNewCustomers(currentPage, itemsPerPage)}
+                  className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
           ) : (
             <NewCustomersContainer
-              customers={currentCustomers}
+              customers={sortedCustomers}
               currentPage={currentPage}
-              totalPages={totalPages}
-              totalCount={allCustomers.length}
+              totalPages={pagination.total_pages}
+              totalCount={pagination.total}
               onPageChange={handlePageChange}
               onViewCustomer={handleViewCustomer}
               onViewVehicle={handleViewVehicle}
@@ -316,7 +252,7 @@ const NewCustomers = () => {
 
         {/* Pagination */}
         <AnimatePresence mode="wait">
-          {!isLoading && !isSorting && totalPages > 1 && (
+          {!isLoading && !isSorting && !error && pagination.total_pages > 1 && (
             <motion.div
               className="flex justify-center mt-8 pt-6 border-t border-neutral-100"
               variants={paginationVariants}
@@ -326,7 +262,7 @@ const NewCustomers = () => {
             >
               <Pagination
                 currentPage={currentPage}
-                totalPages={totalPages}
+                totalPages={pagination.total_pages}
                 onPageChange={handlePageChange}
                 className="w-full max-w-md mb-4"
               />
