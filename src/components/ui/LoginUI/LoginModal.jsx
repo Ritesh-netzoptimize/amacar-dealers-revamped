@@ -270,13 +270,27 @@ export default function LoginModal({
   // Function to reset modal to default login state
   function resetModalToLogin() {
     console.log('🔄 [LoginModal] Resetting modal to login state');
+    
+    // Reset modal state
     setIsForgotPasswordMode(false);
     setPhase("form");
     setResetToken(null);
     setTwoFactorData(null);
-    setShouldResetEmailValidation(true); // Reset email validation state
+    
+    // Reset password visibility states
+    setShowPassword(false);
+    setShowNewPassword(false);
+    
+    // Reset email validation state
+    setShouldResetEmailValidation(true);
+    
+    // Clear all form values and errors (this also clears tooltip errors)
     resetForm();
-    dispatch(clearError()); // Clear Redux error state
+    
+    // Clear Redux error state
+    dispatch(clearError());
+    
+    console.log('✅ [LoginModal] Modal reset complete - all states cleared');
   }
 
   // Enhanced onClose handler that resets modal to login mode
@@ -328,6 +342,23 @@ export default function LoginModal({
       setShouldResetEmailValidation(false);
     }
   }, [shouldResetEmailValidation]);
+
+  // Reset modal state when it opens
+  useEffect(() => {
+    if (isOpen) {
+      console.log('🔄 [LoginModal] Modal opened - resetting to clean state');
+      resetModalToLogin();
+    }
+  }, [isOpen]);
+
+  // Cleanup when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      console.log('🔄 [LoginModal] Modal closed - performing cleanup');
+      // Additional cleanup if needed
+      setShouldResetEmailValidation(true);
+    }
+  }, [isOpen]);
 
   // Reset email validation when email field becomes empty
   useEffect(() => {

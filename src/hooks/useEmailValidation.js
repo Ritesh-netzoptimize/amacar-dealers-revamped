@@ -32,7 +32,7 @@ const useEmailValidation = (email, isRegisterMode, shouldReset = false) => {
   const checkEmailAvailability = useCallback(async (emailToCheck) => {
     console.log('🔍 [EmailValidation] Starting email availability check for:', emailToCheck);
     try {
-      const response = await api.post('/user/check-email', { email: emailToCheck });
+      const response = await api.post('/auth/check-email', { email: emailToCheck });
       console.log('📡 [EmailValidation] API response received:', response.data);
       
       if (!response.data.success) {
