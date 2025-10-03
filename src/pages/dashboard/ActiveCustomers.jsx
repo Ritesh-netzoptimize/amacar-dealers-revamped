@@ -1,17 +1,30 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Pagination from '@/components/common/Pagination/Pagination';
 import ActiveCustomersContainer from '@/components/active-customers/ActiveCustomersContainer';
+import ActiveCustomersSkeleton from '@/components/skeletons/ActiveCustomers/ActiveCustomersSkeleton';
 import NewCustomersSort from '@/components/sorts/NewCustomersSort';
 import { sortNewCustomers } from '@/utils/newCustomersSorting';
+
+// current customers = paginated customers
 
 const ActiveCustomers = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState('join-date-desc');
   const [isSorting, setIsSorting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const itemsPerPage = 10;
+
+  // Simulate loading with 500ms timeout
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Animation variants
   const pageVariants = {
@@ -283,22 +296,26 @@ const ActiveCustomers = () => {
           variants={contentVariants}
           key={currentPage} // Re-animate when page changes
         >
-          <ActiveCustomersContainer 
-            customers={currentCustomers}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalCount={allCustomers.length}
-            onPageChange={handlePageChange}
-            onViewCustomer={handleViewCustomer}
-            onViewVehicle={handleViewVehicle}
-            onScheduleAppointment={handleScheduleAppointment}
-            onContact={handleContact}
-          />
+          {isLoading || isSorting ? (
+            <ActiveCustomersSkeleton />
+          ) : (
+            <ActiveCustomersContainer 
+              customers={currentCustomers}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalCount={allCustomers.length}
+              onPageChange={handlePageChange}
+              onViewCustomer={handleViewCustomer}
+              onViewVehicle={handleViewVehicle}
+              onScheduleAppointment={handleScheduleAppointment}
+              onContact={handleContact}
+            />
+          )}
         </motion.div>
 
         {/* Pagination */}
         <AnimatePresence mode="wait">
-          {totalPages > 1 && (
+          {!isLoading && !isSorting && totalPages > 1 && (
             <motion.div 
               className="flex justify-center mt-8 pt-6 border-t border-neutral-100"
               variants={paginationVariants}
