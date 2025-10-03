@@ -25,7 +25,7 @@ const LiveAuctions = () => {
   const itemsPerPage = 4; // Show 4 vehicles per page
 
   // Live Auctions API function using the imported api instance
-  const getLiveAuctions = async (page = 1, perPage = 4, filters = {}) => {
+  const getLiveAuctions = async (page = 1, perPage = 4) => {
     try {
       const response = await api.get('/live-auctions', {
         params: {
@@ -71,38 +71,14 @@ const LiveAuctions = () => {
   const fetchAuctions = async (page = 1, filter = 'allTime') => {
     try {
       setError(null);
-      const filters = {};
       
-      // Add filter parameters based on active filter
-      // Note: The API might not support all these filters, so we'll handle them client-side if needed
-      if (filter !== 'allTime') {
-        // Map frontend filter names to API parameters
-        switch (filter) {
-          case 'today':
-            // For today's auctions, we might need to filter by date
-            break;
-          case 'thisWeek':
-            // For this week's auctions
-            break;
-          case 'thisMonth':
-            // For this month's auctions
-            break;
-          case 'passed':
-            // For passed auctions - might need to check auction_status
-            filters.status = 'passed';
-            break;
-          default:
-            break;
-        }
-      }
-      
-      const response = await getLiveAuctions(page, itemsPerPage, filters);
+      const response = await getLiveAuctions(page, itemsPerPage);
       
       if (response.success) {
         let transformedData = transformAuctionData(response.data);
         
-        // Apply client-side filtering if API doesn't support it
-        if (filter !== 'allTime' && filter !== 'passed') {
+        // Apply client-side filtering for all filters since API doesn't support them
+        if (filter !== 'allTime') {
           transformedData = applyClientSideFilter(transformedData, filter);
         }
         
