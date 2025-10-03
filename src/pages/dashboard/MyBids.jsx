@@ -202,7 +202,7 @@ const MyBids = () => {
 
   // Simulate data loading - replace with actual API calls
   useEffect(() => {
-    const loadmyBidsData = async () => {
+    const loadMyBidsData = async () => {
       try {
         // TODO: Replace with actual API calls
         // Example:
@@ -226,7 +226,7 @@ const MyBids = () => {
       }
     };
 
-    loadmyBidsData();
+    loadMyBidsData();
   }, []);
 
   // Animation variants
