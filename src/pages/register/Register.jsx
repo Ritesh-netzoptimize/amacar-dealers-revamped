@@ -280,16 +280,16 @@ const Register = () => {
         </div>
 
         {/* Right Column - Form */}
-        <div className="w-full lg:w-3/5 flex flex-col">
+        <div className="w-full lg:w-3/5 flex flex-col bg-[#fffcf8]">
           <div className="flex-1 flex items-center justify-center p-4 lg:p-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="w-full max-w-2xl"
+              className="w-full max-w-4xl"
             >
               {/* Form Card */}
-              <div className="bg-white rounded-3xl shadow-soft border border-neutral-100 overflow-hidden min-h-[800px] max-h-[900px] flex flex-col">
+              <div className="bg-[#fffcf8] overflow-hidden min-h-[800px] max-h-[900px] flex flex-col">
                 {/* Mobile Progress Stepper */}
                 <div className="lg:hidden p-4 border-b border-neutral-200 flex-shrink-0">
                   <ProgressStepper 
@@ -315,7 +315,7 @@ const Register = () => {
                 </div>
 
                 {/* Navigation Buttons - Below Form */}
-                <div className="flex-shrink-0 p-6 lg:p-8 border-t border-neutral-200 bg-neutral-50">
+                <div className="flex-shrink-0 p-6 lg:p-8 ">
                   <div className="flex justify-between items-center">
                     <button
                       onClick={handlePrevious}
