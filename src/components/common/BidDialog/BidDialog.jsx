@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  DollarSign, 
-  CheckCircle, 
-  XCircle, 
-  Loader2, 
-  Clock, 
-  TrendingUp, 
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  DollarSign,
+  CheckCircle,
+  XCircle,
+  Loader2,
+  Clock,
+  TrendingUp,
   Shield,
   AlertTriangle,
-  Gavel
-} from 'lucide-react';
+  Gavel,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -18,48 +18,49 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { formatBidAmount } from '@/lib/utils';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { formatBidAmount } from "@/lib/utils";
+import api from "@/lib/api";
 
-const BidDialog = ({ 
-  isOpen, 
-  onClose, 
-  vehicle, 
+const BidDialog = ({
+  isOpen,
+  onClose,
+  vehicle,
   onBidSuccess,
   formatRemainingTime,
-  remainingTime
+  remainingTime,
 }) => {
-  const [bidAmount, setBidAmount] = useState('');
+  const [bidAmount, setBidAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [validationError, setValidationError] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
+  const [validationError, setValidationError] = useState("");
 
   const handleAmountChange = (e) => {
     const value = e.target.value;
     // Only allow numbers and one decimal point
-    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
       setBidAmount(value);
-      setValidationError('');
+      setValidationError("");
     }
   };
 
   // Format input with commas for better readability
   const formatInputValue = (value) => {
-    if (!value) return '';
-    const numericValue = value.replace(/[^0-9.]/g, '');
-    const parts = numericValue.split('.');
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return parts.join('.');
+    if (!value) return "";
+    const numericValue = value.replace(/[^0-9.]/g, "");
+    const parts = numericValue.split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
   };
 
   const parseCurrencyString = (currencyString) => {
-    if (typeof currencyString === 'number') return currencyString;
-    if (typeof currencyString === 'string') {
+    if (typeof currencyString === "number") return currencyString;
+    if (typeof currencyString === "string") {
       // Remove $ and commas, then parse
-      return parseFloat(currencyString.replace(/[$,]/g, ''));
+      return parseFloat(currencyString.replace(/[$,]/g, ""));
     }
     return 0;
   };
@@ -67,11 +68,15 @@ const BidDialog = ({
   const validateBid = (amount) => {
     const numericAmount = parseFloat(amount);
     if (!amount || isNaN(numericAmount) || numericAmount <= 0) {
-      return 'Please enter a valid bid amount';
+      return "Please enter a valid bid amount";
     }
-    const cashOfferAmount = parseCurrencyString(vehicle.cashOffer || vehicle.cash_offer?.offer_amount);
+    const cashOfferAmount = parseCurrencyString(
+      vehicle.cashOffer || vehicle.cash_offer?.offer_amount
+    );
     if (numericAmount <= cashOfferAmount) {
-      return `Bid amount must be greater than the current cash offer of ${formatBidAmount(cashOfferAmount)}`;
+      return `Bid amount must be greater than the current cash offer of ${formatBidAmount(
+        cashOfferAmount
+      )}`;
     }
     return null;
   };
@@ -84,28 +89,24 @@ const BidDialog = ({
     }
 
     setIsLoading(true);
-    setValidationError('');
+    setValidationError("");
     setIsError(false);
-    setErrorMessage('');
+    setErrorMessage("");
 
     try {
-      // Simulate API call with setTimeout
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate 80% success rate
-          if (Math.random() > 0.2) {
-            resolve();
-          } else {
-            reject(new Error('Bid submission failed. Please try again.'));
-          }
-        }, 2000);
+      const response = await api.post("/bids", {
+        params: {
+          product_id: vehicle.id,
+          bid_amount: bidAmount,
+        },
       });
-
-      setIsSuccess(true);
-      setTimeout(() => {
-        onBidSuccess?.(parseFloat(bidAmount));
-        handleClose();
-      }, 1500);
+      if (response.data.success) {
+        setIsSuccess(true);
+        setTimeout(() => {
+          onBidSuccess?.(parseFloat(bidAmount));
+          handleClose();
+        }, 1500);
+      }
     } catch (error) {
       setIsError(true);
       setErrorMessage(error.message);
@@ -115,20 +116,20 @@ const BidDialog = ({
   };
 
   const handleClose = () => {
-    setBidAmount('');
+    setBidAmount("");
     setIsLoading(false);
     setIsSuccess(false);
     setIsError(false);
-    setErrorMessage('');
-    setValidationError('');
+    setErrorMessage("");
+    setValidationError("");
     onClose();
   };
 
   const resetStates = () => {
     setIsSuccess(false);
     setIsError(false);
-    setErrorMessage('');
-    setValidationError('');
+    setErrorMessage("");
+    setValidationError("");
   };
 
   useEffect(() => {
@@ -137,7 +138,7 @@ const BidDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent 
+      <DialogContent
         className="sm:max-w-lg p-0 overflow-hidden"
         showCloseButton={true}
       >
@@ -162,7 +163,7 @@ const BidDialog = ({
           <div className="px-6 py-6 space-y-6">
             {/* Vehicle Info Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <motion.div 
+              <motion.div
                 className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -173,15 +174,22 @@ const BidDialog = ({
                     <DollarSign className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-green-700">Current Cash Offer</p>
+                    <p className="text-sm font-medium text-green-700">
+                      Current Cash Offer
+                    </p>
                     <p className="text-xl font-bold text-green-900">
-                      {formatBidAmount(parseCurrencyString(vehicle?.cash_offer?.offer_amount || vehicle?.cashOffer))}
+                      {formatBidAmount(
+                        parseCurrencyString(
+                          vehicle?.cash_offer?.offer_amount ||
+                            vehicle?.cashOffer
+                        )
+                      )}
                     </p>
                   </div>
                 </div>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -192,7 +200,9 @@ const BidDialog = ({
                     <Clock className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-blue-700">Time Remaining</p>
+                    <p className="text-sm font-medium text-blue-700">
+                      Time Remaining
+                    </p>
                     <p className="text-lg font-bold text-blue-900">
                       {vehicle?.timeLeft || formatRemainingTime(remainingTime)}
                     </p>
@@ -202,7 +212,7 @@ const BidDialog = ({
             </div>
 
             {/* Auction Status */}
-            <motion.div 
+            <motion.div
               className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -213,16 +223,21 @@ const BidDialog = ({
                   <TrendingUp className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-amber-700">Auction Status</p>
+                  <p className="text-sm font-medium text-amber-700">
+                    Auction Status
+                  </p>
                   <p className="text-base font-semibold text-amber-900">
-                    {vehicle?.auctionStatus === 'active' || vehicle?.status === 'active' ? 'Active - Bidding Open' : 'Ended - Bidding Closed'}
+                    {vehicle?.auctionStatus === "active" ||
+                    vehicle?.status === "active"
+                      ? "Active - Bidding Open"
+                      : "Ended - Bidding Closed"}
                   </p>
                 </div>
               </div>
             </motion.div>
 
             {/* Bid Amount Input */}
-            <motion.div 
+            <motion.div
               className="space-y-3"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -230,14 +245,19 @@ const BidDialog = ({
             >
               <div className="flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-orange-500" />
-                <label htmlFor="bidAmount" className="text-lg font-semibold text-neutral-800">
+                <label
+                  htmlFor="bidAmount"
+                  className="text-lg font-semibold text-neutral-800"
+                >
                   Your Bid Amount
                 </label>
               </div>
-              
+
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <span className="text-2xl font-bold text-neutral-400 group-focus-within:text-orange-500 transition-colors">$</span>
+                  <span className="text-2xl font-bold text-neutral-400 group-focus-within:text-orange-500 transition-colors">
+                    $
+                  </span>
                 </div>
                 <motion.input
                   type="text"
@@ -246,19 +266,25 @@ const BidDialog = ({
                   onChange={handleAmountChange}
                   placeholder="Enter amount..."
                   className={`w-full placeholder:text-neutral-400 pl-12 pr-4 py-4 text-xl font-semibold border-2 rounded-xl focus:outline-none focus:ring-4 transition-all duration-200 ${
-                    validationError 
-                      ? 'border-red-300 bg-red-50 focus:ring-red-200 focus:border-red-400' 
-                      : 'border-neutral-200 bg-neutral-50 focus:ring-orange-200 focus:border-orange-400 hover:border-orange-300'
-                  } ${isLoading || isSuccess ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    validationError
+                      ? "border-red-300 bg-red-50 focus:ring-red-200 focus:border-red-400"
+                      : "border-neutral-200 bg-neutral-50 focus:ring-orange-200 focus:border-orange-400 hover:border-orange-300"
+                  } ${
+                    isLoading || isSuccess
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
                   disabled={isLoading || isSuccess}
                   whileFocus={{ scale: 1.02 }}
                   transition={{ duration: 0.2 }}
                 />
                 <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
-                  <span className="text-sm text-neutral-400 font-medium">USD</span>
+                  <span className="text-sm text-neutral-400 font-medium">
+                    USD
+                  </span>
                 </div>
               </div>
-              
+
               <AnimatePresence>
                 {validationError && (
                   <motion.div
@@ -269,7 +295,9 @@ const BidDialog = ({
                     className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg"
                   >
                     <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                    <p className="text-sm text-red-700 font-medium">{validationError}</p>
+                    <p className="text-sm text-red-700 font-medium">
+                      {validationError}
+                    </p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -293,7 +321,7 @@ const BidDialog = ({
                   >
                     <CheckCircle className="w-8 h-8 text-white" />
                   </motion.div>
-                  <motion.h3 
+                  <motion.h3
                     className="text-xl font-bold text-green-800 mb-2"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -301,13 +329,17 @@ const BidDialog = ({
                   >
                     Bid Submitted Successfully!
                   </motion.h3>
-                  <motion.p 
+                  <motion.p
                     className="text-green-700 text-base"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
                   >
-                    Your bid of <span className="font-bold text-green-800">{formatBidAmount(parseFloat(bidAmount))}</span> has been placed.
+                    Your bid of{" "}
+                    <span className="font-bold text-green-800">
+                      {formatBidAmount(parseFloat(bidAmount))}
+                    </span>{" "}
+                    has been placed.
                   </motion.p>
                 </motion.div>
               )}
@@ -331,7 +363,7 @@ const BidDialog = ({
                   >
                     <XCircle className="w-8 h-8 text-white" />
                   </motion.div>
-                  <motion.h3 
+                  <motion.h3
                     className="text-xl font-bold text-red-800 mb-2"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -339,7 +371,7 @@ const BidDialog = ({
                   >
                     Bid Submission Failed
                   </motion.h3>
-                  <motion.p 
+                  <motion.p
                     className="text-red-700 text-base mb-4"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -366,7 +398,7 @@ const BidDialog = ({
             </AnimatePresence>
 
             {/* Footer */}
-            <motion.div 
+            <motion.div
               className="bg-neutral-50 py-4 border-t border-neutral-200"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -382,43 +414,49 @@ const BidDialog = ({
                   Cancel
                 </Button>
                 <motion.div
-                  whileHover={!isLoading && bidAmount && !isSuccess ? { scale: 1.05 } : {}}
-                  whileTap={!isLoading && bidAmount && !isSuccess ? { scale: 0.95 } : {}}
+                  whileHover={
+                    !isLoading && bidAmount && !isSuccess ? { scale: 1.05 } : {}
+                  }
+                  whileTap={
+                    !isLoading && bidAmount && !isSuccess ? { scale: 0.95 } : {}
+                  }
                 >
                   <Button
                     onClick={handleSubmit}
                     disabled={isLoading || !bidAmount || isSuccess}
                     className={`px-8 py-5.5 font-semibold text-white rounded-lg transition-all duration-200 ${
                       isLoading || !bidAmount || isSuccess
-                        ? 'opacity-50 cursor-not-allowed'
-                        : 'hover:shadow-xl'
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:shadow-xl"
                     }`}
-                    style={{ 
-                      background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-                      boxShadow: bidAmount && !isLoading && !isSuccess 
-                        ? '0 4px 20px 0 rgba(249, 115, 22, 0.4)' 
-                        : '0 4px 14px 0 rgba(249, 115, 22, 0.3)'
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #f97316 0%, #ea580c 100%)",
+                      boxShadow:
+                        bidAmount && !isLoading && !isSuccess
+                          ? "0 4px 20px 0 rgba(249, 115, 22, 0.4)"
+                          : "0 4px 14px 0 rgba(249, 115, 22, 0.3)",
                     }}
                   >
-                  {isLoading ? (
-                    <motion.div 
-                      className="flex items-center gap-2"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Submitting...
-                    </motion.div>
-                  ) : (
-                    <motion.div 
-                      className="flex items-center gap-2"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      <Gavel className="w-4 h-4" />
-                      Submit Bid
-                    </motion.div>
-                  )}
+                    {isLoading ? (
+                      <motion.div
+                        className="flex items-center gap-2"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      >
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Submitting...
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        className="flex items-center gap-2"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      >
+                        <Gavel className="w-4 h-4" />
+                        Submit Bid
+                      </motion.div>
+                    )}
                   </Button>
                 </motion.div>
               </div>

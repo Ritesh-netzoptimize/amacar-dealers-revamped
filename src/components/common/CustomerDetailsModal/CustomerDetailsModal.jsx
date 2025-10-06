@@ -229,7 +229,7 @@ const CustomerDetailsModal = ({
                         
                        
                       </div>
-                      <div className="space-y-3">
+                      {/* <div className="space-y-3">
                         <div>
                           <p className="text-sm text-neutral-500">Email Verified</p>
                           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
@@ -239,7 +239,7 @@ const CustomerDetailsModal = ({
                           </span>
                         </div>
          
-                      </div>
+                      </div> */}
                     </div>
                   </div>
 
