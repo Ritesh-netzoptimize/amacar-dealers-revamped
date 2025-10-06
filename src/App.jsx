@@ -17,6 +17,7 @@ import WonAuctions from "./pages/dashboard/WonAuctions";
 import { Toaster } from "react-hot-toast";
 import Profile from "./pages/dashboard/Profile";
 import Home from "./pages/home/Home";
+import Register from "./pages/register/Register";
 import BackToTop from "./components/ui/BackToTop";
 import VehicleDetails from "./pages/dashboard/VehicleDetails";
 
@@ -70,6 +71,7 @@ function App() {
         {/* <ScrollToTop /> */}
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
           {/* Public Routes */}
           {/* <Route path="/" element={<HomePage />} /> */}
           {/* <Route path="/unauthorized" element={<UnauthorizedPage />} /> */}

@@ -108,7 +108,10 @@ export default function Navbar() {
                 >
                   Login
                 </button>
-                <button className="w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white">
+                <button 
+                  onClick={() => navigate("/register")}
+                  className="w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white hover:bg-orange-50 transition-colors"
+                >
                   Join as dealer
                 </button>
               </div>
@@ -164,7 +167,10 @@ export default function Navbar() {
                 >
                   Login →
                 </button>
-                <button className="mt-2 w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold">
+                <button 
+                  onClick={() => navigate("/register")}
+                  className="mt-2 w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold hover:bg-orange-50 transition-colors"
+                >
                   Join as dealer
                 </button>
               </div>
