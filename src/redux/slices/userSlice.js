@@ -132,7 +132,7 @@ export const updateProfile = createAsyncThunk(
         zip: profileData.zipcode
       };
       
-      const response = await api.put('/user/profile', apiData);
+      const response = await api.put('/auth/profile', apiData);
       if (response.data.success) {
         return response.data.user;
       }
@@ -190,12 +190,41 @@ export const verifyLoginOTP = createAsyncThunk(
   }
 );
 
+// Async thunk to fetch city and state by ZIP code
+export const fetchCityStateByZip = createAsyncThunk(
+  'carDetailsAndQuestions/fetchCityStateByZip',
+  async (zip, { rejectWithValue }) => {
+    try {
+      //   console.log('Fetching city/state for ZIP:', zip);
+      const response = await api.get(
+        `/location/city-state-by-zip?zipcode=${zip}`
+      );
+      //   console.log('City/State API response:', response.data);
+
+      if (response.data.success) {
+        return {
+          city: response.data.location.city,
+          state: response.data.location.state_name,
+          zipcode: response.data.location.zipcode,
+        };
+      } else {
+        return rejectWithValue(response.data.message || 'Invalid ZIP code');
+      }
+    } catch (error) {
+      console.log('City/State API error:', error.response?.data || error.message);
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch location data');
+    }
+  }
+);
+
 
 const userSlice = createSlice({
   name: 'user',
   initialState: {
     user: null,
     loading: true,
+    locationStatus: 'idle',
+    locationError: null,
     form: {
       values: {},
       errors: {},
@@ -417,6 +446,24 @@ const userSlice = createSlice({
       .addCase(verifyLoginOTP.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
+      })
+      .addCase(fetchCityStateByZip.pending, (state) => {
+        state.locationStatus = 'loading';
+        state.locationError = null;
+      })
+      .addCase(fetchCityStateByZip.fulfilled, (state, action) => {
+        state.locationStatus = 'succeeded';
+        state.location = action.payload;
+        state.locationError = null;
+      })
+      .addCase(fetchCityStateByZip.rejected, (state, action) => {
+        state.locationStatus = 'failed';
+        state.locationError = action.payload;
+        state.location = {
+          city: "",
+          state: "",
+          zipcode: "",
+        };
       })
   },
 });

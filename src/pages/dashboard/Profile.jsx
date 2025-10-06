@@ -4,11 +4,11 @@ import { User, Mail, Phone, MapPin, Edit3, Key } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { loadUser } from "@/redux/slices/userSlice";
 
-// import EditProfileModal from "@/components/ui/EditProfileModal";
+import EditProfileModal from "@/components/ui/ProfileUI/EditProfileModal";
 // import ChangePasswordModal from "@/components/ui/ChangePasswordModal";
 // import TwoFactorAuthModal from "@/components/ui/TwoFactorAuthModal";
 
-const ProfilePage = () => {
+const Profile = () => {
   const dispatch = useDispatch();
   const { user, loading } = useSelector((state) => state.user);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -457,12 +457,12 @@ const ProfilePage = () => {
       /> */}
 
       {/* Edit Profile Modal */}
-      {/* <EditProfileModal
+      <EditProfileModal
         isOpen={showEditModal}
         onClose={handleCancel}
         onSave={handleSave}
         initialData={editData}
-      /> */}
+      />
 
       {/* Two-Factor Authentication Modal */}
       {/* <TwoFactorAuthModal
@@ -475,4 +475,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default Profile;
