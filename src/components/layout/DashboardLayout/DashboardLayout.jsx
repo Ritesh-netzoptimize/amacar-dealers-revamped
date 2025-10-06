@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Menu, X, User, Search, LogOut, Settings, ChevronDown, X as XIcon, Calendar, DollarSign, Gavel } from 'lucide-react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 // import { fetchDashboardSummary, selectDashboardSummary } from '../../../redux/slices/offersSlice';
 import Sidebar from '../Sidebar/Sidebar';
 // import { useSearch } from '../../../context/SearchContext';
@@ -18,6 +18,7 @@ const DashboardLayout = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const { user } = useSelector((state) => state.user);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
 
   const profileRef = useRef(null);
@@ -31,10 +32,10 @@ const DashboardLayout = ({ children }) => {
   const getSearchStats = () => ({});
 
   // Placeholder user data for stateless version
-  const user = {
-    firstName: 'Dealer',
-    lastName: 'User',
-    email: 'dealer@example.com'
+  const userData = {
+    firstName: user?.firstName || user?.first_name || '',
+    lastName: user?.lastName || user?.last_name || '',
+    email: user?.email || '',
   };
 
   // Placeholder dashboard summary data
@@ -155,8 +156,8 @@ const DashboardLayout = ({ children }) => {
 
   // Get real user profile data
   const profileData = {
-    name: user ? `${user.firstName || user.first_name || ''} ${user.lastName || user.last_name || ''}`.trim() || 'User' : 'User',
-    email: user?.email || '',
+    name: userData ? `${userData.firstName || userData.first_name || ''} ${userData.lastName || userData.last_name || ''}`.trim() || 'User' : 'User',
+    email: userData?.email || '',
   };
 
   return (
@@ -391,7 +392,7 @@ const DashboardLayout = ({ children }) => {
                       className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-neutral-200 z-50 overflow-hidden"
                     >
                       <div className="bg-gradient-to-r from-neutral-50 to-white px-4 py-3 border-b border-neutral-200">
-                        <p className="text-sm font-semibold text-neutral-800">{profileData.name}</p>
+                        <p className="text-sm font-semibold text-neutral-800">{userData.firstName} {userData.lastName}</p>
                         <p className="text-xs text-neutral-500 truncate">{profileData.email}</p>
                       </div>
                       <div className="py-1">

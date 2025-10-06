@@ -45,7 +45,7 @@ export default function Features () {
                 whileHover={{ y: -10, boxShadow: "0 20px 40px rgba(0,0,0,0.1)" }}
                 className="p-8 bg-gradient-to-br from-white to-neutral-50 rounded-2xl border border-neutral-200 shadow-md transition-all"
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white mb-6">
+                <div className="w-16 h-16 bg-[var(--brand-orange)] rounded-xl flex items-center justify-center text-white mb-6">
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-bold text-neutral-900 mb-3">

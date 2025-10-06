@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { logout } from '@/redux/slices/userSlice';
 import LogoutModal from '@/components/ui/LogoutUI/LogoutModal';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 // import Modal from '@/components/ui/modal';
 // import LogoutModal from '@/components/ui/LogoutModal';
 // import { useDispatch, useSelector } from 'react-redux';
@@ -37,14 +37,14 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
   const prevPathRef = useRef(location.pathname);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const { user } = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.user);
   // const { logout } = useContext(AuthContext);
 
   // Placeholder user data for stateless version
-  const user = {
-    firstName: 'Dealer',
-    lastName: 'User',
-    email: 'dealer@example.com'
+  const userData = {
+    firstName: user?.firstName || user?.first_name || '',
+    lastName: user?.lastName || user?.last_name || '',
+    email: user?.email || '',
   };
 
   const navigation = [
@@ -323,15 +323,15 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-neutral-800 truncate">
-                      {user?.firstName && user?.lastName
-                        ? `${user.firstName} ${user.lastName}`
-                        : user?.first_name && user?.last_name
-                          ? `${user.first_name} ${user.last_name}`
+                      {userData?.firstName && userData?.lastName
+                        ? `${userData.firstName} ${userData.lastName}`
+                        : userData?.first_name && userData?.last_name
+                          ? `${userData.first_name} ${userData.last_name}`
                           : 'User Profile'
                       }
                     </p>
                     <p className="text-xs text-neutral-500 truncate">
-                      {user?.email || 'No email provided'}
+                      {userData?.email || 'No email provided'}
                     </p>
                   </div>
                 </div>
