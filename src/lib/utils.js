@@ -37,14 +37,12 @@ export const formatBidAmount = (amount) => {
   }
 
   export function formatDate(date) {
-    console.log("date", date);
     if (date === null || date === undefined || date === "N/A" || date === "") return "N/A";
     const formattedDate = new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     }).format(new Date(date));
-    console.log("formatted date", formattedDate);
     return formattedDate;
   }
   

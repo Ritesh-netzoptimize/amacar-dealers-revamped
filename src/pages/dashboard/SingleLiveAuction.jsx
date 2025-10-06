@@ -3,37 +3,19 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Car,
-  MapPin,
-  DollarSign,
-  Clock,
-  User,
-  Calendar,
-  Gavel,
-  Image as ImageIcon,
   CheckCircle,
   XCircle,
   AlertCircle,
-  Phone,
-  Mail,
-  Star,
-  Award,
-  Shield,
   ArrowLeft,
 } from "lucide-react";
-import { formatCurrency, formatDate } from "@/lib/utils";
 import api from "@/lib/api";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
 import SingleLiveAuctionSkeleton from "@/components/skeletons/SingleLiveAuction/SingleLiveAuctionSkeleton";
 import ImageCarouselAndKeyInfo from "@/components/single-live-auction/ImageCarouselAndKeyInfo";
 import MainContent from "@/components/single-live-auction/MainContent";
 import BidsSection from "@/components/single-live-auction/BidsSection";
+import { Button } from "@/components/ui/button";
+import { Gavel } from "lucide-react";
+import BidDialog from "@/components/common/BidDialog/BidDialog";
 const SingleLiveAuction = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -42,21 +24,23 @@ const SingleLiveAuction = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [remainingTime, setRemainingTime] = useState(null);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
 
   // Parse time remaining string to seconds
   const parseTimeRemaining = (timeString) => {
     if (!timeString) return 0;
-    
+
     // Parse format like "0 days, 6 hours, 4 minutes"
     const daysMatch = timeString.match(/(\d+) days?/);
     const hoursMatch = timeString.match(/(\d+) hours?/);
     const minutesMatch = timeString.match(/(\d+) minutes?/);
-    
+
     const days = daysMatch ? parseInt(daysMatch[1]) : 0;
     const hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
     const minutes = minutesMatch ? parseInt(minutesMatch[1]) : 0;
-    
-    return (days * 24 * 60 * 60) + (hours * 60 * 60) + (minutes * 60);
+
+    return days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60;
   };
 
   // Transform API data to match component expectations
@@ -74,28 +58,28 @@ const SingleLiveAuction = () => {
         interior_color: "N/A", // Not provided in API
         transmission: "N/A", // Not provided in API
         engine_type: "N/A", // Not provided in API
-        powertrain_description: "N/A" // Not provided in API
+        powertrain_description: "N/A", // Not provided in API
       },
       location: {
         city: "N/A", // Not provided in API
         state: "N/A", // Not provided in API
-        zip_code: "N/A" // Not provided in API
+        zip_code: "N/A", // Not provided in API
       },
       cash_offer: {
         offer_amount: auctionData.cash_offer,
         offer_date: "N/A", // Not provided in API
-        offer_expiration: "N/A" // Not provided in API
+        offer_expiration: "N/A", // Not provided in API
       },
       auction: {
         is_active: auctionData.auction_status === "active",
         auction_started_at: auctionData.created_at,
         auction_ends_at: auctionData.ends_at,
-        remaining_seconds: parseTimeRemaining(auctionData.time_remaining)
+        remaining_seconds: parseTimeRemaining(auctionData.time_remaining),
       },
       user: {
         name: "N/A", // Not provided in API
         email: "N/A", // Not provided in API
-        phone: "N/A" // Not provided in API
+        phone: "N/A", // Not provided in API
       },
       condition_assessment: {
         title: "N/A", // Not provided in API
@@ -105,15 +89,31 @@ const SingleLiveAuction = () => {
         smoked: "N/A", // Not provided in API
         modifications: "N/A", // Not provided in API
         warning: "N/A", // Not provided in API
-        features: "N/A" // Not provided in API
+        features: "N/A", // Not provided in API
       },
       bids: [], // Not provided in API
-      images: auctionData.images?.map(img => ({
-        url: img.url,
-        name: img.type,
-        attachment_id: img.id
-      })) || []
+      images:
+        auctionData.images?.map((img) => ({
+          url: img.url,
+          name: img.type,
+          attachment_id: img.id,
+        })) || [],
     };
+  };
+
+  const handleBidNow = (vehicle) => {
+    setSelectedVehicle(vehicle);
+    setIsBidDialogOpen(true);
+  };
+
+  const handleCloseBidDialog = () => {
+    setIsBidDialogOpen(false);
+    setSelectedVehicle(null);
+  };
+
+  const handleBidSuccess = (bidAmount) => {
+    console.log("Bid successful:", bidAmount);
+    // TODO: Update the vehicle's highest bid or handle success
   };
 
   // Fetch vehicle details
@@ -137,7 +137,9 @@ const SingleLiveAuction = () => {
           // Transform the API response to match the expected structure
           const transformedData = transformAuctionData(response.data.auction);
           setVehicleData(transformedData);
-          setRemainingTime(parseTimeRemaining(response.data.auction?.time_remaining) || 0);
+          setRemainingTime(
+            parseTimeRemaining(response.data.auction?.time_remaining) || 0
+          );
           console.log("response.data.auction", response.data.auction);
           console.log("transformedData", transformedData);
         } else {
@@ -253,9 +255,7 @@ const SingleLiveAuction = () => {
 
   // Loading state
   if (loading) {
-    return (
-      <SingleLiveAuctionSkeleton />
-    );
+    return <SingleLiveAuctionSkeleton />;
   }
 
   // Error state
@@ -309,7 +309,6 @@ const SingleLiveAuction = () => {
     location,
     cash_offer,
     auction,
-    user,
     condition_assessment,
     bids,
     images,
@@ -338,29 +337,67 @@ const SingleLiveAuction = () => {
                   Complete vehicle information and auction details
                 </p>
               </div>
-              <button
-                onClick={() => navigate(-1)}
-                className="cursor-pointer flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-white hover:bg-neutral-50 border border-neutral-200 rounded-lg shadow-sm transition-colors duration-200 w-full sm:w-auto"
-              >
-                <ArrowLeft className="w-4 h-4 text-neutral-600" />
-                <span className="text-neutral-700 font-medium text-sm sm:text-base">
-                  Back
-                </span>
-              </button>
+              <div className="flex gap-2 items-center">
+                <button
+                  onClick={() => navigate(-1)}
+                  className="cursor-pointer flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-white hover:bg-neutral-50 border border-neutral-200 rounded-lg shadow-sm transition-colors duration-200 w-full sm:w-auto"
+                >
+                  <ArrowLeft className="w-4 h-4 text-neutral-600" />
+                  <span className="text-neutral-700 font-medium text-sm sm:text-base">
+                    Back
+                  </span>
+                </button>
+                <Button
+                  onClick={() => handleBidNow(vehicleData)}
+                  className="flex-1 h-full text-xs bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-all duration-200 w-full sm:w-auto px-3 sm:px-4 py-3"
+                >
+                  <Gavel className="w-3.5 h-3.5 mr-1" />
+                  Bid
+                </Button>
+              </div>
             </div>
           </motion.div>
 
           {/* Images Carousel and Key Info Section */}
-          <ImageCarouselAndKeyInfo images={images} auction={auction} cash_offer={cash_offer} itemVariants={itemVariants} formatRemainingTime={formatRemainingTime} remainingTime={remainingTime} />
+          <ImageCarouselAndKeyInfo
+            images={images}
+            auction={auction}
+            cash_offer={cash_offer}
+            itemVariants={itemVariants}
+            formatRemainingTime={formatRemainingTime}
+            remainingTime={remainingTime}
+          />
 
           {/* Main Content */}
-          <MainContent basic_info={basic_info} location={location} condition_assessment={condition_assessment} itemVariants={itemVariants} bids={bids} />
+          <MainContent
+            basic_info={basic_info}
+            location={location}
+            condition_assessment={condition_assessment}
+            itemVariants={itemVariants}
+            bids={bids}
+          />
 
           {/* Bids Section */}
-          {bids && bids.length > 0 && (
-            <BidsSection bids={bids} itemVariants={itemVariants} getBidStatusIcon={getBidStatusIcon} getBidStatusText={getBidStatusText} />
+          {bids?.length > 0 && (
+            <BidsSection
+              bids={bids}
+              itemVariants={itemVariants}
+              getBidStatusIcon={getBidStatusIcon}
+              getBidStatusText={getBidStatusText}
+            />
           )}
         </motion.div>
+
+        {selectedVehicle && (
+          <BidDialog
+            isOpen={isBidDialogOpen}
+            onClose={handleCloseBidDialog}
+            vehicle={selectedVehicle}
+            onBidSuccess={handleBidSuccess}
+            formatRemainingTime={formatRemainingTime}
+            remainingTime={remainingTime}
+          />
+        )}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DollarSign, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import {
   Dialog,
@@ -15,7 +15,9 @@ const BidDialog = ({
   isOpen, 
   onClose, 
   vehicle, 
-  onBidSuccess 
+  onBidSuccess,
+  formatRemainingTime,
+  remainingTime
 }) => {
   const [bidAmount, setBidAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +49,7 @@ const BidDialog = ({
     if (!amount || isNaN(numericAmount) || numericAmount <= 0) {
       return 'Please enter a valid bid amount';
     }
-    const cashOfferAmount = parseCurrencyString(vehicle.cashOffer);
+    const cashOfferAmount = parseCurrencyString(vehicle.cashOffer || vehicle.cash_offer?.offer_amount);
     if (numericAmount <= cashOfferAmount) {
       return `Bid amount must be greater than the current cash offer of ${formatBidAmount(cashOfferAmount)}`;
     }
@@ -109,6 +111,10 @@ const BidDialog = ({
     setValidationError('');
   };
 
+  useEffect(() => {
+    console.log("vehicle", vehicle);
+  }, [vehicle]);
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent 
@@ -131,12 +137,12 @@ const BidDialog = ({
             <div className="flex justify-between items-center">
               <span className="text-sm text-neutral-600">Current Cash Offer</span>
               <span className="text-lg font-bold text-neutral-900">
-                {formatBidAmount(parseCurrencyString(vehicle.cashOffer))}
+                {formatBidAmount(parseCurrencyString(vehicle.cashOffer || vehicle.cash_offer?.offer_amount))}
               </span>
             </div>
             <div className="flex justify-between items-center mt-2">
               <span className="text-sm text-neutral-600">Time Left</span>
-              <span className="text-sm text-neutral-500">{vehicle.timeLeft}</span>
+              <span className="text-sm text-neutral-500">{vehicle.timeLeft || formatRemainingTime(remainingTime)}</span>
             </div>
           </div>
 
