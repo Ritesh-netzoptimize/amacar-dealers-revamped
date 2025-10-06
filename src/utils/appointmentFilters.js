@@ -53,11 +53,16 @@ export const filterAppointmentsByStatus = (appointments, statusFilter) => {
  * @returns {Array} Today's appointments
  */
 export const getTodaysAppointments = (appointments) => {
+  console.log("appointments in getTodaysAppointments", appointments);
   if (!appointments || appointments.length === 0) return [];
   
   const today = new Date();
+  console.log("today", today);
   return appointments.filter(apt => {
     const appointmentDate = new Date(apt.start_time);
+    console.log("appointmentDate", appointmentDate);
+    console.log("new data", new Date(apt.start_time));
+    console.log("appointmentDate.toDateString() === today.toDateString()", appointmentDate.toDateString() === today.toDateString());
     return appointmentDate.toDateString() === today.toDateString();
   });
 };

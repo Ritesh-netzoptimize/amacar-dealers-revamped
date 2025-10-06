@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Calendar, Eye } from "lucide-react";
-import { appointmentsData } from "@/data/appointmentsData";
 import { useAppointmentFilters } from "@/hooks/useAppointmentFilters";
 import AppointmentFilters from "@/components/filters/AppointmentFilters";
 import AppointmentSort from "@/components/sorts/AppointmentSort";
@@ -9,6 +8,7 @@ import AppointmentList from "@/components/appointments/AppointmentList";
 import Pagination from "@/components/common/Pagination/Pagination";
 import AppointmentsSkeleton from "@/components/skeletons/Appointments/AppointmentsSkeleton";
 import AppointmentsSortSkeleton from "@/components/skeletons/Appointments/AppointmentsSortSkeleton";
+import api from "@/lib/api";
 
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -17,7 +17,67 @@ const Appointments = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    per_page: 5,
+    total: 0,
+    total_pages: 1,
+    has_next: false,
+    has_prev: false
+  });
   const itemsPerPage = 5;
+
+  // Appointments API function using the imported api instance
+  const getAppointments = async (page = 1, perPage = 5) => {
+    try {
+      const response = await api.get('/appointments', {
+        params: {
+          page,
+          per_page: perPage
+        }
+      });
+      console.log("response.data", response.data)
+      console.log("response", response)
+      console.log("response.data.data", response.data.data)
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      throw error;
+    }
+  };
+
+  // Transform API data to match component expectations
+  const transformAppointmentsData = (apiData) => {
+    console.log("apiData", apiData);
+    return apiData.map(appointment => ({
+      id: appointment.id,
+      dealer_id: appointment.dealer_id,
+      dealer_name: appointment.customer?.name || 'Unknown Customer',
+      dealer_email: appointment.customer?.email || '',
+      dealer_phone: appointment.customer?.phone || '',
+      start_time: appointment.start_time,
+      end_time: appointment.end_time,
+      duration: appointment.duration,
+      status: appointment.status,
+      reschedule_url: `https://dealer.amacar.ai/my-account/customer-appointments/?dealer_id=${appointment.dealer_id}`,
+      is_pending: appointment.status === 'pending',
+      formatted_date: appointment.formatted_date,
+      formatted_time: appointment.formatted_time,
+      formatted_status: appointment.formatted_status,
+      created_at: appointment.created_at,
+      updated_at: appointment.updated_at,
+      notes: appointment.notes || '',
+      location: 'Location not specified', // API doesn't provide location
+      meeting_type: 'in-person', // Default to in-person
+      user_metadata: {
+        phone: appointment.customer?.phone || '',
+        city: 'Unknown',
+        state: 'Unknown'
+      },
+      customer: appointment.customer,
+      title: appointment.title
+    }));
+  };
 
   // Use custom hooks
   const {
@@ -33,10 +93,8 @@ const Appointments = () => {
     handleSortSelect,
   } = useAppointmentFilters(appointments);
 
-  // Calculate pagination
-  const totalPages = Math.ceil(
-    filteredAndSortedAppointments.length / itemsPerPage
-  );
+  // Calculate pagination - use API pagination for total pages
+  const totalPages = pagination.total_pages;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedAppointments = filteredAndSortedAppointments.slice(
@@ -44,30 +102,49 @@ const Appointments = () => {
     endIndex
   );
 
+  // Fetch appointments from API
+  const fetchAppointments = async (page = 1) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await getAppointments(page, itemsPerPage);
+      
+      if (response.success) {
+        console.log("inside response.success");
+        console.log("response", response)
+        console.log("response.data", response.data)
+        const transformedData = transformAppointmentsData(response.data);
+        console.log("transformedData", transformedData);
+        setAppointments(transformedData);
+        setPagination(response.pagination);
+      } else {
+        throw new Error('Failed to fetch appointments');
+      }
+    } catch (err) {
+      console.error('Error fetching appointments:', err);
+      setError(err.message || 'Failed to load appointments');
+      setAppointments([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [statusFilter, sortBy]);
 
-  // Simulate API call
+  // Initial data load
   useEffect(() => {
-    const loadAppointments = async () => {
-      try {
-        setLoading(true);
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setAppointments(appointmentsData);
-        setError(null);
-      } catch (err) {
-        setError("Failed to load appointments");
-        console.error("Error loading appointments:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadAppointments();
+    fetchAppointments(1);
   }, []);
+
+  // Handle page change
+  const handlePageChange = async (page) => {
+    setCurrentPage(page);
+    await fetchAppointments(page);
+  };
 
   // Handle view details
   const handleViewDetails = (appointment) => {
@@ -182,7 +259,7 @@ const Appointments = () => {
                     : "Appointments"}
                 </h2>
                 <p className="text-xs sm:text-sm text-neutral-600">
-                  {filteredAndSortedAppointments.length}{" "}
+                  {pagination.total}{" "}
                   {statusFilter === "all" ? "scheduled" : statusFilter}{" "}
                   appointments
                 </p>
@@ -242,9 +319,9 @@ const Appointments = () => {
               className="flex justify-center mt-8"
             >
               <Pagination
-                currentPage={currentPage}
+                currentPage={pagination.current_page}
                 totalPages={totalPages}
-                onPageChange={setCurrentPage}
+                onPageChange={handlePageChange}
                 className="w-full max-w-md"
               />
             </motion.div>

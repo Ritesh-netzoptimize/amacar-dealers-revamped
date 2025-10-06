@@ -5,11 +5,13 @@ import AppointmentCard from './AppointmentCard';
 import { getTodaysAppointments, getUpcomingAppointments } from '@/utils/appointmentFilters';
 
 const AppointmentList = ({
-  appointments = [],
+  appointments=[],
   onViewDetails,
   className = ''
 }) => {
+  console.log("appointments in appointment list", appointments);
   const todaysAppointments = getTodaysAppointments(appointments);
+  console.log("todaysA ppointments in appointment list", todaysAppointments);
   const upcomingAppointments = getUpcomingAppointments(appointments);
 
   const containerVariants = {
