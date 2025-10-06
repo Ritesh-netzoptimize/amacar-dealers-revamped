@@ -215,7 +215,7 @@ const BidDialog = ({
                 <div className="flex-1">
                   <p className="text-sm font-medium text-amber-700">Auction Status</p>
                   <p className="text-base font-semibold text-amber-900">
-                    {vehicle?.auctionStatus === 'active' ? 'Active - Bidding Open' : 'Ended - Bidding Closed'}
+                    {vehicle?.auctionStatus === 'active' || vehicle?.status === 'active' ? 'Active - Bidding Open' : 'Ended - Bidding Closed'}
                   </p>
                 </div>
               </div>
