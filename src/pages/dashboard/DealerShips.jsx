@@ -6,6 +6,7 @@ import DealershipSkeleton from "@/components/skeletons/Dealership/DealershipSkel
 import Pagination from "@/components/common/Pagination/Pagination";
 import { Building2 } from "lucide-react";
 import api from "@/lib/api";
+import { useSelector } from "react-redux";
 
 const DealerShips = () => {
   const [dealerships, setDealerships] = useState([]);
@@ -17,22 +18,25 @@ const DealerShips = () => {
   const [pagination, setPagination] = useState({});
   const [retryCount, setRetryCount] = useState(0);
 
+  const { user } = useSelector((state) => state.user);
+
   const itemsPerPage = 10;
   const maxRetries = 3;
 
   // Error handling utility
   const handleApiError = (error) => {
     console.error("API Error:", error);
-    
+
     let errorMessage = "An unexpected error occurred";
     let errorType = "error";
-    
+
     if (error.response) {
       const { status, data } = error.response;
-      
+
       switch (status) {
         case 403:
-          errorMessage = data?.message || "You don't have permission to view dealerships";
+          errorMessage =
+            data?.message || "You don't have permission to view dealerships";
           errorType = "permission";
           break;
         case 401:
@@ -48,11 +52,13 @@ const DealerShips = () => {
           errorType = "server";
           break;
         case 429:
-          errorMessage = "Too many requests. Please wait a moment and try again";
+          errorMessage =
+            "Too many requests. Please wait a moment and try again";
           errorType = "rateLimit";
           break;
         default:
-          errorMessage = data?.message || `Request failed with status ${status}`;
+          errorMessage =
+            data?.message || `Request failed with status ${status}`;
       }
     } else if (error.request) {
       errorMessage = "Network error. Please check your connection";
@@ -60,7 +66,7 @@ const DealerShips = () => {
     } else {
       errorMessage = error.message || "An unexpected error occurred";
     }
-    
+
     return { message: errorMessage, type: errorType };
   };
 
@@ -70,28 +76,39 @@ const DealerShips = () => {
       return {
         id: item.id,
         name: item.name,
-        email: item.contact?.email || 'N/A',
-        phone: item.contact?.phone || 'N/A',
-        city: item.address?.city || 'N/A',
-        state: item.address?.state || 'N/A',
-        zip: item.address?.zip || 'N/A',
-        street: item.address?.street || 'N/A',
-        status: item.status === 'active' ? 'Active' : 
-                item.status === 'pending' ? 'Pending' : 
-                item.status === 'inactive' ? 'Inactive' : 'Unknown',
-        role: 'Dealer', // Default role since API doesn't provide this
-        salesManager: item.user?.name || 'Not Assigned',
+        email: item.contact?.email || "N/A",
+        phone: item.contact?.phone || "N/A",
+        city: item.address?.city || "N/A",
+        state: item.address?.state || "N/A",
+        zip: item.address?.zip || "N/A",
+        street: item.address?.street || "N/A",
+        status:
+          item.status === "active"
+            ? "Active"
+            : item.status === "pending"
+            ? "Pending"
+            : item.status === "inactive"
+            ? "Inactive"
+            : "Unknown",
+        role: "Dealer", // Default role since API doesn't provide this
+        salesManager: item.user?.name || "Not Assigned",
         joinDate: item.created_at,
-        address: [item.address?.street, item.address?.city, item.address?.state, item.address?.zip]
-          .filter(Boolean)
-          .join(', ') || 'Address not provided',
+        address:
+          [
+            item.address?.street,
+            item.address?.city,
+            item.address?.state,
+            item.address?.zip,
+          ]
+            .filter(Boolean)
+            .join(", ") || "Address not provided",
         totalSales: 0, // Not provided in API
         vehiclesInStock: 0, // Not provided in API
         rating: 0, // Not provided in API
         latitude: item.address?.latitude || null,
         longitude: item.address?.longitude || null,
         userId: item.user?.id || null,
-        updatedAt: item.updated_at
+        updatedAt: item.updated_at,
       };
     });
   };
@@ -117,11 +134,18 @@ const DealerShips = () => {
     try {
       return await fn();
     } catch (error) {
-      if (retries > 0 && (error.response?.status >= 500 || error.code === 'NETWORK_ERROR')) {
+      if (
+        retries > 0 &&
+        (error.response?.status >= 500 || error.code === "NETWORK_ERROR")
+      ) {
         const delay = Math.pow(2, maxRetries - retries) * 1000; // Exponential backoff
-        console.log(`Retrying in ${delay}ms... (${maxRetries - retries + 1}/${maxRetries})`);
-        
-        await new Promise(resolve => setTimeout(resolve, delay));
+        console.log(
+          `Retrying in ${delay}ms... (${
+            maxRetries - retries + 1
+          }/${maxRetries})`
+        );
+
+        await new Promise((resolve) => setTimeout(resolve, delay));
         return retryWithBackoff(fn, retries - 1);
       }
       throw error;
@@ -137,7 +161,9 @@ const DealerShips = () => {
         setRetryCount(0);
       }
 
-      const response = await retryWithBackoff(() => getDealerships(page, perPage));
+      const response = await retryWithBackoff(() =>
+        getDealerships(page, perPage)
+      );
 
       if (response.success) {
         const transformedData = transformDealershipData(response.data);
@@ -152,18 +178,19 @@ const DealerShips = () => {
     } catch (error) {
       const errorInfo = handleApiError(error);
       setError(errorInfo);
-      
+
       // Show appropriate toast based on error type
       const toastMessages = {
-        permission: "Access denied. You don't have permission to view dealerships.",
+        permission:
+          "Access denied. You don't have permission to view dealerships.",
         auth: "Please log in to continue.",
         network: "Network error. Please check your connection.",
         rateLimit: "Too many requests. Please wait a moment and try again.",
         server: "Server error. Please try again later.",
         notFound: "Dealerships endpoint not found.",
-        error: "Failed to load dealerships. Please try again."
+        error: "Failed to load dealerships. Please try again.",
       };
-      
+
       toast.error(toastMessages[errorInfo.type] || toastMessages.error);
     } finally {
       setLoading(false);
@@ -300,8 +327,9 @@ const DealerShips = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.4 }}
           >
-            Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, totalCount)} of{" "}
-            {totalCount} dealerships
+            Showing {(currentPage - 1) * itemsPerPage + 1}-
+            {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount}{" "}
+            dealerships
           </motion.div>
         </motion.div>
         <motion.div
@@ -314,16 +342,31 @@ const DealerShips = () => {
               {error.type === "permission" ? (
                 <>
                   <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                    <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v2m0-2h2m-2 0H10m2-7V9a2 2 0 00-2-2H9a2 2 0 00-2 2v1m4 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v1m4 0h2a2 2 0 012 2v1a2 2 0 01-2 2h-2m-4 0H9a2 2 0 01-2-2v-1a2 2 0 012-2h2m-4 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v1m4 0h2a2 2 0 012 2v1a2 2 0 01-2 2h-2" />
+                    <svg
+                      className="w-8 h-8 text-red-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 15v2m0 0v2m0-2h2m-2 0H10m2-7V9a2 2 0 00-2-2H9a2 2 0 00-2 2v1m4 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v1m4 0h2a2 2 0 012 2v1a2 2 0 01-2 2h-2m-4 0H9a2 2 0 01-2-2v-1a2 2 0 012-2h2m-4 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v1m4 0h2a2 2 0 012 2v1a2 2 0 01-2 2h-2"
+                      />
                     </svg>
                   </div>
-                  <div className="text-red-500 text-lg mb-2 font-semibold">Access Denied</div>
-                  <div className="text-red-400 text-sm mb-4">{error.message}</div>
-                  <div className="text-gray-500 text-xs mb-6">
-                    Contact your administrator to request access to dealership management
+                  <div className="text-red-500 text-lg mb-2 font-semibold">
+                    Access Denied
                   </div>
-                  <button 
+                  <div className="text-red-400 text-sm mb-4">
+                    {error.message}
+                  </div>
+                  <div className="text-gray-500 text-xs mb-6">
+                    Contact your administrator to request access to dealership
+                    management
+                  </div>
+                  <button
                     onClick={() => window.location.reload()}
                     className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors mr-2"
                   >
@@ -333,14 +376,28 @@ const DealerShips = () => {
               ) : error.type === "auth" ? (
                 <>
                   <div className="w-16 h-16 mx-auto mb-4 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <svg className="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    <svg
+                      className="w-8 h-8 text-yellow-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                      />
                     </svg>
                   </div>
-                  <div className="text-yellow-600 text-lg mb-2 font-semibold">Authentication Required</div>
-                  <div className="text-yellow-500 text-sm mb-4">{error.message}</div>
-                  <button 
-                    onClick={() => window.location.href = '/login'}
+                  <div className="text-yellow-600 text-lg mb-2 font-semibold">
+                    Authentication Required
+                  </div>
+                  <div className="text-yellow-500 text-sm mb-4">
+                    {error.message}
+                  </div>
+                  <button
+                    onClick={() => (window.location.href = "/login")}
                     className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
                   >
                     Go to Login
@@ -349,13 +406,27 @@ const DealerShips = () => {
               ) : error.type === "network" ? (
                 <>
                   <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
-                    <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+                    <svg
+                      className="w-8 h-8 text-blue-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"
+                      />
                     </svg>
                   </div>
-                  <div className="text-blue-500 text-lg mb-2 font-semibold">Connection Error</div>
-                  <div className="text-blue-400 text-sm mb-4">{error.message}</div>
-                  <button 
+                  <div className="text-blue-500 text-lg mb-2 font-semibold">
+                    Connection Error
+                  </div>
+                  <div className="text-blue-400 text-sm mb-4">
+                    {error.message}
+                  </div>
+                  <button
                     onClick={() => fetchDealerships(currentPage, itemsPerPage)}
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                   >
@@ -365,16 +436,30 @@ const DealerShips = () => {
               ) : error.type === "rateLimit" ? (
                 <>
                   <div className="w-16 h-16 mx-auto mb-4 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <svg className="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-8 h-8 text-yellow-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   </div>
-                  <div className="text-yellow-600 text-lg mb-2 font-semibold">Rate Limit Exceeded</div>
-                  <div className="text-yellow-500 text-sm mb-4">{error.message}</div>
+                  <div className="text-yellow-600 text-lg mb-2 font-semibold">
+                    Rate Limit Exceeded
+                  </div>
+                  <div className="text-yellow-500 text-sm mb-4">
+                    {error.message}
+                  </div>
                   <div className="text-gray-500 text-xs mb-6">
                     Please wait a moment before trying again
                   </div>
-                  <button 
+                  <button
                     onClick={() => fetchDealerships(currentPage, itemsPerPage)}
                     className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
                   >
@@ -384,13 +469,27 @@ const DealerShips = () => {
               ) : (
                 <>
                   <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                    <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-8 h-8 text-red-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                   </div>
-                  <div className="text-red-500 text-lg mb-2 font-semibold">Error Loading Dealerships</div>
-                  <div className="text-red-400 text-sm mb-4">{error.message}</div>
-                  <button 
+                  <div className="text-red-500 text-lg mb-2 font-semibold">
+                    Error Loading Dealerships
+                  </div>
+                  <div className="text-red-400 text-sm mb-4">
+                    {error.message}
+                  </div>
+                  <button
                     onClick={() => fetchDealerships(currentPage, itemsPerPage)}
                     className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
                   >
@@ -400,23 +499,41 @@ const DealerShips = () => {
               )}
             </div>
           ) : dealerships.length > 0 ? (
-            <DealershipContainer
-              dealerships={dealerships}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalCount={totalCount}
-              onPageChange={handlePageChange}
-              onViewDealership={handleViewDealership}
-              onEditDealership={handleEditDealership}
-              onDeleteDealership={handleDeleteDealership}
-              onContactDealership={handleContactDealership}
-              onActivateDealership={handleActivateDealership}
-              onDeactivateDealership={handleDeactivateDealership}
-            />
+            <>
+              {user?.role == "admin" || user?.role == "sales_manager" ? (
+                <DealershipContainer
+                  dealerships={dealerships}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalCount={totalCount}
+                  onPageChange={handlePageChange}
+                  onViewDealership={handleViewDealership}
+                  onEditDealership={handleEditDealership}
+                  onDeleteDealership={handleDeleteDealership}
+                  onContactDealership={handleContactDealership}
+                  onActivateDealership={handleActivateDealership}
+                  onDeactivateDealership={handleDeactivateDealership}
+                />
+              ) : (
+                <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-12 text-center">
+                  <div className="text-neutral-500 text-lg mb-2">
+                    You are not authorized to view dealerships
+                  </div>
+                  <div className="text-neutral-400 text-sm">
+                    Please contact your administrator to request access to
+                    dealership management
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
             <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-12 text-center">
-              <div className="text-neutral-500 text-lg mb-2">No dealerships found</div>
-              <div className="text-neutral-400 text-sm">Try refreshing the page or check back later</div>
+              <div className="text-neutral-500 text-lg mb-2">
+                No dealerships found
+              </div>
+              <div className="text-neutral-400 text-sm">
+                Try refreshing the page or check back later
+              </div>
             </div>
           )}
         </motion.div>
