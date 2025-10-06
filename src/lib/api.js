@@ -100,4 +100,19 @@ export const getLiveAuctions = async (page = 1, perPage = 4, filters = {}) => {
   }
 };
 
+// Dashboard Activity API
+export const getDashboardActivity = async (limit = 6) => {
+  try {
+    const response = await api.get('/dealer-dashboard/activity', {
+      params: {
+        limit: limit
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching dashboard activity:', error);
+    throw error;
+  }
+};
+
 export default api;
