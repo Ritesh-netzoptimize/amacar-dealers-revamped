@@ -198,24 +198,6 @@ export default function EditProfileModal({
       }, 2000);
       return;
       
-      if (updateProfile.fulfilled.match(resultAction)) {
-        // Call the onSave callback with the updated data
-        onSave(formData);
-        
-        setPhase('success');
-        
-        // Show success message
-        toast.success('Profile updated successfully!', { duration: 2000 });
-        
-        // Close modal after success
-        setTimeout(() => {
-          onClose();
-        }, 2000);
-      } else {
-        setPhase('failed');
-        toast.error(resultAction.payload || 'Failed to update profile. Please try again.', { duration: 2000 });
-      }
-      
     } catch (error) {
       setPhase('failed');
       toast.error('Failed to update profile. Please try again.', { duration: 2000 });
