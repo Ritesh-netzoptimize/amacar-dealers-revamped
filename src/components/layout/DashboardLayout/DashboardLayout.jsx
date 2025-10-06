@@ -9,6 +9,7 @@ import BackToTop from '../../ui/BackToTop';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import LogoutModal from '@/components/ui/LogoutUI/LogoutModal';
 import { logout } from '@/redux/slices/userSlice';
+import { getDashboardActivity } from '../../../lib/api';
 
 const DashboardLayout = ({ children }) => {
   const dispatch = useDispatch();
@@ -20,6 +21,8 @@ const DashboardLayout = ({ children }) => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const { user } = useSelector((state) => state.user);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [isLoadingNotifications, setIsLoadingNotifications] = useState(false);
 
   const profileRef = useRef(null);
   const notificationsRef = useRef(null);
@@ -77,10 +80,52 @@ const DashboardLayout = ({ children }) => {
     }, 1000);
   };
 
-  // Fetch dashboard summary on component mount - commented out for stateless version
-  // useEffect(() => {
-  //   dispatch(fetchDashboardSummary());
-  // }, [dispatch]);
+  // Fetch notifications on component mount
+  const fetchNotifications = async () => {
+    try {
+      setIsLoadingNotifications(true);
+      const response = await getDashboardActivity(3);
+      
+      if (response.success && response.activities) {
+        const formattedNotifications = response.activities.map((activity, index) => ({
+          id: activity.data?.customer_id || index + 1,
+          message: activity.message,
+          time: getTimeAgo(activity.timestamp),
+          type: activity.type,
+          icon: getActivityIcon(activity.type)
+        }));
+        
+        setNotifications(formattedNotifications);
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      // Keep empty array on error
+      setNotifications([]);
+    } finally {
+      setIsLoadingNotifications(false);
+    }
+  };
+
+  // Format time ago
+  const getTimeAgo = (timestamp) => {
+    const now = new Date();
+    const activityTime = new Date(timestamp);
+    const diffInMinutes = Math.floor((now - activityTime) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 60) return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+  };
+
+  // Fetch notifications on component mount
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
   // Handle click outside to close dropdowns
   useEffect(() => {
@@ -100,47 +145,11 @@ const DashboardLayout = ({ children }) => {
     };
   }, []);
 
-  // Get notifications from dashboard summary or fallback to dummy data
-  const getNotifications = () => {
-    if (dashboardSummary?.recent_activity && dashboardSummary.recent_activity.length > 0) {
-      return dashboardSummary.recent_activity.slice(0, 5).map((activity, index) => ({
-        id: index + 1,
-        message: activity.message,
-        time: `${activity.formatted_date?.date} at ${activity.formatted_date?.time}`,
-        type: activity.type,
-        icon: getActivityIcon(activity.type)
-      }));
-    }
-
-    // Static dummy data for stateless version
-    return [
-      {
-        id: 1,
-        message: 'New bid placed on 2020 BMW X5',
-        time: '2 hours ago',
-        type: 'bid',
-        icon: DollarSign
-      },
-      {
-        id: 2,
-        message: 'Auction ending soon for 2019 Audi A4',
-        time: '4 hours ago',
-        type: 'auction',
-        icon: Gavel
-      },
-      {
-        id: 3,
-        message: 'Appointment scheduled for tomorrow',
-        time: '1 day ago',
-        type: 'appointment',
-        icon: Calendar
-      }
-    ];
-  };
-
   // Get appropriate icon for activity type
   const getActivityIcon = (type) => {
     switch (type) {
+      case 'new_customer':
+        return User;
       case 'bid':
         return DollarSign;
       case 'auction':
@@ -151,8 +160,6 @@ const DashboardLayout = ({ children }) => {
         return Bell;
     }
   };
-
-  const notifications = getNotifications();
 
   // Get real user profile data
   const profileData = {
@@ -203,7 +210,12 @@ const DashboardLayout = ({ children }) => {
                     <h3 className="text-sm font-semibold text-neutral-800">Notifications</h3>
                   </div>
                   <div className="max-h-64 overflow-y-auto">
-                    {notifications.length > 0 ? (
+                    {isLoadingNotifications ? (
+                      <div className="px-4 py-8 text-center">
+                        <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                        <p className="text-sm text-neutral-500">Loading notifications...</p>
+                      </div>
+                    ) : notifications.length > 0 ? (
                       notifications.map((notification) => {
                         const IconComponent = notification.icon;
                         return (
@@ -212,15 +224,17 @@ const DashboardLayout = ({ children }) => {
                             className="px-4 py-3 hover:bg-primary-50 transition-colors duration-200 border-b border-neutral-100 last:border-b-0"
                           >
                             <div className="flex items-start space-x-3">
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${notification.type === 'bid' ? 'bg-emerald-100' :
-                                notification.type === 'auction' ? 'bg-orange-100' :
-                                  notification.type === 'appointment' ? 'bg-purple-100' :
-                                    'bg-blue-100'
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${notification.type === 'new_customer' ? 'bg-blue-100' :
+                                notification.type === 'bid' ? 'bg-emerald-100' :
+                                  notification.type === 'auction' ? 'bg-orange-100' :
+                                    notification.type === 'appointment' ? 'bg-purple-100' :
+                                      'bg-gray-100'
                                 }`}>
-                                <IconComponent className={`w-4 h-4 ${notification.type === 'bid' ? 'text-emerald-600' :
-                                  notification.type === 'auction' ? 'text-orange-600' :
-                                    notification.type === 'appointment' ? 'text-purple-600' :
-                                      'text-blue-600'
+                                <IconComponent className={`w-4 h-4 ${notification.type === 'new_customer' ? 'text-blue-600' :
+                                  notification.type === 'bid' ? 'text-emerald-600' :
+                                    notification.type === 'auction' ? 'text-orange-600' :
+                                      notification.type === 'appointment' ? 'text-purple-600' :
+                                        'text-gray-600'
                                   }`} />
                               </div>
                               <div className="flex-1 min-w-0">
@@ -335,7 +349,12 @@ const DashboardLayout = ({ children }) => {
                         <h3 className="text-sm font-semibold text-neutral-800">Notifications</h3>
                       </div>
                       <div className="max-h-64 overflow-y-auto">
-                        {notifications.length > 0 ? (
+                        {isLoadingNotifications ? (
+                          <div className="px-4 py-8 text-center">
+                            <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                            <p className="text-sm text-neutral-500">Loading notifications...</p>
+                          </div>
+                        ) : notifications.length > 0 ? (
                           notifications.map((notification) => {
                             const IconComponent = notification.icon;
                             return (
@@ -344,15 +363,17 @@ const DashboardLayout = ({ children }) => {
                                 className="px-4 py-3 hover:bg-primary-50 transition-colors duration-200 border-b border-neutral-100 last:border-b-0"
                               >
                                 <div className="flex items-start space-x-3">
-                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${notification.type === 'bid' ? 'bg-emerald-100' :
-                                    notification.type === 'auction' ? 'bg-orange-100' :
-                                      notification.type === 'appointment' ? 'bg-purple-100' :
-                                        'bg-blue-100'
+                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${notification.type === 'new_customer' ? 'bg-blue-100' :
+                                    notification.type === 'bid' ? 'bg-emerald-100' :
+                                      notification.type === 'auction' ? 'bg-orange-100' :
+                                        notification.type === 'appointment' ? 'bg-purple-100' :
+                                          'bg-gray-100'
                                     }`}>
-                                    <IconComponent className={`w-4 h-4 ${notification.type === 'bid' ? 'text-emerald-600' :
-                                      notification.type === 'auction' ? 'text-orange-600' :
-                                        notification.type === 'appointment' ? 'text-purple-600' :
-                                          'text-blue-600'
+                                    <IconComponent className={`w-4 h-4 ${notification.type === 'new_customer' ? 'text-blue-600' :
+                                      notification.type === 'bid' ? 'text-emerald-600' :
+                                        notification.type === 'auction' ? 'text-orange-600' :
+                                          notification.type === 'appointment' ? 'text-purple-600' :
+                                            'text-gray-600'
                                       }`} />
                                   </div>
                                   <div className="flex-1 min-w-0">
