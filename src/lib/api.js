@@ -115,4 +115,15 @@ export const getDashboardActivity = async (limit = 6) => {
   }
 };
 
+// Customer Details API
+export const getCustomerDetails = async (customerId) => {
+  try {
+    const response = await api.get(`/customer/details/${customerId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching customer details:', error);
+    throw error;
+  }
+};
+
 export default api;

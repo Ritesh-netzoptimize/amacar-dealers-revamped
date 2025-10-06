@@ -12,12 +12,16 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import CustomerDetailsModal from '../../common/CustomerDetailsModal/CustomerDetailsModal';
 
 const RecentCustomers = () => {
   const navigate = useNavigate();
   const [recentCustomers, setRecentCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+  const [selectedCustomerName, setSelectedCustomerName] = useState('');
 
   // Fetch recent customers from API
   const fetchRecentCustomers = async () => {
@@ -80,8 +84,16 @@ const RecentCustomers = () => {
     }
   };
 
-  const handleView = (customerId) => {
-    console.log('View customer:', customerId);
+  const handleView = (customerId, customerName) => {
+    setSelectedCustomerId(customerId);
+    setSelectedCustomerName(customerName);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCustomerId(null);
+    setSelectedCustomerName('');
   };
 
   const handleContact = (customerId) => {
@@ -231,7 +243,7 @@ const RecentCustomers = () => {
                 <TableRow 
                   key={customer.id}
                   className="border-neutral-100 hover:bg-neutral-50 transition-colors duration-200 cursor-pointer"
-                  onClick={() => handleView(customer.id)}
+                  onClick={() => handleView(customer.id, customer.name)}
                 >
                   <TableCell className="font-medium text-neutral-900">
                     {customer.name}
@@ -252,7 +264,7 @@ const RecentCustomers = () => {
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleView(customer.id);
+                          handleView(customer.id, customer.name);
                         }}
                         className="h-8 px-3 text-xs"
                       >
@@ -297,7 +309,7 @@ const RecentCustomers = () => {
             variants={itemVariants}
             whileHover={{ y: -2 }}
             className="bg-neutral-50 rounded-xl p-4 border border-neutral-200 hover:shadow-md transition-all duration-200 cursor-pointer"
-            onClick={() => handleView(customer.id)}
+            onClick={() => handleView(customer.id, customer.name)}
           >
             <div className="space-y-3">
               {/* Customer Name */}
@@ -337,7 +349,7 @@ const RecentCustomers = () => {
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleView(customer.id);
+                    handleView(customer.id, customer.name);
                   }}
                   className="flex-1 h-10 text-sm"
                 >
@@ -377,6 +389,14 @@ const RecentCustomers = () => {
           View All Customers
         </Button>
       </motion.div>
+
+      {/* Customer Details Modal */}
+      <CustomerDetailsModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        customerId={selectedCustomerId}
+        customerName={selectedCustomerName}
+      />
     </motion.div>
   );
 };
