@@ -111,7 +111,7 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
 
   const handleViewVehicle = (vehicle) => {
     console.log("View Vehicle:", vehicle.id);
-    navigate(`/live-auctions/${vehicle.id}`, { 
+    navigate(`/vehicle-details/${vehicle.id}`, { 
       state: { 
         productId: vehicle.id,
         vehicleData: vehicle 

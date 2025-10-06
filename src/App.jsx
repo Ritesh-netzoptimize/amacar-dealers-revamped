@@ -18,7 +18,7 @@ import { Toaster } from "react-hot-toast";
 import Profile from "./pages/dashboard/Profile";
 import Home from "./pages/home/Home";
 import BackToTop from "./components/ui/BackToTop";
-import SingleLiveAuction from "./pages/dashboard/SingleLiveAuction";
+import SingleLiveAuction from "./pages/dashboard/VehicleDetails";
 
 function App() {
   // const location = useLocation();
@@ -96,14 +96,6 @@ function App() {
                 <LiveAuctions />
               </DashboardLayout>
               // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/live-auctions/:id"
-            element={
-              <DashboardLayout>
-                <SingleLiveAuction />
-              </DashboardLayout>
             }
           />
           <Route
@@ -194,6 +186,14 @@ function App() {
                 <Profile />
               </DashboardLayout>
               // </PrivateRoute>
+            }
+          />
+          <Route
+            path="/vehicle-details/:id"
+            element={
+              <DashboardLayout>
+                <SingleLiveAuction />
+              </DashboardLayout>
             }
           />
         </Routes>

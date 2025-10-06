@@ -10,9 +10,9 @@ import {
 } from "lucide-react";
 import api from "@/lib/api";
 import SingleLiveAuctionSkeleton from "@/components/skeletons/SingleLiveAuction/SingleLiveAuctionSkeleton";
-import ImageCarouselAndKeyInfo from "@/components/single-live-auction/ImageCarouselAndKeyInfo";
-import MainContent from "@/components/single-live-auction/MainContent";
-import BidsSection from "@/components/single-live-auction/BidsSection";
+import ImageCarouselAndKeyInfo from "@/components/vehicle-details/ImageCarouselAndKeyInfo";
+import MainContent from "@/components/vehicle-details/MainContent";
+import BidsSection from "@/components/vehicle-details/BidsSection";
 import { Button } from "@/components/ui/button";
 import { Gavel } from "lucide-react";
 import BidDialog from "@/components/common/BidDialog/BidDialog";
@@ -26,6 +26,32 @@ const SingleLiveAuction = () => {
   const [remainingTime, setRemainingTime] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  // Get current user ID from localStorage or auth context
+  const getCurrentUserId = () => {
+    try {
+      const authUser = localStorage.getItem('authUser');
+      if (authUser) {
+        const user = JSON.parse(authUser);
+        return user.id || user.user_id;
+      }
+    } catch (error) {
+      console.error('Error getting current user ID:', error);
+    }
+    return null;
+  };
+
+  // Filter bids to show only current user's bids
+  const filterUserBids = (bids, userId) => {
+    if (!bids || !userId) {
+      console.log('No bids or userId:', { bids, userId });
+      return [];
+    }
+    const userBids = bids.filter(bid => bid.bidder_id === userId.toString());
+    console.log('Filtered user bids:', { allBids: bids, userId, userBids });
+    return userBids;
+  };
 
   // Parse time remaining string to seconds
   const parseTimeRemaining = (timeString) => {
@@ -44,60 +70,74 @@ const SingleLiveAuction = () => {
   };
 
   // Transform API data to match component expectations
-  const transformAuctionData = (auctionData) => {
+  const transformVehicleData = (vehicleData, userId) => {
     return {
       basic_info: {
-        title: auctionData.title,
-        year: parseInt(auctionData.year),
-        make: auctionData.make,
-        model: auctionData.model,
-        trim: "N/A", // Not provided in API
-        mileage: parseInt(auctionData.mileage),
-        body_type: "N/A", // Not provided in API
-        exterior_color: "N/A", // Not provided in API
-        interior_color: "N/A", // Not provided in API
-        transmission: "N/A", // Not provided in API
-        engine_type: "N/A", // Not provided in API
-        powertrain_description: "N/A", // Not provided in API
+        product_id: vehicleData.basic_info.product_id,
+        title: vehicleData.basic_info.title,
+        vin: vehicleData.basic_info.vin,
+        year: parseInt(vehicleData.basic_info.year),
+        make: vehicleData.basic_info.make,
+        model: vehicleData.basic_info.model,
+        trim: vehicleData.basic_info.trim,
+        mileage: parseInt(vehicleData.basic_info.mileage),
+        body_type: vehicleData.basic_info.body_type,
+        exterior_color: vehicleData.basic_info.exterior_color,
+        interior_color: vehicleData.basic_info.interior_color,
+        transmission: vehicleData.basic_info.transmission,
+        engine_type: vehicleData.basic_info.engine_type,
+        powertrain_description: vehicleData.basic_info.powertrain_description,
+        features: vehicleData.basic_info.features || [],
       },
       location: {
-        city: "N/A", // Not provided in API
-        state: "N/A", // Not provided in API
-        zip_code: "N/A", // Not provided in API
+        city: vehicleData.location.city,
+        state: vehicleData.location.state,
+        zip_code: vehicleData.location.zip_code,
+        coordinates: vehicleData.location.coordinates,
       },
       cash_offer: {
-        offer_amount: auctionData.cash_offer,
-        offer_date: "N/A", // Not provided in API
-        offer_expiration: "N/A", // Not provided in API
+        offer_amount: parseFloat(vehicleData.cash_offer.offer_amount),
+        offer_date: vehicleData.cash_offer.offer_date,
+        offer_expiration: vehicleData.cash_offer.offer_expiration,
+        offer_terms: vehicleData.cash_offer.offer_terms,
+        dealers_to_send_details: vehicleData.cash_offer.dealers_to_send_details,
       },
       auction: {
-        is_active: auctionData.auction_status === "active",
-        auction_started_at: auctionData.created_at,
-        auction_ends_at: auctionData.ends_at,
-        remaining_seconds: parseTimeRemaining(auctionData.time_remaining),
+        is_auctionable: vehicleData.auction.is_auctionable,
+        is_active: vehicleData.auction.is_active,
+        auction_started: vehicleData.auction.auction_started,
+        auction_started_at: vehicleData.auction.auction_started_at,
+        auction_ends_at: vehicleData.auction.auction_ends_at,
+        is_sent_to_salesforce: vehicleData.auction.is_sent_to_salesforce,
+        remaining_seconds: vehicleData.auction.remaining_seconds,
+        in_working_hours: vehicleData.auction.in_working_hours,
       },
       user: {
-        name: "N/A", // Not provided in API
-        email: "N/A", // Not provided in API
-        phone: "N/A", // Not provided in API
+        user_id: vehicleData.user.user_id,
+        display_name: vehicleData.user.display_name,
+        email: vehicleData.user.email,
+        first_name: vehicleData.user.first_name,
+        last_name: vehicleData.user.last_name,
       },
       condition_assessment: {
-        title: "N/A", // Not provided in API
-        cosmetic: "N/A", // Not provided in API
-        accident: "N/A", // Not provided in API
-        tread: "N/A", // Not provided in API
-        smoked: "N/A", // Not provided in API
-        modifications: "N/A", // Not provided in API
-        warning: "N/A", // Not provided in API
-        features: "N/A", // Not provided in API
+        title: vehicleData.condition_assessment.title,
+        cosmetic: vehicleData.condition_assessment.cosmetic,
+        accident: vehicleData.condition_assessment.accident,
+        tread: vehicleData.condition_assessment.tread,
+        smoked: vehicleData.condition_assessment.smoked,
+        modifications: vehicleData.condition_assessment.modifications,
+        warning: vehicleData.condition_assessment.warning,
+        features: vehicleData.condition_assessment.features || [],
       },
-      bids: [], // Not provided in API
-      images:
-        auctionData.images?.map((img) => ({
-          url: img.url,
-          name: img.type,
-          attachment_id: img.id,
-        })) || [],
+      bids: filterUserBids(vehicleData.bids || [], userId),
+      images: vehicleData.images?.map((img) => ({
+        url: img.url,
+        name: img.name,
+        attachment_id: img.attachment_id,
+        meta_key: img.meta_key,
+      })) || [],
+      created_at: vehicleData.created_at,
+      updated_at: vehicleData.updated_at,
     };
   };
 
@@ -116,6 +156,12 @@ const SingleLiveAuction = () => {
     // TODO: Update the vehicle's highest bid or handle success
   };
 
+  // Set current user ID on component mount
+  useEffect(() => {
+    const userId = getCurrentUserId();
+    setCurrentUserId(userId);
+  }, []);
+
   // Fetch vehicle details
   useEffect(() => {
     console.log("productId", productId);
@@ -131,16 +177,17 @@ const SingleLiveAuction = () => {
         setError(null);
         console.log("productId", productId);
         console.log("before api call");
-        const response = await api.get(`/live-auctions/${productId}`);
+        const response = await api.get(`/vehicle/details/${productId}`);
 
         if (response.data.success) {
           // Transform the API response to match the expected structure
-          const transformedData = transformAuctionData(response.data.auction);
+          const userId = getCurrentUserId();
+          const transformedData = transformVehicleData(response.data.vehicle, userId);
           setVehicleData(transformedData);
           setRemainingTime(
-            parseTimeRemaining(response.data.auction?.time_remaining) || 0
+            response.data.vehicle.auction?.remaining_seconds || 0
           );
-          console.log("response.data.auction", response.data.auction);
+          console.log("response.data.vehicle", response.data.vehicle);
           console.log("transformedData", transformedData);
         } else {
           setError(response.data.message || "Failed to fetch vehicle details");
@@ -179,14 +226,16 @@ const SingleLiveAuction = () => {
 
   // Update remaining time when vehicleData changes
   useEffect(() => {
-    if (vehicleData?.auction?.remaining_seconds) {
+    if (vehicleData?.auction?.remaining_seconds !== undefined) {
       setRemainingTime(vehicleData.auction.remaining_seconds);
     }
   }, [vehicleData]);
 
   // Format remaining time
   const formatRemainingTime = (seconds) => {
-    if (!seconds) return "N/A";
+    if (seconds === undefined || seconds === null) return "N/A";
+    
+    if (seconds <= 0) return "Auction Ended";
 
     const days = Math.floor(seconds / 86400);
     const hours = Math.floor((seconds % 86400) / 3600);
@@ -378,13 +427,35 @@ const SingleLiveAuction = () => {
           />
 
           {/* Bids Section */}
-          {bids?.length > 0 && (
+          {bids?.length > 0 ? (
             <BidsSection
               bids={bids}
               itemVariants={itemVariants}
               getBidStatusIcon={getBidStatusIcon}
               getBidStatusText={getBidStatusText}
             />
+          ) : (
+            <motion.div
+              variants={itemVariants}
+              className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-8 text-center"
+            >
+              <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Gavel className="w-8 h-8 text-neutral-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-neutral-800 mb-2">
+                No Bids Yet
+              </h3>
+              <p className="text-neutral-600 mb-4">
+                You haven't placed any bids on this vehicle yet.
+              </p>
+              <Button
+                onClick={() => handleBidNow(vehicleData)}
+                className="bg-orange-500 hover:bg-orange-600 text-white"
+              >
+                <Gavel className="w-4 h-4 mr-2" />
+                Place Your First Bid
+              </Button>
+            </motion.div>
           )}
         </motion.div>
 
