@@ -8,6 +8,7 @@ import { sortNewCustomers } from "@/utils/newCustomersSorting";
 import NewCustomersSkeleton from "@/components/skeletons/NewCustomers/NewCustomersSkeleton";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
+import CustomerDetailsModal from "@/components/common/CustomerDetailsModal/CustomerDetailsModal";
 
 const NewCustomers = () => {
   const navigate = useNavigate();
@@ -16,6 +17,11 @@ const NewCustomers = () => {
   const [isSorting, setIsSorting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [customers, setCustomers] = useState([]);
+
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+  const [selectedCustomerName, setSelectedCustomerName] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [pagination, setPagination] = useState({
     current_page: 1,
     per_page: 10,
@@ -53,6 +59,18 @@ const NewCustomers = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleViewCustomer = (customerId, customerName) => {
+    setSelectedCustomerId(customerId);
+    setSelectedCustomerName(customerName);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCustomerId(null);
+    setSelectedCustomerName('');
   };
 
   // Fetch data on component mount and when page changes
@@ -138,10 +156,7 @@ const NewCustomers = () => {
   }, [transformedCustomers, sortBy]);
 
   // Handler functions
-  const handleViewCustomer = (customerId) => {
-    console.log("View customer:", customerId);
-    navigate(`/customers/${customerId}`);
-  };
+
 
   const handleViewVehicle = (customerId) => {
     console.log("View vehicle for customer:", customerId);
@@ -269,6 +284,13 @@ const NewCustomers = () => {
             </motion.div>
           )}
         </AnimatePresence>
+      {/* Customer Details Modal */}
+      <CustomerDetailsModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        customerId={selectedCustomerId}
+        customerName={selectedCustomerName}
+      />
       </div>
     </motion.div>
   );
