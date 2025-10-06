@@ -1,149 +1,104 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { toast } from "react-hot-toast";
 import DashboardStats from "@/components/dashboard/DashboardStats/DashboardStats";
 import HighestBidsContainer from "@/components/highest-bids/HighestBidsContainer";
 import Pagination from "@/components/common/Pagination/Pagination";
 import FilterTabs from "@/components/filters/LiveAuctionFilterTabs";
 import HighestBidsSkeleton from "@/components/skeletons/HighestBids/HighestBidsSkeleton";
+import api from "@/lib/api";
 
 const HighestBids = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isFilterLoading, setIsFilterLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeFilter, setActiveFilter] = useState("allTime");
+  const [highestBids, setHighestBids] = useState([]);
+  const [pagination, setPagination] = useState({});
+  const [error, setError] = useState(null);
   const itemsPerPage = 4; // Show 4 vehicles per page
 
-  // Static data for now - will replace with API later
-  const highestBids = [
-    {
-      id: 1,
-      name: "2014 Jeep Grand Cherokee",
-      images: [
-        "https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=600&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=600&h=400&fit=crop&auto=format&q=80",
-        "https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=600&h=400&fit=crop&auto=format&q=80",
-      ],
-      make: "Jeep",
-      model: "Grand Cherokee",
-      year: 2014,
-      offer: "$7,725",
-      offerStatus: "Accepted",
-      highestBid: "$8,200",
-      highestBidder: "Neeraj",
-      finalPrice: "$8,200",
-      VIN: "12345678901234567",
-      auctionEnds: "Oct 30, 2025 14:00",
-      auctionStatus: "Active",
-      bidPercentage: "85%",
-      timeLeft: "0",
-    },
-    {
-      id: 2,
-      name: "2020 Lexus RX 350",
-      images: [
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&h=400&fit=crop&auto=format&q=80",
-      ],
-      make: "Lexus",
-      model: "RX 350",
-      year: 2020,
-      offer: "$35,000",
-      offerStatus: "Accepted",
-      highestBid: "$36,500",
-      highestBidder: "Neeraj",
-      finalPrice: "$36,500",
-      VIN: "12345678901234567",
-      auctionEnds: "Sept 30, 2025 16:00",
-      auctionStatus: "Ended",
-      bidPercentage: "85%",
-      timeLeft: "0",
-    },
-    {
-      id: 3,
-      name: "2019 BMW X5",
-      images: [
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=600&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=600&h=400&fit=crop&auto=format&q=80",
-        "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=600&h=400&fit=crop&auto=format&q=80",
-      ],
-      make: "BMW",
-      model: "X5",
-      year: 2019,
-      offer: "$42,500",
-      offerStatus: "Accepted",
-      highestBid: "$44,000",
-      highestBidder: "Neeraj",
-      finalPrice: "$44,000",
-      VIN: "12345678901234567",
-      auctionEnds: "Nov 1, 2025 10:00",
-      auctionStatus: "Active",
-      bidPercentage: "85%",
-      timeLeft: "0",
-    },
-    {
-      id: 4,
-      name: "2021 Mercedes-Benz C-Class",
-      images: [
-        "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=600&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=600&h=400&fit=crop&auto=format&q=80",
-      ],
-      make: "Mercedes-Benz",
-      model: "C-Class",
-      year: 2021,
-      offer: "$28,500",
-      offerStatus: "Accepted",
-      highestBid: "$29,200",
-      highestBidder: "Neeraj",
-      finalPrice: "$29,200",
-      VIN: "12345678901234567",
-      auctionEnds: "Sept 2, 2025 12:00",
-      auctionStatus: "Ended",
-      bidPercentage: "85%",
-      timeLeft: "0",
-    },
-    {
-      id: 5,
-      name: "2022 Audi A4",
-      images: [
-        "https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=600&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=600&h=400&fit=crop&auto=format&q=80",
-      ],
-      make: "Audi",
-      model: "A4",
-      year: 2022,
-      offer: "$32,000",
-      offerStatus: "Accepted",
-      highestBid: "$33,500",
-      highestBidder: "Neeraj",
-      finalPrice: "$33,500",
-      VIN: "12345678901234567",
-      auctionEnds: "Aug 3, 2025 15:00",
-      auctionStatus: "Ended",
-      bidPercentage: "85%",
-      timeLeft: "0",
-    },
-    {
-      id: 6,
-      name: "2020 Tesla Model 3",
-      images: [
-        "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=600&h=400&fit=crop",
-        "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=600&h=400&fit=crop&auto=format&q=80",
-      ],
-      make: "Tesla",
-      model: "Model 3",
-      year: 2020,
-      offer: "$38,000",
-      offerStatus: "Accepted",
-      highestBid: "$39,800",
-      highestBidder: "Neeraj",
-      finalPrice: "$39,800",
-      VIN: "12345678901234567",
-      auctionEnds: "Nov 4, 2025 11:00",
-      auctionStatus: "Active",
-      bidPercentage: "85%",
-      timeLeft: "0",
-    },
-  ];
+  // Transform API data to match component expectations
+  const transformApiData = (apiData) => {
+    return apiData.map((item) => {
+      const vehicle = item.vehicle;
+      const highestBid = item.highest_bid;
+
+      return {
+        id: vehicle.id,
+        name: vehicle.title,
+        images: vehicle.images?.map((img) => img.url) || [],
+        make: vehicle.make,
+        model: vehicle.model,
+        year: vehicle.year,
+        offer: `$${vehicle.cash_offer?.toLocaleString() || "0"}`,
+        offerStatus: "Accepted",
+        highestBid: highestBid?.amount
+          ? `$${highestBid.amount.toLocaleString()}`
+          : "No bids",
+        highestBidder: highestBid?.bidder?.name || "No bidder",
+        finalPrice: highestBid?.amount
+          ? `$${highestBid.amount.toLocaleString()}`
+          : "No bids",
+        VIN: vehicle.vin || "N/A",
+        auctionEnds: vehicle.ends_at
+          ? new Date(vehicle.ends_at).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "N/A",
+        auctionStatus: item.auction_status === "ended" ? "Ended" : "Active",
+        bidPercentage: "85%", // This might need to be calculated from API data
+        timeLeft: "0",
+        totalBids: item.total_bids || 0,
+        bidDate: highestBid?.bid_date || null,
+        bidderId: highestBid?.bidder?.id || null,
+      };
+    });
+  };
+
+  // Highest Bids API
+  const getHighestBids = async (page = 1, perPage = 4) => {
+    try {
+      const response = await api.get('/highest-bids', {
+        params: {
+          page,
+          per_page: perPage
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching highest bids:', error);
+      throw error;
+    }
+  };
+
+  // Fetch highest bids data from API
+  const fetchHighestBids = async (page = 1, perPage = 4) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await getHighestBids(page, perPage);
+
+      if (response.success) {
+        const transformedData = transformApiData(response.data);
+        setHighestBids(transformedData);
+        setPagination(response.pagination);
+      } else {
+        throw new Error("Failed to fetch highest bids");
+      }
+    } catch (error) {
+      console.error("Error fetching highest bids:", error);
+      setError(error.message || "Failed to fetch highest bids");
+      toast.error("Failed to load highest bids. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Filter auctions based on active filter
   const getFilteredAuctions = () => {
@@ -185,11 +140,9 @@ const HighestBids = () => {
 
   const filteredAuctions = getFilteredAuctions();
 
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredAuctions.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentAuctions = filteredAuctions.slice(startIndex, endIndex);
+  // Use API pagination instead of client-side pagination
+  const totalPages = pagination.total_pages || 1;
+  const currentAuctions = highestBids;
 
   // Handle filter change with loading simulation
   const handleFilterChange = async (filterId) => {
@@ -205,34 +158,16 @@ const HighestBids = () => {
     setIsFilterLoading(false);
   };
 
-  // Simulate data loading - replace with actual API calls
+  // Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    fetchHighestBids(page, itemsPerPage);
+  };
+
+  // Load data on component mount and when page changes
   useEffect(() => {
-    const loadHighestBidsData = async () => {
-      try {
-        // TODO: Replace with actual API calls
-        // Example:
-        // const [statsData, auctionsData] = await Promise.all([
-        //   fetchhighestBidsStats(),
-        //   fetchhighestBids()
-        // ]);
-
-        // Simulate API calls for different sections
-        await Promise.all([
-          // Simulate stats loading
-          new Promise((resolve) => setTimeout(resolve, 800)),
-          // Simulate auctions loading
-          new Promise((resolve) => setTimeout(resolve, 1200)),
-        ]);
-
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Error loading won auctions data:", error);
-        setIsLoading(false);
-      }
-    };
-
-    loadHighestBidsData();
-  }, []);
+    fetchHighestBids(currentPage, itemsPerPage);
+  }, [currentPage]);
 
   // Animation variants
   const containerVariants = {
@@ -316,7 +251,31 @@ const HighestBids = () => {
 
           {/* Highest Bids Grid */}
           <motion.div className="mt-8" variants={statsVariants}>
-            <HighestBidsContainer auctions={currentAuctions} />
+            {error ? (
+              <div className="text-center py-12">
+                <div className="text-red-500 text-lg mb-2">
+                  Error loading highest bids
+                </div>
+                <div className="text-red-400 text-sm">{error}</div>
+                <button
+                  onClick={() => fetchHighestBids(currentPage, itemsPerPage)}
+                  className="mt-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : currentAuctions.length > 0 ? (
+              <HighestBidsContainer auctions={currentAuctions} />
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-neutral-500 text-lg mb-2">
+                  No highest bids found
+                </div>
+                <div className="text-neutral-400 text-sm">
+                  Try adjusting your filters or check back later
+                </div>
+              </div>
+            )}
           </motion.div>
 
           {/* Pagination */}
@@ -327,7 +286,7 @@ const HighestBids = () => {
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={setCurrentPage}
+              onPageChange={handlePageChange}
               className="w-full max-w-md mt-6 mb-4"
             />
           </motion.div>
