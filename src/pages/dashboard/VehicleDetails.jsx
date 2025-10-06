@@ -9,14 +9,14 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import api from "@/lib/api";
-import SingleLiveAuctionSkeleton from "@/components/skeletons/SingleLiveAuction/SingleLiveAuctionSkeleton";
+import SingleVehicleDetailsSkeleton from "@/components/skeletons/VehicleDetails/VehicleDetailsSkeleton";
 import ImageCarouselAndKeyInfo from "@/components/vehicle-details/ImageCarouselAndKeyInfo";
 import MainContent from "@/components/vehicle-details/MainContent";
 import BidsSection from "@/components/vehicle-details/BidsSection";
 import { Button } from "@/components/ui/button";
 import { Gavel } from "lucide-react";
 import BidDialog from "@/components/common/BidDialog/BidDialog";
-const SingleLiveAuction = () => {
+const VehicleDetails = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const productId = state?.productId;
@@ -304,7 +304,7 @@ const SingleLiveAuction = () => {
 
   // Loading state
   if (loading) {
-    return <SingleLiveAuctionSkeleton />;
+    return <SingleVehicleDetailsSkeleton />;
   }
 
   // Error state
@@ -474,4 +474,4 @@ const SingleLiveAuction = () => {
   );
 };
 
-export default SingleLiveAuction;
+export default VehicleDetails;

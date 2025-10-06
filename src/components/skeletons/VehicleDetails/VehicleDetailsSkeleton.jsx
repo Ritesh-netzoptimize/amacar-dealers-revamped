@@ -1,6 +1,6 @@
 import React from "react";
 
-const SingleLiveAuctionSkeleton = () => {
+const SingleVehicleDetailsSkeleton = () => {
   return (
     <div className="mt-16 min-h-screen bg-gradient-hero">
       <div className="max-w-7xl mx-auto">
@@ -141,4 +141,4 @@ const SingleLiveAuctionSkeleton = () => {
   );
 };
 
-export default SingleLiveAuctionSkeleton;
+export default SingleVehicleDetailsSkeleton;
