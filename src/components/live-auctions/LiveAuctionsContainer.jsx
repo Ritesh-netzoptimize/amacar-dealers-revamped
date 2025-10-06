@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { Gavel, X, Eye, Clock, DollarSign } from "lucide-react";
 import PhotoSwipeGallery from "@/components/ui/PhotoSwipeGallery";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import BidDialog from "@/components/common/BidDialog/BidDialog";
 import PassDialog from "@/components/common/PassDialog/PassDialog";
 
 const LiveAuctionsContainer = ({ auctions = [] }) => {
+  const navigate = useNavigate();
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
   const [isPassDialogOpen, setIsPassDialogOpen] = useState(false);
@@ -107,9 +109,14 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
     setPassErrorMessage("");
   };
 
-  const handleViewVehicle = (vehicleId) => {
-    console.log("View Vehicle:", vehicleId);
-    // TODO: Implement view vehicle functionality
+  const handleViewVehicle = (vehicle) => {
+    console.log("View Vehicle:", vehicle.id);
+    navigate(`/live-auctions/${vehicle.id}`, { 
+      state: { 
+        productId: vehicle.id,
+        vehicleData: vehicle 
+      } 
+    });
   };
 
   return (
@@ -194,6 +201,14 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
 
                 {/* CTA Buttons */}
                 <div className="flex gap-2 pt-4 mt-auto">
+                  <Button
+                    variant="outline"
+                    onClick={() => handleViewVehicle(vehicle)}
+                    className="flex-1 h-9 text-xs border-neutral-200 hover:border-blue-300 hover:bg-blue-50 text-neutral-600 hover:text-blue-600 font-medium rounded-lg transition-all duration-200"
+                  >
+                    <Eye className="w-3.5 h-3.5 mr-1" />
+                    View
+                  </Button>
                   <Button
                     variant="outline"
                     onClick={() => handlePassVehicle(vehicle)}

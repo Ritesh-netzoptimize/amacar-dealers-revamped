@@ -26,3 +26,25 @@ export const formatBidAmount = (amount) => {
       maximumFractionDigits: 0,
     }).format(amount);
   };
+
+  export function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  }
+
+  export function formatDate(date) {
+    console.log("date", date);
+    if (date === null || date === undefined || date === "N/A" || date === "") return "N/A";
+    const formattedDate = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(new Date(date));
+    console.log("formatted date", formattedDate);
+    return formattedDate;
+  }
+  
