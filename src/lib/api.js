@@ -40,6 +40,49 @@ api.interceptors.response.use(
 
 
 
+// Dashboard Cards API
+export const getDashboardCards = async () => {
+  try {
+    const response = await api.get('/dashboard/cards');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching dashboard cards:', error);
+    throw error;
+  }
+};
+
+// Recent Vehicles API (using live auctions endpoint)
+export const getRecentVehicles = async (limit = 6) => {
+  try {
+    const response = await api.get('/live-auctions', {
+        params: {
+          page: 1,
+          per_page: limit
+        }
+      });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching recent vehicles:', error);
+    throw error;
+  }
+};
+
+// Recent Customers API (using active customers endpoint)
+export const getRecentCustomers = async (limit = 5) => {
+  try {
+    const response = await api.get('/active-customers', {
+      params: {
+        page: 1,
+        per_page: limit
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching recent customers:', error);
+    throw error;
+  }
+};
+
 // Live Auctions API
 export const getLiveAuctions = async (page = 1, perPage = 4, filters = {}) => {
   try {

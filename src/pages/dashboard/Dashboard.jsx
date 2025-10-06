@@ -9,35 +9,10 @@ import DashboardSkeleton from "@/components/skeletons/dashboard/DashboardSkeleto
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate data loading for other sections (vehicles, customers, etc.)
+  // Dashboard sections now handle their own loading states
   useEffect(() => {
-    const loadDashboardData = async () => {
-      try {
-        // TODO: Replace with actual API calls for other sections
-        // Example:
-        // const [vehiclesData, customersData] = await Promise.all([
-        //   fetchRecentVehicles(),
-        //   fetchRecentCustomers()
-        // ]);
-        
-        // Simulate API calls for other sections (stats now handles its own loading)
-        await Promise.all([
-          // Simulate vehicles loading
-          new Promise(resolve => setTimeout(resolve, 1200)),
-          // Simulate customers loading
-          new Promise(resolve => setTimeout(resolve, 1000)),
-          // Simulate quick actions loading
-          new Promise(resolve => setTimeout(resolve, 600))
-        ]);
-        
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error loading dashboard data:', error);
-        setIsLoading(false);
-      }
-    };
-
-    loadDashboardData();
+    // Set loading to false immediately since components handle their own loading
+    setIsLoading(false);
   }, []);
 
   // Show skeleton while loading
