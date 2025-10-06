@@ -71,30 +71,34 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
       animate="visible"
       className="space-y-6"
     >
-      <div className="text-center mb-6">
-        <motion.div
-          variants={itemVariants}
-          className="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-soft"
-        >
-          <CreditCard className="w-6 h-6 text-primary-600" />
-        </motion.div>
-        <motion.h2 variants={itemVariants} className="text-xl font-bold text-neutral-900 mb-2">
-          Payment Setup
-        </motion.h2>
-        <motion.p variants={itemVariants} className="text-neutral-600 text-sm">
-          Complete your registration with secure payment
-        </motion.p>
+      <div className="text-left mb-6">
+        <div className="flex items-center gap-4 mb-4">
+          <motion.div
+            variants={itemVariants}
+            className="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center shadow-soft"
+          >
+            <CreditCard className="w-6 h-6 text-primary-600" />
+          </motion.div>
+          <div>
+            <motion.h2 variants={itemVariants} className="text-xl font-bold text-neutral-900">
+              Payment Setup
+            </motion.h2>
+            <motion.p variants={itemVariants} className="text-neutral-600 text-sm">
+              Complete your registration with secure payment
+            </motion.p>
+          </div>
+        </div>
       </div>
 
       {/* Trial Information */}
-      <motion.div variants={itemVariants} className="bg-gradient-to-r from-success to-success/80 rounded-xl p-6 text-white">
-        <div className="flex items-center space-x-3 mb-4">
-          <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-            <Gift className="w-5 h-5" />
+      <motion.div variants={itemVariants} className="bg-gradient-to-r from-success to-success/80 rounded-xl p-4 text-white">
+        <div className="flex items-center space-x-3 mb-3">
+          <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+            <Gift className="w-4 h-4" />
           </div>
-          <h3 className="text-lg font-semibold">Free 30-Day Trial</h3>
+          <h3 className="text-base font-semibold">Free 30-Day Trial</h3>
         </div>
-        <p className="text-success-100 text-sm leading-relaxed mb-4">
+        <p className="text-success-100 text-sm leading-relaxed mb-3">
           Start with a free 30-day trial. No charges until your trial period ends. 
           Cancel anytime during the trial with no obligations.
         </p>
@@ -110,26 +114,26 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
         </div>
       </motion.div>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Card Information */}
-        <motion.div variants={itemVariants} className="bg-neutral-50 rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-neutral-900 mb-4">Payment Information</h3>
+        <motion.div variants={itemVariants} className="bg-neutral-50 rounded-xl p-4">
+          <h3 className="text-base font-semibold text-neutral-900 mb-3">Payment Information</h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {/* Card Number */}
             <div className="md:col-span-2 space-y-2">
               <label className="block text-sm font-semibold text-neutral-700">
                 Card Number *
               </label>
               <div className="relative">
-                <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
+                <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-neutral-400" />
                 <input
                   type="text"
                   value={formData.cardNumber}
                   onChange={handleCardNumberChange}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
+                  className={`w-full pl-9 pr-4 py-2.5 rounded-lg border ${
                     errors.cardNumber ? 'border-error' : 'border-neutral-200'
-                  } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+                  } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                   placeholder="1234 5678 9012 3456"
                   maxLength="19"
                 />
@@ -159,14 +163,14 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
                 Expiry Date *
               </label>
               <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
+                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-neutral-400" />
                 <input
                   type="text"
                   value={formData.expiryDate}
                   onChange={handleExpiryChange}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
+                  className={`w-full pl-9 pr-4 py-2.5 rounded-lg border ${
                     errors.expiryDate ? 'border-error' : 'border-neutral-200'
-                  } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+                  } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                   placeholder="MM/YY"
                   maxLength="5"
                 />
@@ -182,14 +186,14 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
                 CVV *
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-neutral-400" />
                 <input
                   type="text"
                   value={formData.cvv}
                   onChange={(e) => updateFormData('cvv', e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
+                  className={`w-full pl-9 pr-4 py-2.5 rounded-lg border ${
                     errors.cvv ? 'border-error' : 'border-neutral-200'
-                  } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+                  } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                   placeholder="123"
                   maxLength="4"
                 />
@@ -208,9 +212,9 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
                 type="text"
                 value={formData.cardholderName}
                 onChange={(e) => updateFormData('cardholderName', e.target.value)}
-                className={`w-full px-4 py-3 rounded-xl border ${
+                className={`w-full px-4 py-2.5 rounded-lg border ${
                   errors.cardholderName ? 'border-error' : 'border-neutral-200'
-                } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+                } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                 placeholder="Name as it appears on card"
               />
               {errors.cardholderName && (
@@ -246,14 +250,14 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
       </div>
 
       {/* Security Notice */}
-      <motion.div variants={itemVariants} className="bg-primary-50 rounded-xl p-4">
+      <motion.div variants={itemVariants} className="bg-primary-50 rounded-xl p-3">
         <div className="flex items-start space-x-3">
-          <div className="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-            <Lock className="w-4 h-4 text-white" />
+          <div className="w-5 h-5 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+            <Lock className="w-3 h-3 text-white" />
           </div>
           <div>
-            <h4 className="font-semibold text-primary-900 mb-1">Secure Payment</h4>
-            <p className="text-sm text-primary-700">
+            <h4 className="font-semibold text-primary-900 mb-1 text-sm">Secure Payment</h4>
+            <p className="text-xs text-primary-700">
               Your payment information is encrypted and processed securely. We use industry-standard 
               SSL encryption to protect your data and never store your full card details.
             </p>
@@ -262,21 +266,21 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
       </motion.div>
 
       {/* Pricing Summary */}
-      <motion.div variants={itemVariants} className="bg-gradient-to-r from-neutral-50 to-neutral-100 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-neutral-900 mb-4">Pricing Summary</h3>
-        <div className="space-y-3">
+      <motion.div variants={itemVariants} className="bg-gradient-to-r from-neutral-50 to-neutral-100 rounded-xl p-4">
+        <h3 className="text-base font-semibold text-neutral-900 mb-3">Pricing Summary</h3>
+        <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-neutral-600">30-Day Free Trial</span>
-            <span className="font-semibold text-success">$0.00</span>
+            <span className="text-neutral-600 text-sm">30-Day Free Trial</span>
+            <span className="font-semibold text-success text-sm">$0.00</span>
           </div>
-          <div className="flex justify-between items-center text-sm text-neutral-500">
+          <div className="flex justify-between items-center text-xs text-neutral-500">
             <span>After trial (monthly)</span>
             <span>$99.00</span>
           </div>
-          <div className="border-t border-neutral-200 pt-3">
+          <div className="border-t border-neutral-200 pt-2">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-neutral-900">Today's Charge</span>
-              <span className="font-bold text-lg text-success">$0.00</span>
+              <span className="font-semibold text-neutral-900 text-sm">Today's Charge</span>
+              <span className="font-bold text-success">$0.00</span>
             </div>
           </div>
         </div>

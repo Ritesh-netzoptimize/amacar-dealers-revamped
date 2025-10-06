@@ -37,19 +37,23 @@ const LocationInfo = ({ formData, updateFormData, errors }) => {
       animate="visible"
       className="space-y-6"
     >
-      <div className="text-center mb-6">
-        <motion.div
-          variants={itemVariants}
-          className="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-soft"
-        >
-          <MapPin className="w-6 h-6 text-primary-600" />
-        </motion.div>
-        <motion.h2 variants={itemVariants} className="text-xl font-bold text-neutral-900 mb-2">
-          Business Location
-        </motion.h2>
-        <motion.p variants={itemVariants} className="text-neutral-600 text-sm">
-          Where is your dealership located?
-        </motion.p>
+      <div className="text-left mb-6">
+        <div className="flex items-center gap-4 mb-4">
+          <motion.div
+            variants={itemVariants}
+            className="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center shadow-soft"
+          >
+            <MapPin className="w-6 h-6 text-primary-600" />
+          </motion.div>
+          <div>
+            <motion.h2 variants={itemVariants} className="text-xl font-bold text-neutral-900">
+              Business Location
+            </motion.h2>
+            <motion.p variants={itemVariants} className="text-neutral-600 text-sm">
+              Where is your dealership located?
+            </motion.p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

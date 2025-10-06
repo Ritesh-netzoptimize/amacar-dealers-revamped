@@ -4,14 +4,12 @@ import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import ProgressStepper from '../../components/register/ProgressStepper';
 import DealershipInfo from '../../components/register/DealershipInfo';
 import ContactInfo from '../../components/register/ContactInfo';
-import LocationInfo from '../../components/register/LocationInfo';
-import AccountSetup from '../../components/register/AccountSetup';
 import PaymentSetup from '../../components/register/PaymentSetup';
 
 const steps = [
-  { id: 1, title: 'Dealership Info', description: 'Basic dealership details' },
-  { id: 2, title: 'Contact & Location', description: 'Personal and business information' },
-  { id: 3, title: 'Account & Payment', description: 'Create account and complete registration' },
+  { id: 1, title: 'Dealership Info', description: 'Complete dealership and contact details' },
+  { id: 2, title: 'Personal & Account', description: 'Personal information and account setup' },
+  { id: 3, title: 'Payment', description: 'Complete your registration with payment' },
 ];
 
 const Register = () => {
@@ -64,28 +62,28 @@ const Register = () => {
     
     switch (step) {
       case 1:
+        // Dealership Info validation
         if (!formData.dealerCode) newErrors.dealerCode = 'Dealer code is required';
         if (!formData.dealershipName) newErrors.dealershipName = 'Dealership name is required';
         if (!formData.website) newErrors.website = 'Website is required';
         if (!formData.dealerGroup) newErrors.dealerGroup = 'Dealer group is required';
-        break;
-      case 2:
-        // Contact Info validation
+        // Contact Info validation (moved from step 2)
         if (!formData.jobPosition) newErrors.jobPosition = 'Job position is required';
-        if (!formData.firstName) newErrors.firstName = 'First name is required';
-        if (!formData.lastName) newErrors.lastName = 'Last name is required';
-        if (!formData.mobileNumber) newErrors.mobileNumber = 'Mobile number is required';
         if (!formData.businessEmail) newErrors.businessEmail = 'Business email is required';
         else if (!/\S+@\S+\.\S+/.test(formData.businessEmail)) {
           newErrors.businessEmail = 'Please enter a valid email address';
         }
-        // Location validation
+        // Location validation (moved from step 2)
         if (!formData.zipCode) newErrors.zipCode = 'Zip code is required';
         if (!formData.city) newErrors.city = 'City is required';
         if (!formData.state) newErrors.state = 'State is required';
         break;
-      case 3:
-        // Account Setup validation
+      case 2:
+        // Personal Info validation
+        if (!formData.firstName) newErrors.firstName = 'First name is required';
+        if (!formData.lastName) newErrors.lastName = 'Last name is required';
+        if (!formData.mobileNumber) newErrors.mobileNumber = 'Mobile number is required';
+        // Account Setup validation (moved from step 3)
         if (!formData.password) newErrors.password = 'Password is required';
         else if (formData.password.length < 8) {
           newErrors.password = 'Password must be at least 8 characters';
@@ -95,7 +93,9 @@ const Register = () => {
           newErrors.confirmPassword = 'Passwords do not match';
         }
         if (!formData.agreementAccepted) newErrors.agreementAccepted = 'You must accept the terms and conditions';
-        // Payment validation
+        break;
+      case 3:
+        // Payment validation only
         if (!formData.cardNumber) newErrors.cardNumber = 'Card number is required';
         if (!formData.expiryDate) newErrors.expiryDate = 'Expiry date is required';
         if (!formData.cvv) newErrors.cvv = 'CVV is required';
@@ -143,19 +143,9 @@ const Register = () => {
       case 1:
         return <DealershipInfo formData={formData} updateFormData={updateFormData} errors={errors} />;
       case 2:
-        return (
-          <div className="space-y-8">
-            <ContactInfo formData={formData} updateFormData={updateFormData} errors={errors} />
-            <LocationInfo formData={formData} updateFormData={updateFormData} errors={errors} />
-          </div>
-        );
+        return <ContactInfo formData={formData} updateFormData={updateFormData} errors={errors} />;
       case 3:
-        return (
-          <div className="space-y-8">
-            <AccountSetup formData={formData} updateFormData={updateFormData} errors={errors} />
-            <PaymentSetup formData={formData} updateFormData={updateFormData} errors={errors} />
-          </div>
-        );
+        return <PaymentSetup formData={formData} updateFormData={updateFormData} errors={errors} />;
       default:
         return null;
     }
@@ -182,7 +172,7 @@ const Register = () => {
 
       <div className="flex min-h-screen">
         {/* Left Column - Image */}
-        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <div className="hidden lg:flex lg:w-2/5 relative overflow-hidden">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -290,7 +280,7 @@ const Register = () => {
         </div>
 
         {/* Right Column - Form */}
-        <div className="w-full lg:w-1/2 flex flex-col ">
+        <div className="w-full lg:w-3/5 flex flex-col">
           <div className="flex-1 flex items-center justify-center p-4 lg:p-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -299,9 +289,9 @@ const Register = () => {
               className="w-full max-w-2xl"
             >
               {/* Form Card */}
-              <div className="bg-white rounded-3xl shadow-soft border border-neutral-100 overflow-hidden min-h-[700px] relative">
+              <div className="bg-white rounded-3xl shadow-soft border border-neutral-100 overflow-hidden min-h-[800px] max-h-[900px] flex flex-col">
                 {/* Mobile Progress Stepper */}
-                <div className="lg:hidden p-4 border-b border-neutral-200">
+                <div className="lg:hidden p-4 border-b border-neutral-200 flex-shrink-0">
                   <ProgressStepper 
                     steps={steps} 
                     currentStep={currentStep} 
@@ -309,7 +299,7 @@ const Register = () => {
                 </div>
 
                 {/* Form Content */}
-                <div className="p-6 lg:p-8 flex-1">
+                <div className="flex-1 p-6 lg:p-8 overflow-y-auto">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={currentStep}
@@ -317,6 +307,7 @@ const Register = () => {
                       animate={{ x: 0, opacity: 1 }}
                       exit={{ x: -300, opacity: 0 }}
                       transition={{ duration: 0.3, ease: "easeInOut" }}
+                      className="w-full"
                     >
                       {renderStep()}
                     </motion.div>
@@ -324,7 +315,7 @@ const Register = () => {
                 </div>
 
                 {/* Navigation Buttons - Below Form */}
-                <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-8 border-t border-neutral-200 bg-neutral-50">
+                <div className="flex-shrink-0 p-6 lg:p-8 border-t border-neutral-200 bg-neutral-50">
                   <div className="flex justify-between items-center">
                     <button
                       onClick={handlePrevious}
