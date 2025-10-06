@@ -18,7 +18,7 @@ import { Toaster } from "react-hot-toast";
 import Profile from "./pages/dashboard/Profile";
 import Home from "./pages/home/Home";
 import BackToTop from "./components/ui/BackToTop";
-import SingleLiveAuction from "./pages/dashboard/VehicleDetails";
+import VehicleDetails from "./pages/dashboard/VehicleDetails";
 
 function App() {
   // const location = useLocation();
@@ -192,7 +192,7 @@ function App() {
             path="/vehicle-details/:id"
             element={
               <DashboardLayout>
-                <SingleLiveAuction />
+                <VehicleDetails />
               </DashboardLayout>
             }
           />

@@ -44,7 +44,11 @@ const HighestBidsContainer = ({ auctions = [] }) => {
   };
 
   const handleViewVehicle = (vehicleId) => {
-    navigate(`/vehicles/${vehicleId}`);
+    navigate(`/vehicle-details/${vehicleId}`, {
+      state: {
+        productId: vehicleId,
+      },
+    });
   };
 
   const handleViewCustomer = (customerId) => {
