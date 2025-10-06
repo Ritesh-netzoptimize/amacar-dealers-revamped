@@ -175,7 +175,7 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
           </motion.div>
 
           {/* Password Requirements */}
-          {formData.password && (
+          {/* {formData.password && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
@@ -197,10 +197,10 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
                 </div>
               ))}
             </motion.div>
-          )}
+          )} */}
 
           {/* Confirm Password */}
-          <motion.div variants={itemVariants} className="space-y-2">
+          <motion.div variants={itemVariants} className="space-y-2 mb-0">
             <label className="block text-sm font-semibold text-neutral-700">
               Confirm Password *
             </label>
@@ -233,7 +233,7 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className={`flex items-center space-x-2 text-sm ${
+              className={`flex mb-12 items-center space-x-2 text-sm ${
                 formData.password === formData.confirmPassword && formData.confirmPassword
                   ? 'text-success'
                   : 'text-error'
