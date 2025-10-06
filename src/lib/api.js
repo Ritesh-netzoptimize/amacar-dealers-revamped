@@ -38,6 +38,8 @@ api.interceptors.response.use(
   }
 );
 
+
+
 // Live Auctions API
 export const getLiveAuctions = async (page = 1, perPage = 4, filters = {}) => {
   try {

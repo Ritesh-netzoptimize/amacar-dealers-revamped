@@ -9,22 +9,19 @@ import DashboardSkeleton from "@/components/skeletons/dashboard/DashboardSkeleto
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate data loading - replace with actual API calls
+  // Simulate data loading for other sections (vehicles, customers, etc.)
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        // TODO: Replace with actual API calls
+        // TODO: Replace with actual API calls for other sections
         // Example:
-        // const [statsData, vehiclesData, customersData] = await Promise.all([
-        //   fetchStats(),
+        // const [vehiclesData, customersData] = await Promise.all([
         //   fetchRecentVehicles(),
         //   fetchRecentCustomers()
         // ]);
         
-        // Simulate API calls for different sections
+        // Simulate API calls for other sections (stats now handles its own loading)
         await Promise.all([
-          // Simulate stats loading
-          new Promise(resolve => setTimeout(resolve, 800)),
           // Simulate vehicles loading
           new Promise(resolve => setTimeout(resolve, 1200)),
           // Simulate customers loading
