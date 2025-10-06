@@ -18,6 +18,9 @@ import {
   BarChart,
   ArrowUp
 } from 'lucide-react';
+import { logout } from '@/redux/slices/userSlice';
+import LogoutModal from '@/components/ui/LogoutUI/LogoutModal';
+import { useDispatch } from 'react-redux';
 // import Modal from '@/components/ui/modal';
 // import LogoutModal from '@/components/ui/LogoutModal';
 // import { useDispatch, useSelector } from 'react-redux';
@@ -28,11 +31,11 @@ import {
 const Sidebar = ({ isCollapsed, onToggle }) => {
   const location = useLocation();
   // const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isManualToggle, setIsManualToggle] = useState(false);
   const prevPathRef = useRef(location.pathname);
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   // const { user } = useSelector((state) => state.user);
   // const { logout } = useContext(AuthContext);
@@ -58,24 +61,20 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
 
   ];
 
-  const handleLogoutClick = () => {
-    // setLogoutModalOpen(true);
-    // Simple logout without modal for stateless version
-    navigate('/');
+  const handleConfirmLogout = async () => {
+    // await persistor.purge();
+    await dispatch(logout());
+    setTimeout(() => {
+        navigate('/');
+    }, 1000);
   };
-
-  // const handleConfirmLogout = async () => {
-  //   // await persistor.purge();
-  //   await dispatch(logout());
-  //   navigate('/');
-  // };
 
   const bottomNavigation = [
     { name: 'Profile', href: '/profile', icon: User },
     {
       name: 'Logout',
       icon: LogOut,
-      action: handleLogoutClick,
+      action: () => setLogoutModalOpen(true),
     }
   ];
 
@@ -351,11 +350,11 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
       /> */}
 
       {/* Logout Modal - Commented out for stateless version */}
-      {/* <LogoutModal
+      <LogoutModal
         isOpen={logoutModalOpen}
         onClose={() => setLogoutModalOpen(false)}
         onConfirm={handleConfirmLogout}
-      /> */}
+      />
     </>
   );
 };

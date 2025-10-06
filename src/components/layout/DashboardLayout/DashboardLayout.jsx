@@ -1,24 +1,24 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Menu, X, User, Search, LogOut, Settings, ChevronDown, X as XIcon, Calendar, DollarSign, Gavel } from 'lucide-react';
-// import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 // import { fetchDashboardSummary, selectDashboardSummary } from '../../../redux/slices/offersSlice';
-// import { logout } from '../../../redux/slices/userSlice';
 import Sidebar from '../Sidebar/Sidebar';
 // import { useSearch } from '../../../context/SearchContext';
 import BackToTop from '../../ui/BackToTop';
-// import LogoutModal from '../../ui/LogoutModal';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import LogoutModal from '@/components/ui/LogoutUI/LogoutModal';
+import { logout } from '@/redux/slices/userSlice';
 
 const DashboardLayout = ({ children }) => {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  // const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
 
   const profileRef = useRef(null);
   const notificationsRef = useRef(null);
@@ -66,15 +66,15 @@ const DashboardLayout = ({ children }) => {
   };
 
   const handleLogoutClick = () => {
-    // setLogoutModalOpen(true);
-    // Simple logout without modal for stateless version
-    navigate('/');
+    setLogoutModalOpen(true);
   };
 
-  // const handleConfirmLogout = async () => {
-  //   await dispatch(logout());
-  //   navigate('/');
-  // };
+  const handleConfirmLogout = async () => {
+    await dispatch(logout());
+    setTimeout(() => {
+        navigate('/');
+    }, 1000);
+  };
 
   // Fetch dashboard summary on component mount - commented out for stateless version
   // useEffect(() => {
@@ -424,11 +424,11 @@ const DashboardLayout = ({ children }) => {
       </motion.main>
 
       {/* Logout Modal - Commented out for stateless version */}
-      {/* <LogoutModal
+      <LogoutModal
         isOpen={logoutModalOpen}
         onClose={() => setLogoutModalOpen(false)}
         onConfirm={handleConfirmLogout}
-      /> */}
+      />
     </div>
   );
 };
