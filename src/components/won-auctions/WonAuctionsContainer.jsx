@@ -179,9 +179,9 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
             </div>
 
             {/* Desktop Layout: Full Width Row */}
-            <div className="hidden lg:flex max-h-[160px] bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="hidden lg:flex bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
               {/* Left Section - Image Gallery (1/8 width) */}
-              <div className="w-56 rounded-xl relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden">
+              <div className="w-56 relative rounded-xl relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden">
                 <PhotoSwipeGallery
                   images={vehicle.images}
                   vehicleName={vehicle.name}
@@ -193,7 +193,7 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
               </div>
 
               {/* Right Section - Vehicle Information (7/8 width) */}
-              <div className="w-7/8 px-8 py-4 flex flex-col justify-between">
+              <div className="w-7/8 px-8 py-4 flex flex-col justify-between  ">
                 {/* Header with Vehicle Title and CTA Buttons */}
                 <div className="flex items-start justify-between">
                   <div>
@@ -222,7 +222,7 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
                     </Button>
                   </div> */}
 
-                  <div className="flex gap-2 justify-end items-center">
+                  <div className=" flex gap-2 justify-end items-center">
                     {/* <Button
                       variant="default"
                       size="sm"
@@ -244,7 +244,9 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"
-                        className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-1 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50"
+                        side="bottom"
+                        sideOffset={4}
+                        className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-1 overflow-hidden backdrop-blur-sm bg-opacity-90 absolute top-full right-0 mt-2"
                       >
                         <DropdownMenuItem
                           onClick={() =>

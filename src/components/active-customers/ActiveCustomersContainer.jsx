@@ -199,7 +199,9 @@ const ActiveCustomersContainer = ({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"
-                        className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-1 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50"
+                        side="bottom"
+                        sideOffset={4}
+                        className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-1 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
                       >
                         <DropdownMenuItem
                           onClick={() => handleViewCustomer(customer.id, customer.name)}
@@ -308,7 +310,9 @@ const ActiveCustomersContainer = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="w-52 p-1 shadow-lg border border-neutral-200 bg-white rounded-lg"
+                    side="bottom"
+                    sideOffset={4}
+                    className="w-52 p-1 shadow-lg border border-neutral-200 bg-white rounded-lg absolute top-full right-0 mt-2 z-50"
                   >
                     <DropdownMenuItem
                       onClick={() => handleViewCustomer(customer.id)}
