@@ -22,7 +22,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 
 const WonAuctionsContainer = ({ 
   auctions = [], 
@@ -93,12 +93,12 @@ const WonAuctionsContainer = ({
       animate="visible"
     >
       {/* Full Width Rows Layout */}
-      <div className="space-y-6">
+      <div className="space-y-6 relative">
         {auctions.map((vehicle) => (
           <motion.div
             key={vehicle.id}
             variants={cardVariants}
-            className="bg-white rounded-3xl shadow-sm border border-neutral-100 overflow-hidden hover:shadow-xl hover:border-neutral-200 transition-all duration-500 group"
+            className="bg-white rounded-3xl shadow-sm border border-neutral-100 hover:shadow-xl hover:border-neutral-200 transition-all duration-500 group relative"
           >
             {/* Mobile Layout: Stacked */}
             <div className="lg:hidden flex flex-col min-h-full">
@@ -272,7 +272,7 @@ const WonAuctionsContainer = ({
                         align="end"
                         side="bottom"
                         sideOffset={4}
-                        className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-1 overflow-hidden backdrop-blur-sm bg-opacity-90 absolute top-full right-0 mt-2"
+                        className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-1 overflow-hidden backdrop-blur-sm bg-opacity-90"
                       >
                         <DropdownMenuItem
                           onClick={() =>

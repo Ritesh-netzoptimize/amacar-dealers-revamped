@@ -25,8 +25,8 @@ export const loginUser = createAsyncThunk(
             const expirationDate = new Date(response.data.expires_at * 1000);
             Cookies.set('authToken', response.data.token, { 
               expires: expirationDate,
-              secure: true,
-              sameSite: 'strict'
+              // secure: true, 
+              // sameSite: 'strict'
             });
           }
         }
