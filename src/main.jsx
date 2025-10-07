@@ -14,19 +14,19 @@ import { store, persistor } from "./redux/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";
 import { TooltipProvider } from "@/components/ui/tooltip";
-// import { loadStripe } from "@stripe/stripe-js";
-// import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 
-// const stripePromise = loadStripe("your-publishable-key");
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_test_51234567890abcdef");
 
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor} >
       <BrowserRouter>
         <TooltipProvider>
-          {/* <Elements stripe={stripePromise}> */}
+          <Elements stripe={stripePromise}>
             <App />
-          {/* </Elements> */}
+          </Elements>
         </TooltipProvider>
       </BrowserRouter>
     </PersistGate>
