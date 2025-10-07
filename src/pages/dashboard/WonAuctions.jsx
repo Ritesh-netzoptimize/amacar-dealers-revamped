@@ -71,8 +71,33 @@ const WonAuctions = () => {
     }));
   }, []);
 
-  // Fetch won auctions from API
-  const fetchWonAuctions = useCallback(async (page = 1, filter = 'allTime') => {
+ 
+
+  // Apply client-side filtering for date-based filters
+  const applyClientSideFilter = useCallback((data, filter) => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const thisWeek = new Date(today.getTime() - (today.getDay() * 24 * 60 * 60 * 1000));
+    const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    return data.filter(auction => {
+      const auctionDate = new Date(auction.acceptedOn);
+      
+      switch (filter) {
+        case 'today':
+          return auctionDate >= today && auctionDate < new Date(today.getTime() + 24 * 60 * 60 * 1000);
+        case 'thisWeek':
+          return auctionDate >= thisWeek && auctionDate < new Date(thisWeek.getTime() + 7 * 24 * 60 * 60 * 1000);
+        case 'thisMonth':
+          return auctionDate >= thisMonth && auctionDate < new Date(thisMonth.getTime() + 30 * 24 * 60 * 60 * 1000);
+        default:
+          return true;
+      }
+    });
+  }, []);
+
+   // Fetch won auctions from API
+   const fetchWonAuctions = useCallback(async (page = 1, filter = 'allTime') => {
     try {
       setError(null);
       
@@ -97,29 +122,6 @@ const WonAuctions = () => {
       setAuctions([]);
     }
   }, [getWonAuctions, itemsPerPage, transformWonAuctionData, applyClientSideFilter]);
-
-  // Apply client-side filtering for date-based filters
-  const applyClientSideFilter = useCallback((data, filter) => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const thisWeek = new Date(today.getTime() - (today.getDay() * 24 * 60 * 60 * 1000));
-    const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    return data.filter(auction => {
-      const auctionDate = new Date(auction.acceptedOn);
-      
-      switch (filter) {
-        case 'today':
-          return auctionDate >= today && auctionDate < new Date(today.getTime() + 24 * 60 * 60 * 1000);
-        case 'thisWeek':
-          return auctionDate >= thisWeek && auctionDate < new Date(thisWeek.getTime() + 7 * 24 * 60 * 60 * 1000);
-        case 'thisMonth':
-          return auctionDate >= thisMonth && auctionDate < new Date(thisMonth.getTime() + 30 * 24 * 60 * 60 * 1000);
-        default:
-          return true;
-      }
-    });
-  }, []);
 
   // Handle filter change
   const handleFilterChange = useCallback(async (filterId) => {
