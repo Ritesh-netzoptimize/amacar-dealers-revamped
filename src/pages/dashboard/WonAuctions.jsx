@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import DashboardStats from "@/components/dashboard/DashboardStats/DashboardStats";
 import WonAuctionsContainer from "@/components/won-auctions/WonAuctionsContainer";
@@ -25,7 +25,7 @@ const WonAuctions = () => {
   const itemsPerPage = 4; // Show 4 vehicles per page
 
   // Won Auctions API function using the imported api instance
-  const getWonAuctions = async (page = 1, perPage = 4) => {
+  const getWonAuctions = useCallback(async (page = 1, perPage = 4) => {
     try {
       const response = await api.get('/won-auctions', {
         params: {
@@ -38,10 +38,10 @@ const WonAuctions = () => {
       console.error('Error fetching won auctions:', error);
       throw error;
     }
-  };
+  }, []);
 
   // Transform API data to match component expectations
-  const transformWonAuctionData = (apiData) => {
+  const transformWonAuctionData = useCallback((apiData) => {
     return apiData.map(auction => ({
       id: auction.id,
       name: auction.title,
@@ -69,10 +69,10 @@ const WonAuctions = () => {
       createdAt: auction.created_at,
       updatedAt: auction.updated_at
     }));
-  };
+  }, []);
 
   // Fetch won auctions from API
-  const fetchWonAuctions = async (page = 1, filter = 'allTime') => {
+  const fetchWonAuctions = useCallback(async (page = 1, filter = 'allTime') => {
     try {
       setError(null);
       
@@ -96,10 +96,10 @@ const WonAuctions = () => {
       setError(err.message);
       setAuctions([]);
     }
-  };
+  }, [getWonAuctions, itemsPerPage, transformWonAuctionData, applyClientSideFilter]);
 
   // Apply client-side filtering for date-based filters
-  const applyClientSideFilter = (data, filter) => {
+  const applyClientSideFilter = useCallback((data, filter) => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const thisWeek = new Date(today.getTime() - (today.getDay() * 24 * 60 * 60 * 1000));
@@ -119,10 +119,10 @@ const WonAuctions = () => {
           return true;
       }
     });
-  };
+  }, []);
 
   // Handle filter change
-  const handleFilterChange = async (filterId) => {
+  const handleFilterChange = useCallback(async (filterId) => {
     if (isFilterLoading) return;
     
     setIsFilterLoading(true);
@@ -131,24 +131,24 @@ const WonAuctions = () => {
     
     await fetchWonAuctions(1, filterId);
     setIsFilterLoading(false);
-  };
+  }, [isFilterLoading, fetchWonAuctions]);
 
   // Handle page change
-  const handlePageChange = async (page) => {
+  const handlePageChange = useCallback(async (page) => {
     setCurrentPage(page);
     await fetchWonAuctions(page, activeFilter);
-  };
+  }, [fetchWonAuctions, activeFilter]);
 
   // Initial data load
-  useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
-      await fetchWonAuctions(1, activeFilter);
-      setIsLoading(false);
-    };
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    await fetchWonAuctions(1, activeFilter);
+    setIsLoading(false);
+  }, [fetchWonAuctions, activeFilter]);
 
+  useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   // Animation variants
   const containerVariants = {
