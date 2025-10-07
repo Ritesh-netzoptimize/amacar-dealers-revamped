@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const NewCustomersContainer = ({
   customers = [],
@@ -71,8 +72,8 @@ const NewCustomersContainer = ({
     onViewCustomer(customerId);
   };
 
-  const handleViewVehicle = (customerId) => {
-    onViewVehicle(customerId);
+  const handleViewVehicle = (vehicleId) => {
+    onViewVehicle(vehicleId);
   };
 
   const handleScheduleAppointment = (customerId) => {
@@ -82,6 +83,7 @@ const NewCustomersContainer = ({
   const handleContact = (customerId) => {
     onContact(customerId);
   };
+
 
   return (
     <motion.div
@@ -212,14 +214,14 @@ const NewCustomersContainer = ({
                         className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
                       >
                         <DropdownMenuItem
-                          onClick={() => handleViewCustomer(customer.id)}
+                          onClick={() => handleViewCustomer(customer.vehicleId)}
                           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                         >
                           <Eye className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                           <span>View Customer</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleViewVehicle(customer.id)}
+                          onClick={() => handleViewVehicle(customer.vehicleId)}
                           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                         >
                           <Car className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
