@@ -12,15 +12,24 @@ import { Button } from "@/components/ui/button";
 import { formatBidAmount, getStatusColor } from "@/lib/utils";
 import { useState } from "react";
 import BidDialog from "@/components/common/BidDialog/BidDialog";
+import { useNavigate } from "react-router-dom";
 const VehicleCard = ({ vehicle, onBidSuccess }) => {
   const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
-
+  const navigate = useNavigate();
   const handleBidClick = () => {
     setIsBidDialogOpen(true);
   };
 
   const handleBidSuccess = (bidAmount) => {
     onBidSuccess?.(vehicle.id, bidAmount);
+  };
+
+  const handleViewClick = () => {
+    navigate(`/vehicle-details/${vehicle.id}`, {
+      state: {
+        productId: vehicle.id,
+      },
+    });
   };
 
   return (
@@ -114,7 +123,7 @@ const VehicleCard = ({ vehicle, onBidSuccess }) => {
             variant="outline"
             size="sm"
             className="flex-1 h-10 cursor-pointer bg-white hover:bg-neutral-50 border-neutral-200 hover:border-neutral-300 text-neutral-700 hover:text-neutral-900 shadow-sm hover:shadow-md transition-all duration-200 font-medium"
-            onClick={() => console.log("View Details:", vehicle.id)}
+            onClick={handleViewClick}
           >
             <Eye className="w-4 h-4 mr-2" />
             View Details
