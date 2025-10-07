@@ -303,6 +303,11 @@ const userSlice = createSlice({
     loading: true,
     locationStatus: 'idle',
     locationError: null,
+    location: {
+      city: "",
+      state: "",
+      zipcode: ""
+    },
     form: {
       values: {},
       errors: {},
@@ -330,6 +335,11 @@ const userSlice = createSlice({
     clearLocation: (state) => {
       state.locationStatus = 'idle';
       state.locationError = null;
+      state.location = {
+        city: "",
+        state: "",
+        zipcode: ""
+      };
     },
     logout: (state) => {
         console.log("Inside logout reducer first step")

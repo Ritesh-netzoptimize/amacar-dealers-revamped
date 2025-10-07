@@ -6,7 +6,7 @@ import { fetchCityStateByZip, clearLocation } from '@/redux/slices/userSlice';
 
 const DealershipInfo = ({ formData, updateFormData, errors }) => {
   const dispatch = useDispatch();
-  const { locationStatus, locationError, locationData } = useSelector((state) => state.user);
+  const { locationStatus, locationError, location } = useSelector((state) => state.user);
   const timeoutRef = useRef(null);
 
   // Debounced ZIP code lookup
@@ -30,11 +30,11 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
 
   // Handle ZIP code lookup results
   useEffect(() => {
-    if (locationStatus === 'fulfilled' && locationData) {
-      updateFormData('city', locationData.city || '');
-      updateFormData('state', locationData.state || '');
+    if (locationStatus === 'succeeded' && location) {
+      updateFormData('city', location.city || '');
+      updateFormData('state', location.state || '');
     }
-  }, [locationStatus, locationData, updateFormData]);
+  }, [locationStatus, location, updateFormData]);
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },

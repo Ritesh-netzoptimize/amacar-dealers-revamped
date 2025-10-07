@@ -45,14 +45,9 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
 
     createPaymentIntent();
   }, []);
-useEffect(() => {
-  console.log("clientSecret", clientSecret)
-  console.log("isStripeReady", isStripeReady)
-}, [clientSecret])
   // Handle payment submission
   const handlePaymentSubmit = async (event) => {
     event.preventDefault();
-    console.log("out of the if of handle paymen submit")
     if (!stripe || !elements || !clientSecret) {
       console.log("in if of the handle payment submit")
       setPaymentError("Payment system not ready. Please try again.");
@@ -144,10 +139,10 @@ useEffect(() => {
           <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
             <Gift className="w-4 h-4" />
           </div>
-          <h3 className="text-base font-semibold">Free 30-Day Trial</h3>
+          <h3 className="text-base font-semibold">Free 7-Day Trial</h3>
         </div>
         <p className="text-success-100 text-sm leading-relaxed mb-3">
-          Start with a free 30-day trial. No charges until your trial period
+          Start with a free 7-day trial. No charges until your trial period
           ends. Cancel anytime during the trial with no obligations.
         </p>
        
@@ -218,7 +213,7 @@ useEffect(() => {
               htmlFor="trialAccepted"
               className="text-sm text-neutral-700 cursor-pointer"
             >
-              I understand that I will be charged $99/month after the 30-day
+              I understand that I will be charged $99/month after the 7-day
               free trial period, and I can cancel anytime during the trial with
               no charges. *
             </label>
@@ -277,7 +272,7 @@ useEffect(() => {
         </h3>
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-neutral-600 text-sm">30-Day Free Trial</span>
+            <span className="text-neutral-600 text-sm">7-Day Free Trial</span>
             <span className="font-semibold text-success text-sm">$0.00</span>
           </div>
           <div className="flex justify-between items-center text-xs text-neutral-500">
