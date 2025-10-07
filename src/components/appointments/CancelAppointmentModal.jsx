@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Loader2, 
@@ -46,7 +46,7 @@ export default function CancelAppointmentModal({
   };
 
   // Validation
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     const newErrors = {};
     
     if (!notes.trim()) {
@@ -55,10 +55,10 @@ export default function CancelAppointmentModal({
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [notes]);
 
   // Handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     
     if (!validateForm()) return;
@@ -87,16 +87,16 @@ export default function CancelAppointmentModal({
       setPhase("error");
       setErrorMessage("Network error. Please check your connection and try again.");
     }
-  };
+  }, [appointment, notes, onConfirmCancel, dispatch, validateForm]);
 
   // Handle cancel without submitting
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setNotes("");
     setErrors({});
     setPhase("form");
     setErrorMessage("");
     onClose(false);
-  };
+  }, [onClose]);
 
   // Reset form when modal opens
   useEffect(() => {
@@ -131,7 +131,7 @@ export default function CancelAppointmentModal({
       setPhase("error");
       setErrorMessage(operationError);
     }
-  }, [isProcessing, operationSuccess, operationError, phase]);
+  }, [isProcessing, operationSuccess, operationError, phase, handleCancel]);
 
   const isCloseDisabled = isProcessing;
 

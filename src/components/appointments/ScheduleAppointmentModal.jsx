@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Loader2, 
@@ -69,7 +69,7 @@ export default function ScheduleAppointmentModal({
     if (isOpen) {
       resetFormState();
     }
-  }, [isOpen]);
+  }, [isOpen, resetFormState]);
 
   // Close calendar when clicking outside
   useEffect(() => {
@@ -100,7 +100,7 @@ export default function ScheduleAppointmentModal({
   };
 
   // Reset form state
-  const resetFormState = () => {
+  const resetFormState = useCallback(() => {
     setPhase("form");
     setSelectedDate(undefined);
     setSelectedTime("");
@@ -130,7 +130,7 @@ export default function ScheduleAppointmentModal({
         setNotes(appointmentToReschedule.notes);
       }
     }
-  };
+  }, [isReschedule, appointmentToReschedule]);
 
   // Validation
   const validateForm = () => {
