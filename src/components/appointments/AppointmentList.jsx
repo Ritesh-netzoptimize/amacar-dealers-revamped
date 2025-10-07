@@ -11,7 +11,7 @@ const AppointmentList = ({
 }) => {
   console.log("appointments in appointment list", appointments);
   const todaysAppointments = getTodaysAppointments(appointments);
-  console.log("todaysA ppointments in appointment list", todaysAppointments);
+  console.log("todays Appointments in appointment list", todaysAppointments);
   const upcomingAppointments = getUpcomingAppointments(appointments);
 
   const containerVariants = {

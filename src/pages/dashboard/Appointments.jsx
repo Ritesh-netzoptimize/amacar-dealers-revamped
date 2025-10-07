@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Calendar, Eye } from "lucide-react";
 import { useAppointmentFilters } from "@/hooks/useAppointmentFilters";
@@ -9,14 +9,25 @@ import Pagination from "@/components/common/Pagination/Pagination";
 import AppointmentsSkeleton from "@/components/skeletons/Appointments/AppointmentsSkeleton";
 import AppointmentsSortSkeleton from "@/components/skeletons/Appointments/AppointmentsSortSkeleton";
 import api from "@/lib/api";
+import AppointmentDetailsModal from "@/components/appointments/AppointmentDetailsModal";
+import { useDispatch } from "react-redux";
+import { fetchAppointmentsFromSlice } from "@/redux/slices/appointmentSlice";
 
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const dispatch = useDispatch();
+  // Modal state
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingAction, setProcessingAction] = useState('');
+
+
   const [pagination, setPagination] = useState({
     current_page: 1,
     per_page: 5,
@@ -28,23 +39,16 @@ const Appointments = () => {
   const itemsPerPage = 5;
 
   // Appointments API function using the imported api instance
-  const getAppointments = async (page = 1, perPage = 5) => {
+  const getAppointments = useCallback(async (page = 1, perPage = 5) => {
     try {
-      const response = await api.get('/appointments', {
-        params: {
-          page,
-          per_page: perPage
-        }
-      });
-      console.log("response.data", response.data)
-      console.log("response", response)
-      console.log("response.data.data", response.data.data)
-      return response.data;
+      const response = await dispatch(fetchAppointmentsFromSlice({ page, perPage }));
+      console.log("response from thunk", response);
+      return response.payload;
     } catch (error) {
       console.error('Error fetching appointments:', error);
       throw error;
     }
-  };
+  }, [dispatch]);
 
   // Transform API data to match component expectations
   const transformAppointmentsData = (apiData) => {
@@ -103,21 +107,23 @@ const Appointments = () => {
   );
 
   // Fetch appointments from API
-  const fetchAppointments = async (page = 1) => {
+  const fetchAppointments = useCallback(async (page = 1) => {
     try {
       setLoading(true);
       setError(null);
       
       const response = await getAppointments(page, itemsPerPage);
+      console.log("response from getAppointments", response);
       
-      if (response.success) {
+      if (response && response.success) {
         console.log("inside response.success");
-        console.log("response", response)
-        console.log("response.data", response.data)
-        const transformedData = transformAppointmentsData(response.data);
+        console.log("response.appointments", response.appointments);
+        console.log("response.pagination", response.pagination);
+        
+        const transformedData = transformAppointmentsData(response.appointments || []);
         console.log("transformedData", transformedData);
         setAppointments(transformedData);
-        setPagination(response.pagination);
+        setPagination(response.pagination || {});
       } else {
         throw new Error('Failed to fetch appointments');
       }
@@ -128,7 +134,9 @@ const Appointments = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [itemsPerPage, getAppointments]);
+
+  
 
   // Reset to first page when filters change
   useEffect(() => {
@@ -138,7 +146,7 @@ const Appointments = () => {
   // Initial data load
   useEffect(() => {
     fetchAppointments(1);
-  }, []);
+  }, [fetchAppointments]);
 
   // Handle page change
   const handlePageChange = async (page) => {
@@ -149,8 +157,14 @@ const Appointments = () => {
   // Handle view details
   const handleViewDetails = (appointment) => {
     setSelectedAppointment(appointment);
-    // You can implement modal or navigation here
-    console.log("View details for appointment:", appointment.id);
+    setIsDetailsModalOpen(true);
+  };
+
+  const handleCloseDetailsModal = () => {
+    setIsDetailsModalOpen(false);
+    setSelectedAppointment(null);
+    setIsProcessing(false);
+    setProcessingAction('');
   };
 
   // Animation variants
@@ -414,6 +428,18 @@ const Appointments = () => {
             </div>
           </motion.div>
         )}
+        {/* Appointment Details Modal */}
+      <AppointmentDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={handleCloseDetailsModal}
+        appointment={selectedAppointment}
+        // onCancel={handleCancel}
+        // onReschedule={handleReschedule}
+        // onCall={handleCall}
+        // onJoin={handleJoin}
+        isProcessing={isProcessing}
+        processingAction={processingAction}
+      />
       </div>
     </div>
   );
