@@ -16,6 +16,7 @@ import {
 import PhotoSwipeGallery from "@/components/ui/PhotoSwipeGallery";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import CustomerDetailsModal from "@/components/common/CustomerDetailsModal/CustomerDetailsModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +29,11 @@ const WonAuctionsContainer = ({
   onScheduleAppointment = () => {} 
 }) => {
   const navigate = useNavigate();
+  
+  // Customer modal state
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+  const [selectedCustomerName, setSelectedCustomerName] = useState('');
 
   // Animation variants
   const containerVariants = {
@@ -61,8 +67,17 @@ const WonAuctionsContainer = ({
     });
   };
 
-  const handleViewCustomer = (customerId) => {
-    navigate(`/customers/${customerId}`);
+  const handleViewCustomer = (customerId, customerName = '') => {
+    console.log("View customer:", customerId);
+    setSelectedCustomerId(customerId);
+    setSelectedCustomerName(customerName);
+    setIsCustomerModalOpen(true);
+  };
+
+  const handleCloseCustomerModal = () => {
+    setIsCustomerModalOpen(false);
+    setSelectedCustomerId(null);
+    setSelectedCustomerName('');
   };
 
   const handleScheduleAppointment = (vehicle) => {
@@ -163,7 +178,7 @@ const WonAuctionsContainer = ({
                   <div className="flex gap-3">
                     <Button
                       variant="outline"
-                      onClick={() => handleViewCustomer(vehicle.customer?.id)}
+                      onClick={() => handleViewCustomer(vehicle.customer?.id, vehicle.customer?.name)}
                       className="flex-1 border-2 border-neutral-200 hover:border-blue-300 hover:bg-blue-50 text-neutral-700 hover:text-blue-600 font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
                     >
                       <User className="w-4 h-4 mr-2" />
@@ -262,8 +277,8 @@ const WonAuctionsContainer = ({
                         <DropdownMenuItem
                           onClick={() =>
                             handleViewCustomer(
-                              vehicle.customer.id,
-                              vehicle.customer.name
+                              vehicle.customer?.id,
+                              vehicle.customer?.name
                             )
                           }
                           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
@@ -349,6 +364,14 @@ const WonAuctionsContainer = ({
           </motion.div>
         ))}
       </div>
+
+      {/* Customer Details Modal */}
+      <CustomerDetailsModal
+        isOpen={isCustomerModalOpen}
+        onClose={handleCloseCustomerModal}
+        customerId={selectedCustomerId}
+        customerName={selectedCustomerName}
+      />
     </motion.div>
   );
 };
