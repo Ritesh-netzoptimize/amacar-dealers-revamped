@@ -73,7 +73,7 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Dealer Code */}
             <motion.div variants={itemVariants} className="space-y-2">
-              <label className="block text-sm font-semibold text-neutral-700">
+              <label className="block text-sm text-neutral-700 font-semibold">
                 Dealer Code *
               </label>
               <div className="relative">

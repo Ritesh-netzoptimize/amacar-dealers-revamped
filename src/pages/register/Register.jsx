@@ -157,11 +157,12 @@ const Register = () => {
   };
 
   const handleNext = () => {
+    if(currentStep === 2 && formData.talkToSales) {
+      window.location.href = 'https://calendly.com/sz253500/'
+      setCurrentStep(prev => Math.min(prev - 1, steps.length-1));
+    }
     if (validateStep(currentStep)) {
       setCurrentStep(prev => Math.min(prev + 1, steps.length));
-    }
-    if(currentStep === 2 && formData.talkToSales) {
-      navigate('https://calendly.com/sz253500/')
     }
   };
 
