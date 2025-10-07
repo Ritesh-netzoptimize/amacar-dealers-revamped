@@ -299,7 +299,7 @@ const Register = () => {
                 </div>
 
                 {/* Form Content */}
-                <div className="flex-1 p-6 lg:p-8 overflow-y-auto">
+                <div className="flex-1 p-6 lg:p-8 overflow-y-auto overflow-x-hidden">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={currentStep}

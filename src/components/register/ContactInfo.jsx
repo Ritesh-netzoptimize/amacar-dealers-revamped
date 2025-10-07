@@ -233,7 +233,7 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className={`flex mb-12 items-center space-x-2 text-sm ${
+              className={`flex mt-2 items-center space-x-2 text-sm ${
                 formData.password === formData.confirmPassword && formData.confirmPassword
                   ? 'text-success'
                   : 'text-error'
@@ -257,7 +257,7 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
 
           {/* Agreement Checkbox */}
           <motion.div variants={itemVariants} className="space-y-2">
-            <div className="flex items-start space-x-3">
+            <div className="flex items-start space-x-3 mt-12">
               <div className="flex items-center h-5">
                 <input
                   type="checkbox"
