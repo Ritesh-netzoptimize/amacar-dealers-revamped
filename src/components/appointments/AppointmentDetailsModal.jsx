@@ -27,8 +27,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-// import CancelAppointmentModal from "./CancelAppointmentModal";
-// import ScheduleAppointmentModal from "./ScheduleAppointmentModal";
+import ScheduleAppointmentModal from "./ScheduleAppointmentModal";
+import CancelAppointmentModal from "./CancelAppointmentModal";
 
 export default function AppointmentDetailsModal({
   isOpen,
@@ -422,16 +422,16 @@ export default function AppointmentDetailsModal({
       </DialogContent>
 
       {/* Cancel Appointment Modal */}
-      {/* <CancelAppointmentModal
+      <CancelAppointmentModal
         isOpen={isCancelModalOpen}
         onClose={handleCancelModalClose}
         appointment={appointment}
         onConfirmCancel={handleConfirmCancel}
         isProcessing={isCancelProcessing}
-      /> */}
+      />
 
       {/* Reschedule Appointment Modal */}
-      {/* <ScheduleAppointmentModal
+      <ScheduleAppointmentModal
         isOpen={isRescheduleModalOpen}
         onClose={handleRescheduleModalClose}
         dealerName={appointment?.dealer_name}
@@ -447,7 +447,7 @@ export default function AppointmentDetailsModal({
             onReschedule(appointment);
           }
         }}
-      /> */}
+      />
     </Dialog>
   );
 }
