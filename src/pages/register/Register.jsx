@@ -378,25 +378,55 @@ const Register = () => {
 
                     <div className="flex space-x-3">
                       {currentStep < steps.length ? (
-                        <button
+                        <motion.button
                           onClick={handleNext}
                           disabled={!isStepValid(currentStep)}
-                          className={`flex items-center space-x-2 px-8 py-3 font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 ${
+                          whileHover={isStepValid(currentStep) ? { 
+                            scale: 1.05,
+                            boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)"
+                          } : {}}
+                          whileTap={isStepValid(currentStep) ? { 
+                            scale: 0.98 
+                          } : {}}
+                          className={`flex items-center space-x-2 px-8 py-3 font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 ${
                             isStepValid(currentStep)
-                              ? 'bg-primary-500 hover:bg-primary-600 text-white transform hover:scale-105 hover:shadow-glow focus:ring-primary-200'
+                              ? 'bg-primary-500 hover:bg-primary-600 text-white focus:ring-primary-200'
                               : 'bg-neutral-300 text-neutral-500 cursor-not-allowed'
                           }`}
                         >
-                          <span>
+                          <motion.span
+                            key={`${currentStep}-${formData.talkToSales}`}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ 
+                              duration: 0.3,
+                              ease: "easeInOut"
+                            }}
+                            className="flex items-center space-x-2"
+                          >
                             {currentStep === 2 && formData.talkToSales 
                               ? 'Submit to Sales Team' 
                               : currentStep === 2 && !formData.talkToSales 
                               ? 'Make Payment' 
                               : 'Next'
                             }
-                          </span>
-                          <ChevronRight className="w-5 h-5" />
-                        </button>
+                          </motion.span>
+                          <motion.div
+                            animate={{ 
+                              x: isStepValid(currentStep) ? [0, 3, 0] : 0,
+                              scale: isStepValid(currentStep) ? [1, 1.1, 1] : 1
+                            }}
+                            transition={{ 
+                              duration: 0.6,
+                              ease: "easeInOut",
+                              repeat: isStepValid(currentStep) ? Infinity : 0,
+                              repeatDelay: 2
+                            }}
+                          >
+                            <ChevronRight className="w-5 h-5" />
+                          </motion.div>
+                        </motion.button>
                       ) : (
                         <button
                           onClick={handleSubmit}

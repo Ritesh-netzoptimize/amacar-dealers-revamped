@@ -317,20 +317,33 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
 
           {/* Talk to Sales Checkbox */}
           <motion.div variants={itemVariants} className="space-y-2">
-            <div className="mt-8 p-6 bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl border border-orange-100 hover:border-orange-200 transition-all duration-300 group">
+            <motion.div 
+              className="mt-8 p-6 bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl border border-orange-100 hover:border-orange-200 transition-all duration-300 group"
+              whileHover={{ 
+                scale: 1.02,
+                boxShadow: "0 8px 25px rgba(246, 133, 31, 0.15)"
+              }}
+              whileTap={{ scale: 0.98 }}
+            >
               <div className="flex items-center space-x-4">
-                  <input
+                  <motion.input
                     type="checkbox"
                     id="talkToSales"
                     checked={formData.talkToSales}
                     onChange={(e) =>
                       updateFormData("talkToSales", e.target.checked)
                     }
+                    whileTap={{ scale: 0.9 }}
                     className="w-5 h-5 text-[var(--brand-orange)] bg-white border-2 border-orange-200 rounded-md focus:ring-[var(--brand-orange)] focus:ring-2 focus:ring-orange-100 transition-all duration-200"
                   />
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
-                    <div>
+                    <motion.div
+                      animate={formData.talkToSales ? { 
+                        color: "var(--brand-orange)" 
+                      } : {}}
+                      transition={{ duration: 0.3 }}
+                    >
                       <label
                         htmlFor="talkToSales"
                         className="text-lg font-bold text-neutral-800 cursor-pointer group-hover:text-[var(--brand-orange)] transition-colors duration-200"
@@ -340,7 +353,7 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
                       <p className="text-sm text-neutral-600 mt-1">
                         Get in touch with our sales team
                       </p>
-                    </div>
+                    </motion.div>
                   </div>
 
                   <div className="flex items-center space-x-4 text-sm text-neutral-600">
@@ -355,7 +368,7 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
 
          
