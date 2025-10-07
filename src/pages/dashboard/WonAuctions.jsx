@@ -5,7 +5,9 @@ import WonAuctionsContainer from "@/components/won-auctions/WonAuctionsContainer
 import WonAuctionsSkeleton from "@/components/skeletons/WonAuctions/WonAuctionsSkeleton";
 import Pagination from "@/components/common/Pagination/Pagination";
 import FilterTabs from "@/components/filters/LiveAuctionFilterTabs";
+import ScheduleAppointmentModal from "@/components/appointments/ScheduleAppointmentModal";
 import api from "@/lib/api";
+import toast from "react-hot-toast";
 
 const WonAuctions = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,6 +25,10 @@ const WonAuctions = () => {
   });
   const [error, setError] = useState(null);
   const itemsPerPage = 4; // Show 4 vehicles per page
+
+  // Appointment modal state
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+  const [selectedAuctionForAppointment, setSelectedAuctionForAppointment] = useState(null);
 
   // Won Auctions API function using the imported api instance
   const getWonAuctions = useCallback(async (page = 1, perPage = 4) => {
@@ -140,6 +146,25 @@ const WonAuctions = () => {
     setCurrentPage(page);
     await fetchWonAuctions(page, activeFilter);
   }, [fetchWonAuctions, activeFilter]);
+
+  // Handle schedule appointment
+  const handleScheduleAppointment = (auction) => {
+    console.log("Schedule appointment for auction:", auction);
+    setSelectedAuctionForAppointment(auction);
+    setIsAppointmentModalOpen(true);
+  };
+
+  const handleCloseAppointmentModal = () => {
+    setIsAppointmentModalOpen(false);
+    setSelectedAuctionForAppointment(null);
+  };
+
+  const handleAppointmentSubmit = (appointmentData) => {
+    console.log("Appointment submitted:", appointmentData);
+    // Handle appointment submission success
+    toast.success("Appointment scheduled successfully!");
+    handleCloseAppointmentModal();
+  };
 
   // Initial data load
   const loadData = useCallback(async () => {
@@ -274,7 +299,10 @@ const WonAuctions = () => {
           {/* Won Auctions Grid */}
           {!error && (
             <motion.div className="mt-8" variants={statsVariants}>
-              <WonAuctionsContainer auctions={auctions} />
+              <WonAuctionsContainer 
+                auctions={auctions} 
+                onScheduleAppointment={handleScheduleAppointment}
+              />
             </motion.div>
           )}
 
@@ -293,6 +321,21 @@ const WonAuctions = () => {
             </motion.div>
           )}
         </div>
+      )}
+
+      {/* Schedule Appointment Modal */}
+      {selectedAuctionForAppointment && (
+        <ScheduleAppointmentModal
+          isOpen={isAppointmentModalOpen}
+          onClose={handleCloseAppointmentModal}
+          onAppointmentSubmit={handleAppointmentSubmit}
+          dealerName={selectedAuctionForAppointment.customer?.name || "Customer"}
+          dealerId={selectedAuctionForAppointment.customer?.id || selectedAuctionForAppointment.id}
+          dealerEmail={selectedAuctionForAppointment.customer?.email || "customer@example.com"}
+          vehicleInfo={`${selectedAuctionForAppointment.year} ${selectedAuctionForAppointment.make} ${selectedAuctionForAppointment.model}`}
+          title="Schedule Appointment"
+          description="Choose your preferred date and time to meet with this customer"
+        />
       )}
     </motion.div>
   );
