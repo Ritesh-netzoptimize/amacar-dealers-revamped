@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Loader2, 
-  CheckCircle2, 
-  Calendar, 
-  Clock, 
-  User, 
-  Mail, 
-  Car, 
-  Sparkles, 
+import {
+  Loader2,
+  CheckCircle2,
+  Calendar,
+  Clock,
+  User,
+  Mail,
+  Car,
+  Sparkles,
   XCircle,
   ChevronDown,
   FileText,
-  X
+  X,
 } from "lucide-react";
 import {
   Dialog,
@@ -23,7 +23,10 @@ import {
 } from "@/components/ui/dialog";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { useSelector, useDispatch } from "react-redux";
-import { createAppointments, rescheduleAppointment } from "@/redux/slices/appointmentSlice";
+import {
+  createAppointments,
+  rescheduleAppointment,
+} from "@/redux/slices/appointmentSlice";
 
 export default function ScheduleAppointmentModal({
   isOpen,
@@ -38,7 +41,7 @@ export default function ScheduleAppointmentModal({
   // Reschedule mode props
   isReschedule = false,
   appointmentToReschedule = null,
-  onRescheduleSubmit
+  onRescheduleSubmit,
 }) {
   const [phase, setPhase] = useState("form");
   const [selectedDate, setSelectedDate] = useState();
@@ -50,26 +53,30 @@ export default function ScheduleAppointmentModal({
   const [appointmentData, setAppointmentData] = useState(null);
   const calendarRef = useRef(null);
   const dispatch = useDispatch();
-  const {acceptedOffers, appointmentOperationLoading} = useSelector(state => state.appointments);
-  const {user} = useSelector(state => state.user);
+  const { acceptedOffers, appointmentOperationLoading } = useSelector(
+    (state) => state.appointments
+  );
+  const { user } = useSelector((state) => state.user);
 
   useEffect(() => {
-    console.log("user.id", user.id)
-  })
+    console.log("user.id", user.id);
+  });
 
   // Simplified time slots (hourly only)
   const timeSlots = [
-    "9:00", "10:00", "11:00", "12:00", 
-    "13:00", "14:00", "15:00", "16:00", 
-    "17:00", "18:00"
+    "9:00",
+    "10:00",
+    "11:00",
+    "12:00",
+    "13:00",
+    "14:00",
+    "15:00",
+    "16:00",
+    "17:00",
+    "18:00",
   ];
 
   // Reset form when modal opens/closes
-  useEffect(() => {
-    if (isOpen) {
-      resetFormState();
-    }
-  }, [isOpen, resetFormState]);
 
   // Close calendar when clicking outside
   useEffect(() => {
@@ -80,18 +87,18 @@ export default function ScheduleAppointmentModal({
     };
 
     if (showCalendar) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showCalendar]);
 
   // Disable past dates - ensure we're working with today's date properly
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   // Function to check if a date is before today
   const isDateDisabled = (date) => {
     const dateToCheck = new Date(date);
@@ -109,22 +116,25 @@ export default function ScheduleAppointmentModal({
     setShowCalendar(false);
     setErrorMessage("");
     setAppointmentData(null);
-    
+
     // Pre-populate form for reschedule mode
     if (isReschedule && appointmentToReschedule) {
       // Parse the existing appointment date and time
-      if (appointmentToReschedule.start_time && appointmentToReschedule.start_time !== "0000-00-00 00:00:00") {
+      if (
+        appointmentToReschedule.start_time &&
+        appointmentToReschedule.start_time !== "0000-00-00 00:00:00"
+      ) {
         const appointmentDate = new Date(appointmentToReschedule.start_time);
         setSelectedDate(appointmentDate);
-        
+
         // Extract time from start_time
-        const timeString = appointmentToReschedule.start_time.split(' ')[1];
+        const timeString = appointmentToReschedule.start_time.split(" ")[1];
         if (timeString) {
-          const [hours, minutes] = timeString.split(':');
+          const [hours, minutes] = timeString.split(":");
           setSelectedTime(`${hours}:${minutes}`);
         }
       }
-      
+
       // Pre-populate notes if available
       if (appointmentToReschedule.notes) {
         setNotes(appointmentToReschedule.notes);
@@ -135,30 +145,31 @@ export default function ScheduleAppointmentModal({
   // Validation
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!selectedDate) {
       newErrors.date = "Please select a date";
     }
-    
+
     if (!selectedTime) {
       newErrors.time = "Please select a time";
     }
-    
+
     // For reschedule mode, check if the new time is at least 2 hours from now
     if (isReschedule && selectedDate && selectedTime) {
       const now = new Date();
       const selectedDateTime = new Date(selectedDate);
-      const [hours, minutes] = selectedTime.split(':');
+      const [hours, minutes] = selectedTime.split(":");
       selectedDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-      
+
       const timeDifference = selectedDateTime.getTime() - now.getTime();
       const hoursDifference = timeDifference / (1000 * 60 * 60);
-      
+
       if (hoursDifference < 2 && hoursDifference > 0) {
-        newErrors.time = "Appointment must be scheduled at least 2 hours from now";
+        newErrors.time =
+          "Appointment must be scheduled at least 2 hours from now";
       }
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -166,31 +177,31 @@ export default function ScheduleAppointmentModal({
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setPhase("loading");
     setErrorMessage("");
-    
+
     try {
       // Format date as YYYY-MM-DD
-      const formattedDate = selectedDate.toISOString().split('T')[0];
+      const formattedDate = selectedDate.toISOString().split("T")[0];
       // Format time as HH:mm
-      const formattedTime = selectedTime.padStart(5, '0');
-      
+      const formattedTime = selectedTime.padStart(5, "0");
+
       // Merge into one string
       const start_time = `${formattedDate} ${formattedTime}:00`;
-      
+
       let response;
-      
+
       if (isReschedule && appointmentToReschedule) {
         // Reschedule existing appointment
         const reschedulePayload = {
           appointmentId: appointmentToReschedule.id,
           start_time: start_time,
-          notes: notes.trim()
+          notes: notes.trim(),
         };
-        
+
         response = await dispatch(rescheduleAppointment(reschedulePayload));
         console.log("reschedule response", response);
       } else {
@@ -199,65 +210,81 @@ export default function ScheduleAppointmentModal({
           dealerId,
           userId: user.id,
           start_time: start_time,
-          notes: notes.trim()
+          notes: notes.trim(),
         };
-        
+
         response = await dispatch(createAppointments(appointmentPayload));
         console.log("create response", response);
       }
-      
+
       if (response.payload && response.payload.success) {
         // Success case (201) - Handle invalid date formatting
         const appointment = response.payload.appointment;
         if (appointment) {
           // Create a copy of the appointment object to avoid read-only property error
           const appointmentCopy = { ...appointment };
-          
+
           // Fix invalid date formatting
-          if (appointmentCopy.start_time === "0000-00-00 00:00:00" || appointmentCopy.formatted_start_time?.includes("-0001")) {
+          if (
+            appointmentCopy.start_time === "0000-00-00 00:00:00" ||
+            appointmentCopy.formatted_start_time?.includes("-0001")
+          ) {
             // Use the selected date and time for display
             const displayDate = new Date(selectedDate);
-            appointmentCopy.formatted_start_time = `${displayDate.toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric'
-            })} at ${selectedTime}`;
+            appointmentCopy.formatted_start_time = `${displayDate.toLocaleDateString(
+              "en-US",
+              {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }
+            )} at ${selectedTime}`;
           }
           setAppointmentData(appointmentCopy);
         }
         setPhase("success");
       } else if (response.payload && !response.payload.success) {
         // Error cases (400, 403)
-        const errorMessage = response.payload.message || "Something went wrong. Please try again.";
-        
+        const errorMessage =
+          response.payload.message || "Something went wrong. Please try again.";
+
         // Log the full error response for debugging
         console.log("Appointment error response:", response.payload);
-        
+
         // Handle specific error cases
-        if (errorMessage.includes("Cannot reschedule appointment") && errorMessage.includes("hours")) {
+        if (
+          errorMessage.includes("Cannot reschedule appointment") &&
+          errorMessage.includes("hours")
+        ) {
           // Too late to reschedule error
           setErrorMessage(errorMessage);
-        } else if (errorMessage.includes("already have an appointment scheduled") || errorMessage.includes("You already have an appointment scheduled")) {
+        } else if (
+          errorMessage.includes("already have an appointment scheduled") ||
+          errorMessage.includes("You already have an appointment scheduled")
+        ) {
           // Duplicate appointment error - show the full message
           setErrorMessage(errorMessage);
         } else if (errorMessage.includes("not authorized")) {
           // Authorization error
-          setErrorMessage("You are not authorized to reschedule this appointment.");
+          setErrorMessage(
+            "You are not authorized to reschedule this appointment."
+          );
         } else {
           // Generic error
           setErrorMessage(errorMessage);
         }
-        
+
         setPhase("failed");
       } else {
         // Unexpected response format
         setErrorMessage("Something went wrong. Please try again.");
         setPhase("failed");
       }
-      
     } catch (error) {
       console.error("Appointment operation error:", error);
-      setErrorMessage("Network error. Please check your connection and try again.");
+      setErrorMessage(
+        "Network error. Please check your connection and try again."
+      );
       setPhase("failed");
     }
   };
@@ -268,6 +295,11 @@ export default function ScheduleAppointmentModal({
       onClose(false);
     }
   };
+  useEffect(() => {
+    if (isOpen) {
+      resetFormState();
+    }
+  }, [isOpen, resetFormState]);
 
   // Handle close button click
   const handleCloseClick = () => {
@@ -278,25 +310,25 @@ export default function ScheduleAppointmentModal({
 
   // Format date for display
   const formatDate = (date) => {
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
     });
   };
 
   const formatFullDate = (date) => {
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   // Helper function to truncate notes for display
   const truncateNotes = (notes, maxLength = 50) => {
     if (!notes || notes.length <= maxLength) return notes;
-    return notes.substring(0, maxLength) + '...';
+    return notes.substring(0, maxLength) + "...";
   };
 
   const isCloseDisabled = phase === "loading" || appointmentOperationLoading;
@@ -318,7 +350,9 @@ export default function ScheduleAppointmentModal({
                     {isReschedule ? "Reschedule Appointment" : title}
                   </DialogTitle>
                   <DialogDescription className="text-white text-xs sm:text-sm break-words">
-                    {isReschedule ? "Choose a new date and time for your appointment" : description}
+                    {isReschedule
+                      ? "Choose a new date and time for your appointment"
+                      : description}
                   </DialogDescription>
                 </div>
                 {/* Custom Close Button for Mobile */}
@@ -356,7 +390,9 @@ export default function ScheduleAppointmentModal({
                       <div className="w-6 h-6 sm:w-7 sm:h-7 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
                         <Car className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                       </div>
-                      <h3 className="font-semibold text-slate-800 text-xs sm:text-sm break-words">Appointment Details</h3>
+                      <h3 className="font-semibold text-slate-800 text-xs sm:text-sm break-words">
+                        Appointment Details
+                      </h3>
                     </div>
                     <div className="space-y-1.5 text-xs text-slate-600">
                       <div className="flex items-center gap-1.5 min-w-0">
@@ -375,8 +411,8 @@ export default function ScheduleAppointmentModal({
                     </div>
                   </div>
 
-                   {/* Selected Appointment Summary - Mobile: Below details, Desktop: Side by side */}
-                   {selectedDate && selectedTime && (
+                  {/* Selected Appointment Summary - Mobile: Below details, Desktop: Side by side */}
+                  {selectedDate && selectedTime && (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -387,10 +423,16 @@ export default function ScheduleAppointmentModal({
                         <span className="break-words">Appointment Summary</span>
                       </h4>
                       <div className="text-xs overflow-x-hidden sm:text-sm text-orange-700 space-y-1">
-                        <p className="break-words overflow-x-hidden"><strong>Date:</strong> {formatFullDate(selectedDate)}</p>
-                        <p className="break-words overflow-x-hidden"><strong>Time:</strong> {selectedTime}</p>
+                        <p className="break-words overflow-x-hidden">
+                          <strong>Date:</strong> {formatFullDate(selectedDate)}
+                        </p>
+                        <p className="break-words overflow-x-hidden">
+                          <strong>Time:</strong> {selectedTime}
+                        </p>
                         {notes && (
-                          <p className="break-words overflow-x-hidden"><strong>Notes:</strong> {truncateNotes(notes)}</p>
+                          <p className="break-words overflow-x-hidden">
+                            <strong>Notes:</strong> {truncateNotes(notes)}
+                          </p>
                         )}
                       </div>
                     </motion.div>
@@ -409,8 +451,16 @@ export default function ScheduleAppointmentModal({
                         onClick={() => setShowCalendar(!showCalendar)}
                         className="cursor-pointer w-full h-10 sm:h-12 rounded-lg border-2 border-slate-200 bg-white hover:border-orange-500 transition-all duration-200 flex items-center justify-between px-3 group"
                       >
-                        <span className={`text-xs sm:text-sm ${selectedDate ? 'text-slate-900 font-medium' : 'text-slate-500'} truncate`}>
-                          {selectedDate ? formatDate(selectedDate) : 'Select date'}
+                        <span
+                          className={`text-xs sm:text-sm ${
+                            selectedDate
+                              ? "text-slate-900 font-medium"
+                              : "text-slate-500"
+                          } truncate`}
+                        >
+                          {selectedDate
+                            ? formatDate(selectedDate)
+                            : "Select date"}
                         </span>
                         <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 text-slate-400 group-hover:text-orange-500 transition-colors flex-shrink-0" />
                       </button>
@@ -424,38 +474,44 @@ export default function ScheduleAppointmentModal({
                             className="absolute z-50 mt-2 bg-white rounded-lg border border-slate-200 shadow-lg p-2 sm:p-4 w-full max-w-[calc(100vw-0.5rem)] sm:max-w-none left-0 right-0"
                           >
                             <div className="w-full text-center">
-                                <CalendarComponent
+                              <CalendarComponent
                                 mode="single"
                                 selected={selectedDate}
                                 onSelect={(date) => {
-                                    setSelectedDate(date);
-                                    setShowCalendar(false);
+                                  setSelectedDate(date);
+                                  setShowCalendar(false);
                                 }}
                                 disabled={isDateDisabled}
                                 className="rounded-lg w-full"
                                 classNames={{
-                                    months: "flex flex-col space-y-4",
-                                    month: "space-y-4",
-                                    caption: "flex justify-center pt-1 relative items-center",
-                                    caption_label: "text-sm font-medium",
-                                    nav: "space-x-1 flex items-center",
-                                    nav_button: "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100",
-                                    nav_button_previous: "absolute left-1",
-                                    nav_button_next: "absolute right-1",
-                                    table: "w-full border-collapse space-y-1",
-                                    head_row: "flex",
-                                    head_cell: "text-slate-500 rounded-md w-9 font-normal text-[0.8rem] flex items-center justify-center",
-                                    row: "flex w-full mt-1",
-                                    cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-orange-500 [&:has([aria-selected])]:text-white first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                                    day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-slate-100 rounded-md ",
-                                    day_selected: "bg-orange-500 text-white hover:bg-orange-600 hover:text-white focus:bg-orange-500 focus:text-white",
-                                    day_today: "bg-orange-100 text-orange-700 font-semibold",
-                                    day_outside: "text-slate-300 opacity-50",
-                                    day_disabled: "text-slate-300 opacity-50",
-                                    day_range_middle: "aria-selected:bg-orange-100 aria-selected:text-orange-700",
-                                    day_hidden: "invisible",
+                                  months: "flex flex-col space-y-4",
+                                  month: "space-y-4",
+                                  caption:
+                                    "flex justify-center pt-1 relative items-center",
+                                  caption_label: "text-sm font-medium",
+                                  nav: "space-x-1 flex items-center",
+                                  nav_button:
+                                    "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100",
+                                  nav_button_previous: "absolute left-1",
+                                  nav_button_next: "absolute right-1",
+                                  table: "w-full border-collapse space-y-1",
+                                  head_row: "flex",
+                                  head_cell:
+                                    "text-slate-500 rounded-md w-9 font-normal text-[0.8rem] flex items-center justify-center",
+                                  row: "flex w-full mt-1",
+                                  cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-orange-500 [&:has([aria-selected])]:text-white first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                                  day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-slate-100 rounded-md ",
+                                  day_selected:
+                                    "bg-orange-500 text-white hover:bg-orange-600 hover:text-white focus:bg-orange-500 focus:text-white",
+                                  day_today:
+                                    "bg-orange-100 text-orange-700 font-semibold",
+                                  day_outside: "text-slate-300 opacity-50",
+                                  day_disabled: "text-slate-300 opacity-50",
+                                  day_range_middle:
+                                    "aria-selected:bg-orange-100 aria-selected:text-orange-700",
+                                  day_hidden: "invisible",
                                 }}
-                                />
+                              />
                             </div>
                           </motion.div>
                         )}
@@ -478,15 +534,15 @@ export default function ScheduleAppointmentModal({
                         Time
                       </label>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-1.5 sm:gap-2 max-h-[180px] sm:max-h-[200px] overflow-y-auto pr-1">
-                        {timeSlots.map(time => (
+                        {timeSlots.map((time) => (
                           <button
                             key={time}
                             type="button"
                             onClick={() => setSelectedTime(time)}
                             className={`cursor-pointer h-8 sm:h-10 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 ${
                               selectedTime === time
-                                ? 'bg-orange-500 text-white shadow-md shadow-orange-500/25'
-                                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                ? "bg-orange-500 text-white shadow-md shadow-orange-500/25"
+                                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                             }`}
                           >
                             {time}
@@ -507,9 +563,14 @@ export default function ScheduleAppointmentModal({
 
                   {/* Additional Notes */}
                   <div className="space-y-2">
-                    <label htmlFor="notes" className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+                    <label
+                      htmlFor="notes"
+                      className="text-xs font-semibold text-slate-700 flex items-center gap-1.5"
+                    >
                       <FileText className="w-3.5 h-3.5 flex-shrink-0" />
-                      <span className="break-words">Additional Notes (Optional)</span>
+                      <span className="break-words">
+                        Additional Notes (Optional)
+                      </span>
                     </label>
                     <textarea
                       id="notes"
@@ -518,26 +579,38 @@ export default function ScheduleAppointmentModal({
                       placeholder="Any special requirements, questions, or notes for the appointment..."
                       rows={3}
                       className="w-full rounded-lg border-2 border-slate-200 bg-white p-3 text-xs sm:text-sm outline-none transition-all duration-200 focus:border-orange-500 focus:ring-0 resize-none break-words overflow-wrap-anywhere overflow-x-hidden"
-                      style={{ wordBreak: 'break-word', overflowWrap: 'anywhere', overflowX: 'hidden' }}
+                      style={{
+                        wordBreak: "break-word",
+                        overflowWrap: "anywhere",
+                        overflowX: "hidden",
+                      }}
                     />
                   </div>
-
-                 
 
                   {/* Submit Button */}
                   <div className="pt-1 sm:pt-2">
                     <button
                       type="submit"
-                      disabled={appointmentOperationLoading || !selectedDate || !selectedTime}
+                      disabled={
+                        appointmentOperationLoading ||
+                        !selectedDate ||
+                        !selectedTime
+                      }
                       className="cursor-pointer w-full h-10 sm:h-12 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold shadow-md shadow-orange-500/25 transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none text-xs sm:text-sm"
                     >
                       {appointmentOperationLoading ? (
                         <div className="flex items-center justify-center gap-2">
                           <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
-                          <span className="truncate">{isReschedule ? "Rescheduling..." : "Scheduling..."}</span>
+                          <span className="truncate">
+                            {isReschedule ? "Rescheduling..." : "Scheduling..."}
+                          </span>
                         </div>
                       ) : (
-                        <span className="truncate">{isReschedule ? "Reschedule Appointment" : "Schedule Appointment"}</span>
+                        <span className="truncate">
+                          {isReschedule
+                            ? "Reschedule Appointment"
+                            : "Schedule Appointment"}
+                        </span>
                       )}
                     </button>
                   </div>
@@ -560,10 +633,14 @@ export default function ScheduleAppointmentModal({
                   </div>
                   <div>
                     <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2 break-words">
-                      {isReschedule ? "Rescheduling Appointment" : "Scheduling Appointment"}
+                      {isReschedule
+                        ? "Rescheduling Appointment"
+                        : "Scheduling Appointment"}
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-600 break-words">
-                      {isReschedule ? "Please wait while we update your appointment..." : "Please wait while we confirm your booking..."}
+                      {isReschedule
+                        ? "Please wait while we update your appointment..."
+                        : "Please wait while we confirm your booking..."}
                     </p>
                   </div>
                   <div className="w-full bg-slate-200 rounded-full h-2">
@@ -590,7 +667,12 @@ export default function ScheduleAppointmentModal({
                     className="relative"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.1 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 200,
+                      damping: 15,
+                      delay: 0.1,
+                    }}
                   >
                     <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
                       <CheckCircle2 className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
@@ -598,7 +680,11 @@ export default function ScheduleAppointmentModal({
                     <motion.div
                       className="absolute -top-2 -right-2"
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
                     >
                       <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500" />
                     </motion.div>
@@ -609,7 +695,9 @@ export default function ScheduleAppointmentModal({
                       {isReschedule ? "Rescheduled!" : "All Set!"}
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-600 mb-3 break-words">
-                      {isReschedule ? "Your appointment has been rescheduled successfully." : "Your appointment has been scheduled successfully."}
+                      {isReschedule
+                        ? "Your appointment has been rescheduled successfully."
+                        : "Your appointment has been scheduled successfully."}
                     </p>
                     {appointmentData ? (
                       <div className="bg-slate-50 rounded-lg p-2.5 text-xs sm:text-sm space-y-1">
@@ -620,20 +708,26 @@ export default function ScheduleAppointmentModal({
                           Appointment ID: #{appointmentData.id}
                         </p>
                         <p className="text-slate-600 break-words">
-                          Status: <span className="capitalize text-orange-600">{appointmentData.status}</span>
+                          Status:{" "}
+                          <span className="capitalize text-orange-600">
+                            {appointmentData.status}
+                          </span>
                         </p>
                       </div>
-                    ) : selectedDate && selectedTime && (
-                      <div className="bg-slate-50 rounded-lg p-2.5 text-xs sm:text-sm">
-                        <p className="font-semibold text-slate-900 break-words">
-                          {formatFullDate(selectedDate)} at {selectedTime}
-                        </p>
-                        {notes && (
-                          <p className="text-slate-600 break-words mt-1">
-                            <strong>Notes:</strong> {truncateNotes(notes)}
+                    ) : (
+                      selectedDate &&
+                      selectedTime && (
+                        <div className="bg-slate-50 rounded-lg p-2.5 text-xs sm:text-sm">
+                          <p className="font-semibold text-slate-900 break-words">
+                            {formatFullDate(selectedDate)} at {selectedTime}
                           </p>
-                        )}
-                      </div>
+                          {notes && (
+                            <p className="text-slate-600 break-words mt-1">
+                              <strong>Notes:</strong> {truncateNotes(notes)}
+                            </p>
+                          )}
+                        </div>
+                      )
                     )}
                   </div>
                   <button
@@ -662,22 +756,31 @@ export default function ScheduleAppointmentModal({
                   </div>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2 break-words">
-                      {isReschedule ? "Rescheduling Failed" : "Scheduling Failed"}
+                      {isReschedule
+                        ? "Rescheduling Failed"
+                        : "Scheduling Failed"}
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-600 mb-3 break-words">
-                      {errorMessage || "Something went wrong. Please try again."}
+                      {errorMessage ||
+                        "Something went wrong. Please try again."}
                     </p>
                     {errorMessage && (
                       <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-xs sm:text-sm w-full max-w-sm sm:max-w-md">
                         <p className="text-orange-800 font-medium break-words text-center sm:text-left">
-                          {errorMessage.includes("Cannot reschedule appointment") && errorMessage.includes("hours") ? 
-                            "⏰ Tip: You can only reschedule appointments at least 2 hours before the scheduled time." :
-                            errorMessage.includes("already have an appointment scheduled") || errorMessage.includes("You already have an appointment scheduled") ?
-                            "💡 Tip: You already have an appointment with this dealer. Please choose a different date or contact the dealer to modify your existing appointment." :
-                            errorMessage.includes("not authorized") ?
-                            "🔒 Tip: You don't have permission to reschedule this appointment. Contact support if this is an error." :
-                            "💡 Tip: Please check your input and try again, or contact support if the issue persists."
-                          }
+                          {errorMessage.includes(
+                            "Cannot reschedule appointment"
+                          ) && errorMessage.includes("hours")
+                            ? "⏰ Tip: You can only reschedule appointments at least 2 hours before the scheduled time."
+                            : errorMessage.includes(
+                                "already have an appointment scheduled"
+                              ) ||
+                              errorMessage.includes(
+                                "You already have an appointment scheduled"
+                              )
+                            ? "💡 Tip: You already have an appointment with this dealer. Please choose a different date or contact the dealer to modify your existing appointment."
+                            : errorMessage.includes("not authorized")
+                            ? "🔒 Tip: You don't have permission to reschedule this appointment. Contact support if this is an error."
+                            : "💡 Tip: Please check your input and try again, or contact support if the issue persists."}
                         </p>
                       </div>
                     )}
