@@ -94,12 +94,16 @@ const BidDialog = ({
     setErrorMessage("");
 
     try {
+      console.log("vehicle", vehicle);
+      console.log("bidAmount", bidAmount);
+      console.log("before api call");
+      console.log("product_id", vehicle.id);
+      const bidAmountParsed = parseFloat(bidAmount);
       const response = await api.post("/bids", {
-        params: {
-          product_id: vehicle.id,
-          bid_amount: bidAmount,
-        },
+        product_id: vehicle.id,
+        bid_amount: bidAmountParsed,
       });
+
       if (response.data.success) {
         setIsSuccess(true);
         setTimeout(() => {
