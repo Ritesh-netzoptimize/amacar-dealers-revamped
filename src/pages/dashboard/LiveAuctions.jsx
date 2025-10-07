@@ -80,6 +80,16 @@ const LiveAuctions = () => {
     const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
     return data.filter((auction) => {
+      // Handle passed vehicles filter
+      if (filter === "passed") {
+        return auction.is_passed === true;
+      }
+
+      // For all other filters, exclude passed vehicles
+      if (auction.is_passed === true) {
+        return false;
+      }
+
       const auctionDate = new Date(auction.endsAt);
 
       switch (filter) {
@@ -99,6 +109,8 @@ const LiveAuctions = () => {
             auctionDate <
               new Date(thisMonth.getTime() + 30 * 24 * 60 * 60 * 1000)
           );
+        case "allTime":
+          return true;
         default:
           return true;
       }
@@ -117,9 +129,8 @@ const LiveAuctions = () => {
           let transformedData = transformAuctionData(response.data);
 
           // Apply client-side filtering for all filters since API doesn't support them
-          if (filter !== "allTime") {
-            transformedData = applyClientSideFilter(transformedData, filter);
-          }
+          // This ensures passed vehicles are properly filtered
+          transformedData = applyClientSideFilter(transformedData, filter);
 
           setAuctions(transformedData);
           setPagination(response.pagination);
