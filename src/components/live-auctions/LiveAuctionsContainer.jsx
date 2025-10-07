@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Gavel, X, Eye, Clock, DollarSign, CheckCircle } from "lucide-react";
@@ -96,7 +96,11 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
   };
 
   const isVehiclePassed = (vehicleId) => {
-    return passedVehicles.has(vehicleId);
+    const isPassed = passedVehicles.has(vehicleId);
+    console.log("passedVehicles", passedVehicles);
+    console.log("vehicleId", vehicleId);
+    console.log("isVehiclePassed", isPassed);
+    return isPassed;
   };
 
   const handleViewVehicle = (vehicle) => {
@@ -108,6 +112,10 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
       } 
     });
   };
+
+  useEffect(() => {
+    console.log("auctions", auctions);
+  }, [auctions]);
 
   return (
     <motion.div
@@ -122,7 +130,11 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
           <motion.div
             key={vehicle.id}
             variants={cardVariants}
-            className="bg-white rounded-xl border border-neutral-200 overflow-hidden hover:shadow-lg hover:border-orange-200 transition-all duration-300 group"
+            className={`bg-white rounded-xl border overflow-hidden transition-all duration-300 group ${
+              isVehiclePassed(vehicle.id)
+                ? 'border-gray-300 opacity-75 hover:shadow-md hover:border-gray-400'
+                : 'border-neutral-200 hover:shadow-lg hover:border-orange-200'
+            }`}
           >
             {/* Compact Card Layout */}
             <div className="flex flex-col h-full">
@@ -136,8 +148,12 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                   showOverlay={true}
                 />
                 {/* Status Badge */}
-                <div className="absolute top-3 left-3 bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                  Live
+                <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${
+                  isVehiclePassed(vehicle.id)
+                    ? 'bg-gray-500 text-white'
+                    : 'bg-orange-500 text-white'
+                }`}>
+                  {isVehiclePassed(vehicle.id) ? 'Passed' : 'Live'}
                 </div>
               </div>
 
@@ -223,7 +239,13 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                   
                   <Button
                     onClick={() => handleBidNow(vehicle)}
-                    className="flex-1 h-9 text-xs bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-all duration-200"
+                    disabled={isVehiclePassed(vehicle.id)}
+                    className={`flex-1 h-9 text-xs font-medium rounded-lg transition-all duration-200 ${
+                      isVehiclePassed(vehicle.id)
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
+                        : 'bg-orange-500 hover:bg-orange-600 text-white'
+                    }`}
+                    title={isVehiclePassed(vehicle.id) ? 'Cannot bid on passed vehicle' : 'Place a bid'}
                   >
                     <Gavel className="w-3.5 h-3.5 mr-1" />
                     Bid
