@@ -7,13 +7,15 @@ import { Button } from "@/components/ui/button";
 import BidDialog from "@/components/common/BidDialog/BidDialog";
 import PassDialog from "@/components/common/PassDialog/PassDialog";
 
-const LiveAuctionsContainer = ({ auctions = [] }) => {
+const LiveAuctionsContainer = ({ 
+  auctions = [], 
+  onPassUnpassSuccess = () => {} 
+}) => {
   const navigate = useNavigate();
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
   const [isPassDialogOpen, setIsPassDialogOpen] = useState(false);
   const [passDialogMode, setPassDialogMode] = useState('pass'); // 'pass' or 'unpass'
-  const [passedVehicles, setPassedVehicles] = useState(new Set());
 
   // Animation variants
   const containerVariants = {
@@ -68,18 +70,14 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
 
   const handlePassSuccess = (vehicle, response) => {
     console.log("Vehicle passed successfully:", vehicle.id, response);
-    // Add vehicle to passed vehicles set
-    setPassedVehicles(prev => new Set([...prev, vehicle.id]));
+    // Notify parent component to refresh data
+    onPassUnpassSuccess();
   };
 
   const handleUnpassSuccess = (vehicle, response) => {
     console.log("Vehicle unpassed successfully:", vehicle.id, response);
-    // Remove vehicle from passed vehicles set
-    setPassedVehicles(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(vehicle.id);
-      return newSet;
-    });
+    // Notify parent component to refresh data
+    onPassUnpassSuccess();
   };
 
   const handlePassError = (vehicle, error) => {
@@ -95,12 +93,9 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
     setSelectedVehicle(null);
   };
 
-  const isVehiclePassed = (vehicleId) => {
-    const isPassed = passedVehicles.has(vehicleId);
-    console.log("passedVehicles", passedVehicles);
-    console.log("vehicleId", vehicleId);
-    console.log("isVehiclePassed", isPassed);
-    return isPassed;
+  const isVehiclePassed = (vehicle) => {
+    // Use the is_passed field from the API response
+    return vehicle.is_passed === true;
   };
 
   const handleViewVehicle = (vehicle) => {
@@ -131,7 +126,7 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
             key={vehicle.id}
             variants={cardVariants}
             className={`bg-white rounded-xl border overflow-hidden transition-all duration-300 group ${
-              isVehiclePassed(vehicle.id)
+              isVehiclePassed(vehicle)
                 ? 'border-gray-300 opacity-75 hover:shadow-md hover:border-gray-400'
                 : 'border-neutral-200 hover:shadow-lg hover:border-orange-200'
             }`}
@@ -149,11 +144,11 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                 />
                 {/* Status Badge */}
                 <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${
-                  isVehiclePassed(vehicle.id)
+                  isVehiclePassed(vehicle)
                     ? 'bg-gray-500 text-white'
                     : 'bg-orange-500 text-white'
                 }`}>
-                  {isVehiclePassed(vehicle.id) ? 'Passed' : 'Live'}
+                  {isVehiclePassed(vehicle) ? 'Passed' : 'Live'}
                 </div>
               </div>
 
@@ -217,7 +212,7 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                   </Button>
                   
                   {/* Conditional Pass/Unpass Button */}
-                  {isVehiclePassed(vehicle.id) ? (
+                  {isVehiclePassed(vehicle) ? (
                     <Button
                       variant="outline"
                       onClick={() => handleUnpassVehicle(vehicle)}
@@ -239,13 +234,13 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                   
                   <Button
                     onClick={() => handleBidNow(vehicle)}
-                    disabled={isVehiclePassed(vehicle.id)}
+                    disabled={isVehiclePassed(vehicle)}
                     className={`flex-1 h-9 text-xs font-medium rounded-lg transition-all duration-200 ${
-                      isVehiclePassed(vehicle.id)
+                      isVehiclePassed(vehicle)
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
                         : 'bg-orange-500 hover:bg-orange-600 text-white'
                     }`}
-                    title={isVehiclePassed(vehicle.id) ? 'Cannot bid on passed vehicle' : 'Place a bid'}
+                    title={isVehiclePassed(vehicle) ? 'Cannot bid on passed vehicle' : 'Place a bid'}
                   >
                     <Gavel className="w-3.5 h-3.5 mr-1" />
                     Bid

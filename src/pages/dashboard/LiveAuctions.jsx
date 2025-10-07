@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import DashboardStats from '@/components/dashboard/DashboardStats/DashboardStats';
-import LiveAuctionsContainer from '@/components/live-auctions/LiveAuctionsContainer';
-import LiveAuctionsSkeleton from '@/components/skeletons/LiveAuctions/LiveAuctionsSkeleton';
-import Pagination from '@/components/common/Pagination/Pagination';
-import FilterTabs from '@/components/filters/LiveAuctionFilterTabs';
-import api from '@/lib/api';
+import React, { useState, useEffect, useCallback } from "react";
+import { motion } from "framer-motion";
+import DashboardStats from "@/components/dashboard/DashboardStats/DashboardStats";
+import LiveAuctionsContainer from "@/components/live-auctions/LiveAuctionsContainer";
+import LiveAuctionsSkeleton from "@/components/skeletons/LiveAuctions/LiveAuctionsSkeleton";
+import Pagination from "@/components/common/Pagination/Pagination";
+import FilterTabs from "@/components/filters/LiveAuctionFilterTabs";
+import api from "@/lib/api";
 
 const LiveAuctions = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isFilterLoading, setIsFilterLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeFilter, setActiveFilter] = useState('allTime');
+  const [activeFilter, setActiveFilter] = useState("allTime");
   const [auctions, setAuctions] = useState([]);
   const [pagination, setPagination] = useState({
     current_page: 1,
@@ -19,112 +19,130 @@ const LiveAuctions = () => {
     total: 0,
     total_pages: 1,
     has_next: false,
-    has_prev: false
+    has_prev: false,
   });
   const [error, setError] = useState(null);
   const itemsPerPage = 4; // Show 4 vehicles per page
 
   // Live Auctions API function using the imported api instance
-  const getLiveAuctions = async (page = 1, perPage = 4) => {
+  const getLiveAuctions = useCallback(async (page = 1, perPage = 4) => {
     try {
-      const response = await api.get('/live-auctions', {
+      const response = await api.get("/live-auctions", {
         params: {
           page,
-          per_page: perPage
-        }
+          per_page: perPage,
+        },
       });
       return response.data;
     } catch (error) {
-      console.error('Error fetching live auctions:', error);
+      console.error("Error fetching live auctions:", error);
       throw error;
     }
-  };
+  }, []);
 
   // Transform API data to match component expectations
-  const transformAuctionData = (apiData) => {
-    return apiData.map(auction => ({
+  const transformAuctionData = useCallback((apiData) => {
+    return apiData.map((auction) => ({
       id: auction.id,
       name: auction.title,
-      images: auction.images?.map(img => img.url) || [],
+      images: auction.images?.map((img) => img.url) || [],
       make: auction.make,
       model: auction.model,
       year: parseInt(auction.year),
       mileage: parseInt(auction.mileage),
       VIN: auction.vin,
-      cashOffer: `$${auction.cash_offer?.toLocaleString() || '0'}`,
-      highestBid: auction.highest_bid ? `$${auction.highest_bid.toLocaleString()}` : 'No bids',
-      endsAt: new Date(auction.ends_at).toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+      cashOffer: `$${auction.cash_offer?.toLocaleString() || "0"}`,
+      highestBid: auction.highest_bid
+        ? `$${auction.highest_bid.toLocaleString()}`
+        : "No bids",
+      endsAt: new Date(auction.ends_at).toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       }),
       timeLeft: auction.time_remaining,
       auctionStatus: auction.auction_status,
+      is_passed: auction.is_passed, // Include the is_passed field
       createdAt: auction.created_at,
-      updatedAt: auction.updated_at
+      updatedAt: auction.updated_at,
     }));
-  };
-
-  // Fetch auctions from API
-  const fetchAuctions = async (page = 1, filter = 'allTime') => {
-    try {
-      setError(null);
-      
-      const response = await getLiveAuctions(page, itemsPerPage);
-      
-      if (response.success) {
-        let transformedData = transformAuctionData(response.data);
-        
-        // Apply client-side filtering for all filters since API doesn't support them
-        if (filter !== 'allTime') {
-          transformedData = applyClientSideFilter(transformedData, filter);
-        }
-        
-        setAuctions(transformedData);
-        setPagination(response.pagination);
-      } else {
-        throw new Error('Failed to fetch auctions');
-      }
-    } catch (err) {
-      console.error('Error fetching auctions:', err);
-      setError(err.message);
-      setAuctions([]);
-    }
-  };
+  }, []);
 
   // Apply client-side filtering for date-based filters
-  const applyClientSideFilter = (data, filter) => {
+  const applyClientSideFilter = useCallback((data, filter) => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const thisWeek = new Date(today.getTime() - (today.getDay() * 24 * 60 * 60 * 1000));
+    const thisWeek = new Date(
+      today.getTime() - today.getDay() * 24 * 60 * 60 * 1000
+    );
     const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    return data.filter(auction => {
+    return data.filter((auction) => {
       const auctionDate = new Date(auction.endsAt);
-      
+
       switch (filter) {
-        case 'today':
-          return auctionDate >= today && auctionDate < new Date(today.getTime() + 24 * 60 * 60 * 1000);
-        case 'thisWeek':
-          return auctionDate >= thisWeek && auctionDate < new Date(thisWeek.getTime() + 7 * 24 * 60 * 60 * 1000);
-        case 'thisMonth':
-          return auctionDate >= thisMonth && auctionDate < new Date(thisMonth.getTime() + 30 * 24 * 60 * 60 * 1000);
+        case "today":
+          return (
+            auctionDate >= today &&
+            auctionDate < new Date(today.getTime() + 24 * 60 * 60 * 1000)
+          );
+        case "thisWeek":
+          return (
+            auctionDate >= thisWeek &&
+            auctionDate < new Date(thisWeek.getTime() + 7 * 24 * 60 * 60 * 1000)
+          );
+        case "thisMonth":
+          return (
+            auctionDate >= thisMonth &&
+            auctionDate <
+              new Date(thisMonth.getTime() + 30 * 24 * 60 * 60 * 1000)
+          );
         default:
           return true;
       }
     });
-  };
+  }, []);
+
+  // Fetch auctions from API
+  const fetchAuctions = useCallback(
+    async (page = 1, filter = "allTime") => {
+      try {
+        setError(null);
+
+        const response = await getLiveAuctions(page, itemsPerPage);
+
+        if (response.success) {
+          let transformedData = transformAuctionData(response.data);
+
+          // Apply client-side filtering for all filters since API doesn't support them
+          if (filter !== "allTime") {
+            transformedData = applyClientSideFilter(transformedData, filter);
+          }
+
+          setAuctions(transformedData);
+          setPagination(response.pagination);
+        } else {
+          throw new Error("Failed to fetch auctions");
+        }
+      } catch (err) {
+        console.error("Error fetching auctions:", err);
+        setError(err.message);
+        setAuctions([]);
+      }
+    },
+    [getLiveAuctions, itemsPerPage, transformAuctionData, applyClientSideFilter]
+  );
 
   // Handle filter change
   const handleFilterChange = async (filterId) => {
     if (isFilterLoading) return;
-    
+
     setIsFilterLoading(true);
     setCurrentPage(1);
     setActiveFilter(filterId);
-    
+
     await fetchAuctions(1, filterId);
     setIsFilterLoading(false);
   };
@@ -133,6 +151,12 @@ const LiveAuctions = () => {
   const handlePageChange = async (page) => {
     setCurrentPage(page);
     await fetchAuctions(page, activeFilter);
+  };
+
+  // Handle pass/unpass success - refresh data
+  const handlePassUnpassSuccess = async () => {
+    console.log("Pass/Unpass operation successful, refreshing data...");
+    await fetchAuctions(currentPage, activeFilter);
   };
 
   // Initial data load
@@ -144,7 +168,7 @@ const LiveAuctions = () => {
     };
 
     loadData();
-  }, []);
+  }, [activeFilter, fetchAuctions]);
 
   // Animation variants
   const containerVariants = {
@@ -153,9 +177,9 @@ const LiveAuctions = () => {
       opacity: 1,
       transition: {
         duration: 0.6,
-        staggerChildren: 0.2
-      }
-    }
+        staggerChildren: 0.2,
+      },
+    },
   };
 
   const headerVariants = {
@@ -165,9 +189,9 @@ const LiveAuctions = () => {
       y: 0,
       transition: {
         duration: 0.6,
-        ease: "easeOut"
-      }
-    }
+        ease: "easeOut",
+      },
+    },
   };
 
   const statsVariants = {
@@ -177,9 +201,9 @@ const LiveAuctions = () => {
       y: 0,
       transition: {
         duration: 0.6,
-        ease: "easeOut"
-      }
-    }
+        ease: "easeOut",
+      },
+    },
   };
 
   return (
@@ -187,7 +211,7 @@ const LiveAuctions = () => {
       {isLoading ? (
         <LiveAuctionsSkeleton />
       ) : (
-        <motion.div 
+        <motion.div
           className="min-h-screen bg-gray-50 pt-10 md:pt-24 px-4 md:px-6"
           variants={containerVariants}
           initial="hidden"
@@ -195,11 +219,8 @@ const LiveAuctions = () => {
         >
           <div className="px-4 md:px-6">
             {/* Header Section */}
-            <motion.div 
-              className="mb-8"
-              variants={headerVariants}
-            >
-              <motion.h1 
+            <motion.div className="mb-8" variants={headerVariants}>
+              <motion.h1
                 className="text-3xl font-bold text-neutral-900 mb-2"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -207,13 +228,14 @@ const LiveAuctions = () => {
               >
                 Live Auctions
               </motion.h1>
-              <motion.p 
+              <motion.p
                 className="text-neutral-600"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
-                Monitor and participate in live vehicle auctions. Place your bids and track real-time activity.
+                Monitor and participate in live vehicle auctions. Place your
+                bids and track real-time activity.
               </motion.p>
             </motion.div>
 
@@ -223,32 +245,38 @@ const LiveAuctions = () => {
             </motion.div>
 
             {/* Filter Tabs */}
-            <motion.div 
+            <motion.div
               className="mt-8 flex items-center justify-between"
               variants={statsVariants}
             >
-              <FilterTabs 
+              <FilterTabs
                 activeFilter={activeFilter}
                 onFilterChange={handleFilterChange}
                 isLoading={isFilterLoading}
                 className=""
               />
-              
+
               {/* Results Count */}
-              <motion.div 
+              <motion.div
                 className="flex items-center justify-between mb-4"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.1 }}
               >
                 <p className="text-sm text-neutral-600">
-                  Showing {pagination.total} auction{pagination.total !== 1 ? 's' : ''}
-                  {activeFilter !== 'allTime' && (
+                  Showing {pagination.total} auction
+                  {pagination.total !== 1 ? "s" : ""}
+                  {activeFilter !== "allTime" && (
                     <span className="ml-1 text-neutral-500">
-                      ({activeFilter === 'today' ? 'today' : 
-                        activeFilter === 'thisWeek' ? 'this week' : 
-                        activeFilter === 'thisMonth' ? 'this month' : 
-                        'passed'})
+                      (
+                      {activeFilter === "today"
+                        ? "today"
+                        : activeFilter === "thisWeek"
+                        ? "this week"
+                        : activeFilter === "thisMonth"
+                        ? "this month"
+                        : "passed"}
+                      )
                     </span>
                   )}
                 </p>
@@ -257,7 +285,7 @@ const LiveAuctions = () => {
 
             {/* Error State */}
             {error && (
-              <motion.div 
+              <motion.div
                 className="mt-8 p-4 bg-red-50 border border-red-200 rounded-lg"
                 variants={statsVariants}
               >
@@ -269,17 +297,17 @@ const LiveAuctions = () => {
 
             {/* Live Auctions Grid */}
             {!error && (
-              <motion.div 
-                className="mt-8"
-                variants={statsVariants}
-              >
-                <LiveAuctionsContainer auctions={auctions} />
+              <motion.div className="mt-8" variants={statsVariants}>
+                <LiveAuctionsContainer
+                  auctions={auctions}
+                  onPassUnpassSuccess={handlePassUnpassSuccess}
+                />
               </motion.div>
             )}
 
             {/* Pagination */}
             {!error && pagination.total_pages > 1 && (
-              <motion.div 
+              <motion.div
                 className="flex justify-center mt-8"
                 variants={statsVariants}
               >
