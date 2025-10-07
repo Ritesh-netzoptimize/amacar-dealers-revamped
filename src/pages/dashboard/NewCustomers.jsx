@@ -9,6 +9,7 @@ import NewCustomersSkeleton from "@/components/skeletons/NewCustomers/NewCustome
 import api from "@/lib/api";
 import toast from "react-hot-toast";
 import CustomerDetailsModal from "@/components/common/CustomerDetailsModal/CustomerDetailsModal";
+import ScheduleAppointmentModal from "@/components/appointments/ScheduleAppointmentModal";
 
 const NewCustomers = () => {
   const navigate = useNavigate();
@@ -21,6 +22,10 @@ const NewCustomers = () => {
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
   const [selectedCustomerName, setSelectedCustomerName] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Appointment modal state
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+  const [selectedCustomerForAppointment, setSelectedCustomerForAppointment] = useState(null);
 
   const [pagination, setPagination] = useState({
     current_page: 1,
@@ -165,7 +170,24 @@ const NewCustomers = () => {
 
   const handleScheduleAppointment = (customerId) => {
     console.log("Schedule appointment for customer:", customerId);
-    navigate(`/appointments/schedule?customerId=${customerId}`);
+    // Find the customer data
+    const customer = transformedCustomers.find(c => c.id === customerId);
+    if (customer) {
+      setSelectedCustomerForAppointment(customer);
+      setIsAppointmentModalOpen(true);
+    }
+  };
+
+  const handleCloseAppointmentModal = () => {
+    setIsAppointmentModalOpen(false);
+    setSelectedCustomerForAppointment(null);
+  };
+
+  const handleAppointmentSubmit = (appointmentData) => {
+    console.log("Appointment submitted:", appointmentData);
+    // Handle appointment submission success
+    toast.success("Appointment scheduled successfully!");
+    handleCloseAppointmentModal();
   };
 
   const handleContact = (customerId) => {
@@ -291,6 +313,21 @@ const NewCustomers = () => {
         customerId={selectedCustomerId}
         customerName={selectedCustomerName}
       />
+      
+      {/* Schedule Appointment Modal */}
+      {selectedCustomerForAppointment && (
+        <ScheduleAppointmentModal
+          isOpen={isAppointmentModalOpen}
+          onClose={handleCloseAppointmentModal}
+          onAppointmentSubmit={handleAppointmentSubmit}
+          dealerName={selectedCustomerForAppointment.name}
+          dealerId={selectedCustomerForAppointment.id}
+          dealerEmail={selectedCustomerForAppointment.email}
+          vehicleInfo={`${selectedCustomerForAppointment.year} ${selectedCustomerForAppointment.make} ${selectedCustomerForAppointment.model}`}
+          title="Schedule Appointment"
+          description="Choose your preferred date and time to meet with this customer"
+        />
+      )}
       </div>
     </motion.div>
   );

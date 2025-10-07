@@ -36,7 +36,7 @@ export const createAppointments = createAsyncThunk(
     async (appointmentData, { rejectWithValue }) => {
       try {
         // Use the axios instance which already handles auth headers
-        const response = await api.post('/appointments/schedule', {dealer_id: appointmentData.dealerId, start_time: appointmentData.start_time, notes: appointmentData.notes});
+        const response = await api.post('/appointments/schedule', {customer_id: appointmentData.dealerId, start_time: appointmentData.start_time, notes: appointmentData.notes});
         
         if (!response.data.success) {
           throw new Error(response.data.message || 'Failed to create appointments');
