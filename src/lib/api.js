@@ -1,7 +1,8 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL || 'https://dealer.amacar.ai',
+  baseURL: import.meta.env.VITE_BASE_URL || 'https://dealer.amacar.ai/wp-json/dealer-portal/v1',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -10,7 +11,11 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    // No need to manually add token - HTTP-only cookies are sent automatically
+    // Get token from cookie and add to Authorization header for protected routes
+    const token = Cookies.get('authToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
@@ -24,18 +29,38 @@ api.interceptors.response.use(
     const originalRequest = error.config;
     
     if (error.response?.status === 401 && !originalRequest._retry) {
-      // Don't auto-logout for 2FA toggle requests - let the component handle it
+      // Don't auto-refresh for these endpoints to prevent infinite loops
       const isTwoFAToggle = error.config?.url?.includes('/user/twofa');
       const isRefreshToken = error.config?.url?.includes('/auth/refresh-token');
       const isLogout = error.config?.url?.includes('/auth/logout');
+      const isLogin = error.config?.url?.includes('/auth/login');
       
-      if (!isTwoFAToggle && !isRefreshToken && !isLogout) {
+      if (!isTwoFAToggle && !isRefreshToken && !isLogout && !isLogin) {
         // Mark this request as retried to prevent infinite loops
         originalRequest._retry = true;
         
         try {
           // Import the token refresh service dynamically to avoid circular imports
           const { default: tokenRefreshService } = await import('@/services/tokenRefreshService');
+          
+          // Check if we have a valid user session before attempting refresh
+          const user = localStorage.getItem('authUser');
+          const expiration = localStorage.getItem('authExpiration');
+          
+          if (!user || !expiration) {
+            console.warn('No valid session found, skipping token refresh');
+            return Promise.reject(error);
+          }
+          
+          // Check if token is already expired
+          const expTime = parseInt(expiration, 10);
+          if (Date.now() >= expTime) {
+            console.warn('Token already expired, skipping refresh');
+            localStorage.removeItem('authUser');
+            localStorage.removeItem('authExpiration');
+            Cookies.remove('authToken');
+            return Promise.reject(error);
+          }
           
           // Attempt to refresh the token
           const refreshResult = await tokenRefreshService.forceRefresh();
@@ -45,8 +70,10 @@ api.interceptors.response.use(
             return api(originalRequest);
           } else {
             // Refresh failed, clear data and let the app handle logout
+            console.warn('Token refresh failed, clearing session');
             localStorage.removeItem('authUser');
             localStorage.removeItem('authExpiration');
+            Cookies.remove('authToken');
           }
         } catch (refreshError) {
           console.error('Token refresh failed in interceptor:', refreshError);
@@ -54,6 +81,7 @@ api.interceptors.response.use(
           localStorage.removeItem('authToken');
           localStorage.removeItem('authUser');
           localStorage.removeItem('authExpiration');
+          Cookies.remove('authToken');
         }
       }
     }
@@ -115,7 +143,7 @@ export const getLiveAuctions = async (page = 1, perPage = 4, filters = {}) => {
       ...filters
     });
     
-    const response = await api.get(`/wp-json/dealer-portal/v1/live-auctions?${params}`);
+    const response = await api.get(`/live-auctions?${params}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching live auctions:', error);

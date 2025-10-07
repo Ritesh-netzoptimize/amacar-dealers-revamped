@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import Cookies from 'js-cookie';
 import api from '../../lib/api'; // Assuming api.js is in src/
 
 // Async thunks for auth actions
@@ -10,7 +11,7 @@ export const loginUser = createAsyncThunk(
       if (response.data.success) {
         // If 2FA is not required, proceed with normal login
         if (!response.data.requires_2fa) {
-          // Store user data in localStorage for persistence (token is in HTTP-only cookie)
+          // Store user data in localStorage for persistence
           if (response.data.user) {
             localStorage.setItem('authUser', JSON.stringify(response.data.user));
           }
@@ -18,6 +19,15 @@ export const loginUser = createAsyncThunk(
             // expires_at is already a Unix timestamp, convert to milliseconds
             const expirationTime = response.data.expires_at * 1000;
             localStorage.setItem('authExpiration', expirationTime);
+          }
+          // Store token in cookie if provided (for client-side access)
+          if (response.data.token) {
+            const expirationDate = new Date(response.data.expires_at * 1000);
+            Cookies.set('authToken', response.data.token, { 
+              expires: expirationDate,
+              secure: true,
+              sameSite: 'strict'
+            });
           }
         }
         return response.data; // { user, token, expires_at, requires_2fa, user_id, username }
@@ -35,6 +45,22 @@ export const registerUser = createAsyncThunk(
     try {
       const response = await api.post('/auth/register', data);
       if (response.data.success) {
+        // Store user data and token
+        if (response.data.user) {
+          localStorage.setItem('authUser', JSON.stringify(response.data.user));
+        }
+        if (response.data.token) {
+          const expirationDate = new Date(Date.now() + response.data.expires_in * 1000);
+          Cookies.set('authToken', response.data.token, { 
+            expires: expirationDate,
+            secure: true,
+            sameSite: 'strict'
+          });
+        }
+        if (response.data.expires_in) {
+          const expirationTime = Date.now() + response.data.expires_in * 1000;
+          localStorage.setItem('authExpiration', expirationTime);
+        }
         return response.data; // { user, token, expires_in }
       }
       return rejectWithValue(response.data.message || 'Registration failed');
@@ -168,7 +194,7 @@ export const verifyLoginOTP = createAsyncThunk(
     try {
       const response = await api.post('/auth/verify-login-otp', { otp, username });
       if (response.data.success) {
-        // Store user data in localStorage for persistence (token is in HTTP-only cookie)
+        // Store user data in localStorage for persistence
         if (response.data.user) {
           localStorage.setItem('authUser', JSON.stringify(response.data.user));
         }
@@ -176,6 +202,15 @@ export const verifyLoginOTP = createAsyncThunk(
           // expires_at is already a Unix timestamp, convert to milliseconds
           const expirationTime = response.data.expires_at * 1000;
           localStorage.setItem('authExpiration', expirationTime);
+        }
+        // Store token in cookie if provided
+        if (response.data.token) {
+          const expirationDate = new Date(response.data.expires_at * 1000);
+          Cookies.set('authToken', response.data.token, { 
+            expires: expirationDate,
+            secure: true,
+            sameSite: 'strict'
+          });
         }
         return response.data;
       }
@@ -200,6 +235,15 @@ export const refreshToken = createAsyncThunk(
         if (response.data.expires_at) {
           const expirationTime = response.data.expires_at * 1000;
           localStorage.setItem('authExpiration', expirationTime);
+        }
+        // Update token in cookie if provided
+        if (response.data.token) {
+          const expirationDate = new Date(response.data.expires_at * 1000);
+          Cookies.set('authToken', response.data.token, { 
+            expires: expirationDate,
+            secure: true,
+            sameSite: 'strict'
+          });
         }
         return response.data;
       }
@@ -286,9 +330,11 @@ const userSlice = createSlice({
     },
     logout: (state) => {
         console.log("Inside logout reducer first step")
-        // Clear localStorage data (token is in HTTP-only cookie)
+        // Clear localStorage data
         localStorage.removeItem('authUser');
         localStorage.removeItem('authExpiration');
+        // Clear cookies
+        Cookies.remove('authToken');
         state.user = null;
         state.error = null;
         state.form.values = {};
@@ -363,10 +409,7 @@ const userSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.user = action.payload.user;
-        localStorage.setItem('authToken', action.payload.token);
-        localStorage.setItem('authUser', JSON.stringify(action.payload.user));
-        const expirationTime = Date.now() + action.payload.expires_in * 1000;
-        localStorage.setItem('authExpiration', expirationTime);
+        // Token and user data are already stored in the thunk
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.status = 'failed';
@@ -508,14 +551,12 @@ const userSlice = createSlice({
         // Token is automatically updated in HTTP-only cookie
       })
       .addCase(refreshToken.rejected, (state, action) => {
-        // If refresh fails, logout the user
+        // If refresh fails, just clear the user state
+        // Don't call logout API as it might also fail
         console.warn('Token refresh failed:', action.payload);
         state.user = null;
-        localStorage.removeItem('authUser');
-        localStorage.removeItem('authExpiration');
         state.error = action.payload;
-        state.form.values = {};
-        state.form.errors = {};
+        // Note: localStorage is cleared by the service, not here
       })
       // Logout User
       .addCase(logoutUser.pending, (state) => {
@@ -528,6 +569,8 @@ const userSlice = createSlice({
         state.user = null;
         localStorage.removeItem('authUser');
         localStorage.removeItem('authExpiration');
+        // Clear cookies
+        Cookies.remove('authToken');
         state.error = null;
         state.form.values = {};
         state.form.errors = {};
@@ -539,6 +582,8 @@ const userSlice = createSlice({
         state.user = null;
         localStorage.removeItem('authUser');
         localStorage.removeItem('authExpiration');
+        // Clear cookies
+        Cookies.remove('authToken');
         state.form.values = {};
         state.form.errors = {};
       })

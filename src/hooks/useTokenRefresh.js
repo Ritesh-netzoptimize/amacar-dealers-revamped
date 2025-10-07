@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { refreshToken } from '@/redux/slices/userSlice';
 import { getTimeUntilExpiry, isTokenExpired, needsTokenRefresh } from '@/utils/tokenUtils';
+import Cookies from 'js-cookie';
 
 /**
  * Hook for managing token refresh functionality
@@ -47,6 +48,17 @@ export const useTokenRefresh = () => {
     }
   };
 
+  // Check if user has a valid token in cookies
+  const hasValidToken = () => {
+    const token = Cookies.get('authToken');
+    const expiration = localStorage.getItem('authExpiration');
+    
+    if (!token || !expiration) return false;
+    
+    const expTime = parseInt(expiration, 10);
+    return Date.now() < expTime;
+  };
+
   // Check if token needs refresh
   const shouldRefresh = needsTokenRefresh();
 
@@ -56,6 +68,7 @@ export const useTokenRefresh = () => {
     needsRefresh: shouldRefresh,
     isRefreshing,
     refreshToken: refreshTokenManually,
+    hasValidToken: hasValidToken(),
     user
   };
 };

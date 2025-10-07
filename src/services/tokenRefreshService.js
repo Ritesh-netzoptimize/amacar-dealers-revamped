@@ -1,5 +1,6 @@
 import { store } from '../redux/store';
 import { refreshToken, logoutUser } from '../redux/slices/userSlice';
+import Cookies from 'js-cookie';
 
 class TokenRefreshService {
   constructor() {
@@ -10,6 +11,26 @@ class TokenRefreshService {
 
   // Start the token refresh service
   start() {
+    // Check if we have a valid session before starting
+    const user = localStorage.getItem('authUser');
+    const expiration = localStorage.getItem('authExpiration');
+    const token = Cookies.get('authToken');
+    
+    if (!user || !expiration || !token) {
+      console.warn('No valid session found, cannot start token refresh service');
+      return;
+    }
+    
+    // Check if token is already expired
+    const expTime = parseInt(expiration, 10);
+    if (Date.now() >= expTime) {
+      console.warn('Token already expired, cannot start refresh service');
+      localStorage.removeItem('authUser');
+      localStorage.removeItem('authExpiration');
+      Cookies.remove('authToken');
+      return;
+    }
+    
     this.scheduleRefresh();
   }
 
@@ -73,14 +94,22 @@ class TokenRefreshService {
           this.scheduleRefresh();
         } else {
           console.error('Token refresh failed:', result.payload);
-          // If refresh fails, logout the user
-          store.dispatch(logoutUser());
+          // If refresh fails, just clear local data and stop the service
+          // Don't call logout API as it might also fail and cause loops
+          localStorage.removeItem('authUser');
+          localStorage.removeItem('authExpiration');
+          Cookies.remove('authToken');
+          this.stop();
         }
         return result;
       })
       .catch((error) => {
         console.error('Token refresh error:', error);
-        store.dispatch(logoutUser());
+        // Just clear local data and stop the service
+        localStorage.removeItem('authUser');
+        localStorage.removeItem('authExpiration');
+        Cookies.remove('authToken');
+        this.stop();
         return error;
       })
       .finally(() => {
