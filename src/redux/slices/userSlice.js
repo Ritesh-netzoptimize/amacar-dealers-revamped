@@ -186,6 +186,30 @@ export const verifyLoginOTP = createAsyncThunk(
   }
 );
 
+// Refresh token API call
+export const refreshToken = createAsyncThunk(
+  'user/refreshToken',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/auth/refresh-token');
+      if (response.data.success) {
+        // Update user data and expiration if provided
+        if (response.data.user) {
+          localStorage.setItem('authUser', JSON.stringify(response.data.user));
+        }
+        if (response.data.expires_at) {
+          const expirationTime = response.data.expires_at * 1000;
+          localStorage.setItem('authExpiration', expirationTime);
+        }
+        return response.data;
+      }
+      return rejectWithValue(response.data.message || 'Token refresh failed');
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Token refresh failed');
+    }
+  }
+);
+
 // Logout API call to clear HTTP-only cookie
 export const logoutUser = createAsyncThunk(
   'user/logout',
@@ -471,6 +495,27 @@ const userSlice = createSlice({
           state: "",
           zipcode: "",
         };
+      })
+      // Refresh Token
+      .addCase(refreshToken.pending, (state) => {
+        // Don't set loading state for background refresh
+      })
+      .addCase(refreshToken.fulfilled, (state, action) => {
+        // Update user data if provided
+        if (action.payload.user) {
+          state.user = action.payload.user;
+        }
+        // Token is automatically updated in HTTP-only cookie
+      })
+      .addCase(refreshToken.rejected, (state, action) => {
+        // If refresh fails, logout the user
+        console.warn('Token refresh failed:', action.payload);
+        state.user = null;
+        localStorage.removeItem('authUser');
+        localStorage.removeItem('authExpiration');
+        state.error = action.payload;
+        state.form.values = {};
+        state.form.errors = {};
       })
       // Logout User
       .addCase(logoutUser.pending, (state) => {

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { loadUser, logout, logoutUser, clearLoginRedirect } from "@/redux/slices/userSlice";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import tokenRefreshService from "@/services/tokenRefreshService";
 
 export function AuthProvider({ children }) {
   const dispatch = useDispatch();
@@ -15,7 +16,23 @@ export function AuthProvider({ children }) {
     dispatch(loadUser());
   }, [dispatch]);
 
-  // Handle token expiration
+  // Start token refresh service when user is loaded
+  useEffect(() => {
+    if (user) {
+      console.log('Starting token refresh service for user:', user.username);
+      tokenRefreshService.start();
+    } else {
+      console.log('Stopping token refresh service - no user');
+      tokenRefreshService.stop();
+    }
+
+    // Cleanup on unmount
+    return () => {
+      tokenRefreshService.stop();
+    };
+  }, [user]);
+
+  // Handle token expiration (fallback for when refresh fails)
   useEffect(() => {
     if (user) {
       const expiration = localStorage.getItem("authExpiration");
@@ -23,13 +40,17 @@ export function AuthProvider({ children }) {
         const expTime = parseInt(expiration, 10);
         const remainingTime = expTime - Date.now();
 
-        if (remainingTime > 0) {
+        // Only set a fallback timer if there's more than 2 minutes left
+        // (refresh service handles the 1-minute refresh)
+        if (remainingTime > (2 * 60 * 1000)) {
           const timer = setTimeout(() => {
+            console.warn('Token expired, logging out user');
             dispatch(logoutUser());
             navigate("/");
           }, remainingTime);
           return () => clearTimeout(timer);
-        } else {
+        } else if (remainingTime <= 0) {
+          // Token already expired
           dispatch(logoutUser());
           navigate("/");
         }

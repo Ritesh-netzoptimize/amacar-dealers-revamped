@@ -20,18 +20,41 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
+  async (error) => {
+    const originalRequest = error.config;
+    
+    if (error.response?.status === 401 && !originalRequest._retry) {
       // Don't auto-logout for 2FA toggle requests - let the component handle it
       const isTwoFAToggle = error.config?.url?.includes('/user/twofa');
+      const isRefreshToken = error.config?.url?.includes('/auth/refresh-token');
+      const isLogout = error.config?.url?.includes('/auth/logout');
       
-      if (!isTwoFAToggle) {
-        // Clear any remaining localStorage data (for backward compatibility)
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('authUser');
-        localStorage.removeItem('authExpiration');
-        // The actual logout will be handled by the Redux store
-        //   window.location.href = '/unauthorized';
+      if (!isTwoFAToggle && !isRefreshToken && !isLogout) {
+        // Mark this request as retried to prevent infinite loops
+        originalRequest._retry = true;
+        
+        try {
+          // Import the token refresh service dynamically to avoid circular imports
+          const { default: tokenRefreshService } = await import('@/services/tokenRefreshService');
+          
+          // Attempt to refresh the token
+          const refreshResult = await tokenRefreshService.forceRefresh();
+          
+          if (refreshResult.type === 'user/refreshToken/fulfilled') {
+            // Token refreshed successfully, retry the original request
+            return api(originalRequest);
+          } else {
+            // Refresh failed, clear data and let the app handle logout
+            localStorage.removeItem('authUser');
+            localStorage.removeItem('authExpiration');
+          }
+        } catch (refreshError) {
+          console.error('Token refresh failed in interceptor:', refreshError);
+          // Clear any remaining localStorage data (for backward compatibility)
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('authUser');
+          localStorage.removeItem('authExpiration');
+        }
       }
     }
     return Promise.reject(error);
