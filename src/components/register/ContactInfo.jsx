@@ -28,7 +28,6 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
     { text: 'Contains number', met: /\d/.test(formData.password) },
     { text: 'Contains special character', met: /[!@#$%^&*(),.?":{}|<>]/.test(formData.password) }
   ];
-
   const isPasswordValid = passwordRequirements.every(req => req.met);
 
   return (
@@ -255,9 +254,31 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
             </motion.div>
           )}
 
+          {/* Talk to Sales Checkbox */}
+          <motion.div variants={itemVariants} className="space-y-2">
+            <div className="flex items-start space-x-3 mt-8">
+              <div className="flex items-center h-5">
+                <input
+                  type="checkbox"
+                  id="talkToSales"
+                  checked={formData.talkToSales}
+                  onChange={(e) => updateFormData('talkToSales', e.target.checked)}
+                  className="w-4 h-4 text-primary-600 bg-neutral-100 border-neutral-300 rounded focus:ring-primary-500 focus:ring-2"
+                />
+              </div>
+              <div className="text-sm">
+                <label htmlFor="talkToSales" className="text-neutral-700 cursor-pointer">
+                  <span className="font-semibold">Talk to sales</span>
+                  <br />
+                  <span className="text-neutral-600">Get in touch with our sales team</span>
+                </label>
+              </div>
+            </div>
+          </motion.div>
+
           {/* Agreement Checkbox */}
           <motion.div variants={itemVariants} className="space-y-2">
-            <div className="flex items-start space-x-3 mt-12">
+            <div className="flex items-start space-x-3 mt-4">
               <div className="flex items-center h-5">
                 <input
                   type="checkbox"

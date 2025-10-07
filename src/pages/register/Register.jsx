@@ -5,6 +5,7 @@ import ProgressStepper from '../../components/register/ProgressStepper';
 import DealershipInfo from '../../components/register/DealershipInfo';
 import ContactInfo from '../../components/register/ContactInfo';
 import PaymentSetup from '../../components/register/PaymentSetup';
+import { useNavigate } from 'react-router-dom';
 
 const steps = [
   { id: 1, title: 'Dealership Info', description: 'Complete dealership and contact details' },
@@ -14,6 +15,7 @@ const steps = [
 
 const Register = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     // Dealership Info
     dealerCode: '',
@@ -37,6 +39,7 @@ const Register = () => {
     password: '',
     confirmPassword: '',
     agreementAccepted: false,
+    talkToSales: false,
     
     // Payment Setup
     cardNumber: '',
@@ -54,6 +57,49 @@ const Register = () => {
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const isStepValid = (step) => {
+    switch (step) {
+      case 1:
+        // Dealership Info validation
+        if (!formData.dealerCode) return false;
+        if (!formData.dealershipName) return false;
+        if (!formData.website) return false;
+        if (!formData.dealerGroup) return false;
+        // Contact Info validation (moved from step 2)
+        if (!formData.jobPosition) return false;
+        if (!formData.businessEmail) return false;
+        if (!/\S+@\S+\.\S+/.test(formData.businessEmail)) return false;
+        // Location validation (moved from step 2)
+        if (!formData.zipCode) return false;
+        if (!formData.city) return false;
+        if (!formData.state) return false;
+        return true;
+      case 2:
+        // Personal Info validation
+        if (!formData.firstName) return false;
+        if (!formData.lastName) return false;
+        if (!formData.mobileNumber) return false;
+        // Account Setup validation (moved from step 3)
+        if (!formData.password) return false;
+        if (formData.password.length < 8) return false;
+        if (!formData.confirmPassword) return false;
+        if (formData.password !== formData.confirmPassword) return false;
+        if (!formData.agreementAccepted) return false;
+        // Note: talkToSales is optional, so we don't check it
+        return true;
+      case 3:
+        // Payment validation only
+        if (!formData.cardNumber) return false;
+        if (!formData.expiryDate) return false;
+        if (!formData.cvv) return false;
+        if (!formData.cardholderName) return false;
+        if (!formData.trialAccepted) return false;
+        return true;
+      default:
+        return false;
     }
   };
 
@@ -113,6 +159,9 @@ const Register = () => {
   const handleNext = () => {
     if (validateStep(currentStep)) {
       setCurrentStep(prev => Math.min(prev + 1, steps.length));
+    }
+    if(currentStep === 2 && formData.talkToSales) {
+      navigate('https://calendly.com/sz253500/')
     }
   };
 
@@ -299,7 +348,7 @@ const Register = () => {
                 </div>
 
                 {/* Form Content */}
-                <div className="flex-1 p-6 lg:p-8 overflow-y-auto overflow-x-hidden">
+                <div className="flex-1 p-6 lg:p-8 overflow-hidden">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={currentStep}
@@ -330,9 +379,21 @@ const Register = () => {
                       {currentStep < steps.length ? (
                         <button
                           onClick={handleNext}
-                          className="flex items-center space-x-2 px-8 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-glow focus:outline-none focus:ring-4 focus:ring-primary-200"
+                          disabled={!isStepValid(currentStep)}
+                          className={`flex items-center space-x-2 px-8 py-3 font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-4 ${
+                            isStepValid(currentStep)
+                              ? 'bg-primary-500 hover:bg-primary-600 text-white transform hover:scale-105 hover:shadow-glow focus:ring-primary-200'
+                              : 'bg-neutral-300 text-neutral-500 cursor-not-allowed'
+                          }`}
                         >
-                          <span>Next</span>
+                          <span>
+                            {currentStep === 2 && formData.talkToSales 
+                              ? 'Submit to Sales Team' 
+                              : currentStep === 2 && !formData.talkToSales 
+                              ? 'Make Payment' 
+                              : 'Next'
+                            }
+                          </span>
                           <ChevronRight className="w-5 h-5" />
                         </button>
                       ) : (
