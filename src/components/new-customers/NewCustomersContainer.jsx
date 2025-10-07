@@ -84,7 +84,6 @@ const NewCustomersContainer = ({
     onContact(customerId);
   };
 
-
   return (
     <motion.div
       className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6"
@@ -182,12 +181,15 @@ const NewCustomersContainer = ({
                 </TableCell>
                 <TableCell className="py-3">
                   <div className="text-xs text-neutral-600">
-                    {new Date(customer.joinDate).toLocaleDateString()} {new Date(customer.joinDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(customer.joinDate).toLocaleDateString()}{" "}
+                    {new Date(customer.joinDate).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </div>
                 </TableCell>
                 <TableCell className="py-3 text-right">
                   <div className="flex gap-4 justify-end items-center">
-                    
                     <Button
                       variant="default"
                       size="sm"
@@ -227,16 +229,18 @@ const NewCustomersContainer = ({
                           <Car className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                           <span>View Vehicle</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleContact(customer.id)}
-                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
-                        >
-                          <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-                          <span>Contact</span>
+                        <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group">
+                          <a
+                            onClick={(e) => e.stopPropagation()}
+                            href={`tel:${customer.phone}`} // replace with the dealer's phone number
+                            className="flex gap-4 items-center w-full"
+                          >
+                            <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                            <span>Contact</span>
+                          </a>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-
                   </div>
                 </TableCell>
               </TableRow>
@@ -298,7 +302,11 @@ const NewCustomersContainer = ({
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-neutral-600">Join Date</span>
                   <span className="text-xs text-neutral-700">
-                    {new Date(customer.joinDate).toLocaleDateString()} {new Date(customer.joinDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(customer.joinDate).toLocaleDateString()}{" "}
+                    {new Date(customer.joinDate).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
               </div>

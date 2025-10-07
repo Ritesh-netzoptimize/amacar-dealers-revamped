@@ -172,12 +172,15 @@ const ActiveCustomersContainer = ({
                 </TableCell>
                 <TableCell className="py-4">
                   <div className="text-xs text-neutral-600">
-                    {new Date(customer.joinDate).toLocaleDateString()} {new Date(customer.joinDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(customer.joinDate).toLocaleDateString()}{" "}
+                    {new Date(customer.joinDate).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </div>
                 </TableCell>
                 <TableCell className="py-4 text-right pr-6">
                   <div className="flex gap-2 justify-end items-center">
-                    
                     {/* <Button
                       variant="default"
                       size="sm"
@@ -204,7 +207,9 @@ const ActiveCustomersContainer = ({
                         className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-1 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
                       >
                         <DropdownMenuItem
-                          onClick={() => handleViewCustomer(customer.id, customer.name)}
+                          onClick={() =>
+                            handleViewCustomer(customer.id, customer.name)
+                          }
                           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                         >
                           <Eye className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
@@ -217,16 +222,18 @@ const ActiveCustomersContainer = ({
                           <Car className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                           <span>View Vehicle</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleContact(customer.id)}
-                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
-                        >
-                          <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-                          <span>Contact</span>
+                        <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group">
+                          <a
+                            onClick={(e) => e.stopPropagation()}
+                            href={`tel:${customer.phone}`} // replace with the dealer's phone number
+                            className="flex gap-4 items-center w-full"
+                          >
+                            <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                            <span>Contact</span>
+                          </a>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-
                   </div>
                 </TableCell>
               </TableRow>
@@ -262,27 +269,39 @@ const ActiveCustomersContainer = ({
               {/* Vehicle Info */}
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-xs text-neutral-600 font-medium">Vehicle</span>
+                  <span className="text-xs text-neutral-600 font-medium">
+                    Vehicle
+                  </span>
                   <span className="text-sm font-medium text-neutral-800 text-right">
                     {customer.vehicle}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-xs text-neutral-600 font-medium">Offer Price</span>
+                  <span className="text-xs text-neutral-600 font-medium">
+                    Offer Price
+                  </span>
                   <span className="text-sm font-bold text-green-600">
                     {customer.offer}
                   </span>
                 </div>
                 <div className="flex justify-between items-start py-2">
-                  <span className="text-xs text-neutral-600 font-medium">Address</span>
+                  <span className="text-xs text-neutral-600 font-medium">
+                    Address
+                  </span>
                   <span className="text-xs text-neutral-700 text-right max-w-[220px] leading-relaxed">
                     {customer.address}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-xs text-neutral-600 font-medium">Join Date</span>
+                  <span className="text-xs text-neutral-600 font-medium">
+                    Join Date
+                  </span>
                   <span className="text-xs text-neutral-700 text-right">
-                    {new Date(customer.joinDate).toLocaleDateString()} {new Date(customer.joinDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(customer.joinDate).toLocaleDateString()}{" "}
+                    {new Date(customer.joinDate).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
               </div>
