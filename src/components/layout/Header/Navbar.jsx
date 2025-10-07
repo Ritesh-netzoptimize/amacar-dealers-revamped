@@ -136,14 +136,14 @@ export default function Navbar() {
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
-            className="md:hidden pb-4"
+            className="md:hidden pb-4 "
           >
             {navLinks.map((link) => (
               <motion.a
                 animate={{ opacity: 1, height: "auto" }}
                 key={link}
                 href={`#${link.toLowerCase().replace(" ", "-")}`}
-                className="block py-2 text-neutral-700 hover:text-orange-500"
+                className="block py-2 text-[var(--brand-orange)] font-semibold hover:text-orange-500"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link}
