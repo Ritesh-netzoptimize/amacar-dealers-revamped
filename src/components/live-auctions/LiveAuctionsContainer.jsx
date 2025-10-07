@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Gavel, X, Eye, Clock, DollarSign } from "lucide-react";
+import { Gavel, X, Eye, Clock, DollarSign, CheckCircle } from "lucide-react";
 import PhotoSwipeGallery from "@/components/ui/PhotoSwipeGallery";
 import { Button } from "@/components/ui/button";
 import BidDialog from "@/components/common/BidDialog/BidDialog";
@@ -12,10 +12,8 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
   const [isPassDialogOpen, setIsPassDialogOpen] = useState(false);
-  const [passLoading, setPassLoading] = useState(false);
-  const [passSuccess, setPassSuccess] = useState(false);
-  const [passError, setPassError] = useState(false);
-  const [passErrorMessage, setPassErrorMessage] = useState("");
+  const [passDialogMode, setPassDialogMode] = useState('pass'); // 'pass' or 'unpass'
+  const [passedVehicles, setPassedVehicles] = useState(new Set());
 
   // Animation variants
   const containerVariants = {
@@ -58,55 +56,47 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
 
   const handlePassVehicle = (vehicle) => {
     setSelectedVehicle(vehicle);
+    setPassDialogMode('pass');
     setIsPassDialogOpen(true);
-    // Reset states when opening dialog
-    setPassLoading(false);
-    setPassSuccess(false);
-    setPassError(false);
-    setPassErrorMessage("");
   };
 
-  const handlePassConfirm = async (vehicle) => {
-    setPassLoading(true);
-    setPassError(false);
-    setPassErrorMessage("");
+  const handleUnpassVehicle = (vehicle) => {
+    setSelectedVehicle(vehicle);
+    setPassDialogMode('unpass');
+    setIsPassDialogOpen(true);
+  };
 
-    try {
-      // Simulate API call
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate 90% success rate
-          if (Math.random() > 0.1) {
-            resolve();
-          } else {
-            reject(new Error("Failed to pass vehicle. Please try again."));
-          }
-        }, 2000);
-      });
+  const handlePassSuccess = (vehicle, response) => {
+    console.log("Vehicle passed successfully:", vehicle.id, response);
+    // Add vehicle to passed vehicles set
+    setPassedVehicles(prev => new Set([...prev, vehicle.id]));
+  };
 
-      setPassSuccess(true);
+  const handleUnpassSuccess = (vehicle, response) => {
+    console.log("Vehicle unpassed successfully:", vehicle.id, response);
+    // Remove vehicle from passed vehicles set
+    setPassedVehicles(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(vehicle.id);
+      return newSet;
+    });
+  };
 
-      // Close dialog after success
-      setTimeout(() => {
-        handleClosePassDialog();
-        // TODO: Remove vehicle from auctions list or update its status
-        console.log("Vehicle passed successfully:", vehicle.id);
-      }, 1500);
-    } catch (error) {
-      setPassError(true);
-      setPassErrorMessage(error.message);
-    } finally {
-      setPassLoading(false);
-    }
+  const handlePassError = (vehicle, error) => {
+    console.error("Error passing vehicle:", vehicle.id, error);
+  };
+
+  const handleUnpassError = (vehicle, error) => {
+    console.error("Error unpassing vehicle:", vehicle.id, error);
   };
 
   const handleClosePassDialog = () => {
     setIsPassDialogOpen(false);
     setSelectedVehicle(null);
-    setPassLoading(false);
-    setPassSuccess(false);
-    setPassError(false);
-    setPassErrorMessage("");
+  };
+
+  const isVehiclePassed = (vehicleId) => {
+    return passedVehicles.has(vehicleId);
   };
 
   const handleViewVehicle = (vehicle) => {
@@ -209,14 +199,28 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
                     <Eye className="w-3.5 h-3.5 mr-1" />
                     View
                   </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => handlePassVehicle(vehicle)}
-                    className="flex-1 h-9 text-xs border-neutral-200 hover:border-red-300 hover:bg-red-50 text-neutral-600 hover:text-red-600 font-medium rounded-lg transition-all duration-200"
-                  >
-                    <X className="w-3.5 h-3.5 mr-1" />
-                    Pass
-                  </Button>
+                  
+                  {/* Conditional Pass/Unpass Button */}
+                  {isVehiclePassed(vehicle.id) ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => handleUnpassVehicle(vehicle)}
+                      className="flex-1 h-9 text-xs border-green-200 hover:border-green-300 hover:bg-green-50 text-green-600 hover:text-green-700 font-medium rounded-lg transition-all duration-200"
+                    >
+                      <CheckCircle className="w-3.5 h-3.5 mr-1" />
+                      Unpass
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      onClick={() => handlePassVehicle(vehicle)}
+                      className="flex-1 h-9 text-xs border-neutral-200 hover:border-red-300 hover:bg-red-50 text-neutral-600 hover:text-red-600 font-medium rounded-lg transition-all duration-200"
+                    >
+                      <X className="w-3.5 h-3.5 mr-1" />
+                      Pass
+                    </Button>
+                  )}
+                  
                   <Button
                     onClick={() => handleBidNow(vehicle)}
                     className="flex-1 h-9 text-xs bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-all duration-200"
@@ -242,17 +246,15 @@ const LiveAuctionsContainer = ({ auctions = [] }) => {
         />
       )}
 
-      {/* Pass Dialog */}
+      {/* Pass/Unpass Dialog */}
       {selectedVehicle && (
         <PassDialog
           isOpen={isPassDialogOpen}
           onClose={handleClosePassDialog}
           vehicle={selectedVehicle}
-          onPassConfirm={handlePassConfirm}
-          isLoading={passLoading}
-          isSuccess={passSuccess}
-          isError={passError}
-          errorMessage={passErrorMessage}
+          mode={passDialogMode}
+          onSuccess={passDialogMode === 'pass' ? handlePassSuccess : handleUnpassSuccess}
+          onError={passDialogMode === 'pass' ? handlePassError : handleUnpassError}
         />
       )}
     </motion.div>

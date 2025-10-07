@@ -126,4 +126,30 @@ export const getCustomerDetails = async (customerId) => {
   }
 };
 
+// Pass Vehicle API
+export const passVehicle = async (productId) => {
+  try {
+    const response = await api.post('/bids/pass-vehicle', {
+      product_id: productId
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error passing vehicle:', error);
+    throw error;
+  }
+};
+
+// Unpass Vehicle API
+export const unpassVehicle = async (productId) => {
+  try {
+    const response = await api.post('/bids/unpass-vehicle', {
+      product_id: productId
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error unpassing vehicle:', error);
+    throw error;
+  }
+};
+
 export default api;
