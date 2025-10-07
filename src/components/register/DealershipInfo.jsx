@@ -1,7 +1,41 @@
 import { motion } from 'framer-motion';
 import { Building2, Globe, Users, Hash, Briefcase, Mail, MapPin, Building, Map } from 'lucide-react';
+import { useCallback, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCityStateByZip, clearLocation } from '@/redux/slices/userSlice';
 
 const DealershipInfo = ({ formData, updateFormData, errors }) => {
+  const dispatch = useDispatch();
+  const { locationStatus, locationError, locationData } = useSelector((state) => state.user);
+  const timeoutRef = useRef(null);
+
+  // Debounced ZIP code lookup
+  const debouncedZipLookup = useCallback((zip) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
+    timeoutRef.current = setTimeout(() => {
+      if (zip && zip.length === 5 && /^\d{5}$/.test(zip)) {
+        console.log("Dispatching ZIP lookup for:", zip);
+        dispatch(fetchCityStateByZip(zip));
+      } else if (zip.length === 0) {
+        // Clear location when ZIP is empty
+        dispatch(clearLocation());
+        updateFormData('city', '');
+        updateFormData('state', '');
+      }
+    }, 500);
+  }, [dispatch, updateFormData]);
+
+  // Handle ZIP code lookup results
+  useEffect(() => {
+    if (locationStatus === 'fulfilled' && locationData) {
+      updateFormData('city', locationData.city || '');
+      updateFormData('state', locationData.state || '');
+    }
+  }, [locationStatus, locationData, updateFormData]);
+
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -28,17 +62,6 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
     }
   };
 
-  const states = [
-    'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
-    'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho',
-    'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
-    'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi',
-    'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
-    'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma',
-    'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
-    'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington',
-    'West Virginia', 'Wisconsin', 'Wyoming'
-  ];
 
   return (
     <motion.div
@@ -235,12 +258,18 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
                 <input
                   type="text"
                   value={formData.zipCode}
-                  onChange={(e) => updateFormData('zipCode', e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '').slice(0, 5);
+                    updateFormData('zipCode', value);
+                    debouncedZipLookup(value);
+                  }}
                   className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
                     errors.zipCode ? 'border-error' : 'border-neutral-200'
                   } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                   placeholder="12345"
                   maxLength="5"
+                  inputMode="numeric"
+                  pattern="[0-9]{5}"
                 />
               </div>
               {errors.zipCode && (
@@ -258,15 +287,23 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
                 <input
                   type="text"
                   value={formData.city}
-                  onChange={(e) => updateFormData('city', e.target.value)}
+                  disabled={true}
                   className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
                     errors.city ? 'border-error' : 'border-neutral-200'
-                  } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
-                  placeholder="Enter city name"
+                  } bg-neutral-50 text-neutral-600 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 cursor-not-allowed`}
+                  placeholder="Auto-filled from ZIP code"
                 />
+                {locationStatus === 'loading' && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
               </div>
               {errors.city && (
                 <p className="text-sm text-error">{errors.city}</p>
+              )}
+              {locationError && (
+                <p className="text-sm text-error">{locationError}</p>
               )}
             </motion.div>
 
@@ -277,20 +314,20 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
               </label>
               <div className="relative">
                 <Map className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
-                <select
+                <input
+                  type="text"
                   value={formData.state}
-                  onChange={(e) => updateFormData('state', e.target.value)}
+                  disabled={true}
                   className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
                     errors.state ? 'border-error' : 'border-neutral-200'
-                  } bg-white text-neutral-900 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
-                >
-                  <option value="">Select state</option>
-                  {states.map((state) => (
-                    <option key={state} value={state}>
-                      {state}
-                    </option>
-                  ))}
-                </select>
+                  } bg-neutral-50 text-neutral-600 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 cursor-not-allowed`}
+                  placeholder="Auto-filled from ZIP code"
+                />
+                {locationStatus === 'loading' && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
               </div>
               {errors.state && (
                 <p className="text-sm text-error">{errors.state}</p>

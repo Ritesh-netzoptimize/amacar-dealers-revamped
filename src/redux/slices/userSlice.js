@@ -143,7 +143,6 @@ export const changePassword = createAsyncThunk(
   }
 );
 
-
 export const updateProfile = createAsyncThunk(
   'user/updateProfile',
   async (profileData, { rejectWithValue }) => {
@@ -327,6 +326,10 @@ const userSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+    },
+    clearLocation: (state) => {
+      state.locationStatus = 'idle';
+      state.locationError = null;
     },
     logout: (state) => {
         console.log("Inside logout reducer first step")
@@ -590,5 +593,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setFormValue, setFormError, resetForm, clearError, logout, loadUser } = userSlice.actions;
+export const { setFormValue, setFormError, resetForm, clearError, clearLocation, logout, loadUser } = userSlice.actions;
 export default userSlice.reducer;
