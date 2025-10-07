@@ -20,6 +20,8 @@ import Home from "./pages/home/Home";
 import Register from "./pages/register/Register";
 import BackToTop from "./components/ui/BackToTop";
 import VehicleDetails from "./pages/dashboard/VehicleDetails";
+import CheckoutPage from "./components/stripe/CheckoutPage";
+import PaymentSuccess from "./components/stripe/PaymentSuccess";
 
 function App() {
   // const location = useLocation();
@@ -198,6 +200,9 @@ function App() {
               </DashboardLayout>
             }
           />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+
         </Routes>
       </main>
 
