@@ -18,13 +18,13 @@ import {
   BarChart,
   ArrowUp
 } from 'lucide-react';
-import { logout } from '@/redux/slices/userSlice';
+import { logoutUser } from '@/redux/slices/userSlice';
 import LogoutModal from '@/components/ui/LogoutUI/LogoutModal';
 import { useDispatch, useSelector } from 'react-redux';
 // import Modal from '@/components/ui/modal';
 // import LogoutModal from '@/components/ui/LogoutModal';
 // import { useDispatch, useSelector } from 'react-redux';
-// import { logout } from '@/redux/slices/userSlice';
+// import { logoutUser } from '@/redux/slices/userSlice';
 // import { persistor } from '@/redux/store';
 // import { AuthContext } from '@/contexts/AuthContext';
 
@@ -63,7 +63,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
 
   const handleConfirmLogout = async () => {
     // await persistor.purge();
-    await dispatch(logout());
+    await dispatch(logoutUser());
     setTimeout(() => {
         navigate('/');
     }, 1000);

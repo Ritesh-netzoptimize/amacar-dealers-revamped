@@ -8,7 +8,7 @@ import Sidebar from '../Sidebar/Sidebar';
 import BackToTop from '../../ui/BackToTop';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import LogoutModal from '@/components/ui/LogoutUI/LogoutModal';
-import { logout } from '@/redux/slices/userSlice';
+import { logoutUser } from '@/redux/slices/userSlice';
 import { getDashboardActivity } from '../../../lib/api';
 
 const DashboardLayout = ({ children }) => {
@@ -74,7 +74,7 @@ const DashboardLayout = ({ children }) => {
   };
 
   const handleConfirmLogout = async () => {
-    await dispatch(logout());
+    await dispatch(logoutUser());
     setTimeout(() => {
         navigate('/');
     }, 1000);

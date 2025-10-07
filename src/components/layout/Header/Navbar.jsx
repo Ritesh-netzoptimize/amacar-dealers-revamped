@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import LoginModal from "@/components/ui/LoginUI/LoginModal";
 import { useNavigate } from "react-router-dom";
 import LogoutModal from "@/components/ui/LogoutUI/LogoutModal";
-import { logout } from "@/redux/slices/userSlice";
+import { logoutUser } from "@/redux/slices/userSlice";
 
 // Navbar Component
 export default function Navbar() {
@@ -32,7 +32,7 @@ export default function Navbar() {
 
   const handleConfirmLogout = async () => {
     // console.log("Before calling dispatch logout")
-    await dispatch(logout());
+    await dispatch(logoutUser());
     // console.log("after calling dispatch logout")
     navigate("/");
     // setLogoutModalOpen(false);

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { loadUser, logout, clearLoginRedirect } from "@/redux/slices/userSlice";
+import { loadUser, logout, logoutUser, clearLoginRedirect } from "@/redux/slices/userSlice";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 
@@ -25,12 +25,12 @@ export function AuthProvider({ children }) {
 
         if (remainingTime > 0) {
           const timer = setTimeout(() => {
-            dispatch(logout());
+            dispatch(logoutUser());
             navigate("/");
           }, remainingTime);
           return () => clearTimeout(timer);
         } else {
-          dispatch(logout());
+          dispatch(logoutUser());
           navigate("/");
         }
       }

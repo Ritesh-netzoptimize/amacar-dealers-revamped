@@ -5,14 +5,12 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Enable cookies for HTTP-only token storage
 });
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // No need to manually add token - HTTP-only cookies are sent automatically
     return config;
   },
   (error) => {
@@ -28,9 +26,11 @@ api.interceptors.response.use(
       const isTwoFAToggle = error.config?.url?.includes('/user/twofa');
       
       if (!isTwoFAToggle) {
+        // Clear any remaining localStorage data (for backward compatibility)
         localStorage.removeItem('authToken');
         localStorage.removeItem('authUser');
         localStorage.removeItem('authExpiration');
+        // The actual logout will be handled by the Redux store
         //   window.location.href = '/unauthorized';
       }
     }

@@ -10,19 +10,17 @@ export const loginUser = createAsyncThunk(
       if (response.data.success) {
         // If 2FA is not required, proceed with normal login
         if (!response.data.requires_2fa) {
-          // Store auth tokens in localStorage for persistence
-          if (response.data.token) {
-            localStorage.setItem('authToken', response.data.token);
-          }
+          // Store user data in localStorage for persistence (token is in HTTP-only cookie)
           if (response.data.user) {
             localStorage.setItem('authUser', JSON.stringify(response.data.user));
           }
-          if (response.data.expires_in) {
-            const expirationTime = Date.now() + response.data.expires_in * 1000;
+          if (response.data.expires_at) {
+            // expires_at is already a Unix timestamp, convert to milliseconds
+            const expirationTime = response.data.expires_at * 1000;
             localStorage.setItem('authExpiration', expirationTime);
           }
         }
-        return response.data; // { user, token, expires_in, requires_2fa, user_id, username }
+        return response.data; // { user, token, expires_at, requires_2fa, user_id, username }
       }
       return rejectWithValue(response.data.message || 'Login failed');
     } catch (error) {
@@ -170,15 +168,13 @@ export const verifyLoginOTP = createAsyncThunk(
     try {
       const response = await api.post('/auth/verify-login-otp', { otp, username });
       if (response.data.success) {
-        // Store auth tokens in localStorage for persistence
-        if (response.data.token) {
-          localStorage.setItem('authToken', response.data.token);
-        }
+        // Store user data in localStorage for persistence (token is in HTTP-only cookie)
         if (response.data.user) {
           localStorage.setItem('authUser', JSON.stringify(response.data.user));
         }
-        if (response.data.expires_in) {
-          const expirationTime = Date.now() + response.data.expires_in * 1000;
+        if (response.data.expires_at) {
+          // expires_at is already a Unix timestamp, convert to milliseconds
+          const expirationTime = response.data.expires_at * 1000;
           localStorage.setItem('authExpiration', expirationTime);
         }
         return response.data;
@@ -186,6 +182,21 @@ export const verifyLoginOTP = createAsyncThunk(
       return rejectWithValue(response.data.message || 'OTP verification failed');
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'OTP verification failed');
+    }
+  }
+);
+
+// Logout API call to clear HTTP-only cookie
+export const logoutUser = createAsyncThunk(
+  'user/logout',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/auth/logout');
+      return response.data;
+    } catch (error) {
+      // Even if the API call fails, we should still clear local state
+      console.warn('Logout API call failed:', error);
+      return { success: true };
     }
   }
 );
@@ -251,7 +262,7 @@ const userSlice = createSlice({
     },
     logout: (state) => {
         console.log("Inside logout reducer first step")
-        localStorage.removeItem('authToken');
+        // Clear localStorage data (token is in HTTP-only cookie)
         localStorage.removeItem('authUser');
         localStorage.removeItem('authExpiration');
         state.user = null;
@@ -261,21 +272,19 @@ const userSlice = createSlice({
         console.log("Inside logout reducer last step")
     },
     loadUser: (state) => {
-      const token = localStorage.getItem('authToken');
       const storedUser = localStorage.getItem('authUser');
       const expiration = localStorage.getItem('authExpiration');
 
       // Clean up any invalid data in localStorage
       if (storedUser === 'undefined' || storedUser === 'null') {
         localStorage.removeItem('authUser');
-        localStorage.removeItem('authToken');
         localStorage.removeItem('authExpiration');
         state.user = null;
         state.loading = false;
         return;
       }
 
-      if (token && storedUser && expiration) {
+      if (storedUser && expiration) {
         try {
           const expTime = parseInt(expiration);
           if (Date.now() < expTime) {
@@ -284,7 +293,6 @@ const userSlice = createSlice({
             // Note: Auto-logout timer is set in the component
           } else {
             state.user = null;
-            localStorage.removeItem('authToken');
             localStorage.removeItem('authUser');
             localStorage.removeItem('authExpiration');
             state.loading = false;
@@ -293,7 +301,6 @@ const userSlice = createSlice({
           // If JSON.parse fails, clear the invalid data and logout
           console.error('Error parsing stored user data:', error);
           state.user = null;
-          localStorage.removeItem('authToken');
           localStorage.removeItem('authUser');
           localStorage.removeItem('authExpiration');
           state.loading = false;
@@ -464,6 +471,31 @@ const userSlice = createSlice({
           state: "",
           zipcode: "",
         };
+      })
+      // Logout User
+      .addCase(logoutUser.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.status = 'succeeded';
+        // Clear user data and localStorage
+        state.user = null;
+        localStorage.removeItem('authUser');
+        localStorage.removeItem('authExpiration');
+        state.error = null;
+        state.form.values = {};
+        state.form.errors = {};
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+        // Even if logout API fails, clear local state
+        state.user = null;
+        localStorage.removeItem('authUser');
+        localStorage.removeItem('authExpiration');
+        state.form.values = {};
+        state.form.errors = {};
       })
   },
 });
