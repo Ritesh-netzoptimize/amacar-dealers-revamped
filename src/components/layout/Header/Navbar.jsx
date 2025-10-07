@@ -75,7 +75,7 @@ export default function Navbar() {
                 key={link}
                 href={`#${link.toLowerCase().replace(" ", "-")}`}
                 whileHover={{ y: -2 }}
-                className="text-neutral-700 hover:text-orange-500 font-medium transition-colors"
+                className="text-[var(--brand-orange)] font-semibold hover:text-orange-500 font-medium transition-colors"
               >
                 {link}
               </motion.a>
@@ -110,7 +110,7 @@ export default function Navbar() {
                 </button>
                 <button 
                   onClick={() => navigate("/register")}
-                  className="w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white hover:bg-orange-50 transition-colors"
+                  className="w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold shadow-lg bg-white hover:bg-orange-50 transition-colors"
                 >
                   Join as dealer
                 </button>

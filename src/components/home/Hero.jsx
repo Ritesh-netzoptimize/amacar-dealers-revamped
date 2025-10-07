@@ -18,13 +18,35 @@ export default function Hero () {
       setLoginModalOpen(true);
     };
     return (
-      <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-neutral-50 via-orange-50/30 to-neutral-50 pt-20">
+      <div className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        {/* Video Background */}
+        <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover"
+          >
+            <source src="https://dealer.amacar.ai/wp-content/uploads/2025/10/6537414-uhd_3840_2160_30fps.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          
+          {/* Modern Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          
+          {/* Animated gradient overlays for modern effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 via-transparent to-blue-500/20 animate-pulse" />
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-transparent via-orange-500/10 to-transparent" />
+        </div>
+
         <motion.div
           style={{ y }}
           className="absolute inset-0 z-0"
         >
-          <div className="absolute top-20 right-10 w-72 h-72 bg-orange-200/40 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 left-10 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl" />
+          <div className="absolute top-20 right-10 w-72 h-72 bg-orange-200/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 left-10 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl" />
         </motion.div>
   
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -40,22 +62,22 @@ export default function Hero () {
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="inline-block mb-6 px-4 py-2 bg-orange-100 rounded-full"
+                className="inline-block mb-6 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full"
               >
-                <span className="text-orange-600 font-semibold text-sm">
+                <span className="text-white font-semibold text-sm drop-shadow-lg">
                   🚀 Trusted by 500+ Dealers
                 </span>
               </motion.div>
     
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 mb-6 leading-tight">
-                <span className="bg-[var(--brand-orange)] bg-clip-text text-transparent">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-2xl">
+                <span className="bg-gradient-to-r from-orange-400 to-orange-300 bg-clip-text text-transparent drop-shadow-lg">
                   Real Leads. Real-Time Bidding.
                 </span>
                 <br />
-                Real Profit.
+                <span className="text-white drop-shadow-2xl">Real Profit.</span>
               </h1>
     
-              <p className="text-lg sm:text-xl text-neutral-600 max-w-2xl mx-auto lg:mx-0 mb-10 leading-relaxed">
+              <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto lg:mx-0 mb-10 leading-relaxed drop-shadow-lg">
                 Get instant access to pre-qualified seller listings — with zero per-unit auction fees. 
                 Plus, unlock advanced dealer tools that help you source quality inventory and close more deals, faster.
               </p>
@@ -63,18 +85,18 @@ export default function Hero () {
               {user ? (
                 <motion.button
                 onClick={() => navigate("/dashboard")}
-                  whileHover={{ scale: 1.05, boxShadow: "0 10px 40px rgba(246, 133, 31, 0.3)" }}
+                  whileHover={{ scale: 1.05, boxShadow: "0 10px 40px rgba(246, 133, 31, 0.5)" }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 bg-[var(--brand-orange)]  text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                  className="px-8 py-4 bg-[var(--brand-orange)] text-white text-lg font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all backdrop-blur-sm border border-orange-400/30"
                 >
                   Dashboard →
                 </motion.button>
               ) : (
                 <motion.button
                 onClick={() => setLoginModalOpen(true)}
-                  whileHover={{ scale: 1.05, boxShadow: "0 10px 40px rgba(246, 133, 31, 0.3)" }}
+                  whileHover={{ scale: 1.05, boxShadow: "0 10px 40px rgba(246, 133, 31, 0.5)" }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 bg-[var(--brand-orange)]  text-white text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                  className="px-8 py-4 bg-[var(--brand-orange)] text-white text-lg font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all backdrop-blur-sm border border-orange-400/30"
                 >
                   Login →
                 </motion.button>
@@ -89,17 +111,17 @@ export default function Hero () {
               className="relative"
             >
               <div 
-                className="relative rounded-2xl overflow-hidden shadow-2xl bg-white p-2 cursor-pointer group"
+                className="relative rounded-2xl overflow-hidden shadow-2xl bg-white/10 backdrop-blur-md border border-white/20 p-2 cursor-pointer group hover:bg-white/20 transition-all duration-300"
                 onClick={() => setShowVideo(true)}
               >
-                <div className="relative w-full h-64 sm:h-80 lg:h-96 bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl flex items-center justify-center">
+                <div className="relative w-full h-64 sm:h-80 lg:h-96 bg-gradient-to-br from-orange-500/20 to-orange-600/30 rounded-xl flex items-center justify-center backdrop-blur-sm">
                   {/* Thumbnail placeholder - you can replace this with an actual thumbnail image */}
                   <div className="text-center">
-                    <div className="w-20 h-20 bg-orange-500 rounded-full flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-20 h-20 bg-orange-500/80 backdrop-blur-sm rounded-full flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-2xl">
                       <Play className="w-8 h-8 text-white ml-1" />
                     </div>
-                    <p className="text-orange-600 font-semibold text-lg">Watch Demo</p>
-                    <p className="text-orange-500 text-sm mt-1">See how AmacarAI works</p>
+                    <p className="text-white font-semibold text-lg drop-shadow-lg">Watch Demo</p>
+                    <p className="text-white/80 text-sm mt-1 drop-shadow-md">See how AmacarAI works</p>
                   </div>
                 </div>
               </div>
@@ -112,7 +134,7 @@ export default function Hero () {
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             className="mt-16 text-center"
           >
-            <ChevronDown className="w-8 h-8 text-neutral-400 mx-auto" />
+            <ChevronDown className="w-8 h-8 text-white/70 mx-auto drop-shadow-lg" />
           </motion.div>
         </div>
 

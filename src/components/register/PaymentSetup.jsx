@@ -26,7 +26,7 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
     const createPaymentIntent = async () => {
       try {
 
-        const response = await api.post("/create-payment-intent", {
+        const response = await api.post("/registration/create-payment-intent", {
           amount: 0, // Free trial - no charge
           currency: "usd",
         });
