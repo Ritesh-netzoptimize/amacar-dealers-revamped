@@ -71,8 +71,8 @@ const ActiveCustomersContainer = ({
     onViewCustomer(customerId);
   };
 
-  const handleViewVehicle = (customerId) => {
-    onViewVehicle(customerId);
+  const handleViewVehicle = (vehicleId) => {
+    onViewVehicle(vehicleId);
   };
 
   const handleScheduleAppointment = (customerId) => {
@@ -211,7 +211,7 @@ const ActiveCustomersContainer = ({
                           <span>View Customer</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleViewVehicle(customer.id)}
+                          onClick={() => handleViewVehicle(customer.vehicleId)}
                           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                         >
                           <Car className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />

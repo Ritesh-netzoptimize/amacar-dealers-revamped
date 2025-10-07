@@ -123,6 +123,7 @@ const ActiveCustomers = () => {
       address: customer.location?.address || 'Address not available',
       distance: `${Math.round(customer.distance)} miles`,
       vehicle: customer.vehicle?.title || 'Vehicle not available',
+      vehicleId: customer.vehicle?.id || '',
       year: customer.vehicle?.year || '',
       make: customer.vehicle?.make || '',
       model: customer.vehicle?.model || '',
@@ -158,9 +159,9 @@ const ActiveCustomers = () => {
     setSelectedCustomerName('');
   };
 
-  const handleViewVehicle = (customerId) => {
-    console.log("View vehicle for customer:", customerId);
-    navigate(`/vehicles/${customerId}`);
+  const handleViewVehicle = (vehicleId) => {
+    console.log("View vehicle for customer:", vehicleId);
+    navigate(`/vehicle-details/${vehicleId}`, {state: {productId: vehicleId}});
   };
 
   const handleScheduleAppointment = (customerId) => {
