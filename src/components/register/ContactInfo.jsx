@@ -1,6 +1,17 @@
-import { motion } from 'framer-motion';
-import { User, Phone, Lock, Eye, EyeOff, Shield, CheckCircle } from 'lucide-react';
-import { useState } from 'react';
+import { motion } from "framer-motion";
+import {
+  User,
+  Phone,
+  Lock,
+  Eye,
+  EyeOff,
+  Shield,
+  CheckCircle,
+  MessageCircle,
+  Users,
+  ArrowRight,
+} from "lucide-react";
+import { useState } from "react";
 
 const ContactInfo = ({ formData, updateFormData, errors }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,22 +24,25 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
       y: 0,
       transition: {
         duration: 0.5,
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 }
+    visible: { opacity: 1, y: 0 },
   };
 
   const passwordRequirements = [
-    { text: 'At least 8 characters', met: formData.password.length >= 8 },
-    { text: 'Contains number', met: /\d/.test(formData.password) },
-    { text: 'Contains special character', met: /[!@#$%^&*(),.?":{}|<>]/.test(formData.password) }
+    { text: "At least 8 characters", met: formData.password.length >= 8 },
+    { text: "Contains number", met: /\d/.test(formData.password) },
+    {
+      text: "Contains special character",
+      met: /[!@#$%^&*(),.?":{}|<>]/.test(formData.password),
+    },
   ];
-  const isPasswordValid = passwordRequirements.every(req => req.met);
+  const isPasswordValid = passwordRequirements.every((req) => req.met);
 
   return (
     <motion.div
@@ -46,10 +60,16 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
             <User className="w-6 h-6 text-primary-600" />
           </motion.div>
           <div>
-            <motion.h2 variants={itemVariants} className="text-xl font-bold text-neutral-900">
+            <motion.h2
+              variants={itemVariants}
+              className="text-xl font-bold text-neutral-900"
+            >
               Personal Information & Account Setup
             </motion.h2>
-            <motion.p variants={itemVariants} className="text-neutral-600 text-sm">
+            <motion.p
+              variants={itemVariants}
+              className="text-neutral-600 text-sm"
+            >
               Tell us about yourself and create your account
             </motion.p>
           </div>
@@ -67,9 +87,9 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
             <input
               type="text"
               value={formData.firstName}
-              onChange={(e) => updateFormData('firstName', e.target.value)}
+              onChange={(e) => updateFormData("firstName", e.target.value)}
               className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                errors.firstName ? 'border-error' : 'border-neutral-200'
+                errors.firstName ? "border-error" : "border-neutral-200"
               } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
               placeholder="Enter your first name"
             />
@@ -89,9 +109,9 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
             <input
               type="text"
               value={formData.lastName}
-              onChange={(e) => updateFormData('lastName', e.target.value)}
+              onChange={(e) => updateFormData("lastName", e.target.value)}
               className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                errors.lastName ? 'border-error' : 'border-neutral-200'
+                errors.lastName ? "border-error" : "border-neutral-200"
               } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
               placeholder="Enter your last name"
             />
@@ -111,9 +131,9 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
             <input
               type="tel"
               value={formData.mobileNumber}
-              onChange={(e) => updateFormData('mobileNumber', e.target.value)}
+              onChange={(e) => updateFormData("mobileNumber", e.target.value)}
               className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                errors.mobileNumber ? 'border-error' : 'border-neutral-200'
+                errors.mobileNumber ? "border-error" : "border-neutral-200"
               } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
               placeholder="(555) 123-4567"
             />
@@ -126,23 +146,6 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
 
       {/* Account Setup Section */}
       <div className="mt-8 pt-6 border-t border-neutral-200">
-        <div className="flex items-center gap-4 mb-6">
-          <motion.div
-            variants={itemVariants}
-            className="w-10 h-10 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center shadow-soft"
-          >
-            <Shield className="w-5 h-5 text-primary-600" />
-          </motion.div>
-          <div>
-            <motion.h3 variants={itemVariants} className="text-lg font-bold text-neutral-900">
-              Account Setup
-            </motion.h3>
-            <motion.p variants={itemVariants} className="text-neutral-600 text-sm">
-              Create a secure password and accept our terms
-            </motion.p>
-          </div>
-        </div>
-
         <div className="space-y-6">
           {/* Password */}
           <motion.div variants={itemVariants} className="space-y-2">
@@ -152,11 +155,11 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 value={formData.password}
-                onChange={(e) => updateFormData('password', e.target.value)}
+                onChange={(e) => updateFormData("password", e.target.value)}
                 className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
-                  errors.password ? 'border-error' : 'border-neutral-200'
+                  errors.password ? "border-error" : "border-neutral-200"
                 } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                 placeholder="Create a strong password"
               />
@@ -165,7 +168,11 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
             {errors.password && (
@@ -206,11 +213,13 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
               <input
-                type={showConfirmPassword ? 'text' : 'password'}
+                type={showConfirmPassword ? "text" : "password"}
                 value={formData.confirmPassword}
-                onChange={(e) => updateFormData('confirmPassword', e.target.value)}
+                onChange={(e) =>
+                  updateFormData("confirmPassword", e.target.value)
+                }
                 className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
-                  errors.confirmPassword ? 'border-error' : 'border-neutral-200'
+                  errors.confirmPassword ? "border-error" : "border-neutral-200"
                 } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                 placeholder="Confirm your password"
               />
@@ -219,7 +228,11 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
               >
-                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showConfirmPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
             {errors.confirmPassword && (
@@ -233,82 +246,121 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className={`flex mt-2 items-center space-x-2 text-sm ${
-                formData.password === formData.confirmPassword && formData.confirmPassword
-                  ? 'text-success'
-                  : 'text-error'
+                formData.password === formData.confirmPassword &&
+                formData.confirmPassword
+                  ? "text-success"
+                  : "text-error"
               }`}
             >
-              <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
-                formData.password === formData.confirmPassword && formData.confirmPassword
-                  ? 'bg-success'
-                  : 'bg-error'
-              }`}>
+              <div
+                className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                  formData.password === formData.confirmPassword &&
+                  formData.confirmPassword
+                    ? "bg-success"
+                    : "bg-error"
+                }`}
+              >
                 <CheckCircle className="w-3 h-3 text-white" />
               </div>
               <span>
-                {formData.password === formData.confirmPassword && formData.confirmPassword
-                  ? 'Passwords match'
-                  : 'Passwords do not match'
-                }
+                {formData.password === formData.confirmPassword &&
+                formData.confirmPassword
+                  ? "Passwords match"
+                  : "Passwords do not match"}
               </span>
             </motion.div>
           )}
 
-          {/* Talk to Sales Checkbox */}
-          <motion.div variants={itemVariants} className="space-y-2">
-            <div className="flex items-start space-x-3 mt-8">
-              <div className="flex items-center h-5">
-                <input
-                  type="checkbox"
-                  id="talkToSales"
-                  checked={formData.talkToSales}
-                  onChange={(e) => updateFormData('talkToSales', e.target.checked)}
-                  className="w-4 h-4 text-primary-600 bg-neutral-100 border-neutral-300 rounded focus:ring-primary-500 focus:ring-2"
-                />
-              </div>
-              <div className="text-sm">
-                <label htmlFor="talkToSales" className="text-neutral-700 cursor-pointer">
-                  <span className="font-semibold">Talk to sales</span>
-                  <br />
-                  <span className="text-neutral-600">Get in touch with our sales team</span>
-                </label>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Agreement Checkbox */}
-          <motion.div variants={itemVariants} className="space-y-2">
+           {/* Agreement Checkbox */}
+           <motion.div variants={itemVariants} className="space-y-2">
             <div className="flex items-start space-x-3 mt-4">
               <div className="flex items-center h-5">
                 <input
                   type="checkbox"
                   id="agreement"
                   checked={formData.agreementAccepted}
-                  onChange={(e) => updateFormData('agreementAccepted', e.target.checked)}
+                  onChange={(e) =>
+                    updateFormData("agreementAccepted", e.target.checked)
+                  }
                   className="w-4 h-4 text-primary-600 bg-neutral-100 border-neutral-300 rounded focus:ring-primary-500 focus:ring-2"
                 />
               </div>
               <div className="text-sm">
-                <label htmlFor="agreement" className="text-neutral-700 cursor-pointer">
-                  I agree to the{' '}
-                  <a href="#" className="text-primary-600 hover:text-primary-700 underline">
+                <label
+                  htmlFor="agreement"
+                  className="text-neutral-700 cursor-pointer"
+                >
+                  I agree to the{" "}
+                  <a
+                    href="#"
+                    className="text-primary-600 hover:text-primary-700 underline"
+                  >
                     Terms of Service
-                  </a>{' '}
-                  and{' '}
-                  <a href="#" className="text-primary-600 hover:text-primary-700 underline">
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="#"
+                    className="text-primary-600 hover:text-primary-700 underline"
+                  >
                     Privacy Policy
                   </a>
                   *
                 </label>
                 {errors.agreementAccepted && (
-                  <p className="text-sm text-error mt-1">{errors.agreementAccepted}</p>
+                  <p className="text-sm text-error mt-1">
+                    {errors.agreementAccepted}
+                  </p>
                 )}
               </div>
             </div>
           </motion.div>
+
+          {/* Talk to Sales Checkbox */}
+          <motion.div variants={itemVariants} className="space-y-2">
+            <div className="mt-8 p-6 bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl border border-orange-100 hover:border-orange-200 transition-all duration-300 group">
+              <div className="flex items-center space-x-4">
+                  <input
+                    type="checkbox"
+                    id="talkToSales"
+                    checked={formData.talkToSales}
+                    onChange={(e) =>
+                      updateFormData("talkToSales", e.target.checked)
+                    }
+                    className="w-5 h-5 text-[var(--brand-orange)] bg-white border-2 border-orange-200 rounded-md focus:ring-[var(--brand-orange)] focus:ring-2 focus:ring-orange-100 transition-all duration-200"
+                  />
+                <div className="flex-1">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div>
+                      <label
+                        htmlFor="talkToSales"
+                        className="text-lg font-bold text-neutral-800 cursor-pointer group-hover:text-[var(--brand-orange)] transition-colors duration-200"
+                      >
+                        Talk to sales
+                      </label>
+                      <p className="text-sm text-neutral-600 mt-1">
+                        Get in touch with our sales team
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-4 text-sm text-neutral-600">
+                    <div className="flex items-center space-x-2">
+                      <Users className="w-4 h-4 text-[var(--brand-orange)]" />
+                      <span>Expert consultation</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <ArrowRight className="w-4 h-4 text-[var(--brand-orange)]" />
+                      <span>Personalized demo</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+         
         </div>
       </div>
-
     </motion.div>
   );
 };
