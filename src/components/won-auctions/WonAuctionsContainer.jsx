@@ -9,13 +9,22 @@ import {
   Calendar,
   X,
   Gavel,
+  MoreHorizontal,
+  Car,
+  Phone,
 } from "lucide-react";
 import PhotoSwipeGallery from "@/components/ui/PhotoSwipeGallery";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
 
 const WonAuctionsContainer = ({ auctions = [] }) => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   // Animation variants
   const containerVariants = {
@@ -51,6 +60,10 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
 
   const handleViewCustomer = (customerId) => {
     navigate(`/customers/${customerId}`);
+  };
+
+  const handleScheduleAppointment = () => {
+    console.log("handle schedule");
   };
 
   return (
@@ -193,7 +206,7 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
                   </div>
 
                   {/* CTA Buttons - Top Right */}
-                  <div className="flex items-center gap-2">
+                  {/* <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       onClick={() => handleViewCustomer(vehicle.id)}
@@ -207,6 +220,60 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
                     >
                       View Vehicle
                     </Button>
+                  </div> */}
+
+                  <div className="flex gap-2 justify-end items-center">
+                    {/* <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => handleScheduleAppointment(customer.id)}
+                      className="h-8 px-3 text-xs bg-white border-2 border-white cursor-pointer hover:bg-white text-[var(--brand-orange)]"
+                    >
+                      <Calendar className="w-3 h-3 mr-1" />
+                      Schedule
+                    </Button> */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 w-8 p-0 hover:bg-neutral-100 cursor-pointer"
+                        >
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-1 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50"
+                      >
+                        <DropdownMenuItem
+                          onClick={() =>
+                            handleViewCustomer(
+                              vehicle.customer.id,
+                              vehicle.customer.name
+                            )
+                          }
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                        >
+                          <Eye className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                          <span>View Customer</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleViewVehicle(vehicle.id)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                        >
+                          <Car className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                          <span>View Vehicle</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleScheduleAppointment()}
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                        >
+                          <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                          <span>Schedule</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
 
@@ -230,9 +297,7 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
                         Won By
                       </span>
                     </div>
-                    <p className="text-base font-semibold ">
-                      {vehicle.wonBy}
-                    </p>
+                    <p className="text-base font-semibold ">{vehicle.wonBy}</p>
                   </div>
                   <div className="flex flex-col  p-3  rounded-lg transition-all duration-200">
                     <div className="flex items-center mb-1">
@@ -271,8 +336,7 @@ const WonAuctionsContainer = ({ auctions = [] }) => {
           </motion.div>
         ))}
       </div>
-
-    </motion.div>    
+    </motion.div>
   );
 };
 
