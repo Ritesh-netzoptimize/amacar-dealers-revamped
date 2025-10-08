@@ -75,7 +75,11 @@ export default function Navbar() {
                 key={link}
                 href={`#${link.toLowerCase().replace(" ", "-")}`}
                 whileHover={{ y: -2 }}
-                className="text-[var(--brand-orange)] font-semibold hover:text-orange-500 font-medium transition-colors"
+                className={`font-semibold font-medium transition-all duration-300 px-3 py-2 rounded-lg ${
+                  isScrolled 
+                    ? "text-[var(--brand-orange)] hover:text-orange-500 hover:bg-orange-50" 
+                    : "text-white hover:text-orange-300 hover:bg-white/10 backdrop-blur-sm"
+                }`}
               >
                 {link}
               </motion.a>
@@ -120,7 +124,11 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2"
+            className={`md:hidden p-2 rounded-lg transition-all duration-300 ${
+              isScrolled 
+                ? "text-gray-700 hover:bg-gray-100" 
+                : "text-white hover:bg-white/10 backdrop-blur-sm"
+            }`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? (
@@ -136,45 +144,47 @@ export default function Navbar() {
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
-            className="md:hidden pb-4 "
+            className="md:hidden pb-4"
           >
-            {navLinks.map((link) => (
-              <motion.a
-                animate={{ opacity: 1, height: "auto" }}
-                key={link}
-                href={`#${link.toLowerCase().replace(" ", "-")}`}
-                className="block py-2 text-[var(--brand-orange)] font-semibold hover:text-orange-500"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link}
-              </motion.a>
-            ))}
-            {user ? (
-              <button
-                onClick={() => navigate("/dashboard")}
-                className="mt-2 w-full px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold"
-              >
-                Dashboard
-              </button>
-            ) : (
-              <div className="flex flex-col gap-2">
+            <div className="bg-white/95 backdrop-blur-md rounded-xl p-4 shadow-lg border border-white/20">
+              {navLinks.map((link) => (
+                <motion.a
+                  animate={{ opacity: 1, height: "auto" }}
+                  key={link}
+                  href={`#${link.toLowerCase().replace(" ", "-")}`}
+                  className="block py-3 px-4 text-[var(--brand-orange)] font-semibold hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link}
+                </motion.a>
+              ))}
+              {user ? (
                 <button
-                  onClick={() => {
-                    setLoginModalOpen(true);
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="mt-2 w-full px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold"
+                  onClick={() => navigate("/dashboard")}
+                  className="mt-4 w-full px-6 py-3 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
                 >
-                  Login →
+                  Dashboard
                 </button>
-                <button 
-                  onClick={() => navigate("/register")}
-                  className="mt-2 w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold hover:bg-orange-50 transition-colors"
-                >
-                  Join as dealer
-                </button>
-              </div>
-            )}
+              ) : (
+                <div className="flex flex-col gap-3 mt-4">
+                  <button
+                    onClick={() => {
+                      setLoginModalOpen(true);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full px-6 py-3 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+                  >
+                    Login →
+                  </button>
+                  <button 
+                    onClick={() => navigate("/register")}
+                    className="w-full px-6 py-3 text-sm text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white hover:bg-orange-50 transition-all"
+                  >
+                    Join as dealer
+                  </button>
+                </div>
+              )}
+            </div>
           </motion.div>
         )}
 
