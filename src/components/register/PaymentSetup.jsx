@@ -17,6 +17,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import api from "@/lib/api";
+import { Navigate, useNavigate } from "react-router-dom";
 
 // We'll create the stripe instance dynamically when we have the client secret
 let stripePromise = null;
@@ -33,7 +34,7 @@ const PaymentForm = ({
   const [isCompletingRegistration, setIsCompletingRegistration] = useState(false);
   const [registrationError, setRegistrationError] = useState("");
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
-
+  const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
 
@@ -96,9 +97,9 @@ const PaymentForm = ({
         updateFormData("registrationData", response.data);
         
         // Redirect to success page or dashboard after a short delay
-        setTimeout(() => {
-          window.location.href = "/payment-success";
-        }, 2000);
+        // setTimeout(() => {
+        //   navigate('/home')
+        // }, 2000);
       } else {
         throw new Error(response.data.message || "Registration failed");
       }
@@ -154,7 +155,7 @@ const PaymentForm = ({
       const { error, setupIntent } = await stripe.confirmSetup({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/payment-success`,
+          return_url: `${window.location.origin}/profile`,
         },
         redirect: "if_required",
       });
