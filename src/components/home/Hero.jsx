@@ -21,7 +21,7 @@ export default function Hero () {
       <div className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
         {/* Video Background */}
         <div className="absolute inset-0 z-0">
-          <video
+          {/* <video
             autoPlay
             muted
             loop
@@ -30,7 +30,7 @@ export default function Hero () {
           >
             <source src="https://dealer.amacar.ai/wp-content/uploads/2025/10/6537414-uhd_3840_2160_30fps.mp4" type="video/mp4" />
             Your browser does not support the video tag.
-          </video>
+          </video> */}
           
           {/* Modern Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70" />

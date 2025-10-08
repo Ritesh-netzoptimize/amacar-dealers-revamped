@@ -170,9 +170,9 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
                 <select
                   value={formData.dealerGroup}
                   onChange={(e) => updateFormData('dealerGroup', e.target.value)}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
+                  className={`w-full pl-10 pr-10 py-3 rounded-xl border ${
                     errors.dealerGroup ? 'border-error focus:ring-error/20' : 'border-neutral-200 focus:ring-primary-200'
-                  } bg-white text-neutral-900 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300`}
+                  } bg-white text-neutral-900 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300 appearance-none`}
                 >
                   <option value="">Select dealer group</option>
                   <option value="independent">Independent Dealer</option>
@@ -180,6 +180,11 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
                   <option value="group">Dealer Group</option>
                   <option value="other">Other</option>
                 </select>
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                  <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
               {errors.dealerGroup && (
                 <p className="text-sm text-error">{errors.dealerGroup}</p>
@@ -202,9 +207,9 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
                 <select
                   value={formData.jobPosition}
                   onChange={(e) => updateFormData('jobPosition', e.target.value)}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
+                  className={`w-full pl-10 pr-10 py-3 rounded-xl border ${
                     errors.jobPosition ? 'border-error' : 'border-neutral-200'
-                  } bg-white text-neutral-900 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+                  } bg-white text-neutral-900 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 appearance-none`}
                 >
                   <option value="">Select your position</option>
                   <option value="owner">Owner</option>
@@ -214,6 +219,11 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
                   <option value="inventory-manager">Inventory Manager</option>
                   <option value="other">Other</option>
                 </select>
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                  <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
               {errors.jobPosition && (
                 <p className="text-sm text-error">{errors.jobPosition}</p>
@@ -291,7 +301,7 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
                   className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
                     errors.city ? 'border-error' : 'border-neutral-200'
                   } bg-neutral-50 text-neutral-600 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 cursor-not-allowed`}
-                  placeholder="Auto-filled from ZIP code"
+                  placeholder="Auto-filled from ZIP"
                 />
                 {locationStatus === 'loading' && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -321,7 +331,7 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
                   className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
                     errors.state ? 'border-error' : 'border-neutral-200'
                   } bg-neutral-50 text-neutral-600 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 cursor-not-allowed`}
-                  placeholder="Auto-filled from ZIP code"
+                  placeholder="Auto-filled from ZIP"
                 />
                 {locationStatus === 'loading' && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">

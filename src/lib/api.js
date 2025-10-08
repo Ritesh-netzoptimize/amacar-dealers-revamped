@@ -6,7 +6,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Enable cookies for HTTP-only token storage
+  withCredentials: false, // Enable cookies for HTTP-only token storage
 });
 
 api.interceptors.request.use(

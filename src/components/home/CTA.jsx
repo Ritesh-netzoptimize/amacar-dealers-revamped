@@ -28,6 +28,7 @@ export default function CTA () {
               </motion.button>
             ) : (
               <motion.button
+                onClick={() => navigate('/register')}
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}
                 whileTap={{ scale: 0.95 }}
                 className="w-[50%] h-12 cursor-pointer  px-6 py-2.5 text-md text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white"

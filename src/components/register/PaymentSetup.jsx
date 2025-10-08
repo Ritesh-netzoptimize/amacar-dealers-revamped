@@ -9,56 +9,149 @@ import {
   Loader2,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
+import {
+  useStripe,
+  useElements,
+  PaymentElement,
+  Elements,
+} from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 import api from "@/lib/api";
 
-const PaymentSetup = ({ formData, updateFormData, errors }) => {
-  const [clientSecret, setClientSecret] = useState("");
+// We'll create the stripe instance dynamically when we have the client secret
+let stripePromise = null;
+// Inner component that uses Stripe hooks
+const PaymentForm = ({
+  formData,
+  updateFormData,
+  errors,
+  clientSecret,
+  isStripeReady,
+}) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState("");
-  const [isStripeReady, setIsStripeReady] = useState(false);
-  
+  const [isCompletingRegistration, setIsCompletingRegistration] = useState(false);
+  const [registrationError, setRegistrationError] = useState("");
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+
   const stripe = useStripe();
   const elements = useElements();
 
-  // Create payment intent when component mounts
-  useEffect(() => {
-    const createPaymentIntent = async () => {
-      try {
+  // Complete registration after successful payment setup
+  const completeRegistration = async (setupIntentId, customerId) => {
+    setIsCompletingRegistration(true);
+    setRegistrationError("");
+    
+    try {
+      // Format and validate data before sending
+      const formatDealerCode = (code) => {
+        // Remove spaces and special characters, keep only letters, numbers, hyphens, and underscores
+        return code.replace(/[^a-zA-Z0-9\-_]/g, '').toUpperCase();
+      };
 
-        const response = await api.post("/registration/create-payment-intent", {
-          amount: 0, // Free trial - no charge
-          currency: "usd",
+      const formatMobileNumber = (number) => {
+        // Remove all non-numeric characters
+        return number.replace(/\D/g, '');
+      };
+
+      const registrationData = {
+        setup_intent_id: setupIntentId,
+        customer_id: customerId,
+        dealer_code: formatDealerCode(formData.dealerCode),
+        dealership_name: formData.dealershipName,
+        dealership_website: formData.website,
+        dealer_group: formData.dealerGroup,
+        job_position: formData.jobPosition,
+        zipcode: formData.zipCode,
+        city: formData.city,
+        state: formData.state,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        mobile_number: formatMobileNumber(formData.mobileNumber),
+        business_email: formData.businessEmail,
+        password: formData.password,
+        confirm_password: formData.confirmPassword,
+        terms_accepted: formData.agreementAccepted,
+        platform_choice: "7-day-trial",
+        invite_token: formData.inviteToken || null
+      };
+
+      // Validate required fields before sending
+      if (!registrationData.dealer_code) {
+        throw new Error("Dealer code is required and cannot be empty after formatting");
+      }
+      
+      if (!registrationData.mobile_number || registrationData.mobile_number.length < 10) {
+        throw new Error("Valid mobile number is required (at least 10 digits)");
+      }
+
+      console.log("Completing registration with data:", registrationData);
+      
+      const response = await api.post("/registration/complete-registration", registrationData);
+      
+      if (response.data.success) {
+        console.log("Registration completed successfully:", response.data);
+        setRegistrationSuccess(true);
+        updateFormData("registrationCompleted", true);
+        updateFormData("registrationData", response.data);
+        
+        // Redirect to success page or dashboard after a short delay
+        setTimeout(() => {
+          window.location.href = "/payment-success";
+        }, 2000);
+      } else {
+        throw new Error(response.data.message || "Registration failed");
+      }
+    } catch (error) {
+      console.error("Registration completion error:", error);
+      
+      // Handle validation errors specifically
+      if (error.response?.data?.code === 'rest_invalid_param') {
+        const validationErrors = error.response.data.details;
+        const errorMessages = [];
+        
+        Object.keys(validationErrors).forEach(field => {
+          errorMessages.push(`${field}: ${validationErrors[field].message}`);
         });
         
-        if (response.data.clientSecret) {
-          setClientSecret(response.data.clientSecret);
-          setIsStripeReady(true);
-        }
-        // setClientSecret(import.meta.env.VITE_STRIPE_CLIENT_SECRET_TEST_KEY);
-        // setIsStripeReady(true);
-      } catch (error) {
-        console.error("Error creating payment intent:", error);
-        setPaymentError("Failed to initialize payment. Please try again.");
+        setRegistrationError(
+          `Validation errors: ${errorMessages.join(', ')}`
+        );
+      } else {
+        setRegistrationError(
+          error.response?.data?.message || 
+          error.message || 
+          "Failed to complete registration. Please contact support."
+        );
       }
-    };
+    } finally {
+      setIsCompletingRegistration(false);
+    }
+  };
 
-    createPaymentIntent();
-  }, []);
   // Handle payment submission
   const handlePaymentSubmit = async (event) => {
     event.preventDefault();
     if (!stripe || !elements || !clientSecret) {
-      console.log("in if of the handle payment submit")
+      console.log("in if of the handle payment submit");
       setPaymentError("Payment system not ready. Please try again.");
       return;
     }
 
     setIsProcessing(true);
     setPaymentError("");
-
+    console.log("Inside the handle payment submit");
+    console.log("client secret:", clientSecret);
+    console.log("stripe object:", stripe);
+    console.log("elements object:", elements);
+    
     try {
-      const { error, paymentIntent } = await stripe.confirmPayment({
+      // Ensure we have valid elements before proceeding
+      if (!elements || typeof elements !== 'object') {
+        throw new Error('Elements not properly initialized');
+      }
+
+      const { error, setupIntent } = await stripe.confirmSetup({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/payment-success`,
@@ -67,13 +160,37 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
       });
 
       if (error) {
-        setPaymentError(error.message || "Payment failed. Please try again.");
-      } else if (paymentIntent.status === "succeeded") {
-        // Payment successful - update form data
+        console.error("Stripe setup error:", error);
+        if (
+          error.type === "invalid_request_error" &&
+          error.param === "client_secret"
+        ) {
+          setPaymentError(
+            "Payment configuration error. Please contact support or try refreshing the page."
+          );
+        } else {
+          setPaymentError(
+            error.message || "Payment setup failed. Please try again."
+          );
+        }
+      } else if (setupIntent.status === "succeeded") {
+        // Setup successful - update form data
         updateFormData("paymentCompleted", true);
-        updateFormData("paymentIntentId", paymentIntent.id);
+        updateFormData("setupIntentId", setupIntent.id);
+        
+        console.log("SetupIntent response:", setupIntent);
+        
+        // Get customer ID from the setup intent response or form data
+        // The customer ID should be available in the original API response
+        const customerId = formData.customerId || setupIntent.payment_method?.customer;
+        
+        console.log("Customer ID for registration:", customerId);
+        
+        // Complete registration after successful payment setup
+        await completeRegistration(setupIntent.id, customerId);
       }
     } catch (error) {
+      console.error("Payment submission error:", error);
       setPaymentError("An unexpected error occurred. Please try again.");
     } finally {
       setIsProcessing(false);
@@ -97,7 +214,11 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
     visible: { opacity: 1, y: 0 },
   };
 
-
+  useEffect(() => {
+    setTimeout(() => {
+      console.log("stripe key", import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+    }, 5000);
+  }, []);
   return (
     <motion.div
       variants={containerVariants}
@@ -145,15 +266,11 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
           Start with a free 7-day trial. No charges until your trial period
           ends. Cancel anytime during the trial with no obligations.
         </p>
-       
       </motion.div>
 
       <div className="space-y-6">
         {/* Payment Information */}
-        <motion.div
-          variants={itemVariants}
-          className="space-y-4"
-        >
+        <motion.div variants={itemVariants} className="space-y-4">
           <h3 className="text-base font-semibold text-neutral-900">
             Payment Information
           </h3>
@@ -162,16 +279,16 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
           {isStripeReady && clientSecret ? (
             <div className="space-y-4">
               <div className="p-4 border border-neutral-200 rounded-lg bg-white">
-                <PaymentElement 
+                <PaymentElement
                   options={{
                     layout: "tabs",
                     fields: {
-                      billingDetails: "auto"
-                    }
+                      billingDetails: "auto",
+                    },
                   }}
                 />
               </div>
-              
+
               {/* Payment Error Display */}
               {paymentError && (
                 <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -183,7 +300,36 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
               {isProcessing && (
                 <div className="flex items-center justify-center p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <Loader2 className="w-5 h-5 animate-spin text-blue-600 mr-2" />
-                  <p className="text-sm text-blue-600">Processing payment...</p>
+                  <p className="text-sm text-blue-600">
+                    Setting up payment method...
+                  </p>
+                </div>
+              )}
+
+              {/* Registration Completion State */}
+              {isCompletingRegistration && (
+                <div className="flex items-center justify-center p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <Loader2 className="w-5 h-5 animate-spin text-green-600 mr-2" />
+                  <p className="text-sm text-green-600">
+                    Completing registration...
+                  </p>
+                </div>
+              )}
+
+              {/* Registration Success State */}
+              {registrationSuccess && (
+                <div className="flex items-center justify-center p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
+                  <p className="text-sm text-green-600">
+                    Registration completed successfully! Redirecting...
+                  </p>
+                </div>
+              )}
+
+              {/* Registration Error Display */}
+              {registrationError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-600">{registrationError}</p>
                 </div>
               )}
             </div>
@@ -191,7 +337,9 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
             <div className="flex items-center justify-center p-8 bg-neutral-50 border border-neutral-200 rounded-lg">
               <div className="text-center">
                 <Loader2 className="w-6 h-6 animate-spin text-neutral-400 mx-auto mb-2" />
-                <p className="text-sm text-neutral-600">Initializing payment system...</p>
+                <p className="text-sm text-neutral-600">
+                  Initializing payment system...
+                </p>
               </div>
             </div>
           )}
@@ -213,9 +361,9 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
               htmlFor="trialAccepted"
               className="text-sm text-neutral-700 cursor-pointer"
             >
-              I understand that I will be charged $99/month after the 7-day
-              free trial period, and I can cancel anytime during the trial with
-              no charges. *
+              I understand that I will be charged $99/month after the 7-day free
+              trial period, and I can cancel anytime during the trial with no
+              charges. *
             </label>
           </div>
           {errors.trialAccepted && (
@@ -226,23 +374,41 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
           <motion.button
             type="button"
             onClick={handlePaymentSubmit}
-            disabled={!isStripeReady || !formData.trialAccepted || isProcessing}
+            disabled={
+              !isStripeReady || 
+              !formData.trialAccepted || 
+              isProcessing || 
+              isCompletingRegistration ||
+              registrationSuccess
+            }
             className={`
               w-full py-3 px-6 rounded-lg font-semibold text-sm transition-all duration-200
               flex items-center justify-center gap-2
               ${
-                !isStripeReady || !formData.trialAccepted || isProcessing
+                !isStripeReady || 
+                !formData.trialAccepted || 
+                isProcessing || 
+                isCompletingRegistration ||
+                registrationSuccess
                   ? "bg-neutral-300 text-neutral-500 cursor-not-allowed"
-                  : "bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105"
+                  : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105"
               }
             `}
             whileHover={
-              !isStripeReady || !formData.trialAccepted || isProcessing
+              !isStripeReady || 
+              !formData.trialAccepted || 
+              isProcessing || 
+              isCompletingRegistration ||
+              registrationSuccess
                 ? {}
                 : { scale: 1.02 }
             }
             whileTap={
-              !isStripeReady || !formData.trialAccepted || isProcessing
+              !isStripeReady || 
+              !formData.trialAccepted || 
+              isProcessing || 
+              isCompletingRegistration ||
+              registrationSuccess
                 ? {}
                 : { scale: 0.98 }
             }
@@ -250,7 +416,17 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
             {isProcessing ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Processing Payment...
+                Setting Up Payment...
+              </>
+            ) : isCompletingRegistration ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Completing Registration...
+              </>
+            ) : registrationSuccess ? (
+              <>
+                <CheckCircle className="w-4 h-4" />
+                Registration Complete!
               </>
             ) : (
               <>
@@ -290,6 +466,168 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
         </div>
       </motion.div>
     </motion.div>
+  );
+};
+
+// Main component that handles API calls and wraps PaymentForm with Elements
+const PaymentSetup = ({ formData, updateFormData, errors }) => {
+  const [clientSecret, setClientSecret] = useState("");
+  const [isStripeReady, setIsStripeReady] = useState(false);
+  const [paymentError, setPaymentError] = useState("");
+  const [stripeInstance, setStripeInstance] = useState(null);
+
+  // Create setup intent when component mounts
+  useEffect(() => {
+    const createSetupIntent = async (
+      email,
+      customerName,
+      dealerCode,
+      dealershipName
+    ) => {
+      try {
+        const response = await api.post("/registration/create-payment-intent", {
+          amount: 0, // Free trial - no charge
+          currency: "usd",
+          customer_email: email,
+          customer_name: customerName,
+          dealer_code: dealerCode,
+          dealership_name: dealershipName,
+        });
+
+        console.log("Setup intent response:", response.data);
+        console.log(
+          "Current publishable key:",
+          import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+        );
+        console.log(
+          "Using publishable key:",
+          import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
+            "pk_test_51POSsaDUuzIKcsNTvzb5ZfgRrI9537WuMyJvmEfY4fmTyCCpYwvcokSGpLFexOej29Y4XqyLCTS8b7LOkhU4Rmak00F1TaGtHe"
+        );
+
+        if (response.data.client_secret) {
+          console.log("Setting client secret:", response.data.client_secret);
+          console.log(
+            "Client secret format check:",
+            response.data.client_secret.startsWith("seti_") &&
+              response.data.client_secret.includes("_secret_")
+          );
+
+          // Store customer ID from the API response
+          if (response.data.customer_id) {
+            updateFormData("customerId", response.data.customer_id);
+            console.log("Customer ID stored:", response.data.customer_id);
+          }
+
+          // Extract account ID from client secret for debugging
+          const clientSecretParts = response.data.client_secret.split("_");
+          const accountId = clientSecretParts[1];
+          console.log("Account ID from client secret:", accountId);
+
+          // Extract account ID from publishable key for debugging
+          const pubKey =
+            import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
+            "pk_test_51POSsaDUuzIKcsNTvzb5ZfgRrI9537WuMyJvmEfY4fmTyCCpYwvcokSGpLFexOej29Y4XqyLCTS8b7LOkhU4Rmak00F1TaGtHe";
+          // const pubKey = "pk_test_511SFyPQDUuzIKcsNT7wrDuDxd";
+          const pubKeyParts = pubKey.split("_");
+          const pubKeyAccountId = pubKeyParts[1];
+          console.log("Account ID from publishable key:", pubKeyAccountId);
+
+          console.log("Account IDs match:", accountId === pubKeyAccountId);
+
+          // Create the correct publishable key based on the account ID from client secret
+          // const correctPublishableKey = `pk_test_51${accountId}`;
+          const correctPublishableKey =
+            "pk_test_51POSsaDUuzIKcsNTvzb5ZfgRrI9537WuMyJvmEfY4fmTyCCpYwvcokSGpLFexOej29Y4XqyLCTS8b7LOkhU4Rmak00F1TaGtHe";
+          console.log(
+            "Correct publishable key should be:",
+            correctPublishableKey
+          );
+
+          // Create Stripe instance with the correct publishable key
+          try {
+            const stripe = await loadStripe(correctPublishableKey);
+            console.log("Stripe instance created with correct key");
+            setStripeInstance(stripe);
+            setClientSecret(response.data.client_secret);
+            setIsStripeReady(true);
+          } catch (stripeError) {
+            console.error("Stripe loading error:", stripeError);
+            setPaymentError(
+              "Failed to initialize payment system. Please try again."
+            );
+          }
+        } else {
+          console.error("No client_secret in response:", response.data);
+        }
+      } catch (error) {
+        console.error("Error creating setup intent:", error);
+        setPaymentError(
+          "Failed to initialize payment setup. Please try again."
+        );
+      }
+    };
+
+    createSetupIntent(
+      formData.businessEmail,
+      formData.firstName + " " + formData.lastName,
+      formData.dealerCode,
+      formData.dealershipName
+    );
+  }, [
+    formData.businessEmail,
+    formData.firstName,
+    formData.lastName,
+    formData.dealerCode,
+    formData.dealershipName,
+  ]);
+
+  // Don't render Elements until we have a client secret
+  if (!clientSecret) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-6"
+      >
+        <div className="text-left mb-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center shadow-soft">
+              <CreditCard className="w-6 h-6 text-primary-600" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-neutral-900">
+                Payment Setup
+              </h2>
+              <p className="text-neutral-600 text-sm">
+                Complete your registration with secure payment
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center p-8 bg-neutral-50 border border-neutral-200 rounded-lg">
+          <div className="text-center">
+            <Loader2 className="w-6 h-6 animate-spin text-neutral-400 mx-auto mb-2" />
+            <p className="text-sm text-neutral-600">
+              Initializing payment system...
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  return (
+    <Elements stripe={stripeInstance} options={{ clientSecret }}>
+      <PaymentForm
+        formData={formData}
+        updateFormData={updateFormData}
+        errors={errors}
+        clientSecret={clientSecret}
+        isStripeReady={isStripeReady}
+      />
+    </Elements>
   );
 };
 

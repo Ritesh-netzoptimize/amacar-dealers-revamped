@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import ProgressStepper from '../../components/register/ProgressStepper';
@@ -42,15 +42,24 @@ const Register = () => {
     talkToSales: false,
     
     // Payment Setup
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    cardholderName: '',
     trialAccepted: false,
+    paymentCompleted: false,
+    setupIntentId: '',
+    customerId: '',
+    registrationCompleted: false,
+    registrationData: null,
   });
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Handle successful registration completion
+  const handleRegistrationComplete = useCallback(() => {
+    if (formData.registrationCompleted) {
+      // Redirect to success page or dashboard
+      navigate('/payment-success');
+    }
+  }, [formData.registrationCompleted, navigate]);
 
   const updateFormData = useCallback((field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -59,6 +68,11 @@ const Register = () => {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   }, [errors]);
+
+  // Check for registration completion and redirect
+  React.useEffect(() => {
+    handleRegistrationComplete();
+  }, [handleRegistrationComplete]);
 
   const isStepValid = (step) => {
     switch (step) {
@@ -91,11 +105,7 @@ const Register = () => {
         // Note: talkToSales is optional, so we don't check it
         return true;
       case 3:
-        // Payment validation only
-        if (!formData.cardNumber) return false;
-        if (!formData.expiryDate) return false;
-        if (!formData.cvv) return false;
-        if (!formData.cardholderName) return false;
+        // Payment validation only - now handled by Stripe PaymentElement
         if (!formData.trialAccepted) return false;
         return true;
       default:
@@ -141,11 +151,7 @@ const Register = () => {
         if (!formData.agreementAccepted) newErrors.agreementAccepted = 'You must accept the terms and conditions';
         break;
       case 3:
-        // Payment validation only
-        if (!formData.cardNumber) newErrors.cardNumber = 'Card number is required';
-        if (!formData.expiryDate) newErrors.expiryDate = 'Expiry date is required';
-        if (!formData.cvv) newErrors.cvv = 'CVV is required';
-        if (!formData.cardholderName) newErrors.cardholderName = 'Cardholder name is required';
+        // Payment validation only - now handled by Stripe PaymentElement
         if (!formData.trialAccepted) newErrors.trialAccepted = 'You must accept the trial terms';
         break;
       default:
@@ -174,11 +180,10 @@ const Register = () => {
     if (validateStep(currentStep)) {
       setIsSubmitting(true);
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Registration is now handled by PaymentSetup component
+        // This function is kept for backward compatibility but shouldn't be called
         console.log('Registration data:', formData);
-        // Handle successful registration
-        alert('Registration successful!');
+        console.log('Registration is handled by PaymentSetup component');
       } catch (error) {
         console.error('Registration error:', error);
         alert('Registration failed. Please try again.');
@@ -349,7 +354,7 @@ const Register = () => {
                 </div>
 
                 {/* Form Content */}
-                <div className="flex-1 p-6 lg:p-8 overflow-hidden">
+                <div className="flex-1 p-6 lg:p-8 overflow-y-auto overflow-x-hidden">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={currentStep}
@@ -408,7 +413,7 @@ const Register = () => {
                             {currentStep === 2 && formData.talkToSales 
                               ? 'Submit to Sales Team' 
                               : currentStep === 2 && !formData.talkToSales 
-                              ? 'Make Payment' 
+                              ? 'Continue to Payment' 
                               : 'Next'
                             }
                           </motion.span>
@@ -428,23 +433,9 @@ const Register = () => {
                           </motion.div>
                         </motion.button>
                       ) : (
-                        <button
-                          onClick={handleSubmit}
-                          disabled={isSubmitting}
-                          className="flex items-center space-x-2 px-8 py-3 bg-success hover:bg-success/90 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-glow focus:outline-none focus:ring-4 focus:ring-success/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                        >
-                          {isSubmitting ? (
-                            <>
-                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              <span>Processing...</span>
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle className="w-5 h-5" />
-                              <span>Complete Registration</span>
-                            </>
-                          )}
-                        </button>
+                        <div className="text-center text-neutral-500 text-sm">
+                          Registration will be completed after payment setup
+                        </div>
                       )}
                     </div>
                   </div>
