@@ -1,5 +1,6 @@
 import { TrendingUp } from "lucide-react"
 import { Pie, PieChart, Sector } from "recharts"
+import { useState, useEffect } from "react"
 
 import {
   Card,
@@ -14,50 +15,100 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { getCustomersReport } from "@/lib/api"
 
-export const description = "A donut chart with an active sector"
-
-const getChartData = (startDate, endDate) => [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
-]
+export const description = "Customer activity distribution"
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  count: {
+    label: "Customer Count",
   },
-  chrome: {
-    label: "Chrome",
+  active: {
+    label: "Active Customers",
     color: "var(--chart-1)",
   },
-  safari: {
-    label: "Safari",
+  new: {
+    label: "New Customers",
     color: "var(--chart-2)",
   },
-  firefox: {
-    label: "Firefox",
+  returning: {
+    label: "Returning Customers",
     color: "var(--chart-3)",
-  },
-  edge: {
-    label: "Edge",
-    color: "var(--chart-4)",
-  },
-  other: {
-    label: "Other",
-    color: "var(--chart-5)",
   },
 }
 
 export default function PieChartContainer({ startDate, endDate }) {
-  const chartData = getChartData(startDate, endDate);
+  const [chartData, setChartData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCustomersData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Use default date range if not provided
+        const dateFrom = startDate || '2024-01-01';
+        const dateTo = endDate || '2024-12-31';
+        
+        const response = await getCustomersReport(dateFrom, dateTo);
+        
+        if (response.success && response.summary) {
+          const summary = response.summary;
+          
+          // Create pie chart data from customer summary
+          const transformedData = [
+            { 
+              category: "With Vehicles", 
+              count: summary.customers_with_vehicles || 0, 
+              fill: "var(--chart-1)" 
+            },
+            { 
+              category: "Without Vehicles", 
+              count: summary.customers_without_vehicles || 0, 
+              fill: "var(--chart-2)" 
+            }
+          ];
+          
+          setChartData(transformedData);
+        }
+      } catch (error) {
+        console.error('Error fetching customers data:', error);
+        // Fallback data
+        setChartData([
+          { category: "With Vehicles", count: 0, fill: "var(--chart-1)" },
+          { category: "Without Vehicles", count: 0, fill: "var(--chart-2)" },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCustomersData();
+  }, [startDate, endDate]);
+  if (isLoading) {
+    return (
+      <Card className="flex flex-col h-full">
+        <CardHeader className="items-center pb-0">
+          <CardTitle>Customer Distribution</CardTitle>
+          <CardDescription>Loading customer data...</CardDescription>
+        </CardHeader>
+        <CardContent className="flex-1 pb-0">
+          <div className="h-[400px] bg-gray-100 animate-pulse rounded"></div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="flex flex-col h-full">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Donut Active</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Customer Distribution</CardTitle>
+        <CardDescription>
+          {startDate && endDate 
+            ? `${startDate} - ${endDate}` 
+            : 'Customer activity breakdown'
+          }
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -68,11 +119,12 @@ export default function PieChartContainer({ startDate, endDate }) {
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
+              formatter={(value, name) => [value, 'Customers']}
             />
             <Pie
               data={chartData}
-              dataKey="visitors"
-              nameKey="browser"
+              dataKey="count"
+              nameKey="category"
               innerRadius={60}
               strokeWidth={5}
               activeIndex={0}
@@ -88,10 +140,10 @@ export default function PieChartContainer({ startDate, endDate }) {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 leading-none font-medium">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          Customer activity distribution <TrendingUp className="h-4 w-4" />
         </div>
         <div className="text-muted-foreground leading-none">
-          Showing total visitors for the last 6 months
+          Showing customer breakdown by vehicle ownership
         </div>
       </CardFooter>
     </Card>

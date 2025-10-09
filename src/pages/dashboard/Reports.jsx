@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import ReportStats from "@/components/reports/ReportStats";
 import PieChartContainer from "@/components/reports/PieChartContainer";
-import AverageBarChartContainer from "@/components/reports/AverageBarChartContainer";
-import { DealerVsMarketAvgBid } from "@/components/reports/DealerVsMarketAvgBid";
 import SmartInsights from "@/components/reports/SmartInsights";
 import { MultiLineChart } from "@/components/reports/MultiLineChart";
 import { MultiBarChart } from "@/components/reports/MultiBarChart";
@@ -207,23 +205,6 @@ const Reports = () => {
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
-          {/* Horizontal bar chart section */}
-          <motion.div className="mt-4" variants={statsVariants}>
-            <DealerVsMarketAvgBid 
-              startDate={dateRange.startDate}
-              endDate={dateRange.endDate}
-            />
-          </motion.div>
-
-          {/* Average bar chart section */}
-          <motion.div className="mt-4" variants={statsVariants}>
-            <AverageBarChartContainer 
-              startDate={dateRange.startDate}
-              endDate={dateRange.endDate}
-            />
-          </motion.div>
-        </div>
       </div>
     </motion.div>
   );

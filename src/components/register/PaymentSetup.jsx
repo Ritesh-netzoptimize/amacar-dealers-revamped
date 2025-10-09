@@ -70,7 +70,8 @@ const PaymentForm = ({
         password: formData.password,
         confirmPassword: formData.confirmPassword,
         agreementAccepted: formData.agreementAccepted,
-        inviteToken: invitationData?.invite_token || null
+        inviteToken: invitationData?.invite_token || null,
+        invitedByManagerId: invitationData?.id
       };
 
       console.log("Dispatching registration with data:", registrationData);

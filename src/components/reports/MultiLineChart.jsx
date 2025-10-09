@@ -1,5 +1,6 @@
 import { TrendingUp } from "lucide-react"
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import { useState, useEffect } from "react"
 
 import {
   Card,
@@ -14,37 +15,81 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { getBidsReport } from "@/lib/api"
 
-export const description = "A multiple line chart"
-
-const getChartData = (startDate, endDate) => [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-]
+export const description = "Bids trend over time"
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  count: {
+    label: "Bid Count",
     color: "var(--brand-orange)",
   },
-  mobile: {
-    label: "Mobile",
-    color: "var(--brand-orange)",
+  amount: {
+    label: "Total Amount",
+    color: "var(--chart-2)",
   },
 } 
 
 export function MultiLineChart({ startDate, endDate }) {
-  const chartData = getChartData(startDate, endDate);
+  const [chartData, setChartData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBidsData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Use default date range if not provided
+        const dateFrom = startDate || '2024-01-01';
+        const dateTo = endDate || '2024-12-31';
+        
+        const response = await getBidsReport(dateFrom, dateTo);
+        
+        if (response.success && response.data) {
+          // Transform API data to chart format
+          const transformedData = response.data.map(item => ({
+            period: item.period,
+            count: item.count,
+            amount: Math.round(item.total_amount / 1000) // Convert to thousands for better readability
+          }));
+          
+          setChartData(transformedData);
+        }
+      } catch (error) {
+        console.error('Error fetching bids data:', error);
+        setChartData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBidsData();
+  }, [startDate, endDate]);
   
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Bids Trend</CardTitle>
+          <CardDescription>Loading bid data...</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Line Chart</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Bids Trend</CardTitle>
+        <CardDescription>
+          {startDate && endDate 
+            ? `${startDate} - ${endDate}` 
+            : 'Bid activity over time'
+          }
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -58,24 +103,36 @@ export function MultiLineChart({ startDate, endDate }) {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="period"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) => {
+                const date = new Date(value);
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+              }}
             />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <ChartTooltip 
+              cursor={false} 
+              content={<ChartTooltipContent />}
+              formatter={(value, name) => {
+                if (name === 'amount') {
+                  return [`$${value.toLocaleString()}K`, 'Total Amount'];
+                }
+                return [value, 'Bid Count'];
+              }}
+            />
             <Line
-              dataKey="desktop"
+              dataKey="count"
               type="monotone"
               stroke="var(--brand-orange)"
               strokeWidth={2}
               dot={false}
             />
             <Line
-              dataKey="mobile"
+              dataKey="amount"
               type="monotone"
-              stroke="var(--brand-orange)"
+              stroke="var(--chart-2)"
               strokeWidth={2}
               dot={false}
             />
@@ -86,10 +143,10 @@ export function MultiLineChart({ startDate, endDate }) {
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
             <div className="flex items-center gap-2 leading-none font-medium">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+              Bid activity trends <TrendingUp className="h-4 w-4" />
             </div>
             <div className="text-muted-foreground flex items-center gap-2 leading-none">
-              Showing total visitors for the last 6 months
+              Showing bid count and total amount over time
             </div>
           </div>
         </div>

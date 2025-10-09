@@ -203,4 +203,69 @@ export const unpassVehicle = async (productId) => {
   }
 };
 
+// Reports API functions
+export const getBidsReport = async (dateFrom, dateTo, groupBy = 'day') => {
+  try {
+    const params = new URLSearchParams({
+      date_from: dateFrom,
+      date_to: dateTo,
+      group_by: groupBy
+    });
+    
+    const response = await api.get(`/reports/bids?${params}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching bids report:', error);
+    throw error;
+  }
+};
+
+export const getCustomersReport = async (dateFrom, dateTo, groupBy = 'day') => {
+  try {
+    const params = new URLSearchParams({
+      date_from: dateFrom,
+      date_to: dateTo,
+      group_by: groupBy
+    });
+    
+    const response = await api.get(`/reports/customers?${params}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching customers report:', error);
+    throw error;
+  }
+};
+
+export const getVehiclesReport = async (dateFrom, dateTo, groupBy = 'day') => {
+  try {
+    const params = new URLSearchParams({
+      date_from: dateFrom,
+      date_to: dateTo,
+      group_by: groupBy
+    });
+    
+    const response = await api.get(`/reports/vehicles?${params}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching vehicles report:', error);
+    throw error;
+  }
+};
+
+export const getSummaryReport = async (dateFrom, dateTo, groupBy = 'day') => {
+  try {
+    const params = new URLSearchParams({
+      date_from: dateFrom,
+      date_to: dateTo,
+      group_by: groupBy
+    });
+    
+    const response = await api.get(`/reports/summary?${params}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching summary report:', error);
+    throw error;
+  }
+};
+
 export default api;

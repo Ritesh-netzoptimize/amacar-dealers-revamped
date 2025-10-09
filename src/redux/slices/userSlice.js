@@ -60,6 +60,7 @@ export const registerUser = createAsyncThunk(
       const formattedData = {
         setup_intent_id: registrationData.setupIntentId,
         customer_id: registrationData.customerId,
+        invited_by_manager_id: registrationData.invitedByManagerId,
         dealer_code: formatDealerCode(registrationData.dealerCode),
         dealership_name: registrationData.dealershipName,
         dealership_website: registrationData.website,

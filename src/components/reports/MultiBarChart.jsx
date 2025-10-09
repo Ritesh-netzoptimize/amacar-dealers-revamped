@@ -1,5 +1,6 @@
 import { TrendingUp } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { useState, useEffect } from "react"
 
 import {
   Card,
@@ -14,63 +15,116 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-
-const getChartData = (startDate, endDate) => [
-  { month: "January", desktop: 186, mobile: 80, Tablet: 100 },
-  { month: "February", desktop: 305, mobile: 200, Tablet: 120 },
-  { month: "March", desktop: 237, mobile: 120, Tablet: 140 },
-  { month: "April", desktop: 73, mobile: 190, Tablet: 160 },
-  { month: "May", desktop: 209, mobile: 130, Tablet: 180 },
-  { month: "June", desktop: 214, mobile: 140, Tablet: 200 },
-]
+import { getVehiclesReport } from "@/lib/api"
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  count: {
+    label: "Vehicle Count",
     color: "var(--brand-orange)",
   },
-  mobile: {
-    label: "Tablet",
-    color: "var(--brand-orange)",
+  total_amount: {
+    label: "Total Amount",
+    color: "var(--chart-2)",
   },
 } 
 
 export function MultiBarChart({ startDate, endDate }) {
-  const chartData = getChartData(startDate, endDate);
+  const [chartData, setChartData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchVehiclesData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Use default date range if not provided
+        const dateFrom = startDate || '2024-01-01';
+        const dateTo = endDate || '2024-12-31';
+        
+        const response = await getVehiclesReport(dateFrom, dateTo);
+        
+        if (response.success && response.summary) {
+          const summary = response.summary;
+          
+          // Create bar chart data from vehicle summary
+          const transformedData = [
+            {
+              category: "Auction Vehicles",
+              count: summary.auction_vehicles || 0,
+              total_amount: 0 // Vehicles don't have amounts in this API
+            },
+            {
+              category: "Appraised Vehicles", 
+              count: summary.appraised_vehicles || 0,
+              total_amount: 0
+            }
+          ];
+          
+          setChartData(transformedData);
+        }
+      } catch (error) {
+        console.error('Error fetching vehicles data:', error);
+        setChartData([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchVehiclesData();
+  }, [startDate, endDate]);
   
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Vehicle Activity</CardTitle>
+          <CardDescription>Loading vehicle data...</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Multi Bar Chart</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Vehicle Activity</CardTitle>
+        <CardDescription>
+          {startDate && endDate 
+            ? `${startDate} - ${endDate}` 
+            : 'Vehicle breakdown by type'
+          }
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="category"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="dashed" />}
+              formatter={(value, name) => {
+                return [value, 'Vehicle Count'];
+              }}
             />
-            <Bar dataKey="desktop" fill="var(--brand-orange)" radius={4} />
-            <Bar dataKey="mobile" fill="var(--brand-orange)" radius={4} />
-            <Bar dataKey="Tablet" fill="var(--brand-orange)" radius={4} />
+            <Bar dataKey="count" fill="var(--brand-orange)" radius={4} />
           </BarChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 leading-none font-medium">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          Vehicle activity trends <TrendingUp className="h-4 w-4" />
         </div>
         <div className="text-muted-foreground leading-none">
-          Showing total visitors for the last 6 months
+          Showing vehicle breakdown by auction and appraised types
         </div>
       </CardFooter>
     </Card>
