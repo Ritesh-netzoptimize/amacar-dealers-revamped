@@ -12,7 +12,7 @@ import {
   BarChart3
 } from 'lucide-react';
 
-const SmartInsights = () => {
+const SmartInsights = ({ startDate, endDate }) => {
   const insights = [
     {
       id: 1,

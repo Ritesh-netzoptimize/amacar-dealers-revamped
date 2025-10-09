@@ -15,7 +15,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
-const chartData = [
+const getChartData = (startDate, endDate) => [
   { month: "January", desktop: 186, mobile: 80, Tablet: 100 },
   { month: "February", desktop: 305, mobile: 200, Tablet: 120 },
   { month: "March", desktop: 237, mobile: 120, Tablet: 140 },
@@ -35,7 +35,9 @@ const chartConfig = {
   },
 } 
 
-export function MultiBarChart() {
+export function MultiBarChart({ startDate, endDate }) {
+  const chartData = getChartData(startDate, endDate);
+  
   return (
     <Card>
       <CardHeader>

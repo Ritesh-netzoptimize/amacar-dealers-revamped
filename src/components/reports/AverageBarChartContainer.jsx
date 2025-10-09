@@ -17,7 +17,7 @@ import {
 
 export const description = "A bar chart"
 
-const chartData = [
+const getChartData = (startDate, endDate) => [
   { month: "January", desktop: 186 },
   { month: "February", desktop: 305 },
   { month: "March", desktop: 237 },
@@ -33,7 +33,9 @@ const chartConfig = {
   },
 } 
 
-export default function AverageBarChartContainer() {
+export default function AverageBarChartContainer({ startDate, endDate }) {
+  const chartData = getChartData(startDate, endDate);
+  
   return (
     <Card>
       <CardHeader>

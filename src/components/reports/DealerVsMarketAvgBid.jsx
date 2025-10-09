@@ -17,7 +17,7 @@ import {
 
 export const description = "A horizontal bar chart"
 
-const chartData = [
+const getChartData = (startDate, endDate) => [
   { month: "January", desktop: 186 },
   { month: "February", desktop: 305 },
   { month: "March", desktop: 237 },
@@ -33,7 +33,9 @@ const chartConfig = {
   },
 }
 
-export function DealerVsMarketAvgBid() {
+export function DealerVsMarketAvgBid({ startDate, endDate }) {
+  const chartData = getChartData(startDate, endDate);
+  
   return (
     <Card>
       <CardHeader>

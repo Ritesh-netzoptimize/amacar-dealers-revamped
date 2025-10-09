@@ -17,7 +17,7 @@ import {
 
 export const description = "A multiple line chart"
 
-const chartData = [
+const getChartData = (startDate, endDate) => [
   { month: "January", desktop: 186, mobile: 80 },
   { month: "February", desktop: 305, mobile: 200 },
   { month: "March", desktop: 237, mobile: 120 },
@@ -37,7 +37,9 @@ const chartConfig = {
   },
 } 
 
-export function MultiLineChart() {
+export function MultiLineChart({ startDate, endDate }) {
+  const chartData = getChartData(startDate, endDate);
+  
   return (
     <Card>
       <CardHeader>

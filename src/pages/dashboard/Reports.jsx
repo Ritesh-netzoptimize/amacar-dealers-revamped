@@ -7,9 +7,15 @@ import { DealerVsMarketAvgBid } from "@/components/reports/DealerVsMarketAvgBid"
 import SmartInsights from "@/components/reports/SmartInsights";
 import { MultiLineChart } from "@/components/reports/MultiLineChart";
 import { MultiBarChart } from "@/components/reports/MultiBarChart";
+import ReportsGlobalFilter from "@/components/filters/ReportsGlobalFilter";
 
 const Reports = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [isFilterLoading, setIsFilterLoading] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    startDate: null,
+    endDate: null,
+  });
 
   // Simulate data loading - replace with actual API calls
   useEffect(() => {
@@ -44,6 +50,34 @@ const Reports = () => {
 
     loadReportsData();
   }, []);
+
+  // Handle date range changes
+  const handleDateRangeChange = (startDate, endDate) => {
+    setDateRange({ startDate, endDate });
+  };
+
+  // Handle filter apply
+  const handleFilterApply = async () => {
+    setIsFilterLoading(true);
+    try {
+      // TODO: Replace with actual API calls that use the date range
+      // Example:
+      // await Promise.all([
+      //   fetchStats(dateRange.startDate, dateRange.endDate),
+      //   fetchChartData(dateRange.startDate, dateRange.endDate),
+      //   // ... other API calls
+      // ]);
+
+      // Simulate API calls with date range
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      
+      console.log("Filtering reports with date range:", dateRange);
+    } catch (error) {
+      console.error("Error applying date filter:", error);
+    } finally {
+      setIsFilterLoading(false);
+    }
+  };
 
   // Show skeleton while loading
   //   if (isLoading) {
@@ -114,46 +148,78 @@ const Reports = () => {
           </motion.p>
         </motion.div>
 
+        {/* Global Date Range Filter */}
+        <motion.div variants={statsVariants}>
+          <ReportsGlobalFilter
+            startDate={dateRange.startDate}
+            endDate={dateRange.endDate}
+            onDateRangeChange={handleDateRangeChange}
+            onApply={handleFilterApply}
+            isLoading={isFilterLoading}
+          />
+        </motion.div>
+
         {/* Statistics Cards */}
         <motion.div variants={statsVariants}>
-          <ReportStats />
+          <ReportStats 
+            startDate={dateRange.startDate}
+            endDate={dateRange.endDate}
+          />
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
           {/* Pie chart section */}
           <motion.div className="mt-12" variants={statsVariants}>
-            <PieChartContainer />
+            <PieChartContainer 
+              startDate={dateRange.startDate}
+              endDate={dateRange.endDate}
+            />
           </motion.div>
 
          
 
           {/* smart insights section */}
           <motion.div className="mt-12" variants={statsVariants}>
-            <SmartInsights />
+            <SmartInsights 
+              startDate={dateRange.startDate}
+              endDate={dateRange.endDate}
+            />
           </motion.div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
           {/* Line chart section */}
           <motion.div className="mt-4" variants={statsVariants}>
-            <MultiLineChart />
+            <MultiLineChart 
+              startDate={dateRange.startDate}
+              endDate={dateRange.endDate}
+            />
           </motion.div>
 
            {/* Multi Bar Chart section */}
            <motion.div className="mt-4" variants={statsVariants}>
-            <MultiBarChart />
+            <MultiBarChart 
+              startDate={dateRange.startDate}
+              endDate={dateRange.endDate}
+            />
           </motion.div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
           {/* Horizontal bar chart section */}
           <motion.div className="mt-4" variants={statsVariants}>
-            <DealerVsMarketAvgBid />
+            <DealerVsMarketAvgBid 
+              startDate={dateRange.startDate}
+              endDate={dateRange.endDate}
+            />
           </motion.div>
 
           {/* Average bar chart section */}
           <motion.div className="mt-4" variants={statsVariants}>
-            <AverageBarChartContainer />
+            <AverageBarChartContainer 
+              startDate={dateRange.startDate}
+              endDate={dateRange.endDate}
+            />
           </motion.div>
         </div>
       </div>

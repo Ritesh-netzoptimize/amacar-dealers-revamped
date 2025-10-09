@@ -2,8 +2,9 @@ import { motion } from 'framer-motion';
 import { Gavel, DollarSign, Clock, Flame, XCircle } from 'lucide-react';
 import StatsCard from '../common/StatsCard/StatsCard';
 
-const ReportStats = () => {
+const ReportStats = ({ startDate, endDate }) => {
   // Static data for now - will replace with API later
+  // TODO: Use startDate and endDate to fetch filtered data
   const stats = [
     { 
       title: 'Purchased', 

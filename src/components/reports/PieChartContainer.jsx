@@ -17,7 +17,7 @@ import {
 
 export const description = "A donut chart with an active sector"
 
-const chartData = [
+const getChartData = (startDate, endDate) => [
   { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
   { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
   { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
@@ -51,7 +51,8 @@ const chartConfig = {
   },
 }
 
-export default function PieChartContainer() {
+export default function PieChartContainer({ startDate, endDate }) {
+  const chartData = getChartData(startDate, endDate);
   return (
     <Card className="flex flex-col h-full">
       <CardHeader className="items-center pb-0">
