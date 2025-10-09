@@ -112,166 +112,218 @@ const DealershipContainer = ({
 
   // Define columns
   const columns = useMemo(
-    () => [
-      columnHelper.accessor("name", {
-        header: "Dealership Name",
-        cell: ({ row }) => (
-          <div>
-            <div className="font-semibold text-neutral-900 text-sm">
-              {row.original.name}
+    () => {
+      const baseColumns = [
+        columnHelper.accessor("name", {
+          header: "Dealership Name",
+          cell: ({ row }) => (
+            <div>
+              <div className="font-semibold text-neutral-900 text-sm">
+                {row.original.name}
+              </div>
+              <div className="text-xs text-neutral-500 mt-0.5">
+                {row.original.email}
+              </div>
             </div>
-            <div className="text-xs text-neutral-500 mt-0.5">
-              {row.original.email}
-            </div>
-          </div>
-        ),
-      }),
-      columnHelper.accessor("firstName", {
-        header: "First Name",
-        cell: ({ getValue }) => (
-          <div className="text-sm text-neutral-700">{getValue()}</div>
-        ),
-      }),
-      columnHelper.accessor("lastName", {
-        header: "Last Name",
-        cell: ({ getValue }) => (
-          <div className="text-sm text-neutral-700">{getValue()}</div>
-        ),
-      }),
-      columnHelper.accessor("status", {
-        header: "Status",
-        cell: ({ getValue }) => {
-          const status = getValue();
-          const statusColors = {
-            Active: "bg-green-100 text-green-800",
-            Pending: "bg-yellow-100 text-yellow-800",
-            Inactive: "bg-red-100 text-red-800",
-            Expired: "bg-gray-100 text-gray-800",
-            Accepted: "bg-blue-100 text-blue-800",
-          };
-          return (
-            <span
-              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                statusColors[status] || "bg-gray-100 text-gray-800"
-              }`}
-            >
-              {status}
-            </span>
-          );
-        },
-      }),
-      columnHelper.accessor("role", {
-        header: "Role",
-        cell: ({ getValue }) => (
-          <div className="text-sm text-neutral-700 capitalize">
-            {getValue()}
-          </div>
-        ),
-      }),
-      columnHelper.accessor("actions", {
-        header: "Actions",
-        cell: ({ row }) => (
-          <div className="flex justify-end items-center h-full">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 w-8 p-0 hover:bg-neutral-100 cursor-pointer"
-                >
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                side="bottom"
-                sideOffset={4}
-                className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
-              >
-                {!isInvitationView && (
-                  <DropdownMenuItem
-                    onClick={() => onViewDealership(row.original.id)}
-                    className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
-                  >
-                    <Eye className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-                    <span>View Details</span>
-                  </DropdownMenuItem>
-                )}
+          ),
+        }),
+      ];
 
-                {isInvitationView ? (
-                  // Invitation-specific actions
-                  <>
-                    {row.original.status === "Pending" &&
-                      !row.original.isExpired && (
-                        <DropdownMenuItem
-                          onClick={() =>
-                            onResendInvitation(row.original.invitationId)
-                          }
-                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-700 focus:outline-none transition-all duration-200 group"
-                        >
-                          <RotateCcw className="w-4 h-4 text-neutral-500 group-hover:text-blue-600 group-focus:text-blue-600 transition-colors duration-200" />
-                          <span>Resend Invitation</span>
-                        </DropdownMenuItem>
-                      )}
+      // Add columns based on view type
+      if (isInvitationView) {
+        // For invitation view: First Name, Last Name
+        baseColumns.push(
+          columnHelper.accessor("firstName", {
+            header: "First Name",
+            cell: ({ getValue }) => (
+              <div className="text-sm text-neutral-700">{getValue()}</div>
+            ),
+          }),
+          columnHelper.accessor("lastName", {
+            header: "Last Name",
+            cell: ({ getValue }) => (
+              <div className="text-sm text-neutral-700">{getValue()}</div>
+            ),
+          })
+        );
+      } else {
+        // For regular dealership view: Phone, City
+        baseColumns.push(
+          columnHelper.accessor("phone", {
+            header: "Phone",
+            cell: ({ getValue }) => (
+              <div className="text-sm text-neutral-700">{getValue()}</div>
+            ),
+          }),
+          columnHelper.accessor("city", {
+            header: "City",
+            cell: ({ getValue }) => (
+              <div className="text-sm text-neutral-700">{getValue()}</div>
+            ),
+          })
+        );
+      }
+
+      // Add common columns
+      baseColumns.push(
+        columnHelper.accessor("status", {
+          header: "Status",
+          cell: ({ getValue }) => {
+            const status = getValue();
+            const statusColors = {
+              Active: "bg-green-100 text-green-800",
+              Pending: "bg-yellow-100 text-yellow-800",
+              Inactive: "bg-red-100 text-red-800",
+              Expired: "bg-gray-100 text-gray-800",
+              Accepted: "bg-blue-100 text-blue-800",
+            };
+            return (
+              <span
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  statusColors[status] || "bg-gray-100 text-gray-800"
+                }`}
+              >
+                {status}
+              </span>
+            );
+          },
+        }),
+        columnHelper.accessor("role", {
+          header: "Role",
+          cell: ({ getValue }) => (
+            <div className="text-sm text-neutral-700 capitalize">
+              {getValue()}
+            </div>
+          ),
+        })
+      );
+
+      // Add Sales Manager column only for regular dealership view
+      if (!isInvitationView) {
+        baseColumns.push(
+          columnHelper.accessor("salesManager", {
+            header: "Sales Manager",
+            cell: ({ getValue }) => (
+              <div
+                className="text-sm text-neutral-700 w-[140px] whitespace-nowrap overflow-hidden"
+                title={getValue()}
+              >
+                {getValue()}
+              </div>
+            ),
+          })
+        );
+      }
+
+      // Add actions column
+      baseColumns.push(
+        columnHelper.accessor("actions", {
+          header: "Actions",
+          cell: ({ row }) => (
+            <div className="flex justify-end items-center h-full">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-neutral-100 cursor-pointer"
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  side="bottom"
+                  sideOffset={4}
+                  className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
+                >
+                  {!isInvitationView && (
                     <DropdownMenuItem
-                      onClick={() =>
-                        onCancelInvitation(row.original.invitationId)
-                      }
-                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
-                    >
-                      <X className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
-                      <span>Cancel Invitation</span>
-                    </DropdownMenuItem>
-                  </>
-                ) : (
-                  // Regular dealership actions
-                  <>
-                    <DropdownMenuItem
-                      onClick={() => onEditDealership(row.original.id)}
+                      onClick={() => onViewDealership(row.original.id)}
                       className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                     >
-                      <Edit className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-                      <span>Edit Dealership</span>
+                      <Eye className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                      <span>View Details</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => onContactDealership(row.original.id)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
-                    >
-                      <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-                      <span>Contact</span>
-                    </DropdownMenuItem>
-                    {row.original.status === "Active" ? (
+                  )}
+
+                  {isInvitationView ? (
+                    // Invitation-specific actions
+                    <>
+                      {row.original.status === "Pending" &&
+                        !row.original.isExpired && (
+                          <DropdownMenuItem
+                            onClick={() =>
+                              onResendInvitation(row.original.invitationId)
+                            }
+                            className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-700 focus:outline-none transition-all duration-200 group"
+                          >
+                            <RotateCcw className="w-4 h-4 text-neutral-500 group-hover:text-blue-600 group-focus:text-blue-600 transition-colors duration-200" />
+                            <span>Resend Invitation</span>
+                          </DropdownMenuItem>
+                        )}
                       <DropdownMenuItem
-                        onClick={() => onDeactivateDealership(row.original.id)}
+                        onClick={() =>
+                          onCancelInvitation(row.original.invitationId)
+                        }
                         className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
                       >
-                        <UserX className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
-                        <span>Deactivate</span>
+                        <X className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
+                        <span>Cancel Invitation</span>
                       </DropdownMenuItem>
-                    ) : (
+                    </>
+                  ) : (
+                    // Regular dealership actions
+                    <>
                       <DropdownMenuItem
-                        onClick={() => onActivateDealership(row.original.id)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-700 focus:bg-green-50 focus:text-green-700 focus:outline-none transition-all duration-200 group"
+                        onClick={() => onEditDealership(row.original.id)}
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                       >
-                        <UserCheck className="w-4 h-4 text-neutral-500 group-hover:text-green-600 group-focus:text-green-600 transition-colors duration-200" />
-                        <span>Activate</span>
+                        <Edit className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                        <span>Edit Dealership</span>
                       </DropdownMenuItem>
-                    )}
-                    <DropdownMenuItem
-                      onClick={() => onDeleteDealership(row.original.id)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
-                    >
-                      <Trash2 className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
-                      <span>Delete</span>
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        ),
-      }),
-    ],
+                      <DropdownMenuItem
+                        onClick={() => onContactDealership(row.original.id)}
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                      >
+                        <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                        <span>Contact</span>
+                      </DropdownMenuItem>
+                      {row.original.status === "Active" ? (
+                        <DropdownMenuItem
+                          onClick={() => onDeactivateDealership(row.original.id)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
+                        >
+                          <UserX className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
+                          <span>Deactivate</span>
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem
+                          onClick={() => onActivateDealership(row.original.id)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-700 focus:bg-green-50 focus:text-green-700 focus:outline-none transition-all duration-200 group"
+                        >
+                          <UserCheck className="w-4 h-4 text-neutral-500 group-hover:text-green-600 group-focus:text-green-600 transition-colors duration-200" />
+                          <span>Activate</span>
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem
+                        onClick={() => onDeleteDealership(row.original.id)}
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
+                      >
+                        <Trash2 className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ),
+        })
+      );
+
+      return baseColumns;
+    },
     [
       columnHelper,
       onViewDealership,
@@ -351,7 +403,9 @@ const DealershipContainer = ({
                         isSortable
                           ? "cursor-pointer hover:text-neutral-900 hover:bg-neutral-50 group"
                           : "cursor-default"
-                      } ${header.column.id === "actions" ? "text-right" : ""}`}
+                      } ${header.column.id === "actions" ? "text-right" : ""} ${
+                        header.column.id === "salesManager" ? "w-[140px]" : ""
+                      }`}
                       onClick={
                         isSortable
                           ? header.column.getToggleSortingHandler()
@@ -456,10 +510,27 @@ const DealershipContainer = ({
                   <Mail className="w-4 h-4" />
                   {row.original.email}
                 </div>
-                <div className="text-sm text-neutral-600 flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  {row.original.firstName} {row.original.lastName}
-                </div>
+                {isInvitationView ? (
+                  // For invitation view: Show First Name and Last Name
+                  <>
+                    <div className="text-sm text-neutral-600 flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      {row.original.firstName} {row.original.lastName}
+                    </div>
+                  </>
+                ) : (
+                  // For regular dealership view: Show Phone and City
+                  <>
+                    <div className="text-sm text-neutral-600 flex items-center gap-2">
+                      <Phone className="w-4 h-4" />
+                      {row.original.phone}
+                    </div>
+                    <div className="text-sm text-neutral-600 flex items-center gap-2">
+                      <MapPin className="w-4 h-4" />
+                      {row.original.city}
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Status and Role */}
@@ -486,6 +557,17 @@ const DealershipContainer = ({
 
               {/* Stats */}
               <div className="space-y-2">
+                {!isInvitationView && (
+                  // Sales Manager only for regular dealership view
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-neutral-600">
+                      Sales Manager
+                    </span>
+                    <span className="text-sm font-medium text-neutral-800">
+                      {row.original.salesManager}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-neutral-600">
                     Vehicles in Stock
@@ -545,9 +627,7 @@ const DealershipContainer = ({
                               className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-blue-700 hover:bg-blue-50 hover:text-blue-900 rounded-md transition-colors duration-150 focus:bg-blue-50 focus:text-blue-900 focus:outline-none"
                             >
                               <RotateCcw className="w-4 h-4 mr-3 text-blue-500" />
-                              <span className="font-medium">
-                                Resend Invitation
-                              </span>
+                              <span className="font-medium">Resend Invitation</span>
                             </DropdownMenuItem>
                           )}
                         <DropdownMenuItem
@@ -579,9 +659,7 @@ const DealershipContainer = ({
                         </DropdownMenuItem>
                         {row.original.status === "Active" ? (
                           <DropdownMenuItem
-                            onClick={() =>
-                              onDeactivateDealership(row.original.id)
-                            }
+                            onClick={() => onDeactivateDealership(row.original.id)}
                             className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-red-700 hover:bg-red-50 hover:text-red-900 rounded-md transition-colors duration-150 focus:bg-red-50 focus:text-red-900 focus:outline-none"
                           >
                             <UserX className="w-4 h-4 mr-3 text-red-500" />
@@ -589,9 +667,7 @@ const DealershipContainer = ({
                           </DropdownMenuItem>
                         ) : (
                           <DropdownMenuItem
-                            onClick={() =>
-                              onActivateDealership(row.original.id)
-                            }
+                            onClick={() => onActivateDealership(row.original.id)}
                             className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-green-700 hover:bg-green-50 hover:text-green-900 rounded-md transition-colors duration-150 focus:bg-green-50 focus:text-green-900 focus:outline-none"
                           >
                             <UserCheck className="w-4 h-4 mr-3 text-green-500" />

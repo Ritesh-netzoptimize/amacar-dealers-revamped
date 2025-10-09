@@ -266,7 +266,7 @@ const InvitedDealerships = () => {
   };
 
   if (loading) {
-    return (
+  return (
       <motion.div
         className="space-y-6 min-h-screen bg-gray-50 pt-28 px-8 md:px-12"
         initial={{ opacity: 0 }}
