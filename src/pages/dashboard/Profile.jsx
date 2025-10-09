@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { User, Mail, Phone, MapPin, Edit3, Key } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
-import { loadUser } from "@/redux/slices/userSlice";
+import { loadUser, fetchProfileInfo } from "@/redux/slices/userSlice";
 
 import EditProfileModal from "@/components/ui/ProfileUI/EditProfileModal";
 import ProfileSkeleton from "@/components/skeletons/Profile/ProfileSkeleton";
@@ -11,7 +11,7 @@ import ProfileSkeleton from "@/components/skeletons/Profile/ProfileSkeleton";
 
 const Profile = () => {
   const dispatch = useDispatch();
-  const { user, loading } = useSelector((state) => state.user);
+  const { user, loading, status, error } = useSelector((state) => state.user);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [showTwoFactorModal, setShowTwoFactorModal] = useState(false);
@@ -30,6 +30,10 @@ const Profile = () => {
     totalAuctions: 0,
     totalEarnings: 0,
     rating: 0,
+    company: "",
+    profile_picture: null,
+    user_status: "",
+    account_status: "",
   };
 
   const [profile, setProfile] = useState(defaultProfile);
@@ -38,43 +42,40 @@ const Profile = () => {
   // Get 2FA status from user data
   const isTwoFactorEnabled = user?.two_fa === 'enabled' || user?.two_fa === true || user?.two_fa === 1;
 
-  // Load user data from Redux state
+  // Load user data from Redux state and fetch profile info
   useEffect(() => {
     console.log("profile page user data: ", user);
-    // i have display_name in the user data and has two words i want to split int in firstname and last name and if it has one wornd then wnnt only in the firstnam how to do that
-    const firstName = user.display_name.split(" ")[0] || user.first_name || "";
-    const lastName = user.display_name.split(" ")[1] || user.last_name || "";
-
+    
     if (user) {
       const userProfile = {
-        firstName: user.display_name.split(" ")[0] || user.first_name || "",
-        lastName: user.display_name.split(" ")[1] || user.last_name || "",
+        firstName: user.first_name || user.display_name?.split(" ")[0] || "",
+        lastName: user.last_name || user.display_name?.split(" ")[1] || "",
         email: user.email || "",
-        phone: user.phone || user.meta?.phone || "",
-        zipcode:
-          user.meta?.zip ||
-          user.meta?.zip_code ||
-          user.zip_code ||
-          "",
-        state: user.state || user.meta?.state || "",
-        city: user.city || user.meta?.city || "",
-        bio: user.bio || defaultProfile.bio,
-        joinDate: user.createdAt
-          ? new Date(user.createdAt).toLocaleDateString()
+        phone: user.phone || "",
+        zipcode: user.zipcode || "",
+        state: user.state || "",
+        city: user.city || "",
+        bio: user.bio || "Car enthusiast and frequent seller on Amacar platform.",
+        joinDate: user.user_registered
+          ? new Date(user.user_registered).toLocaleDateString()
           : "",
         totalAuctions: user.totalAuctions || user.total_auctions || 0,
         totalEarnings: user.totalEarnings || user.total_earnings || 0,
         rating: user.rating || 0,
+        company: user.company || "",
+        profile_picture: user.profile_picture || null,
+        user_status: user.user_status || "",
+        account_status: user.account_status || "",
       };
       setProfile(userProfile);
       setEditData(userProfile);
     }
   }, [user]);
 
-  // Load user data on component mount
+  // Load user data and fetch profile info on component mount
   useEffect(() => {
     dispatch(loadUser());
-    // dispatch(fetchDashboardSummary());
+    dispatch(fetchProfileInfo());
   }, [dispatch]);
 
   const handleEdit = () => {
@@ -127,9 +128,29 @@ const Profile = () => {
     },
   };
 
-  if (loading) {
+  if (loading || status === 'loading') {
+    return <ProfileSkeleton />;
+  }
+
+  if (error) {
     return (
-        <ProfileSkeleton />
+      <div className="mt-8 md:mt-6 lg:mt-20 min-h-screen bg-gradient-hero p-4 sm:p-6 lg:p-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="card p-4 sm:p-6 lg:p-8 text-center">
+            <h2 className="text-xl font-semibold text-red-600 mb-2">Error Loading Profile</h2>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <button
+              onClick={() => {
+                dispatch(loadUser());
+                dispatch(fetchProfileInfo());
+              }}
+              className="btn-primary"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -159,21 +180,50 @@ const Profile = () => {
             {/* Profile Picture */}
             <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
               <div className="relative flex justify-center sm:justify-start">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary-100 rounded-full flex items-center justify-center">
-                  <User className="w-10 h-10 sm:w-12 sm:h-12 text-primary-600" />
-                </div>
+                {profile.profile_picture?.url ? (
+                  <img
+                    src={profile.profile_picture.url}
+                    alt="Profile"
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-2 border-primary-200"
+                  />
+                ) : (
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary-100 rounded-full flex items-center justify-center">
+                    <User className="w-10 h-10 sm:w-12 sm:h-12 text-primary-600" />
+                  </div>
+                )}
               </div>
               <div className="text-center sm:text-left">
                 <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-neutral-800">
                   {profile.firstName && profile.lastName
                     ? `${profile.firstName} ${profile.lastName}`
-                    : "User Profile"}
+                    : profile.display_name || "User Profile"}
                 </h2>
                 <p className="text-sm sm:text-base text-neutral-600">
                   {profile.joinDate
                     ? `Member since ${profile.joinDate}`
                     : "New member"}
                 </p>
+                {profile.company && (
+                  <p className="text-sm text-neutral-500 mt-1">
+                    {profile.company}
+                  </p>
+                )}
+                <div className="flex items-center gap-2 mt-2">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    profile.user_status === 'approved' 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {profile.user_status || 'Pending'}
+                  </span>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    profile.account_status === 'active' 
+                      ? 'bg-blue-100 text-blue-800' 
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {profile.account_status || 'Inactive'}
+                  </span>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -234,6 +284,16 @@ const Profile = () => {
                   <span className="truncate">{profile.zipcode || "Not provided"}</span>
                 </div>
               </div>
+
+              <div className="space-y-2">
+                <label className="block text-xs sm:text-sm font-semibold text-neutral-700">
+                  Company
+                </label>
+                <div className="flex items-center space-x-2 text-sm sm:text-base text-neutral-600">
+                  <User className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                  <span className="truncate">{profile.company || "Not provided"}</span>
+                </div>
+              </div>
             </div>
           </motion.div>
 
@@ -244,7 +304,7 @@ const Profile = () => {
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {/* Total Vehicles */}
+              {/* Total Auctions */}
               <div className="text-center p-4 sm:p-6 bg-blue-50 rounded-xl">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
                   <svg
@@ -267,11 +327,13 @@ const Profile = () => {
                     />
                   </svg>
                 </div>
-                
-                <div className="text-xs sm:text-sm text-neutral-600">Total Vehicles</div>
+                <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-1">
+                  {profile.totalAuctions || 0}
+                </div>
+                <div className="text-xs sm:text-sm text-neutral-600">Total Auctions</div>
               </div>
 
-              {/* Accepted Offers */}
+              {/* Total Earnings */}
               <div className="text-center p-4 sm:p-6 bg-green-50 rounded-xl">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
                   <svg
@@ -284,15 +346,17 @@ const Profile = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
                     />
                   </svg>
                 </div>
-                
-                <div className="text-xs sm:text-sm text-neutral-600">Accepted Offers</div>
+                <div className="text-2xl sm:text-3xl font-bold text-green-600 mb-1">
+                  ${profile.totalEarnings?.toLocaleString() || 0}
+                </div>
+                <div className="text-xs sm:text-sm text-neutral-600">Total Earnings</div>
               </div>
 
-              {/* Total Bid Value */}
+              {/* User Rating */}
               <div className="text-center p-4 sm:p-6 bg-emerald-50 rounded-xl">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
                   <svg
@@ -305,12 +369,14 @@ const Profile = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
                     />
                   </svg>
                 </div>
-                
-                <div className="text-xs sm:text-sm text-neutral-600">Total Bid Value</div>
+                <div className="text-2xl sm:text-3xl font-bold text-emerald-600 mb-1">
+                  {profile.rating || 0}
+                </div>
+                <div className="text-xs sm:text-sm text-neutral-600">User Rating</div>
               </div>
             </div>
           </motion.div>

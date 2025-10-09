@@ -295,6 +295,25 @@ export const fetchCityStateByZip = createAsyncThunk(
   }
 );
 
+// Fetch profile information from the dealer portal API
+export const fetchProfileInfo = createAsyncThunk(
+  'user/fetchProfileInfo',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/profile/info');
+      
+      if (response.data.success) {
+        return response.data.profile;
+      } else {
+        return rejectWithValue(response.data.message || 'Failed to fetch profile information');
+      }
+    } catch (error) {
+      console.error('Profile API error:', error.response?.data || error.message);
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch profile information');
+    }
+  }
+);
+
 
 const userSlice = createSlice({
   name: 'user',
@@ -599,6 +618,24 @@ const userSlice = createSlice({
         Cookies.remove('authToken');
         state.form.values = {};
         state.form.errors = {};
+      })
+      // Fetch Profile Info
+      .addCase(fetchProfileInfo.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchProfileInfo.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        // Update user data with profile information
+        if (action.payload && typeof action.payload === 'object') {
+          state.user = { ...state.user, ...action.payload };
+          // Update localStorage with new user data
+          localStorage.setItem('authUser', JSON.stringify(state.user));
+        }
+      })
+      .addCase(fetchProfileInfo.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
       })
   },
 });
