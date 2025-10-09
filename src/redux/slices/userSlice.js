@@ -314,6 +314,44 @@ export const fetchProfileInfo = createAsyncThunk(
   }
 );
 
+// Fetch subscription status from the dealer portal API
+export const fetchSubscriptionStatus = createAsyncThunk(
+  'user/fetchSubscriptionStatus',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/profile/subscription-status');
+      
+      if (response.data.success) {
+        return response.data.subscription;
+      } else {
+        return rejectWithValue(response.data.message || 'Failed to fetch subscription status');
+      }
+    } catch (error) {
+      console.error('Subscription API error:', error.response?.data || error.message);
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch subscription status');
+    }
+  }
+);
+
+// Fetch billing information from the dealer portal API
+export const fetchBillingInfo = createAsyncThunk(
+  'user/fetchBillingInfo',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get('/profile/billing-info');
+      
+      if (response.data.success) {
+        return response.data.billing;
+      } else {
+        return rejectWithValue(response.data.message || 'Failed to fetch billing information');
+      }
+    } catch (error) {
+      console.error('Billing API error:', error.response?.data || error.message);
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch billing information');
+    }
+  }
+);
+
 
 const userSlice = createSlice({
   name: 'user',
@@ -327,6 +365,12 @@ const userSlice = createSlice({
       state: "",
       zipcode: ""
     },
+    subscription: null,
+    subscriptionLoading: false,
+    subscriptionError: null,
+    billing: null,
+    billingLoading: false,
+    billingError: null,
     form: {
       values: {},
       errors: {},
@@ -636,6 +680,34 @@ const userSlice = createSlice({
       .addCase(fetchProfileInfo.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
+      })
+      // Fetch Subscription Status
+      .addCase(fetchSubscriptionStatus.pending, (state) => {
+        state.subscriptionLoading = true;
+        state.subscriptionError = null;
+      })
+      .addCase(fetchSubscriptionStatus.fulfilled, (state, action) => {
+        state.subscriptionLoading = false;
+        state.subscription = action.payload;
+        state.subscriptionError = null;
+      })
+      .addCase(fetchSubscriptionStatus.rejected, (state, action) => {
+        state.subscriptionLoading = false;
+        state.subscriptionError = action.payload;
+      })
+      // Fetch Billing Info
+      .addCase(fetchBillingInfo.pending, (state) => {
+        state.billingLoading = true;
+        state.billingError = null;
+      })
+      .addCase(fetchBillingInfo.fulfilled, (state, action) => {
+        state.billingLoading = false;
+        state.billing = action.payload;
+        state.billingError = null;
+      })
+      .addCase(fetchBillingInfo.rejected, (state, action) => {
+        state.billingLoading = false;
+        state.billingError = action.payload;
       })
   },
 });

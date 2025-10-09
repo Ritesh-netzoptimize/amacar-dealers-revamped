@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { User, Mail, Phone, MapPin, Edit3, Key } from "lucide-react";
+import { User, Mail, Phone, MapPin, Edit3, Key, CreditCard, Calendar, DollarSign, Settings } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
-import { loadUser, fetchProfileInfo } from "@/redux/slices/userSlice";
+import { loadUser, fetchProfileInfo, fetchSubscriptionStatus, fetchBillingInfo } from "@/redux/slices/userSlice";
 
 import EditProfileModal from "@/components/ui/ProfileUI/EditProfileModal";
 import ProfileSkeleton from "@/components/skeletons/Profile/ProfileSkeleton";
@@ -11,7 +11,7 @@ import ProfileSkeleton from "@/components/skeletons/Profile/ProfileSkeleton";
 
 const Profile = () => {
   const dispatch = useDispatch();
-  const { user, loading, status, error } = useSelector((state) => state.user);
+  const { user, loading, status, error, subscription, subscriptionLoading, subscriptionError, billing, billingLoading, billingError } = useSelector((state) => state.user);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [showTwoFactorModal, setShowTwoFactorModal] = useState(false);
@@ -76,7 +76,13 @@ const Profile = () => {
   useEffect(() => {
     dispatch(loadUser());
     dispatch(fetchProfileInfo());
+    dispatch(fetchSubscriptionStatus());
+    dispatch(fetchBillingInfo());
   }, [dispatch]);
+
+  useEffect(() => {
+    console.log("subscription", subscription)
+  }, [subscription])
 
   const handleEdit = () => {
     setEditData({ ...profile });
@@ -379,6 +385,248 @@ const Profile = () => {
                 <div className="text-xs sm:text-sm text-neutral-600">User Rating</div>
               </div>
             </div>
+          </motion.div>
+
+          {/* Subscription Status */}
+          <motion.div variants={itemVariants} className="card p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
+            <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-neutral-800 mb-4 sm:mb-6">
+              Subscription Status
+            </h3>
+
+            {subscriptionLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                <span className="ml-2 text-neutral-600">Loading subscription...</span>
+              </div>
+            ) : subscriptionError ? (
+              <div className="text-center py-8">
+                <p className="text-red-600 mb-4">{subscriptionError}</p>
+                <button
+                  onClick={() => dispatch(fetchSubscriptionStatus())}
+                  className="btn-primary"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : subscription ? (
+              <div className="space-y-4">
+                {/* Subscription Status Card */}
+                <div className={`p-4 sm:p-6 rounded-xl border-2 ${
+                  subscription.has_subscription 
+                    ? subscription.status === 'trialing' 
+                      ? 'bg-blue-50 border-blue-200' 
+                      : 'bg-green-50 border-green-200'
+                    : 'bg-gray-50 border-gray-200'
+                }`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-3 h-3 rounded-full ${
+                        subscription.has_subscription 
+                          ? subscription.status === 'trialing' 
+                            ? 'bg-blue-500' 
+                            : 'bg-green-500'
+                          : 'bg-gray-400'
+                      }`}></div>
+                      <h4 className="text-lg font-semibold text-neutral-800">
+                        {subscription.has_subscription ? 'Active Subscription' : 'No Subscription'}
+                      </h4>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      subscription.status === 'trialing' 
+                        ? 'bg-blue-100 text-blue-800' 
+                        : subscription.status === 'active'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {subscription.status?.charAt(0).toUpperCase() + subscription.status?.slice(1) || 'Unknown'}
+                    </span>
+                  </div>
+
+                  {subscription.has_subscription && (
+                    <div className="space-y-6">
+                      {/* Trial Information - Prominent Display */}
+                      {subscription.is_trialing && (
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200">
+                          <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center">
+                              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <Calendar className="w-6 h-6 text-blue-600" />
+                              </div>
+                              <div>
+                                <h4 className="text-xl font-bold text-blue-900">Trial Period Active</h4>
+                                <p className="text-blue-700">You're currently in your trial period</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-3xl font-bold text-blue-900">${subscription.trial_amount}</div>
+                              <div className="text-sm text-blue-700">Trial Amount</div>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-white p-4 rounded-lg border border-blue-200">
+                              <div className="flex items-center mb-2">
+                                <Calendar className="w-4 h-4 text-blue-600 mr-2" />
+                                <span className="text-sm font-medium text-blue-800">Trial Started</span>
+                              </div>
+                              <div className="text-lg font-semibold text-blue-900">
+                                {subscription.trial_start_date 
+                                  ? new Date(subscription.trial_start_date).toLocaleDateString('en-US', {
+                                      weekday: 'long',
+                                      year: 'numeric',
+                                      month: 'long',
+                                      day: 'numeric'
+                                    })
+                                  : 'N/A'
+                                }
+                              </div>
+                            </div>
+                            
+                            <div className="bg-white p-4 rounded-lg border border-blue-200">
+                              <div className="flex items-center mb-2">
+                                <Calendar className="w-4 h-4 text-blue-600 mr-2" />
+                                <span className="text-sm font-medium text-blue-800">Trial Ends</span>
+                              </div>
+                              <div className="text-lg font-semibold text-blue-900">
+                                {subscription.trial_end_date 
+                                  ? new Date(subscription.trial_end_date).toLocaleDateString('en-US', {
+                                      weekday: 'long',
+                                      year: 'numeric',
+                                      month: 'long',
+                                      day: 'numeric'
+                                    })
+                                  : 'N/A'
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Subscription Details */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="bg-white p-4 rounded-lg border border-neutral-200">
+                          <div className="flex items-center mb-3">
+                            <CreditCard className="w-5 h-5 text-neutral-600 mr-2" />
+                            <h5 className="font-semibold text-neutral-800">Subscription Details</h5>
+                          </div>
+                          <div className="space-y-3 text-sm">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <CreditCard className="w-4 h-4 text-neutral-500 mr-1" />
+                                <span className="text-neutral-600">Stripe ID:</span>
+                              </div>
+                              <span className="font-mono text-xs text-neutral-500 truncate max-w-24">
+                                {subscription.stripe_subscription_id || 'N/A'}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <Settings className="w-4 h-4 text-neutral-500 mr-1" />
+                                <span className="text-neutral-600">Status:</span>
+                              </div>
+                              <span className="font-medium capitalize">
+                                {subscription.status || 'Unknown'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Billing Information */}
+                        <div className="bg-white p-4 rounded-lg border border-neutral-200">
+                          <div className="flex items-center mb-3">
+                            <DollarSign className="w-5 h-5 text-neutral-600 mr-2" />
+                            <h5 className="font-semibold text-neutral-800">Billing Information</h5>
+                          </div>
+                          {billingLoading ? (
+                            <div className="flex items-center justify-center py-4">
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
+                              <span className="ml-2 text-sm text-neutral-600">Loading billing...</span>
+                            </div>
+                          ) : billingError ? (
+                            <div className="text-center py-4">
+                              <p className="text-red-600 text-sm mb-2">{billingError}</p>
+                              <button
+                                onClick={() => dispatch(fetchBillingInfo())}
+                                className="btn-primary text-xs py-1 px-2"
+                              >
+                                Retry
+                              </button>
+                            </div>
+                          ) : billing ? (
+                            <div className="space-y-3 text-sm">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                  <CreditCard className="w-4 h-4 text-neutral-500 mr-1" />
+                                  <span className="text-neutral-600">Has Billing:</span>
+                                </div>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  billing.has_billing 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : 'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {billing.has_billing ? 'Yes' : 'No'}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                  <CreditCard className="w-4 h-4 text-neutral-500 mr-1" />
+                                  <span className="text-neutral-600">Customer ID:</span>
+                                </div>
+                                <span className="font-mono text-xs text-neutral-500 truncate max-w-24">
+                                  {billing.stripe_customer_id || 'N/A'}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                  <DollarSign className="w-4 h-4 text-neutral-500 mr-1" />
+                                  <span className="text-neutral-600">Trial Amount:</span>
+                                </div>
+                                <span className="font-medium">
+                                  ${billing.trial_amount || 0}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                  <DollarSign className="w-4 h-4 text-neutral-500 mr-1" />
+                                  <span className="text-neutral-600">Currency:</span>
+                                </div>
+                                <span className="font-medium">
+                                  {billing.currency || 'USD'}
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-center py-4">
+                              <p className="text-neutral-600 text-sm">No billing data available</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {!subscription.has_subscription && (
+                    <div className="text-center py-8">
+                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                        </svg>
+                      </div>
+                      <h4 className="text-lg font-semibold text-neutral-800 mb-2">No Active Subscription</h4>
+                      <p className="text-neutral-600 mb-4">Get started with a subscription to access all features</p>
+                      <button className="btn-primary">
+                        Choose a Plan
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-neutral-600">No subscription data available</p>
+              </div>
+            )}
           </motion.div>
 
           {/* Account Settings */}
