@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
 import DealershipContainer from "@/components/dealership/DealershipContainer";
 import DealershipSkeleton from "@/components/skeletons/Dealership/DealershipSkeleton";
 import Pagination from "@/components/common/Pagination/Pagination";
-import { Building2 } from "lucide-react";
+import InviteDealershipsModal from "@/components/ui/InviteDealershipsModal";
+import { Building2, UserPlus } from "lucide-react";
 import api from "@/lib/api";
 import { useSelector } from "react-redux";
 
@@ -17,6 +18,7 @@ const DealerShips = () => {
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({});
   const [retryCount, setRetryCount] = useState(0);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const { user } = useSelector((state) => state.user);
 
@@ -24,7 +26,7 @@ const DealerShips = () => {
   const maxRetries = 3;
 
   // Error handling utility
-  const handleApiError = (error) => {
+  const handleApiError = useCallback((error) => {
     console.error("API Error:", error);
 
     let errorMessage = "An unexpected error occurred";
@@ -68,7 +70,7 @@ const DealerShips = () => {
     }
 
     return { message: errorMessage, type: errorType };
-  };
+  }, []);
 
   // Transform API data to match component expectations
   const transformDealershipData = (apiData) => {
@@ -130,7 +132,7 @@ const DealerShips = () => {
   };
 
   // Retry function with exponential backoff
-  const retryWithBackoff = async (fn, retries = maxRetries) => {
+  const retryWithBackoff = useCallback(async (fn, retries = maxRetries) => {
     try {
       return await fn();
     } catch (error) {
@@ -150,10 +152,10 @@ const DealerShips = () => {
       }
       throw error;
     }
-  };
+  }, [maxRetries]);
 
   // Fetch dealerships data from API
-  const fetchDealerships = async (page = 1, perPage = 10, isRetry = false) => {
+  const fetchDealerships = useCallback(async (page = 1, perPage = 10, isRetry = false) => {
     try {
       setLoading(true);
       if (!isRetry) {
@@ -195,7 +197,7 @@ const DealerShips = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [retryWithBackoff, handleApiError]);
 
   // Animation variants
   const pageVariants = {
@@ -230,7 +232,7 @@ const DealerShips = () => {
   // Load dealerships data on component mount and when page changes
   useEffect(() => {
     fetchDealerships(currentPage, itemsPerPage);
-  }, [currentPage]);
+  }, [currentPage, fetchDealerships]);
 
   // Handle page change
   const handlePageChange = (page) => {
@@ -266,6 +268,14 @@ const DealerShips = () => {
   const handleDeactivateDealership = (dealershipId) => {
     console.log("Deactivate dealership:", dealershipId);
     // Update dealership status to inactive
+  };
+
+  const handleOpenInviteModal = () => {
+    setIsInviteModalOpen(true);
+  };
+
+  const handleCloseInviteModal = () => {
+    setIsInviteModalOpen(false);
   };
 
   if (loading) {
@@ -321,16 +331,18 @@ const DealerShips = () => {
               </p>
             </div>
           </motion.div>
-          <motion.div
-            className="text-sm text-neutral-500"
+          <motion.button
+            onClick={handleOpenInviteModal}
+            className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.4 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            Showing {(currentPage - 1) * itemsPerPage + 1}-
-            {Math.min(currentPage * itemsPerPage, totalCount)} of {totalCount}{" "}
-            dealerships
-          </motion.div>
+            <UserPlus className="w-4 h-4" />
+            Invite Dealership
+          </motion.button>
         </motion.div>
         <motion.div
           variants={containerVariants}
@@ -555,6 +567,12 @@ const DealerShips = () => {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Invite Dealership Modal */}
+        <InviteDealershipsModal
+          isOpen={isInviteModalOpen}
+          onClose={handleCloseInviteModal}
+        />
       </motion.div>
     </AnimatePresence>
   );
