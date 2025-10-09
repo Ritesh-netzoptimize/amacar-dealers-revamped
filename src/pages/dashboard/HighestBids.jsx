@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import DashboardStats from "@/components/dashboard/DashboardStats/DashboardStats";
@@ -6,11 +6,14 @@ import HighestBidsContainer from "@/components/highest-bids/HighestBidsContainer
 import Pagination from "@/components/common/Pagination/Pagination";
 import FilterTabs from "@/components/filters/LiveAuctionFilterTabs";
 import HighestBidsSkeleton from "@/components/skeletons/HighestBids/HighestBidsSkeleton";
+import HighestBidsCompactSkeleton from "@/components/skeletons/HighestBids/HighestBidsCompactSkeleton";
 import api from "@/lib/api";
+import { useSearch } from "@/context/SearchContext";
 
 const HighestBids = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isFilterLoading, setIsFilterLoading] = useState(false);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeFilter, setActiveFilter] = useState("allTime");
   const [highestBids, setHighestBids] = useState([]);
@@ -18,8 +21,11 @@ const HighestBids = () => {
   const [error, setError] = useState(null);
   const itemsPerPage = 4; // Show 4 vehicles per page
 
+  // Search context
+  const { searchQuery, isSearching, debouncedSearchQuery, clearSearch } = useSearch();
+
   // Transform API data to match component expectations
-  const transformApiData = (apiData) => {
+  const transformApiData = useCallback((apiData) => {
     return apiData.map((item) => {
       const vehicle = item.vehicle;
       const highestBid = item.highest_bid;
@@ -58,31 +64,36 @@ const HighestBids = () => {
         bidderId: highestBid?.bidder?.id || null,
       };
     });
-  };
+  }, []);
 
   // Highest Bids API
-  const getHighestBids = async (page = 1, perPage = 4) => {
+  const getHighestBids = useCallback(async (page = 1, perPage = 4, search = '') => {
     try {
-      const response = await api.get('/highest-bids', {
-        params: {
-          page,
-          per_page: perPage
-        }
-      });
+      const params = {
+        page,
+        per_page: perPage
+      };
+      
+      // Add search parameter if provided
+      if (search && search.trim()) {
+        params.search = search.trim();
+      }
+      
+      const response = await api.get('/highest-bids', { params });
       return response.data;
     } catch (error) {
       console.error('Error fetching highest bids:', error);
       throw error;
     }
-  };
+  }, []);
 
   // Fetch highest bids data from API
-  const fetchHighestBids = async (page = 1, perPage = 4) => {
+  const fetchHighestBids = useCallback(async (page = 1, perPage = 4, search = '') => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const response = await getHighestBids(page, perPage);
+      const response = await getHighestBids(page, perPage, search);
 
       if (response.success) {
         const transformedData = transformApiData(response.data);
@@ -98,10 +109,10 @@ const HighestBids = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [getHighestBids, transformApiData]);
 
   // Filter auctions based on active filter
-  const getFilteredAuctions = () => {
+  const getFilteredAuctions = useCallback(() => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const thisWeek = new Date(
@@ -136,7 +147,7 @@ const HighestBids = () => {
           return true;
       }
     });
-  };
+  }, [highestBids, activeFilter]);
 
   const filteredAuctions = getFilteredAuctions();
 
@@ -145,7 +156,7 @@ const HighestBids = () => {
   const currentAuctions = highestBids;
 
   // Handle filter change with loading simulation
-  const handleFilterChange = async (filterId) => {
+  const handleFilterChange = useCallback(async (filterId) => {
     if (isFilterLoading) return;
 
     setIsFilterLoading(true);
@@ -156,18 +167,37 @@ const HighestBids = () => {
 
     setActiveFilter(filterId);
     setIsFilterLoading(false);
-  };
+  }, [isFilterLoading]);
 
   // Handle page change
-  const handlePageChange = (page) => {
+  const handlePageChange = useCallback((page) => {
     setCurrentPage(page);
-    fetchHighestBids(page, itemsPerPage);
-  };
+    fetchHighestBids(page, itemsPerPage, debouncedSearchQuery);
+  }, [fetchHighestBids, itemsPerPage, debouncedSearchQuery]);
 
-  // Load data on component mount and when page changes
+  // Handle data fetching for search and filter changes
   useEffect(() => {
-    fetchHighestBids(currentPage, itemsPerPage);
-  }, [currentPage]);
+    const fetchData = async () => {
+      setIsSearchLoading(false);
+      setIsLoading(true);
+      
+      // Reset to page 1 when search or filter changes
+      setCurrentPage(1);
+      await fetchHighestBids(1, itemsPerPage, debouncedSearchQuery);
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, [debouncedSearchQuery, activeFilter, fetchHighestBids, itemsPerPage]);
+
+  // Handle search loading state separately
+  useEffect(() => {
+    if (isSearching) {
+      setIsSearchLoading(true);
+    } else {
+      setIsSearchLoading(false);
+    }
+  }, [isSearching]);
 
   // Animation variants
   const containerVariants = {
@@ -247,6 +277,52 @@ const HighestBids = () => {
               isLoading={isFilterLoading}
               className="mb-6"
             />
+
+            {/* Results Count */}
+            <motion.div
+              className="flex items-center justify-between mb-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            >
+              <p className="text-sm text-neutral-600">
+                {searchQuery ? (
+                  <>
+                    Showing {pagination.total || 0} result{(pagination.total || 0) !== 1 ? "s" : ""} for "{searchQuery}"
+                    {activeFilter !== "allTime" && (
+                      <span className="ml-1 text-neutral-500">
+                        (
+                        {activeFilter === "today"
+                          ? "today"
+                          : activeFilter === "thisWeek"
+                          ? "this week"
+                          : activeFilter === "thisMonth"
+                          ? "this month"
+                          : "passed"}
+                        )
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    Showing {pagination.total || 0} highest bid{(pagination.total || 0) !== 1 ? "s" : ""}
+                    {activeFilter !== "allTime" && (
+                      <span className="ml-1 text-neutral-500">
+                        (
+                        {activeFilter === "today"
+                          ? "today"
+                          : activeFilter === "thisWeek"
+                          ? "this week"
+                          : activeFilter === "thisMonth"
+                          ? "this month"
+                          : "passed"}
+                        )
+                      </span>
+                    )}
+                  </>
+                )}
+              </p>
+            </motion.div>
           </motion.div>
 
           {/* Highest Bids Grid */}
@@ -258,22 +334,51 @@ const HighestBids = () => {
                 </div>
                 <div className="text-red-400 text-sm">{error}</div>
                 <button
-                  onClick={() => fetchHighestBids(currentPage, itemsPerPage)}
+                  onClick={() => fetchHighestBids(currentPage, itemsPerPage, debouncedSearchQuery)}
                   className="mt-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
                 >
                   Try Again
                 </button>
               </div>
+            ) : isSearchLoading ? (
+              <HighestBidsCompactSkeleton />
             ) : currentAuctions.length > 0 ? (
               <HighestBidsContainer auctions={currentAuctions} />
             ) : (
-              <div className="text-center py-12">
-                <div className="text-neutral-500 text-lg mb-2">
-                  No highest bids found
+              /* Empty State */
+              <div className="flex flex-col items-center justify-center py-16 px-4">
+                <div className="w-24 h-24 bg-gradient-to-br from-neutral-100 to-neutral-200 rounded-full flex items-center justify-center mb-6">
+                  <svg 
+                    className="w-12 h-12 text-neutral-400" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={1.5} 
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
+                    />
+                  </svg>
                 </div>
-                <div className="text-neutral-400 text-sm">
-                  Try adjusting your filters or check back later
-                </div>
+                <h3 className="text-xl font-semibold text-neutral-900 mb-2">
+                  {searchQuery ? `No results found for "${searchQuery}"` : "No highest bids available"}
+                </h3>
+                <p className="text-neutral-500 text-center max-w-md">
+                  {searchQuery 
+                    ? "Try adjusting your search terms or browse all highest bids."
+                    : "No highest bids found. Check back later for new auction results!"
+                  }
+                </p>
+                {searchQuery && (
+                  <button
+                    onClick={clearSearch}
+                    className="mt-4 px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-200"
+                  >
+                    Clear Search
+                  </button>
+                )}
               </div>
             )}
           </motion.div>
