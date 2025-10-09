@@ -22,7 +22,7 @@ export default function ChangePasswordModal({
   onClose,
 }) {
   const dispatch = useDispatch();
-  const { status, error } = useSelector((state) => state.user);
+  const { error: globalError } = useSelector((state) => state.user);
   
   const [formData, setFormData] = useState({
     email: '',
@@ -40,6 +40,7 @@ export default function ChangePasswordModal({
     new: false,
     confirm: false,
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   // Initialize form data when modal opens
   useEffect(() => {
@@ -58,6 +59,7 @@ export default function ChangePasswordModal({
       setErrors({});
       setPhase('form');
       setIsForgotPasswordMode(false);
+      setIsLoading(false);
       setResetToken(null);
       setShowPasswords({
         current: false,
@@ -146,12 +148,14 @@ export default function ChangePasswordModal({
     console.log("isForgotPasswordMode after validateForm", isForgotPasswordMode);
 
     setPhase('loading');
+    setIsLoading(true);
     
     try {
       if (isForgotPasswordMode && phase === 'forgot') {
         // Handle forgot password
         await dispatch(forgotPassword(formData.email)).unwrap();
         setPhase('verify-otp');
+        setIsLoading(false);
       } else if (phase === 'reset-password') {
         // Handle reset password
         await dispatch(resetPassword({
@@ -161,6 +165,7 @@ export default function ChangePasswordModal({
           confirmPassword: formData.confirmPassword
         })).unwrap();
         setPhase('success');
+        setIsLoading(false);
         toast.success('Password reset successfully!', { duration: 2000 });
         setTimeout(() => {
           onClose();
@@ -175,18 +180,21 @@ export default function ChangePasswordModal({
         
         if (changePassword.fulfilled.match(resultAction)) {
           setPhase('success');
+          setIsLoading(false);
           toast.success('Password changed successfully!', { duration: 2000 });
           setTimeout(() => {
             onClose();
           }, 2000);
         } else {
           setPhase('failed');
+          setIsLoading(false);
           toast.error(resultAction.payload || 'Failed to change password. Please try again.', { duration: 2000 });
         }
       }
       
     } catch (error) {
       setPhase('failed');
+      setIsLoading(false);
       // Extract error message from Axios response
       const errorMessage = error?.response?.data?.message || error?.message || 'An error occurred. Please try again.';
       toast.error(errorMessage, { duration: 3000 });
@@ -198,12 +206,15 @@ export default function ChangePasswordModal({
     if (!validateOtp()) return;
 
     setPhase('loading');
+    setIsLoading(true);
     try {
       const token = await dispatch(verifyOTP({ email: formData.email, otp: formData.otp })).unwrap();
       setResetToken(token);
       setPhase('reset-password');
+      setIsLoading(false);
     } catch (error) {
       setPhase('verify-otp');
+      setIsLoading(false);
       // Extract error message from Axios response
       const errorMessage = error?.response?.data?.message || error?.message || 'Wrong OTP. Please try again.';
       setErrors(prev => ({ ...prev, otp: errorMessage }));
@@ -212,7 +223,7 @@ export default function ChangePasswordModal({
   };
 
   const handleModalClose = (open) => {
-    if (!open && phase !== 'loading' && phase !== 'verify-otp') {
+    if (!open && phase !== 'loading' && phase !== 'verify-otp' && !isLoading) {
       onClose();
     }
   };
@@ -221,6 +232,7 @@ export default function ChangePasswordModal({
     setPhase('form');
     setErrors({});
     setIsForgotPasswordMode(false);
+    setIsLoading(false);
     setResetToken(null);
   };
 

@@ -229,7 +229,7 @@ const Profile = () => {
     },
   };
 
-  if (loading || status === 'loading') {
+  if (loading ) {
     return <ProfileSkeleton />;
   }
   

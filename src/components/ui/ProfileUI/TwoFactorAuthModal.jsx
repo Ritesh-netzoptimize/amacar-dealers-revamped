@@ -27,13 +27,14 @@ export default function TwoFactorAuthModal({
   isEnabled = true,
 }) {
   const dispatch = useDispatch();
-  const { status } = useSelector((state) => state.user);
+  const { error: globalError } = useSelector((state) => state.user);
   
   const [phase, setPhase] = useState('confirmation'); // confirmation | loading | success | error
   const [error, setError] = useState('');
   const [initialIsEnabled, setInitialIsEnabled] = useState(isEnabled);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const isCloseDisabled = phase === 'loading';
+  const isCloseDisabled = phase === 'loading' || isLoading;
   
   // Update initial state when modal opens
   useEffect(() => {
@@ -41,6 +42,7 @@ export default function TwoFactorAuthModal({
       setInitialIsEnabled(isEnabled);
       setPhase('confirmation');
       setError('');
+      setIsLoading(false);
     }
   }, [isOpen]); // Remove isEnabled dependency to prevent reset during modal lifecycle
   
@@ -50,6 +52,7 @@ export default function TwoFactorAuthModal({
 
   const handleConfirm = async () => {
     setPhase('loading');
+    setIsLoading(true);
     setError('');
     
     try {
@@ -71,25 +74,29 @@ export default function TwoFactorAuthModal({
         setTimeout(() => {
           onClose();
           setPhase('confirmation');
+          setIsLoading(false);
         }, 2000);
       } else {
         setPhase('error');
         const errorMessage = resultAction.payload || 'Failed to update 2FA settings';
         setError(errorMessage);
         toast.error(errorMessage, { duration: 3000 });
+        setIsLoading(false);
       }
     } catch (error) {
       setPhase('error');
       const errorMessage = error?.response?.data?.message || error?.message || 'An error occurred';
       setError(errorMessage);
       toast.error(errorMessage, { duration: 3000 });
+      setIsLoading(false);
     }
   };
 
   const handleCancel = () => {
-    if (phase !== 'loading') {
+    if (phase !== 'loading' && !isLoading) {
       setPhase('confirmation');
       setError('');
+      setIsLoading(false);
       onClose();
     }
   };
@@ -97,6 +104,7 @@ export default function TwoFactorAuthModal({
   const handleRetry = () => {
     setPhase('confirmation');
     setError('');
+    setIsLoading(false);
   };
 
   const handleModalClose = (open) => {
