@@ -284,9 +284,9 @@ export const getInvitations = async (page = 1, perPage = 20) => {
   }
 };
 
-export const resendInvitation = async (invitationId) => {
+export const resendInvitation = async (token) => {
   try {
-    const response = await api.post(`/dealers/invitations/${invitationId}/resend`);
+    const response = await api.post(`/dealers/invitations/${token}/resend`);
     return response.data;
   } catch (error) {
     console.error('Error resending invitation:', error);
@@ -294,9 +294,9 @@ export const resendInvitation = async (invitationId) => {
   }
 };
 
-export const cancelInvitation = async (invitationId) => {
+export const cancelInvitation = async (token) => {
   try {
-    const response = await api.delete(`/dealers/invitations/${invitationId}`);
+    const response = await api.delete(`/dealers/invitations/${token}/cancel`);
     return response.data;
   } catch (error) {
     console.error('Error canceling invitation:', error);

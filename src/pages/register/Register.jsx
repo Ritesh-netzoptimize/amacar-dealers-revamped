@@ -5,6 +5,7 @@ import ProgressStepper from '../../components/register/ProgressStepper';
 import DealershipInfo from '../../components/register/DealershipInfo';
 import ContactInfo from '../../components/register/ContactInfo';
 import PaymentSetup from '../../components/register/PaymentSetup';
+import InvitationErrorDialog from '../../components/ui/InvitationErrorDialog';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../../lib/api';
 
@@ -24,6 +25,7 @@ const Register = () => {
   const [invitationLoading, setInvitationLoading] = useState(false);
   const [invitationError, setInvitationError] = useState(null);
   const [isInvitedUser, setIsInvitedUser] = useState(false);
+  const [errorContext, setErrorContext] = useState(null); // Store additional context for errors
   
   const [formData, setFormData] = useState({
     // Dealership Info
@@ -76,6 +78,7 @@ const Register = () => {
   const fetchInvitationData = useCallback(async (invitationCode) => {
     setInvitationLoading(true);
     setInvitationError(null);
+    setErrorContext(null);
     
     try {
       const response = await api.get(`/invitations/${invitationCode}`);
@@ -107,12 +110,38 @@ const Register = () => {
     } catch (error) {
       console.error('Error fetching invitation:', error);
       
-      if (error.response?.status === 404) {
-        setInvitationError('Invitation not found or has expired.');
+      // Handle specific error messages from API response
+      if (error.response?.data?.message) {
+        const errorMessage = error.response.data.message.toLowerCase();
+        
+        if (errorMessage.includes('already been used') || errorMessage.includes('already used')) {
+          setInvitationError('already_used');
+          setErrorContext({ type: 'already_used', invitationCode });
+        } else if (errorMessage.includes('expired') || errorMessage.includes('expire')) {
+          setInvitationError('expired');
+          setErrorContext({ type: 'expired', invitationCode });
+        } else if (errorMessage.includes('invalid') || errorMessage.includes('not valid')) {
+          setInvitationError('invalid');
+          setErrorContext({ type: 'invalid', invitationCode });
+        } else if (errorMessage.includes('not found') || errorMessage.includes('does not exist')) {
+          setInvitationError('not_found');
+          setErrorContext({ type: 'not_found', invitationCode });
+        } else {
+          setInvitationError('generic');
+          setErrorContext({ type: 'generic', invitationCode });
+        }
+      } else if (error.response?.status === 404) {
+        setInvitationError('not_found');
+        setErrorContext({ type: 'not_found', invitationCode });
       } else if (error.response?.status === 400) {
-        setInvitationError('Invalid invitation code.');
+        setInvitationError('invalid');
+        setErrorContext({ type: 'invalid', invitationCode });
+      } else if (error.response?.status === 403) {
+        setInvitationError('already_used'); // 403 might indicate already used
+        setErrorContext({ type: 'already_used', invitationCode });
       } else {
-        setInvitationError('Failed to load invitation. Please try again.');
+        setInvitationError('generic');
+        setErrorContext({ type: 'generic', invitationCode });
       }
     } finally {
       setInvitationLoading(false);
@@ -142,6 +171,23 @@ const Register = () => {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   }, [errors]);
+
+  // Dialog handlers
+  const handleCloseErrorDialog = () => {
+    setInvitationError(null);
+    setErrorContext(null);
+  };
+
+  const handleRetryInvitation = () => {
+    const invitationCode = getInvitationCode();
+    if (invitationCode) {
+      fetchInvitationData(invitationCode);
+    }
+  };
+
+  const handleNavigateToRegister = () => {
+    navigate('/register');
+  };
 
   // Check for registration completion and redirect
   React.useEffect(() => {
@@ -335,22 +381,6 @@ const Register = () => {
         </div>
       )}
 
-      {invitationError && (
-        <div className="bg-red-50 border-b border-red-200">
-          <div className="max-w-7xl mx-auto px-4 py-3">
-            <div className="flex items-center justify-center space-x-2">
-              <AlertCircle className="w-4 h-4 text-red-500" />
-              <span className="text-red-700 text-sm font-medium">{invitationError}</span>
-              <button
-                onClick={() => navigate('/register')}
-                className="text-red-600 hover:text-red-800 text-sm underline ml-2"
-              >
-                Continue with normal registration
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {isInvitedUser && invitationData && (
         <div className="bg-green-50 border-b border-green-200">
@@ -358,7 +388,7 @@ const Register = () => {
             <div className="flex items-center justify-center space-x-2">
               <UserPlus className="w-4 h-4 text-green-500" />
               <span className="text-green-700 text-sm font-medium">
-                You were invited by <strong>{invitationData.dealership_name}</strong>
+                You were invited by <strong>Amacar sales manager</strong>
               </span>
             </div>
           </div>
@@ -585,6 +615,16 @@ const Register = () => {
           </div>
         </div>
       </div>
+
+      {/* Invitation Error Dialog */}
+      <InvitationErrorDialog
+        isOpen={!!invitationError}
+        onClose={handleCloseErrorDialog}
+        errorType={invitationError}
+        errorContext={errorContext}
+        onRetry={handleRetryInvitation}
+        onNavigateToRegister={handleNavigateToRegister}
+      />
 
     </div>
   );

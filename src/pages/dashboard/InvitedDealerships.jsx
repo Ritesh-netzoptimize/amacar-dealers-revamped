@@ -5,6 +5,7 @@ import DealershipContainer from "@/components/dealership/DealershipContainer";
 import DealershipSkeleton from "@/components/skeletons/Dealership/DealershipSkeleton";
 import Pagination from "@/components/common/Pagination/Pagination";
 import InviteDealershipsModal from "@/components/ui/InviteDealershipsModal";
+import ResendAndCancelInvitationModal from "@/components/ui/ResendAndCancelInvitationModal";
 import { Building2, UserPlus, Mail, Clock, CheckCircle, XCircle } from "lucide-react";
 import { getInvitations, resendInvitation, cancelInvitation } from "@/lib/api";
 import { useSelector } from "react-redux";
@@ -19,6 +20,12 @@ const InvitedDealerships = () => {
   const [pagination, setPagination] = useState({});
   const [retryCount, setRetryCount] = useState(0);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  
+  // Confirmation modal state
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [confirmationAction, setConfirmationAction] = useState(null); // 'resend' or 'cancel'
+  const [selectedInvitation, setSelectedInvitation] = useState(null);
+  const [isActionLoading, setIsActionLoading] = useState(false);
 
   const { user } = useSelector((state) => state.user);
 
@@ -106,7 +113,8 @@ const InvitedDealerships = () => {
         expiresAt: item.expires_at,
         acceptedAt: item.accepted_at,
         isExpired: isExpired,
-        invitationId: item.id
+        invitationId: item.id,
+        token: item.token // Add token field for API calls
       };
     });
   };
@@ -225,36 +233,59 @@ const InvitedDealerships = () => {
     // Navigate to invitation details page
   };
 
-  const handleResendInvitation = async (invitationId) => {
-    try {
-      const response = await resendInvitation(invitationId);
-      if (response.success) {
-        toast.success("Invitation resent successfully!");
-        // Refresh the data
-        fetchInvitations(currentPage, itemsPerPage);
-      } else {
-        toast.error(response.message || "Failed to resend invitation");
-      }
-    } catch (error) {
-      console.error("Error resending invitation:", error);
-      toast.error("Failed to resend invitation. Please try again.");
+  const handleResendInvitation = (invitationId) => {
+    const invitation = invitations.find(inv => inv.invitationId === invitationId);
+    if (invitation) {
+      setSelectedInvitation(invitation);
+      setConfirmationAction('resend');
+      setIsConfirmationModalOpen(true);
     }
   };
 
-  const handleCancelInvitation = async (invitationId) => {
+  const handleCancelInvitation = (invitationId) => {
+    const invitation = invitations.find(inv => inv.invitationId === invitationId);
+    if (invitation) {
+      setSelectedInvitation(invitation);
+      setConfirmationAction('cancel');
+      setIsConfirmationModalOpen(true);
+    }
+  };
+
+  const handleConfirmAction = async () => {
+    if (!selectedInvitation || !confirmationAction) return;
+
+    setIsActionLoading(true);
     try {
-      const response = await cancelInvitation(invitationId);
-      if (response.success) {
-        toast.success("Invitation canceled successfully!");
-        // Refresh the data
-        fetchInvitations(currentPage, itemsPerPage);
+      let response;
+      if (confirmationAction === 'resend') {
+        response = await resendInvitation(selectedInvitation.token);
       } else {
-        toast.error(response.message || "Failed to cancel invitation");
+        response = await cancelInvitation(selectedInvitation.token);
+      }
+
+      if (response.success) {
+        const actionText = confirmationAction === 'resend' ? 'resent' : 'canceled';
+        toast.success(`Invitation ${actionText} successfully!`);
+        fetchInvitations(currentPage, itemsPerPage);
+        handleCloseConfirmationModal();
+      } else {
+        const actionText = confirmationAction === 'resend' ? 'resend' : 'cancel';
+        toast.error(response.message || `Failed to ${actionText} invitation`);
       }
     } catch (error) {
-      console.error("Error canceling invitation:", error);
-      toast.error("Failed to cancel invitation. Please try again.");
+      console.error(`Error ${confirmationAction}ing invitation:`, error);
+      const actionText = confirmationAction === 'resend' ? 'resend' : 'cancel';
+      toast.error(`Failed to ${actionText} invitation. Please try again.`);
+    } finally {
+      setIsActionLoading(false);
     }
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setIsConfirmationModalOpen(false);
+    setConfirmationAction(null);
+    setSelectedInvitation(null);
+    setIsActionLoading(false);
   };
 
   const handleOpenInviteModal = () => {
@@ -517,6 +548,16 @@ const InvitedDealerships = () => {
             handleCloseInviteModal();
             fetchInvitations(currentPage, itemsPerPage);
           }}
+        />
+
+        {/* Confirmation Modal */}
+        <ResendAndCancelInvitationModal
+          isOpen={isConfirmationModalOpen}
+          onClose={handleCloseConfirmationModal}
+          onConfirm={handleConfirmAction}
+          actionType={confirmationAction}
+          dealershipName={selectedInvitation?.name || ''}
+          isLoading={isActionLoading}
         />
       </motion.div>
     </AnimatePresence>
