@@ -8,6 +8,7 @@ import EditProfileModal from "@/components/ui/ProfileUI/EditProfileModal";
 import ProfileSkeleton from "@/components/skeletons/Profile/ProfileSkeleton";
 import toast from "react-hot-toast";
 import ChangePasswordModal from "@/components/ui/ProfileUI/ChangePasswrdModa";
+import TwoFactorAuthModal from "@/components/ui/ProfileUI/TwoFactorAuthModal";
 // import ChangePasswordModal from "@/components/ui/ChangePasswordModal";
 // import TwoFactorAuthModal from "@/components/ui/TwoFactorAuthModal";
 
@@ -43,13 +44,14 @@ const Profile = () => {
   const [editData, setEditData] = useState({ ...profile });
 
   // Get 2FA status from user data
-  const isTwoFactorEnabled = user?.two_fa === 'enabled' || user?.two_fa === true || user?.two_fa === 1;
+  const isTwoFactorEnabled = user?.two_fa === 'enabled' || user?.two_fa === true || user?.two_fa === 1 || user?.requires_2fa === 'enabled' || user?.requires_2fa === true || user?.requires_2fa === 1;
 
   // Load user data from Redux state and fetch profile info
   useEffect(() => {
     console.log("uploadProfilePictureLoading", uploadProfilePictureLoading)
     console.log("removeProfilePictureLoading", removeProfilePictureLoading)
-  }, [uploadProfilePictureLoading, removeProfilePictureLoading])
+    console.log("user", user)
+  }, [uploadProfilePictureLoading, removeProfilePictureLoading, user])
   useEffect(() => {
     console.log("profile page user data: ", user);
     
@@ -754,12 +756,12 @@ const Profile = () => {
       />
 
       {/* Two-Factor Authentication Modal */}
-      {/* <TwoFactorAuthModal
+      <TwoFactorAuthModal
         isOpen={showTwoFactorModal}
         onClose={() => setShowTwoFactorModal(false)}
         onSuccess={handleTwoFactorSuccess}
         isEnabled={isTwoFactorEnabled}
-      /> */}
+      />
     </div>
   );
 };
