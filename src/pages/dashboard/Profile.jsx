@@ -1,20 +1,22 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { User, Mail, Phone, MapPin, Edit3, Key, CreditCard, Calendar, DollarSign, Settings } from "lucide-react";
+import { User, Mail, Phone, MapPin, Edit3, Key, CreditCard, Calendar, DollarSign, Settings, Camera, X } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
-import { loadUser, fetchProfileInfo, fetchSubscriptionStatus, fetchBillingInfo } from "@/redux/slices/userSlice";
+import { loadUser, fetchProfileInfo, fetchSubscriptionStatus, fetchBillingInfo, uploadProfilePicture, removeProfilePicture } from "@/redux/slices/userSlice";
 
 import EditProfileModal from "@/components/ui/ProfileUI/EditProfileModal";
 import ProfileSkeleton from "@/components/skeletons/Profile/ProfileSkeleton";
+import toast from "react-hot-toast";
 // import ChangePasswordModal from "@/components/ui/ChangePasswordModal";
 // import TwoFactorAuthModal from "@/components/ui/TwoFactorAuthModal";
 
 const Profile = () => {
   const dispatch = useDispatch();
-  const { user, loading, status, error, subscription, subscriptionLoading, subscriptionError, billing, billingLoading, billingError } = useSelector((state) => state.user);
+  const { user, loading, status, error, subscription, subscriptionLoading, subscriptionError, billing, billingLoading, billingError, uploadProfilePictureLoading, uploadProfilePictureError, removeProfilePictureLoading, removeProfilePictureError } = useSelector((state) => state.user);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [showTwoFactorModal, setShowTwoFactorModal] = useState(false);
+  const [isHoveringAvatar, setIsHoveringAvatar] = useState(false);
 
   // Default profile data structure
   const defaultProfile = {
@@ -43,6 +45,10 @@ const Profile = () => {
   const isTwoFactorEnabled = user?.two_fa === 'enabled' || user?.two_fa === true || user?.two_fa === 1;
 
   // Load user data from Redux state and fetch profile info
+  useEffect(() => {
+    console.log("uploadProfilePictureLoading", uploadProfilePictureLoading)
+    console.log("removeProfilePictureLoading", removeProfilePictureLoading)
+  }, [uploadProfilePictureLoading, removeProfilePictureLoading])
   useEffect(() => {
     console.log("profile page user data: ", user);
     
@@ -114,6 +120,92 @@ const Profile = () => {
     dispatch(loadUser());
   };
 
+  // Handle profile picture upload
+  const handleProfilePictureUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Please select JPG, PNG, or GIF images only');
+        return;
+      }
+      
+      // Validate file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Image size should be less than 2MB');
+        return;
+      }
+
+      // Create preview URL for immediate UI update
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Update profile with new image preview
+        const newProfile = {
+          ...profile,
+          profile_picture: {
+            url: e.target.result,
+            file: file
+          }
+        };
+        setProfile(newProfile);
+      };
+      reader.readAsDataURL(file);
+
+      // Upload to server
+      try {
+        const result = await dispatch(uploadProfilePicture(file)).unwrap();
+        console.log('Profile picture uploaded successfully:', result);
+        toast.success("Image uploaded successfully")
+        
+        // Update profile with server response
+        const newProfile = {
+          ...profile,
+          profile_picture: {
+            id: result.attachment_id,
+            url: result.url
+          }
+        };
+        setProfile(newProfile);
+      } catch (error) {
+        console.error('Failed to upload profile picture:', error);
+        // Revert to original profile picture on error
+        if (user?.profile_picture?.url) {
+          const revertedProfile = {
+            ...profile,
+            profile_picture: {
+              id: user.profile_picture.id,
+              url: user.profile_picture.url
+            }
+          };
+          setProfile(revertedProfile);
+        }
+      }
+    }
+  };
+
+  // Handle profile picture removal
+  const handleProfilePictureRemove = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      const result = await dispatch(removeProfilePicture()).unwrap();
+      console.log('Profile picture removed successfully:', result);
+      toast.success("Profile picture removed successfully");
+      
+      // Update profile to remove picture
+      const newProfile = {
+        ...profile,
+        profile_picture: null
+      };
+      setProfile(newProfile);
+    } catch (error) {
+      console.error('Failed to remove profile picture:', error);
+      toast.error(error || 'Failed to remove profile picture');
+    }
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -137,6 +229,7 @@ const Profile = () => {
   if (loading || status === 'loading') {
     return <ProfileSkeleton />;
   }
+  
 
   if (error) {
     return (
@@ -159,6 +252,8 @@ const Profile = () => {
       </div>
     );
   }
+
+ 
 
   return (
     <div className="mt-8 md:mt-6 lg:mt-20 min-h-screen bg-gradient-hero p-4 sm:p-6 lg:p-8">
@@ -186,17 +281,63 @@ const Profile = () => {
             {/* Profile Picture */}
             <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
               <div className="relative flex justify-center sm:justify-start">
-                {profile.profile_picture?.url ? (
-                  <img
-                    src={profile.profile_picture.url}
-                    alt="Profile"
-                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-2 border-primary-200"
+                <div 
+                  className="relative cursor-pointer group"
+                  onMouseEnter={() => setIsHoveringAvatar(true)}
+                  onMouseLeave={() => setIsHoveringAvatar(false)}
+                  onClick={profile.profile_picture?.url ? handleProfilePictureRemove : () => document.getElementById('profile-picture-input').click()}
+                >
+                  <input
+                    id="profile-picture-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleProfilePictureUpload}
+                    className="hidden"
                   />
-                ) : (
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary-100 rounded-full flex items-center justify-center">
-                    <User className="w-10 h-10 sm:w-12 sm:h-12 text-primary-600" />
+                  
+                  {profile.profile_picture?.url ? (
+                    <div className="relative">
+                      <img
+                        src={profile.profile_picture.url}
+                        alt="Profile"
+                        className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-2 border-primary-200 transition-all duration-300 group-hover:border-primary-400"
+                      />
+                      {/* Hover Overlay */}
+                      <div className={`absolute inset-0 rounded-full bg-[var(--brand-orange)] bg-opacity-50 flex items-center justify-center transition-all duration-300 ${
+                        isHoveringAvatar ? 'opacity-100' : 'opacity-0'
+                      }`}>
+                        <X className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary-100 rounded-full flex items-center justify-center transition-all duration-300 group-hover:bg-primary-200">
+                        <User className="w-10 h-10 sm:w-12 sm:h-12 text-primary-600" />
+                      </div>
+                      {/* Hover Overlay */}
+                      <div className={`absolute inset-0 rounded-full bg-[var(--brand-orange)] bg-opacity-50 flex items-center justify-center transition-all duration-300 ${
+                        isHoveringAvatar ? 'opacity-100' : 'opacity-0'
+                      }`}>
+                        <Camera className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Upload/Remove indicator */}
+                  <div className={`absolute -bottom-1 -right-1 w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    uploadProfilePictureLoading || removeProfilePictureLoading
+                      ? 'bg-orange-500 animate-pulse' 
+                      : 'bg-primary-600'
+                  } ${isHoveringAvatar ? 'scale-110' : 'scale-100'}`}>
+                    {uploadProfilePictureLoading || removeProfilePictureLoading ? (
+                      <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : profile.profile_picture?.url ? (
+                      <X className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                    ) : (
+                      <Camera className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                    )}
                   </div>
-                )}
+                </div>
               </div>
               <div className="text-center sm:text-left">
                 <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-neutral-800">
@@ -214,6 +355,11 @@ const Profile = () => {
                     {profile.company}
                   </p>
                 )}
+                {(uploadProfilePictureError || removeProfilePictureError) && (
+                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+                    <p className="text-sm text-red-600">{uploadProfilePictureError || removeProfilePictureError}</p>
+                  </div>
+                )}
                 <div className="flex items-center gap-2 mt-2">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                     profile.user_status === 'approved' 
@@ -222,13 +368,7 @@ const Profile = () => {
                   }`}>
                     {profile.user_status || 'Pending'}
                   </span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    profile.account_status === 'active' 
-                      ? 'bg-blue-100 text-blue-800' 
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {profile.account_status || 'Inactive'}
-                  </span>
+                  
                 </div>
               </div>
             </div>

@@ -24,7 +24,7 @@ export default function EditProfileModal({
   const { status, error } = useSelector((state) => state.user);
   const { locationStatus } = useSelector((state) => state.user);
   const {user} = useSelector((state) => state.user);
-  const location = user.meta;
+  const location = user?.meta;
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',

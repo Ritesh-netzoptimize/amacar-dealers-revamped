@@ -352,6 +352,63 @@ export const fetchBillingInfo = createAsyncThunk(
   }
 );
 
+// Upload profile picture
+export const uploadProfilePicture = createAsyncThunk(
+  'user/uploadProfilePicture',
+  async (file, { rejectWithValue }) => {
+    try {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        return rejectWithValue('Invalid file type. Please upload JPG, PNG, or GIF images only.');
+      }
+      
+      // Validate file size (2MB max)
+      if (file.size > 2 * 1024 * 1024) {
+        return rejectWithValue('File size too large. Please upload images smaller than 2MB.');
+      }
+
+      // Create FormData
+      const formData = new FormData();
+      formData.append('profile_picture', file);
+      console.log("profile page", formData)
+      const response = await api.post('/profile/picture', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log("response", response) 
+      if (response.data.success) {
+        return response.data;
+      } else {
+        return rejectWithValue(response.data.message || 'Failed to upload profile picture');
+      }
+    } catch (error) {
+      console.error('Profile picture upload error:', error.response?.data || error.message);
+      return rejectWithValue(error.response?.data?.message || 'Failed to upload profile picture');
+    }
+  }
+);
+
+// Remove profile picture
+export const removeProfilePicture = createAsyncThunk(
+  'user/removeProfilePicture',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.delete('/profile/picture');
+      
+      if (response.data.success) {
+        return response.data.data;
+      } else {
+        return rejectWithValue(response.data.message || 'Failed to remove profile picture');
+      }
+    } catch (error) {
+      console.error('Profile picture removal error:', error.response?.data || error.message);
+      return rejectWithValue(error.response?.data?.message || 'Failed to remove profile picture');
+    }
+  }
+);
+
 
 const userSlice = createSlice({
   name: 'user',
@@ -371,6 +428,10 @@ const userSlice = createSlice({
     billing: null,
     billingLoading: false,
     billingError: null,
+    uploadProfilePictureLoading: false,
+    uploadProfilePictureError: null,
+    removeProfilePictureLoading: false,
+    removeProfilePictureError: null,
     form: {
       values: {},
       errors: {},
@@ -708,6 +769,41 @@ const userSlice = createSlice({
       .addCase(fetchBillingInfo.rejected, (state, action) => {
         state.billingLoading = false;
         state.billingError = action.payload;
+      })
+      .addCase(uploadProfilePicture.pending, (state) => {
+        state.uploadProfilePictureLoading = true;
+        state.uploadProfilePictureError = null;
+      })
+      .addCase(uploadProfilePicture.fulfilled, (state, action) => {
+        state.uploadProfilePictureLoading = false;
+        state.uploadProfilePictureError = null;
+        // Update user profile with new picture URL
+        if (state.user) {
+          state.user.profile_picture = {
+            id: action?.payload?.attachment_id,
+            url: action?.payload?.url
+          };
+        }
+      })
+      .addCase(uploadProfilePicture.rejected, (state, action) => {
+        state.uploadProfilePictureLoading = false;
+        state.uploadProfilePictureError = action.payload;
+      })
+      .addCase(removeProfilePicture.pending, (state) => {
+        state.removeProfilePictureLoading = true;
+        state.removeProfilePictureError = null;
+      })
+      .addCase(removeProfilePicture.fulfilled, (state, action) => {
+        state.removeProfilePictureLoading = false;
+        state.removeProfilePictureError = null;
+        // Remove profile picture from user data
+        if (state.user) {
+          state.user.profile_picture = null;
+        }
+      })
+      .addCase(removeProfilePicture.rejected, (state, action) => {
+        state.removeProfilePictureLoading = false;
+        state.removeProfilePictureError = action.payload;
       })
   },
 });
