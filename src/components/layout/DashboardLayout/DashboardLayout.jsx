@@ -48,7 +48,7 @@ const DashboardLayout = ({ children }) => {
 
   // Check if search bar should be hidden
   const shouldHideSearchBar = () => {
-    return location.pathname === '/dashboard' || location.pathname === '/appointments' || location.pathname === '/profile' || location.pathname === '/car-details';
+    return location.pathname === '/dashboard' || location.pathname === '/appointments' || location.pathname === '/profile' || location.pathname === '/car-details' || location.pathname === '/dealerships' || location.pathname === '/reports' || location.pathname === '/new-customers' || location.pathname === '/active-customers';
   };
 
   const toggleSidebar = () => {
