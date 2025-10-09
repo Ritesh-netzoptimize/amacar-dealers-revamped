@@ -148,6 +148,14 @@ const Reports = () => {
           </motion.p>
         </motion.div>
 
+         {/* Statistics Cards */}
+         <motion.div variants={statsVariants}>
+          <ReportStats 
+            startDate={dateRange.startDate}
+            endDate={dateRange.endDate}
+          />
+        </motion.div>
+
         {/* Global Date Range Filter */}
         <motion.div variants={statsVariants}>
           <ReportsGlobalFilter
@@ -159,13 +167,7 @@ const Reports = () => {
           />
         </motion.div>
 
-        {/* Statistics Cards */}
-        <motion.div variants={statsVariants}>
-          <ReportStats 
-            startDate={dateRange.startDate}
-            endDate={dateRange.endDate}
-          />
-        </motion.div>
+       
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
           {/* Pie chart section */}

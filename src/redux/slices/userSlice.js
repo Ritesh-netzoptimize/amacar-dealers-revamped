@@ -44,11 +44,58 @@ export const loginUser = createAsyncThunk(
 
 export const registerUser = createAsyncThunk(
   "user/register",
-  async (data, { rejectWithValue }) => {
+  async (registrationData, { rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/register", data);
+      // Format and validate data before sending
+      const formatDealerCode = (code) => {
+        // Remove spaces and special characters, keep only letters, numbers, hyphens, and underscores
+        return code.replace(/[^a-zA-Z0-9\-_]/g, '').toUpperCase();
+      };
+
+      const formatMobileNumber = (number) => {
+        // Remove all non-numeric characters
+        return number.replace(/\D/g, '');
+      };
+
+      const formattedData = {
+        setup_intent_id: registrationData.setupIntentId,
+        customer_id: registrationData.customerId,
+        dealer_code: formatDealerCode(registrationData.dealerCode),
+        dealership_name: registrationData.dealershipName,
+        dealership_website: registrationData.website,
+        dealer_group: registrationData.dealerGroup,
+        job_position: registrationData.jobPosition,
+        zipcode: registrationData.zipCode,
+        city: registrationData.city,
+        state: registrationData.state,
+        first_name: registrationData.firstName,
+        last_name: registrationData.lastName,
+        mobile_number: formatMobileNumber(registrationData.mobileNumber),
+        business_email: registrationData.businessEmail,
+        password: registrationData.password,
+        confirm_password: registrationData.confirmPassword,
+        terms_accepted: registrationData.agreementAccepted,
+        platform_choice: "7-day-trial",
+        invite_token: registrationData.inviteToken || null
+      };
+
+      // Validate required fields before sending
+      if (!formattedData.dealer_code) {
+        throw new Error("Dealer code is required and cannot be empty after formatting");
+      }
+      
+      if (!formattedData.mobile_number || formattedData.mobile_number.length < 10) {
+        throw new Error("Valid mobile number is required (at least 10 digits)");
+      }
+
+      console.log("Completing registration with data:", formattedData);
+      
+      const response = await api.post("/registration/complete-registration", formattedData);
+      
       if (response.data.success) {
-        // Store user data and token
+        console.log("Registration completed successfully:", response.data);
+        
+        // Store user data and token if provided
         if (response.data.user) {
           localStorage.setItem("authUser", JSON.stringify(response.data.user));
         }
@@ -58,21 +105,41 @@ export const registerUser = createAsyncThunk(
           );
           Cookies.set("authToken", response.data.token, {
             expires: expirationDate,
-            secure: true,
-            sameSite: "strict",
+            // secure: true,
+            // sameSite: "strict",
           });
         }
         if (response.data.expires_in) {
           const expirationTime = Date.now() + response.data.expires_in * 1000;
           localStorage.setItem("authExpiration", expirationTime);
         }
-        return response.data; // { user, token, expires_in }
+        
+        return response.data; // { user, token, expires_in, success, message }
+      } else {
+        throw new Error(response.data.message || "Registration failed");
       }
-      return rejectWithValue(response.data.message || "Registration failed");
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Registration failed"
-      );
+      console.error("Registration completion error:", error);
+      
+      // Handle validation errors specifically
+      if (error.response?.data?.code === 'rest_invalid_param') {
+        const validationErrors = error.response.data.details;
+        const errorMessages = [];
+        
+        Object.keys(validationErrors).forEach(field => {
+          errorMessages.push(`${field}: ${validationErrors[field].message}`);
+        });
+        
+        return rejectWithValue(
+          `Validation errors: ${errorMessages.join(', ')}`
+        );
+      } else {
+        return rejectWithValue(
+          error.response?.data?.message || 
+          error.message || 
+          "Failed to complete registration. Please contact support."
+        );
+      }
     }
   }
 );
@@ -530,6 +597,8 @@ const userSlice = createSlice({
     },
     error: null,
     status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
+    registrationStatus: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
+    registrationError: null,
   },
   reducers: {
     setFormValue: (state, action) => {
@@ -632,17 +701,17 @@ const userSlice = createSlice({
       })
       // Register
       .addCase(registerUser.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
+        state.registrationStatus = "loading";
+        state.registrationError = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.registrationStatus = "succeeded";
         state.user = action.payload.user;
         // Token and user data are already stored in the thunk
       })
       .addCase(registerUser.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
+        state.registrationStatus = "failed";
+        state.registrationError = action.payload;
       })
       // Forgot Password
       .addCase(forgotPassword.pending, (state) => {

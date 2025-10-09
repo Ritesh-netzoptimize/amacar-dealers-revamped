@@ -1,11 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, AlertCircle, UserPlus } from 'lucide-react';
 import ProgressStepper from '../../components/register/ProgressStepper';
 import DealershipInfo from '../../components/register/DealershipInfo';
 import ContactInfo from '../../components/register/ContactInfo';
 import PaymentSetup from '../../components/register/PaymentSetup';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import api from '../../lib/api';
 
 const steps = [
   { id: 1, title: 'Dealership Info', description: 'Complete dealership and contact details' },
@@ -16,6 +17,14 @@ const steps = [
 const Register = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Invitation state
+  const [invitationData, setInvitationData] = useState(null);
+  const [invitationLoading, setInvitationLoading] = useState(false);
+  const [invitationError, setInvitationError] = useState(null);
+  const [isInvitedUser, setIsInvitedUser] = useState(false);
+  
   const [formData, setFormData] = useState({
     // Dealership Info
     dealerCode: '',
@@ -53,11 +62,76 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Extract invitation code from URL
+  const getInvitationCode = useCallback(() => {
+    console.log('location', location);  
+    const path = location.pathname;
+    console.log("path", path)
+    // path is path /register/axMZSVZ4Fq8Cs788Mznr6sW6p5ey3XUn so do accordingly
+    const invitationMatch = path.match(/\/register\/([^/]+)/);
+    return invitationMatch ? invitationMatch[1] : null;
+  }, [location]);
+
+  // Fetch invitation data
+  const fetchInvitationData = useCallback(async (invitationCode) => {
+    setInvitationLoading(true);
+    setInvitationError(null);
+    
+    try {
+      const response = await api.get(`/invitations/${invitationCode}`);
+      
+      if (response.data.success && response.data.invitation) {
+        const invitation = response.data.invitation;
+        
+        // Check if invitation is still pending
+        if (invitation.status !== 'pending') {
+          setInvitationError('This invitation has expired or is no longer valid.');
+          return;
+        }
+        
+        setInvitationData(invitation);
+        setIsInvitedUser(true);
+        
+        // Prefill form data with invitation data
+        setFormData(prev => ({
+          ...prev,
+          dealerCode: invitation.dealer_code || '',
+          dealershipName: invitation.dealership_name || '',
+          businessEmail: invitation.email || '',
+          firstName: invitation.first_name || '',
+          lastName: invitation.last_name || '',
+        }));
+      } else {
+        setInvitationError('Invalid invitation code.');
+      }
+    } catch (error) {
+      console.error('Error fetching invitation:', error);
+      
+      if (error.response?.status === 404) {
+        setInvitationError('Invitation not found or has expired.');
+      } else if (error.response?.status === 400) {
+        setInvitationError('Invalid invitation code.');
+      } else {
+        setInvitationError('Failed to load invitation. Please try again.');
+      }
+    } finally {
+      setInvitationLoading(false);
+    }
+  }, []);
+
+  // Check for invitation on component mount
+  useEffect(() => {
+    const invitationCode = getInvitationCode();
+    if (invitationCode) {
+      fetchInvitationData(invitationCode);
+    }
+  }, [fetchInvitationData, getInvitationCode]);
+
   // Handle successful registration completion
   const handleRegistrationComplete = useCallback(() => {
     if (formData.registrationCompleted) {
       // Redirect to success page or dashboard
-      navigate('/payment-success');
+      navigate('/profile');
     }
   }, [formData.registrationCompleted, navigate]);
 
@@ -196,11 +270,35 @@ const Register = () => {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <DealershipInfo formData={formData} updateFormData={updateFormData} errors={errors} />;
+        return (
+          <DealershipInfo 
+            formData={formData} 
+            updateFormData={updateFormData} 
+            errors={errors}
+            isInvitedUser={isInvitedUser}
+            invitationData={invitationData}
+          />
+        );
       case 2:
-        return <ContactInfo formData={formData} updateFormData={updateFormData} errors={errors} />;
+        return (
+          <ContactInfo 
+            formData={formData} 
+            updateFormData={updateFormData} 
+            errors={errors}
+            isInvitedUser={isInvitedUser}
+            invitationData={invitationData}
+          />
+        );
       case 3:
-        return <PaymentSetup formData={formData} updateFormData={updateFormData} errors={errors} />;
+        return (
+          <PaymentSetup 
+            formData={formData} 
+            updateFormData={updateFormData} 
+            errors={errors}
+            isInvitedUser={isInvitedUser}
+            invitationData={invitationData}
+          />
+        );
       default:
         return null;
     }
@@ -224,6 +322,48 @@ const Register = () => {
           </div>
         </div>
       </div>
+
+      {/* Invitation Status Banner */}
+      {invitationLoading && (
+        <div className="bg-blue-50 border-b border-blue-200">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-blue-700 text-sm font-medium">Loading invitation details...</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {invitationError && (
+        <div className="bg-red-50 border-b border-red-200">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex items-center justify-center space-x-2">
+              <AlertCircle className="w-4 h-4 text-red-500" />
+              <span className="text-red-700 text-sm font-medium">{invitationError}</span>
+              <button
+                onClick={() => navigate('/register')}
+                className="text-red-600 hover:text-red-800 text-sm underline ml-2"
+              >
+                Continue with normal registration
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isInvitedUser && invitationData && (
+        <div className="bg-green-50 border-b border-green-200">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex items-center justify-center space-x-2">
+              <UserPlus className="w-4 h-4 text-green-500" />
+              <span className="text-green-700 text-sm font-medium">
+                You were invited by <strong>{invitationData.dealership_name}</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex min-h-screen">
         {/* Left Column - Image */}

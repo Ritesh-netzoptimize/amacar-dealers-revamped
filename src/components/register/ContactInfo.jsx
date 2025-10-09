@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-const ContactInfo = ({ formData, updateFormData, errors }) => {
+const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitationData }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -81,6 +81,9 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
         <motion.div variants={itemVariants} className="space-y-2">
           <label className="block text-sm font-semibold text-neutral-700">
             First Name *
+            {isInvitedUser && (
+              <span className="text-xs text-green-600 ml-2">(Pre-filled from invitation)</span>
+            )}
           </label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
@@ -88,9 +91,14 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
               type="text"
               value={formData.firstName}
               onChange={(e) => updateFormData("firstName", e.target.value)}
+              disabled={isInvitedUser}
               className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
                 errors.firstName ? "border-error" : "border-neutral-200"
-              } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+              } ${
+                isInvitedUser 
+                  ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed' 
+                  : 'bg-white text-neutral-900'
+              } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
               placeholder="Enter your first name"
             />
           </div>
@@ -103,6 +111,9 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
         <motion.div variants={itemVariants} className="space-y-2">
           <label className="block text-sm font-semibold text-neutral-700">
             Last Name *
+            {isInvitedUser && (
+              <span className="text-xs text-green-600 ml-2">(Pre-filled from invitation)</span>
+            )}
           </label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
@@ -110,9 +121,14 @@ const ContactInfo = ({ formData, updateFormData, errors }) => {
               type="text"
               value={formData.lastName}
               onChange={(e) => updateFormData("lastName", e.target.value)}
+              disabled={isInvitedUser}
               className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
                 errors.lastName ? "border-error" : "border-neutral-200"
-              } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+              } ${
+                isInvitedUser 
+                  ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed' 
+                  : 'bg-white text-neutral-900'
+              } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
               placeholder="Enter your last name"
             />
           </div>

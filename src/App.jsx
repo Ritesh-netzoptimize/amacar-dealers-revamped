@@ -76,6 +76,7 @@ function App() {
           <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/register/:invitations" element={<Register />} />
           {/* Public Routes */}
           {/* <Route path="/" element={<HomePage />} /> */}
           {/* <Route path="/unauthorized" element={<UnauthorizedPage />} /> */}

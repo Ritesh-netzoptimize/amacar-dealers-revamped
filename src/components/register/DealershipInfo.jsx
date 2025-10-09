@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCityStateByZip, clearLocation } from '@/redux/slices/userSlice';
 
-const DealershipInfo = ({ formData, updateFormData, errors }) => {
+const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invitationData }) => {
   const dispatch = useDispatch();
   const { locationStatus, locationError, location } = useSelector((state) => state.user);
   const timeoutRef = useRef(null);
@@ -98,6 +98,9 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
             <motion.div variants={itemVariants} className="space-y-2">
               <label className="block text-sm text-neutral-700 font-semibold">
                 Dealer Code *
+                {isInvitedUser && (
+                  <span className="text-xs text-green-600 ml-2">(Pre-filled from invitation)</span>
+                )}
               </label>
               <div className="relative">
                 <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
@@ -105,9 +108,14 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
                   type="text"
                   value={formData.dealerCode}
                   onChange={(e) => updateFormData('dealerCode', e.target.value)}
+                  disabled={isInvitedUser}
                   className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
                     errors.dealerCode ? 'border-error focus:ring-error/20' : 'border-neutral-200 focus:ring-primary-200'
-                  } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300`}
+                  } ${
+                    isInvitedUser 
+                      ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed' 
+                      : 'bg-white text-neutral-900'
+                  } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300`}
                   placeholder="Enter your dealer code"
                 />
               </div>
@@ -120,6 +128,9 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
             <motion.div variants={itemVariants} className="space-y-2">
               <label className="block text-sm font-semibold text-neutral-700">
                 Dealership Name *
+                {isInvitedUser && (
+                  <span className="text-xs text-green-600 ml-2">(Pre-filled from invitation)</span>
+                )}
               </label>
               <div className="relative">
                 <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
@@ -127,9 +138,14 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
                   type="text"
                   value={formData.dealershipName}
                   onChange={(e) => updateFormData('dealershipName', e.target.value)}
+                  disabled={isInvitedUser}
                   className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
                     errors.dealershipName ? 'border-error focus:ring-error/20' : 'border-neutral-200 focus:ring-primary-200'
-                  } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300`}
+                  } ${
+                    isInvitedUser 
+                      ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed' 
+                      : 'bg-white text-neutral-900'
+                  } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300`}
                   placeholder="Enter dealership name"
                 />
               </div>
@@ -234,6 +250,9 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
             <motion.div variants={itemVariants} className="space-y-2">
               <label className="block text-sm font-semibold text-neutral-700">
                 Business Email *
+                {isInvitedUser && (
+                  <span className="text-xs text-green-600 ml-2">(Pre-filled from invitation)</span>
+                )}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
@@ -241,9 +260,14 @@ const DealershipInfo = ({ formData, updateFormData, errors }) => {
                   type="email"
                   value={formData.businessEmail}
                   onChange={(e) => updateFormData('businessEmail', e.target.value)}
+                  disabled={isInvitedUser}
                   className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
                     errors.businessEmail ? 'border-error' : 'border-neutral-200'
-                  } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+                  } ${
+                    isInvitedUser 
+                      ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed' 
+                      : 'bg-white text-neutral-900'
+                  } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                   placeholder="your.email@dealership.com"
                 />
               </div>

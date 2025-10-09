@@ -18,6 +18,8 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import api from "@/lib/api";
 import { Navigate, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser } from "@/redux/slices/userSlice";
 
 // We'll create the stripe instance dynamically when we have the client secret
 let stripePromise = null;
@@ -28,6 +30,8 @@ const PaymentForm = ({
   errors,
   clientSecret,
   isStripeReady,
+  isInvitedUser,
+  invitationData,
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState("");
@@ -35,8 +39,12 @@ const PaymentForm = ({
   const [registrationError, setRegistrationError] = useState("");
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const stripe = useStripe();
   const elements = useElements();
+  
+  // Get registration status from Redux
+  const { registrationStatus, registrationError: reduxRegistrationError } = useSelector((state) => state.user);
 
   // Complete registration after successful payment setup
   const completeRegistration = async (setupIntentId, customerId) => {
@@ -44,87 +52,39 @@ const PaymentForm = ({
     setRegistrationError("");
     
     try {
-      // Format and validate data before sending
-      const formatDealerCode = (code) => {
-        // Remove spaces and special characters, keep only letters, numbers, hyphens, and underscores
-        return code.replace(/[^a-zA-Z0-9\-_]/g, '').toUpperCase();
-      };
-
-      const formatMobileNumber = (number) => {
-        // Remove all non-numeric characters
-        return number.replace(/\D/g, '');
-      };
-
       const registrationData = {
-        setup_intent_id: setupIntentId,
-        customer_id: customerId,
-        dealer_code: formatDealerCode(formData.dealerCode),
-        dealership_name: formData.dealershipName,
-        dealership_website: formData.website,
-        dealer_group: formData.dealerGroup,
-        job_position: formData.jobPosition,
-        zipcode: formData.zipCode,
+        setupIntentId,
+        customerId,
+        dealerCode: formData.dealerCode,
+        dealershipName: formData.dealershipName,
+        website: formData.website,
+        dealerGroup: formData.dealerGroup,
+        jobPosition: formData.jobPosition,
+        zipCode: formData.zipCode,
         city: formData.city,
         state: formData.state,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        mobile_number: formatMobileNumber(formData.mobileNumber),
-        business_email: formData.businessEmail,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        mobileNumber: formData.mobileNumber,
+        businessEmail: formData.businessEmail,
         password: formData.password,
-        confirm_password: formData.confirmPassword,
-        terms_accepted: formData.agreementAccepted,
-        platform_choice: "7-day-trial",
-        invite_token: formData.inviteToken || null
+        confirmPassword: formData.confirmPassword,
+        agreementAccepted: formData.agreementAccepted,
+        inviteToken: invitationData?.invite_token || null
       };
 
-      // Validate required fields before sending
-      if (!registrationData.dealer_code) {
-        throw new Error("Dealer code is required and cannot be empty after formatting");
-      }
+      console.log("Dispatching registration with data:", registrationData);
       
-      if (!registrationData.mobile_number || registrationData.mobile_number.length < 10) {
-        throw new Error("Valid mobile number is required (at least 10 digits)");
-      }
-
-      console.log("Completing registration with data:", registrationData);
+      const result = await dispatch(registerUser(registrationData)).unwrap();
       
-      const response = await api.post("/registration/complete-registration", registrationData);
+      console.log("Registration completed successfully:", result);
+      setRegistrationSuccess(true);
+      updateFormData("registrationCompleted", true);
+      updateFormData("registrationData", result);
       
-      if (response.data.success) {
-        console.log("Registration completed successfully:", response.data);
-        setRegistrationSuccess(true);
-        updateFormData("registrationCompleted", true);
-        updateFormData("registrationData", response.data);
-        
-        // Redirect to success page or dashboard after a short delay
-        // setTimeout(() => {
-        //   navigate('/home')
-        // }, 2000);
-      } else {
-        throw new Error(response.data.message || "Registration failed");
-      }
     } catch (error) {
       console.error("Registration completion error:", error);
-      
-      // Handle validation errors specifically
-      if (error.response?.data?.code === 'rest_invalid_param') {
-        const validationErrors = error.response.data.details;
-        const errorMessages = [];
-        
-        Object.keys(validationErrors).forEach(field => {
-          errorMessages.push(`${field}: ${validationErrors[field].message}`);
-        });
-        
-        setRegistrationError(
-          `Validation errors: ${errorMessages.join(', ')}`
-        );
-      } else {
-        setRegistrationError(
-          error.response?.data?.message || 
-          error.message || 
-          "Failed to complete registration. Please contact support."
-        );
-      }
+      setRegistrationError(error || "Failed to complete registration. Please contact support.");
     } finally {
       setIsCompletingRegistration(false);
     }
@@ -471,7 +431,7 @@ const PaymentForm = ({
 };
 
 // Main component that handles API calls and wraps PaymentForm with Elements
-const PaymentSetup = ({ formData, updateFormData, errors }) => {
+const PaymentSetup = ({ formData, updateFormData, errors, isInvitedUser, invitationData }) => {
   const [clientSecret, setClientSecret] = useState("");
   const [isStripeReady, setIsStripeReady] = useState(false);
   const [paymentError, setPaymentError] = useState("");
@@ -581,6 +541,7 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
     formData.lastName,
     formData.dealerCode,
     formData.dealershipName,
+    updateFormData,
   ]);
 
   // Don't render Elements until we have a client secret
@@ -627,6 +588,8 @@ const PaymentSetup = ({ formData, updateFormData, errors }) => {
         errors={errors}
         clientSecret={clientSecret}
         isStripeReady={isStripeReady}
+        isInvitedUser={isInvitedUser}
+        invitationData={invitationData}
       />
     </Elements>
   );
