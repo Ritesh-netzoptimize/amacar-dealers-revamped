@@ -5,7 +5,7 @@ import LiveAuctionsContainer from "@/components/live-auctions/LiveAuctionsContai
 import LiveAuctionsSkeleton from "@/components/skeletons/LiveAuctions/LiveAuctionsSkeleton";
 import LiveAuctionsCompactSkeleton from "@/components/skeletons/LiveAuctions/LiveAuctionsCompactSkeleton";
 import Pagination from "@/components/common/Pagination/Pagination";
-import FilterTabs from "@/components/filters/LiveAuctionFilterTabs";
+import VehicleFilterTabs from "@/components/filters/VehicleFilterTabs";
 import api from "@/lib/api";
 import { useSearch } from "@/context/SearchContext";
 
@@ -14,7 +14,7 @@ const LiveAuctions = () => {
   const [isFilterLoading, setIsFilterLoading] = useState(false);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [activeFilter, setActiveFilter] = useState("allTime");
+  const [activeFilter, setActiveFilter] = useState("all");
   const [auctions, setAuctions] = useState([]);
   const [pagination, setPagination] = useState({
     current_page: 1,
@@ -31,7 +31,7 @@ const LiveAuctions = () => {
   const { searchQuery, isSearching, debouncedSearchQuery, clearSearch } = useSearch();
 
   // Live Auctions API function using the imported api instance
-  const getLiveAuctions = useCallback(async (page = 1, perPage = 4, search = '') => {
+  const getLiveAuctions = useCallback(async (page = 1, perPage = 4, search = '', make = '') => {
     try {
       const params = {
         page,
@@ -41,6 +41,11 @@ const LiveAuctions = () => {
       // Add search parameter if provided
       if (search && search.trim()) {
         params.search = search.trim();
+      }
+      
+      // Add make filter if provided and not 'all'
+      if (make && make !== 'all') {
+        params.make = make;
       }
       
       const response = await api.get("/live-auctions", { params });
@@ -81,68 +86,17 @@ const LiveAuctions = () => {
     }));
   }, []);
 
-  // Apply client-side filtering for date-based filters
-  const applyClientSideFilter = useCallback((data, filter) => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const thisWeek = new Date(
-      today.getTime() - today.getDay() * 24 * 60 * 60 * 1000
-    );
-    const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    return data.filter((auction) => {
-      // Handle passed vehicles filter
-      if (filter === "passed") {
-        return auction.is_passed === true;
-      }
-
-      // For all other filters, exclude passed vehicles
-      if (auction.is_passed === true) {
-        return false;
-      }
-
-      const auctionDate = new Date(auction.endsAt);
-
-      switch (filter) {
-        case "today":
-          return (
-            auctionDate >= today &&
-            auctionDate < new Date(today.getTime() + 24 * 60 * 60 * 1000)
-          );
-        case "thisWeek":
-          return (
-            auctionDate >= thisWeek &&
-            auctionDate < new Date(thisWeek.getTime() + 7 * 24 * 60 * 60 * 1000)
-          );
-        case "thisMonth":
-          return (
-            auctionDate >= thisMonth &&
-            auctionDate <
-              new Date(thisMonth.getTime() + 30 * 24 * 60 * 60 * 1000)
-          );
-        case "allTime":
-          return true;
-        default:
-          return true;
-      }
-    });
-  }, []);
 
   // Fetch auctions from API
   const fetchAuctions = useCallback(
-    async (page = 1, filter = "allTime", search = '') => {
+    async (page = 1, filter = "all", search = '') => {
       try {
         setError(null);
 
-        const response = await getLiveAuctions(page, itemsPerPage, search);
+        const response = await getLiveAuctions(page, itemsPerPage, search, filter);
 
         if (response.success) {
-          let transformedData = transformAuctionData(response.data);
-
-          // Apply client-side filtering for all filters since API doesn't support them
-          // This ensures passed vehicles are properly filtered
-          transformedData = applyClientSideFilter(transformedData, filter);
-
+          const transformedData = transformAuctionData(response.data);
           setAuctions(transformedData);
           setPagination(response.pagination);
         } else {
@@ -154,7 +108,7 @@ const LiveAuctions = () => {
         setAuctions([]);
       }
     },
-    [getLiveAuctions, itemsPerPage, transformAuctionData, applyClientSideFilter]
+    [getLiveAuctions, itemsPerPage, transformAuctionData]
   );
 
   // Handle filter change
@@ -242,10 +196,6 @@ const LiveAuctions = () => {
     },
   };
 
-  useEffect(() => {
-    console.log("isloading", isLoading)
-    console.log("issearhcloadng", isSearchLoading)
-  }, [isLoading, isSearchLoading])
 
   return (
     <>
@@ -290,7 +240,7 @@ const LiveAuctions = () => {
               className="mt-8 flex items-center justify-between"
               variants={statsVariants}
             >
-              <FilterTabs
+              <VehicleFilterTabs
                 activeFilter={activeFilter}
                 onFilterChange={handleFilterChange}
                 isLoading={isFilterLoading}
@@ -308,17 +258,9 @@ const LiveAuctions = () => {
                   {searchQuery ? (
                     <>
                       Showing {pagination.total} result{pagination.total !== 1 ? "s" : ""} for "{searchQuery}"
-                      {activeFilter !== "allTime" && (
+                      {activeFilter !== "all" && (
                         <span className="ml-1 text-neutral-500">
-                          (
-                          {activeFilter === "today"
-                            ? "today"
-                            : activeFilter === "thisWeek"
-                            ? "this week"
-                            : activeFilter === "thisMonth"
-                            ? "this month"
-                            : "passed"}
-                          )
+                          ({activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)})
                         </span>
                       )}
                     </>
@@ -326,17 +268,9 @@ const LiveAuctions = () => {
                     <>
                       Showing {pagination.total} auction
                       {pagination.total !== 1 ? "s" : ""}
-                      {activeFilter !== "allTime" && (
+                      {activeFilter !== "all" && (
                         <span className="ml-1 text-neutral-500">
-                          (
-                          {activeFilter === "today"
-                            ? "today"
-                            : activeFilter === "thisWeek"
-                            ? "this week"
-                            : activeFilter === "thisMonth"
-                            ? "this month"
-                            : "passed"}
-                          )
+                          ({activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)})
                         </span>
                       )}
                     </>
@@ -360,7 +294,7 @@ const LiveAuctions = () => {
             {/* Live Auctions Grid */}
             {!error && (
               <motion.div className="mt-8" variants={statsVariants}>
-                {isSearchLoading ? (
+                {isSearchLoading || isFilterLoading ? (
                   <LiveAuctionsCompactSkeleton />
                 ) : auctions.length > 0 ? (
                   <LiveAuctionsContainer
