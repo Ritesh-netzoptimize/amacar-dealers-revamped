@@ -22,6 +22,7 @@ import BackToTop from "./components/ui/BackToTop";
 import VehicleDetails from "./pages/dashboard/VehicleDetails";
 import CheckoutPage from "./components/stripe/CheckoutPage";
 import PaymentSuccess from "./components/stripe/PaymentSuccess";
+import { SearchProvider } from "./context/SearchContext";
 
 function App() {
   // const location = useLocation();
@@ -36,42 +37,43 @@ function App() {
   // location.pathname.startsWith('/car-details');
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: "#363636",
-            color: "#fff",
-            borderRadius: "12px",
-            padding: "16px",
-            fontSize: "14px",
-            fontWeight: "500",
-          },
-          success: {
-            iconTheme: {
-              primary: "#10b981",
-              secondary: "#fff",
+    <SearchProvider>
+      <div className="min-h-screen bg-slate-50">
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: "#363636",
+              color: "#fff",
+              borderRadius: "12px",
+              padding: "16px",
+              fontSize: "14px",
+              fontWeight: "500",
             },
-          },
-          error: {
-            iconTheme: {
-              primary: "#ef4444",
-              secondary: "#fff",
+            success: {
+              iconTheme: {
+                primary: "#10b981",
+                secondary: "#fff",
+              },
             },
-          },
-        }}
-        containerStyle={{
-          marginTop: "60px",
-        }}
-      />
+            error: {
+              iconTheme: {
+                primary: "#ef4444",
+                secondary: "#fff",
+              },
+            },
+          }}
+          containerStyle={{
+            marginTop: "60px",
+          }}
+        />
 
-      {/* {!hideHeaderFooter && <Header />} */}
+        {/* {!hideHeaderFooter && <Header />} */}
 
-      <main className="pt-0 bg-white">
-        {/* <ScrollToTop /> */}
-        <Routes>
+        <main className="pt-0 bg-white">
+          {/* <ScrollToTop /> */}
+          <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           {/* Public Routes */}
@@ -206,12 +208,13 @@ function App() {
         </Routes>
       </main>
 
-      {/* {!hideHeaderFooter && <Footer />} */}
+        {/* {!hideHeaderFooter && <Footer />} */}
 
-      {/* Back to Top Button - Only for public pages */}
-      {/* {!hideHeaderFooter && <BackToTop />} */}
-      <BackToTop />
-    </div>
+        {/* Back to Top Button - Only for public pages */}
+        {/* {!hideHeaderFooter && <BackToTop />} */}
+        <BackToTop />
+      </div>
+    </SearchProvider>
   );
 }
 

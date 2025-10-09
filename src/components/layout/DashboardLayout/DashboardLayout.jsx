@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Menu, X, User, Search, LogOut, Settings, ChevronDown, X as XIcon, Calendar, DollarSign, Gavel } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 // import { fetchDashboardSummary, selectDashboardSummary } from '../../../redux/slices/offersSlice';
 import Sidebar from '../Sidebar/Sidebar';
-// import { useSearch } from '../../../context/SearchContext';
+import { useSearch } from '../../../context/SearchContext';
 import BackToTop from '../../ui/BackToTop';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import LogoutModal from '@/components/ui/LogoutUI/LogoutModal';
@@ -27,12 +27,8 @@ const DashboardLayout = ({ children }) => {
   const profileRef = useRef(null);
   const notificationsRef = useRef(null);
 
-  // Search context - placeholder implementation
-  const searchQuery = '';
-  const setSearchQuery = () => {};
-  const isSearching = false;
-  const clearSearch = () => {};
-  const getSearchStats = () => ({});
+  // Search context
+  const { searchQuery, setSearchQuery, isSearching, clearSearch, getSearchStats } = useSearch();
 
   // Placeholder user data for stateless version
   const userData = {
@@ -81,7 +77,7 @@ const DashboardLayout = ({ children }) => {
   };
 
   // Fetch notifications on component mount
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       setIsLoadingNotifications(true);
       const response = await getDashboardActivity(3);
@@ -104,7 +100,7 @@ const DashboardLayout = ({ children }) => {
     } finally {
       setIsLoadingNotifications(false);
     }
-  };
+  }, []);
 
   // Format time ago
   const getTimeAgo = (timestamp) => {
@@ -125,7 +121,7 @@ const DashboardLayout = ({ children }) => {
   // Fetch notifications on component mount
   useEffect(() => {
     fetchNotifications();
-  }, []);
+  }, [fetchNotifications]);
 
   // Handle click outside to close dropdowns
   useEffect(() => {

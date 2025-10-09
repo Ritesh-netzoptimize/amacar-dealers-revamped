@@ -6,10 +6,12 @@ import LiveAuctionsSkeleton from "@/components/skeletons/LiveAuctions/LiveAuctio
 import Pagination from "@/components/common/Pagination/Pagination";
 import FilterTabs from "@/components/filters/LiveAuctionFilterTabs";
 import api from "@/lib/api";
+import { useSearch } from "@/context/SearchContext";
 
 const LiveAuctions = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isFilterLoading, setIsFilterLoading] = useState(false);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeFilter, setActiveFilter] = useState("allTime");
   const [auctions, setAuctions] = useState([]);
@@ -24,15 +26,23 @@ const LiveAuctions = () => {
   const [error, setError] = useState(null);
   const itemsPerPage = 4; // Show 4 vehicles per page
 
+  // Search context
+  const { searchQuery, isSearching, debouncedSearchQuery } = useSearch();
+
   // Live Auctions API function using the imported api instance
-  const getLiveAuctions = useCallback(async (page = 1, perPage = 4) => {
+  const getLiveAuctions = useCallback(async (page = 1, perPage = 4, search = '') => {
     try {
-      const response = await api.get("/live-auctions", {
-        params: {
-          page,
-          per_page: perPage,
-        },
-      });
+      const params = {
+        page,
+        per_page: perPage,
+      };
+      
+      // Add search parameter if provided
+      if (search && search.trim()) {
+        params.search = search.trim();
+      }
+      
+      const response = await api.get("/live-auctions", { params });
       return response.data;
     } catch (error) {
       console.error("Error fetching live auctions:", error);
@@ -119,11 +129,12 @@ const LiveAuctions = () => {
 
   // Fetch auctions from API
   const fetchAuctions = useCallback(
-    async (page = 1, filter = "allTime") => {
+    async (page = 1, filter = "allTime", search = '') => {
+      console.log('🚀 API Call - fetchAuctions called with:', { page, filter, search });
       try {
         setError(null);
 
-        const response = await getLiveAuctions(page, itemsPerPage);
+        const response = await getLiveAuctions(page, itemsPerPage, search);
 
         if (response.success) {
           let transformedData = transformAuctionData(response.data);
@@ -154,32 +165,47 @@ const LiveAuctions = () => {
     setCurrentPage(1);
     setActiveFilter(filterId);
 
-    await fetchAuctions(1, filterId);
+    await fetchAuctions(1, filterId, debouncedSearchQuery);
     setIsFilterLoading(false);
   };
 
   // Handle page change
   const handlePageChange = async (page) => {
     setCurrentPage(page);
-    await fetchAuctions(page, activeFilter);
+    await fetchAuctions(page, activeFilter, debouncedSearchQuery);
   };
 
   // Handle pass/unpass success - refresh data
   const handlePassUnpassSuccess = async () => {
     console.log("Pass/Unpass operation successful, refreshing data...");
-    await fetchAuctions(currentPage, activeFilter);
+    await fetchAuctions(currentPage, activeFilter, debouncedSearchQuery);
   };
 
-  // Initial data load
+  // Handle data fetching for search and filter changes
   useEffect(() => {
-    const loadData = async () => {
+    const fetchData = async () => {
+      console.log('🔍 Fetching data with:', { debouncedSearchQuery, activeFilter });
+      setIsSearchLoading(false);
       setIsLoading(true);
-      await fetchAuctions(1, activeFilter);
+      
+      // Reset to page 1 when search or filter changes
+      setCurrentPage(1);
+      await fetchAuctions(1, activeFilter, debouncedSearchQuery);
       setIsLoading(false);
     };
 
-    loadData();
-  }, [activeFilter, fetchAuctions]);
+    // Only fetch when debouncedSearchQuery or activeFilter changes, not when isSearching changes
+    fetchData();
+  }, [debouncedSearchQuery, activeFilter, fetchAuctions]);
+
+  // Handle search loading state separately
+  useEffect(() => {
+    if (isSearching) {
+      setIsSearchLoading(true);
+    } else {
+      setIsSearchLoading(false);
+    }
+  }, [isSearching]);
 
   // Animation variants
   const containerVariants = {
@@ -219,7 +245,7 @@ const LiveAuctions = () => {
 
   return (
     <>
-      {isLoading ? (
+      {isLoading || isSearchLoading ? (
         <LiveAuctionsSkeleton />
       ) : (
         <motion.div
@@ -275,20 +301,41 @@ const LiveAuctions = () => {
                 transition={{ duration: 0.3, delay: 0.1 }}
               >
                 <p className="text-sm text-neutral-600">
-                  Showing {pagination.total} auction
-                  {pagination.total !== 1 ? "s" : ""}
-                  {activeFilter !== "allTime" && (
-                    <span className="ml-1 text-neutral-500">
-                      (
-                      {activeFilter === "today"
-                        ? "today"
-                        : activeFilter === "thisWeek"
-                        ? "this week"
-                        : activeFilter === "thisMonth"
-                        ? "this month"
-                        : "passed"}
-                      )
-                    </span>
+                  {searchQuery ? (
+                    <>
+                      Showing {pagination.total} result{pagination.total !== 1 ? "s" : ""} for "{searchQuery}"
+                      {activeFilter !== "allTime" && (
+                        <span className="ml-1 text-neutral-500">
+                          (
+                          {activeFilter === "today"
+                            ? "today"
+                            : activeFilter === "thisWeek"
+                            ? "this week"
+                            : activeFilter === "thisMonth"
+                            ? "this month"
+                            : "passed"}
+                          )
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      Showing {pagination.total} auction
+                      {pagination.total !== 1 ? "s" : ""}
+                      {activeFilter !== "allTime" && (
+                        <span className="ml-1 text-neutral-500">
+                          (
+                          {activeFilter === "today"
+                            ? "today"
+                            : activeFilter === "thisWeek"
+                            ? "this week"
+                            : activeFilter === "thisMonth"
+                            ? "this month"
+                            : "passed"}
+                          )
+                        </span>
+                      )}
+                    </>
                   )}
                 </p>
               </motion.div>
