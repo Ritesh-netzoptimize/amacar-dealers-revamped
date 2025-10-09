@@ -47,6 +47,10 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
     email: user?.email || '',
   };
 
+  // Get user roles from Redux state
+  const userRole = user?.role;
+  const canAccessDealerships = userRole === 'sales_manager' || userRole === 'administrator';
+
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Live Auctions', href: '/live-auctions', icon: TrendingUp },
@@ -56,7 +60,8 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
     { name: 'My bids', href: '/my-bids', icon: ShoppingCart  },
     { name: 'Highest Bids', href: '/highest-bids', icon: ArrowUp },
     { name: 'Active customers', href: '/active-customers', icon: Users },
-    { name: 'DealerShips', href: '/dealerships', icon: Home  },
+    // Conditionally include DealerShips based on user role
+    ...(canAccessDealerships ? [{ name: 'DealerShips', href: '/dealerships', icon: Home }] : []),
     { name: 'Reports', href: '/reports', icon: BarChart  },
 
   ];
