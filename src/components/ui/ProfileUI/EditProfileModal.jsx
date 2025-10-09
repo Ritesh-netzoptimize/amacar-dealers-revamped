@@ -41,7 +41,7 @@ export default function EditProfileModal({
   const debouncedZipcode = useDebounce(formData.zipcode, 500);
 
   useEffect(() => {
-    console.log("user.meta", user.meta);
+    console.log("user.meta", user?.meta);
     console.log("location", location);
   }, [user]);
 

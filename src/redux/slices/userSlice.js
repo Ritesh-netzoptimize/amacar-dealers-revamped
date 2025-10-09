@@ -132,7 +132,7 @@ export const changePassword = createAsyncThunk(
   'user/changePassword',
   async (passwordData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/user/change-password', { current_password: passwordData.currentPassword, new_password: passwordData.newPassword, confirm_password: passwordData.confirmPassword });
+      const response = await api.post('/profile/change-password', { current_password: passwordData.currentPassword, new_password: passwordData.newPassword, confirm_password: passwordData.confirmPassword });
       if (response.data.success) {
         return response.data.user;
       }

@@ -7,6 +7,7 @@ import { loadUser, fetchProfileInfo, fetchSubscriptionStatus, fetchBillingInfo, 
 import EditProfileModal from "@/components/ui/ProfileUI/EditProfileModal";
 import ProfileSkeleton from "@/components/skeletons/Profile/ProfileSkeleton";
 import toast from "react-hot-toast";
+import ChangePasswordModal from "@/components/ui/ProfileUI/ChangePasswrdModa";
 // import ChangePasswordModal from "@/components/ui/ChangePasswordModal";
 // import TwoFactorAuthModal from "@/components/ui/TwoFactorAuthModal";
 
@@ -443,90 +444,6 @@ const Profile = () => {
             </div>
           </motion.div>
 
-          {/* Your Statistics */}
-          <motion.div variants={itemVariants} className="card p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
-            <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-neutral-800 mb-4 sm:mb-6">
-              Your Statistics
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {/* Total Auctions */}
-              <div className="text-center p-4 sm:p-6 bg-blue-50 rounded-xl">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                  <svg
-                    className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0M15 17a2 2 0 104 0"
-                    />
-                  </svg>
-                </div>
-                <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-1">
-                  {profile.totalAuctions || 0}
-                </div>
-                <div className="text-xs sm:text-sm text-neutral-600">Total Auctions</div>
-              </div>
-
-              {/* Total Earnings */}
-              <div className="text-center p-4 sm:p-6 bg-green-50 rounded-xl">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                  <svg
-                    className="w-5 h-5 sm:w-6 sm:h-6 text-green-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                    />
-                  </svg>
-                </div>
-                <div className="text-2xl sm:text-3xl font-bold text-green-600 mb-1">
-                  ${profile.totalEarnings?.toLocaleString() || 0}
-                </div>
-                <div className="text-xs sm:text-sm text-neutral-600">Total Earnings</div>
-              </div>
-
-              {/* User Rating */}
-              <div className="text-center p-4 sm:p-6 bg-emerald-50 rounded-xl">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                  <svg
-                    className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-                    />
-                  </svg>
-                </div>
-                <div className="text-2xl sm:text-3xl font-bold text-emerald-600 mb-1">
-                  {profile.rating || 0}
-                </div>
-                <div className="text-xs sm:text-sm text-neutral-600">User Rating</div>
-              </div>
-            </div>
-          </motion.div>
-
           {/* Subscription Status */}
           <motion.div variants={itemVariants} className="card p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8">
             <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-neutral-800 mb-4 sm:mb-6">
@@ -823,10 +740,10 @@ const Profile = () => {
       </div>
 
       {/* Change Password Modal */}
-      {/* <ChangePasswordModal
+      <ChangePasswordModal
         isOpen={showChangePasswordModal}
         onClose={() => setShowChangePasswordModal(false)}
-      /> */}
+      />
 
       {/* Edit Profile Modal */}
       <EditProfileModal
