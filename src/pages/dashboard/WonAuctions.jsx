@@ -3,15 +3,18 @@ import { motion } from "framer-motion";
 import DashboardStats from "@/components/dashboard/DashboardStats/DashboardStats";
 import WonAuctionsContainer from "@/components/won-auctions/WonAuctionsContainer";
 import WonAuctionsSkeleton from "@/components/skeletons/WonAuctions/WonAuctionsSkeleton";
+import WonAuctionsCompactSkeleton from "@/components/skeletons/WonAuctions/WonAuctionsCompactSkeleton";
 import Pagination from "@/components/common/Pagination/Pagination";
 import FilterTabs from "@/components/filters/LiveAuctionFilterTabs";
 import ScheduleAppointmentModal from "@/components/appointments/ScheduleAppointmentModal";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
+import { useSearch } from "@/context/SearchContext";
 
 const WonAuctions = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isFilterLoading, setIsFilterLoading] = useState(false);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeFilter, setActiveFilter] = useState("allTime");
   const [auctions, setAuctions] = useState([]);
@@ -26,19 +29,27 @@ const WonAuctions = () => {
   const [error, setError] = useState(null);
   const itemsPerPage = 4; // Show 4 vehicles per page
 
+  // Search context
+  const { searchQuery, isSearching, debouncedSearchQuery, clearSearch } = useSearch();
+
   // Appointment modal state
   const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
   const [selectedAuctionForAppointment, setSelectedAuctionForAppointment] = useState(null);
 
   // Won Auctions API function using the imported api instance
-  const getWonAuctions = useCallback(async (page = 1, perPage = 4) => {
+  const getWonAuctions = useCallback(async (page = 1, perPage = 4, search = '') => {
     try {
-      const response = await api.get('/won-auctions', {
-        params: {
-          page,
-          per_page: perPage
-        }
-      });
+      const params = {
+        page,
+        per_page: perPage
+      };
+      
+      // Add search parameter if provided
+      if (search && search.trim()) {
+        params.search = search.trim();
+      }
+      
+      const response = await api.get('/won-auctions', { params });
       return response.data;
     } catch (error) {
       console.error('Error fetching won auctions:', error);
@@ -103,11 +114,11 @@ const WonAuctions = () => {
   }, []);
 
    // Fetch won auctions from API
-   const fetchWonAuctions = useCallback(async (page = 1, filter = 'allTime') => {
+   const fetchWonAuctions = useCallback(async (page = 1, filter = 'allTime', search = '') => {
     try {
       setError(null);
       
-      const response = await getWonAuctions(page, itemsPerPage);
+      const response = await getWonAuctions(page, itemsPerPage, search);
       
       if (response.success) {
         let transformedData = transformWonAuctionData(response.data);
@@ -137,15 +148,15 @@ const WonAuctions = () => {
     setCurrentPage(1);
     setActiveFilter(filterId);
     
-    await fetchWonAuctions(1, filterId);
+    await fetchWonAuctions(1, filterId, debouncedSearchQuery);
     setIsFilterLoading(false);
-  }, [isFilterLoading, fetchWonAuctions]);
+  }, [isFilterLoading, fetchWonAuctions, debouncedSearchQuery]);
 
   // Handle page change
   const handlePageChange = useCallback(async (page) => {
     setCurrentPage(page);
-    await fetchWonAuctions(page, activeFilter);
-  }, [fetchWonAuctions, activeFilter]);
+    await fetchWonAuctions(page, activeFilter, debouncedSearchQuery);
+  }, [fetchWonAuctions, activeFilter, debouncedSearchQuery]);
 
   // Handle schedule appointment
   const handleScheduleAppointment = (auction) => {
@@ -166,16 +177,29 @@ const WonAuctions = () => {
     handleCloseAppointmentModal();
   };
 
-  // Initial data load
-  const loadData = useCallback(async () => {
-    setIsLoading(true);
-    await fetchWonAuctions(1, activeFilter);
-    setIsLoading(false);
-  }, [fetchWonAuctions, activeFilter]);
-
+  // Handle data fetching for search and filter changes
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    const fetchData = async () => {
+      setIsSearchLoading(false);
+      setIsLoading(true);
+      
+      // Reset to page 1 when search or filter changes
+      setCurrentPage(1);
+      await fetchWonAuctions(1, activeFilter, debouncedSearchQuery);
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, [debouncedSearchQuery, activeFilter, fetchWonAuctions]);
+
+  // Handle search loading state separately
+  useEffect(() => {
+    if (isSearching) {
+      setIsSearchLoading(true);
+    } else {
+      setIsSearchLoading(false);
+    }
+  }, [isSearching]);
 
   // Animation variants
   const containerVariants = {
@@ -266,20 +290,41 @@ const WonAuctions = () => {
               transition={{ duration: 0.3, delay: 0.1 }}
             >
               <p className="text-sm text-neutral-600">
-                Showing {pagination.total} auction
-                {pagination.total !== 1 ? "s" : ""}
-                {activeFilter !== "allTime" && (
-                  <span className="ml-1 text-neutral-500">
-                    (
-                    {activeFilter === "today"
-                      ? "today"
-                      : activeFilter === "thisWeek"
-                      ? "this week"
-                      : activeFilter === "thisMonth"
-                      ? "this month"
-                      : "passed"}
-                    )
-                  </span>
+                {searchQuery ? (
+                  <>
+                    Showing {pagination.total} result{pagination.total !== 1 ? "s" : ""} for "{searchQuery}"
+                    {activeFilter !== "allTime" && (
+                      <span className="ml-1 text-neutral-500">
+                        (
+                        {activeFilter === "today"
+                          ? "today"
+                          : activeFilter === "thisWeek"
+                          ? "this week"
+                          : activeFilter === "thisMonth"
+                          ? "this month"
+                          : "passed"}
+                        )
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    Showing {pagination.total} auction
+                    {pagination.total !== 1 ? "s" : ""}
+                    {activeFilter !== "allTime" && (
+                      <span className="ml-1 text-neutral-500">
+                        (
+                        {activeFilter === "today"
+                          ? "today"
+                          : activeFilter === "thisWeek"
+                          ? "this week"
+                          : activeFilter === "thisMonth"
+                          ? "this month"
+                          : "passed"}
+                        )
+                      </span>
+                    )}
+                  </>
                 )}
               </p>
             </motion.div>
@@ -299,10 +344,50 @@ const WonAuctions = () => {
           {/* Won Auctions Grid */}
           {!error && (
             <motion.div className="mt-8" variants={statsVariants}>
-              <WonAuctionsContainer 
-                auctions={auctions} 
-                onScheduleAppointment={handleScheduleAppointment}
-              />
+              {isSearchLoading ? (
+                <WonAuctionsCompactSkeleton />
+              ) : auctions.length > 0 ? (
+                <WonAuctionsContainer 
+                  auctions={auctions} 
+                  onScheduleAppointment={handleScheduleAppointment}
+                />
+              ) : (
+                /* Empty State */
+                <div className="flex flex-col items-center justify-center py-16 px-4">
+                  <div className="w-24 h-24 bg-gradient-to-br from-neutral-100 to-neutral-200 rounded-full flex items-center justify-center mb-6">
+                    <svg 
+                      className="w-12 h-12 text-neutral-400" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={1.5} 
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold text-neutral-900 mb-2">
+                    {searchQuery ? `No results found for "${searchQuery}"` : "No won auctions available"}
+                  </h3>
+                  <p className="text-neutral-500 text-center max-w-md">
+                    {searchQuery 
+                      ? "Try adjusting your search terms or browse all won auctions."
+                      : "You haven't won any auctions yet. Keep bidding to see your wins here!"
+                    }
+                  </p>
+                  {searchQuery && (
+                    <button
+                      onClick={clearSearch}
+                      className="mt-4 px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-200"
+                    >
+                      Clear Search
+                    </button>
+                  )}
+                </div>
+              )}
             </motion.div>
           )}
 
