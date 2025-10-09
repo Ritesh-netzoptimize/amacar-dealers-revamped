@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import DashboardStats from "@/components/dashboard/DashboardStats/DashboardStats";
 import LiveAuctionsContainer from "@/components/live-auctions/LiveAuctionsContainer";
 import LiveAuctionsSkeleton from "@/components/skeletons/LiveAuctions/LiveAuctionsSkeleton";
+import LiveAuctionsCompactSkeleton from "@/components/skeletons/LiveAuctions/LiveAuctionsCompactSkeleton";
 import Pagination from "@/components/common/Pagination/Pagination";
 import FilterTabs from "@/components/filters/LiveAuctionFilterTabs";
 import api from "@/lib/api";
@@ -27,7 +28,7 @@ const LiveAuctions = () => {
   const itemsPerPage = 4; // Show 4 vehicles per page
 
   // Search context
-  const { searchQuery, isSearching, debouncedSearchQuery } = useSearch();
+  const { searchQuery, isSearching, debouncedSearchQuery, clearSearch } = useSearch();
 
   // Live Auctions API function using the imported api instance
   const getLiveAuctions = useCallback(async (page = 1, perPage = 4, search = '') => {
@@ -130,7 +131,6 @@ const LiveAuctions = () => {
   // Fetch auctions from API
   const fetchAuctions = useCallback(
     async (page = 1, filter = "allTime", search = '') => {
-      console.log('🚀 API Call - fetchAuctions called with:', { page, filter, search });
       try {
         setError(null);
 
@@ -184,7 +184,6 @@ const LiveAuctions = () => {
   // Handle data fetching for search and filter changes
   useEffect(() => {
     const fetchData = async () => {
-      console.log('🔍 Fetching data with:', { debouncedSearchQuery, activeFilter });
       setIsSearchLoading(false);
       setIsLoading(true);
       
@@ -243,9 +242,14 @@ const LiveAuctions = () => {
     },
   };
 
+  useEffect(() => {
+    console.log("isloading", isLoading)
+    console.log("issearhcloadng", isSearchLoading)
+  }, [isLoading, isSearchLoading])
+
   return (
     <>
-      {isLoading || isSearchLoading ? (
+      {isLoading ? (
         <LiveAuctionsSkeleton />
       ) : (
         <motion.div
@@ -356,10 +360,50 @@ const LiveAuctions = () => {
             {/* Live Auctions Grid */}
             {!error && (
               <motion.div className="mt-8" variants={statsVariants}>
-                <LiveAuctionsContainer
-                  auctions={auctions}
-                  onPassUnpassSuccess={handlePassUnpassSuccess}
-                />
+                {isSearchLoading ? (
+                  <LiveAuctionsCompactSkeleton />
+                ) : auctions.length > 0 ? (
+                  <LiveAuctionsContainer
+                    auctions={auctions}
+                    onPassUnpassSuccess={handlePassUnpassSuccess}
+                  />
+                ) : (
+                  /* Empty State */
+                  <div className="flex flex-col items-center justify-center py-16 px-4">
+                    <div className="w-24 h-24 bg-gradient-to-br from-neutral-100 to-neutral-200 rounded-full flex items-center justify-center mb-6">
+                      <svg 
+                        className="w-12 h-12 text-neutral-400" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                          strokeWidth={1.5} 
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-semibold text-neutral-900 mb-2">
+                      {searchQuery ? `No results found for "${searchQuery}"` : "No auctions available"}
+                    </h3>
+                    <p className="text-neutral-500 text-center max-w-md">
+                      {searchQuery 
+                        ? "Try adjusting your search terms or browse all available auctions."
+                        : "There are currently no live auctions. Check back later for new opportunities."
+                      }
+                    </p>
+                    {searchQuery && (
+                      <button
+                        onClick={clearSearch}
+                        className="mt-4 px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors duration-200"
+                      >
+                        Clear Search
+                      </button>
+                    )}
+                  </div>
+                )}
               </motion.div>
             )}
 

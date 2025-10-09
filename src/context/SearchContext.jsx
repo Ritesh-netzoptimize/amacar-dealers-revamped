@@ -26,11 +26,10 @@ export const SearchProvider = ({ children }) => {
   const [isSearching, setIsSearching] = useState(false);
 
   // Debounce search query
-  const debouncedSearchQuery = useDebounce(searchQuery, 1500);
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   // Update isSearching state based on debounced query
   useEffect(() => {
-    console.log('🔍 SearchContext - debouncedSearchQuery changed:', debouncedSearchQuery);
     if (debouncedSearchQuery.trim()) {
       setIsSearching(true);
       // Set a short delay to show loading state
