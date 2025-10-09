@@ -58,18 +58,15 @@ const Reports = () => {
   const handleFilterApply = async () => {
     setIsFilterLoading(true);
     try {
-      // TODO: Replace with actual API calls that use the date range
-      // Example:
-      // await Promise.all([
-      //   fetchStats(dateRange.startDate, dateRange.endDate),
-      //   fetchChartData(dateRange.startDate, dateRange.endDate),
-      //   // ... other API calls
-      // ]);
-
-      // Simulate API calls with date range
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // The date range state is already updated by the ReportsGlobalFilter component
+      // All chart components will automatically re-fetch data when startDate/endDate props change
+      // due to their useEffect dependencies
       
       console.log("Filtering reports with date range:", dateRange);
+      
+      // Optional: Add a small delay to show loading state
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      
     } catch (error) {
       console.error("Error applying date filter:", error);
     } finally {
