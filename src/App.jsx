@@ -23,6 +23,7 @@ import VehicleDetails from "./pages/dashboard/VehicleDetails";
 import CheckoutPage from "./components/stripe/CheckoutPage";
 import PaymentSuccess from "./components/stripe/PaymentSuccess";
 import { SearchProvider } from "./context/SearchContext";
+import InvitedDealerships from "./pages/dashboard/InvitedDealerships";
 
 function App() {
   // const location = useLocation();
@@ -175,6 +176,17 @@ function App() {
               // </PrivateRoute>
             }
           />
+          <Route
+            path="/invited-dealerships"
+            element={
+              // <PrivateRoute>
+              <DashboardLayout>
+                <InvitedDealerships />
+              </DashboardLayout>
+              // </PrivateRoute>
+            }
+          />
+          
           <Route
             path="/reports"
             element={

@@ -268,4 +268,40 @@ export const getSummaryReport = async (dateFrom, dateTo, groupBy = 'day') => {
   }
 };
 
+// Invitations API functions
+export const getInvitations = async (page = 1, perPage = 20) => {
+  try {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      per_page: perPage.toString()
+    });
+    
+    const response = await api.get(`/dealers/invitations?${params}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching invitations:', error);
+    throw error;
+  }
+};
+
+export const resendInvitation = async (invitationId) => {
+  try {
+    const response = await api.post(`/dealers/invitations/${invitationId}/resend`);
+    return response.data;
+  } catch (error) {
+    console.error('Error resending invitation:', error);
+    throw error;
+  }
+};
+
+export const cancelInvitation = async (invitationId) => {
+  try {
+    const response = await api.delete(`/dealers/invitations/${invitationId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error canceling invitation:', error);
+    throw error;
+  }
+};
+
 export default api;

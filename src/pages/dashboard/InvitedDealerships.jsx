@@ -5,12 +5,12 @@ import DealershipContainer from "@/components/dealership/DealershipContainer";
 import DealershipSkeleton from "@/components/skeletons/Dealership/DealershipSkeleton";
 import Pagination from "@/components/common/Pagination/Pagination";
 import InviteDealershipsModal from "@/components/ui/InviteDealershipsModal";
-import { Building2, UserPlus } from "lucide-react";
-import api from "@/lib/api";
+import { Building2, UserPlus, Mail, Clock, CheckCircle, XCircle } from "lucide-react";
+import { getInvitations, resendInvitation, cancelInvitation } from "@/lib/api";
 import { useSelector } from "react-redux";
 
-const DealerShips = () => {
-  const [dealerships, setDealerships] = useState([]);
+const InvitedDealerships = () => {
+  const [invitations, setInvitations] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -22,7 +22,7 @@ const DealerShips = () => {
 
   const { user } = useSelector((state) => state.user);
 
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
   const maxRetries = 3;
 
   // Error handling utility
@@ -38,15 +38,15 @@ const DealerShips = () => {
       switch (status) {
         case 403:
           errorMessage =
-            data?.message || "You don't have permission to view dealerships";
+            data?.message || "You don't have permission to view invitations";
           errorType = "permission";
           break;
         case 401:
-          errorMessage = "Please log in to view dealerships";
+          errorMessage = "Please log in to view invitations";
           errorType = "auth";
           break;
         case 404:
-          errorMessage = "Dealerships endpoint not found";
+          errorMessage = "Invitations endpoint not found";
           errorType = "notFound";
           break;
         case 500:
@@ -73,62 +73,42 @@ const DealerShips = () => {
   }, []);
 
   // Transform API data to match component expectations
-  const transformDealershipData = (apiData) => {
+  const transformInvitationData = (apiData) => {
     return apiData.map((item) => {
+      const fullName = `${item.first_name || ''} ${item.last_name || ''}`.trim() || 'N/A';
+      const isExpired = new Date(item.expires_at) < new Date();
+      
       return {
         id: item.id,
-        name: item.name,
-        email: item.contact?.email || "N/A",
-        phone: item.contact?.phone || "N/A",
-        city: item.address?.city || "N/A",
-        state: item.address?.state || "N/A",
-        zip: item.address?.zip || "N/A",
-        street: item.address?.street || "N/A",
-        status:
-          item.status === "active"
-            ? "Active"
-            : item.status === "pending"
-            ? "Pending"
-            : item.status === "inactive"
-            ? "Inactive"
-            : "Unknown",
-        role: "Dealer", // Default role since API doesn't provide this
-        salesManager: item.user?.name || "Not Assigned",
+        name: item.dealership_name || 'N/A',
+        email: item.email || "N/A",
+        firstName: item.first_name || 'N/A',
+        lastName: item.last_name || 'N/A',
+        phone: "N/A", // Not provided in API
+        city: "N/A", // Not provided in API
+        state: "N/A", // Not provided in API
+        zip: "N/A", // Not provided in API
+        street: "N/A", // Not provided in API
+        status: isExpired ? "Expired" : (item.status === "pending" ? "Pending" : item.status === "accepted" ? "Accepted" : "Unknown"),
+        role: "Invited Dealer",
+        salesManager: fullName,
         joinDate: item.created_at,
-        address:
-          [
-            item.address?.street,
-            item.address?.city,
-            item.address?.state,
-            item.address?.zip,
-          ]
-            .filter(Boolean)
-            .join(", ") || "Address not provided",
-        totalSales: 0, // Not provided in API
-        vehiclesInStock: 0, // Not provided in API
-        rating: 0, // Not provided in API
-        latitude: item.address?.latitude || null,
-        longitude: item.address?.longitude || null,
-        userId: item.user?.id || null,
-        updatedAt: item.updated_at,
+        address: "Address not provided", // Not provided in API
+        totalSales: 0, // Not applicable for invitations
+        vehiclesInStock: 0, // Not applicable for invitations
+        rating: 0, // Not applicable for invitations
+        latitude: null,
+        longitude: null,
+        userId: item.sales_manager_id || null,
+        updatedAt: item.created_at,
+        // Additional invitation-specific fields
+        dealerCode: item.dealer_code || 'N/A',
+        expiresAt: item.expires_at,
+        acceptedAt: item.accepted_at,
+        isExpired: isExpired,
+        invitationId: item.id
       };
     });
-  };
-
-  // Dealerships API
-  const getDealerships = async (page = 1, perPage = 10) => {
-    try {
-      const response = await api.get("/dealerships", {
-        params: {
-          page,
-          per_page: perPage,
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching dealerships:", error);
-      throw error;
-    }
   };
 
   // Retry function with exponential backoff
@@ -154,8 +134,8 @@ const DealerShips = () => {
     }
   }, [maxRetries]);
 
-  // Fetch dealerships data from API
-  const fetchDealerships = useCallback(async (page = 1, perPage = 10, isRetry = false) => {
+  // Fetch invitations data from API
+  const fetchInvitations = useCallback(async (page = 1, perPage = 20, isRetry = false) => {
     try {
       setLoading(true);
       if (!isRetry) {
@@ -164,18 +144,18 @@ const DealerShips = () => {
       }
 
       const response = await retryWithBackoff(() =>
-        getDealerships(page, perPage)
+        getInvitations(page, perPage)
       );
 
       if (response.success) {
-        const transformedData = transformDealershipData(response.data);
-        setDealerships(transformedData);
+        const transformedData = transformInvitationData(response.data);
+        setInvitations(transformedData);
         setPagination(response.pagination);
         setTotalPages(response.pagination.total_pages || 1);
         setTotalCount(parseInt(response.pagination.total) || 0);
         setRetryCount(0); // Reset retry count on success
       } else {
-        throw new Error(response.message || "Failed to fetch dealerships");
+        throw new Error(response.message || "Failed to fetch invitations");
       }
     } catch (error) {
       const errorInfo = handleApiError(error);
@@ -184,13 +164,13 @@ const DealerShips = () => {
       // Show appropriate toast based on error type
       const toastMessages = {
         permission:
-          "Access denied. You don't have permission to view dealerships.",
+          "Access denied. You don't have permission to view invitations.",
         auth: "Please log in to continue.",
         network: "Network error. Please check your connection.",
         rateLimit: "Too many requests. Please wait a moment and try again.",
         server: "Server error. Please try again later.",
-        notFound: "Dealerships endpoint not found.",
-        error: "Failed to load dealerships. Please try again.",
+        notFound: "Invitations endpoint not found.",
+        error: "Failed to load invitations. Please try again.",
       };
 
       toast.error(toastMessages[errorInfo.type] || toastMessages.error);
@@ -229,45 +209,52 @@ const DealerShips = () => {
     },
   };
 
-  // Load dealerships data on component mount and when page changes
+  // Load invitations data on component mount and when page changes
   useEffect(() => {
-    fetchDealerships(currentPage, itemsPerPage);
-  }, [currentPage, fetchDealerships]);
+    fetchInvitations(currentPage, itemsPerPage);
+  }, [currentPage, fetchInvitations]);
 
   // Handle page change
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  // Handle dealership actions
-  const handleViewDealership = (dealershipId) => {
-    console.log("View dealership:", dealershipId);
-    // Navigate to dealership details page
+  // Handle invitation actions
+  const handleViewInvitation = (invitationId) => {
+    console.log("View invitation:", invitationId);
+    // Navigate to invitation details page
   };
 
-  const handleEditDealership = (dealershipId) => {
-    console.log("Edit dealership:", dealershipId);
-    // Open edit modal or navigate to edit page
+  const handleResendInvitation = async (invitationId) => {
+    try {
+      const response = await resendInvitation(invitationId);
+      if (response.success) {
+        toast.success("Invitation resent successfully!");
+        // Refresh the data
+        fetchInvitations(currentPage, itemsPerPage);
+      } else {
+        toast.error(response.message || "Failed to resend invitation");
+      }
+    } catch (error) {
+      console.error("Error resending invitation:", error);
+      toast.error("Failed to resend invitation. Please try again.");
+    }
   };
 
-  const handleDeleteDealership = (dealershipId) => {
-    console.log("Delete dealership:", dealershipId);
-    // Show confirmation dialog and delete
-  };
-
-  const handleContactDealership = (dealershipId) => {
-    console.log("Contact dealership:", dealershipId);
-    // Open contact modal or initiate contact
-  };
-
-  const handleActivateDealership = (dealershipId) => {
-    console.log("Activate dealership:", dealershipId);
-    // Update dealership status to active
-  };
-
-  const handleDeactivateDealership = (dealershipId) => {
-    console.log("Deactivate dealership:", dealershipId);
-    // Update dealership status to inactive
+  const handleCancelInvitation = async (invitationId) => {
+    try {
+      const response = await cancelInvitation(invitationId);
+      if (response.success) {
+        toast.success("Invitation canceled successfully!");
+        // Refresh the data
+        fetchInvitations(currentPage, itemsPerPage);
+      } else {
+        toast.error(response.message || "Failed to cancel invitation");
+      }
+    } catch (error) {
+      console.error("Error canceling invitation:", error);
+      toast.error("Failed to cancel invitation. Please try again.");
+    }
   };
 
   const handleOpenInviteModal = () => {
@@ -295,7 +282,7 @@ const DealerShips = () => {
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        className="space-y-6   min-h-screen bg-gray-50 pt-10 md:pt-24 px-8 md:px-6"
+        className="space-y-6 min-h-screen bg-gray-50 pt-10 md:pt-24 px-8 md:px-6"
         variants={pageVariants}
         initial="hidden"
         animate="visible"
@@ -320,19 +307,31 @@ const DealerShips = () => {
               whileHover={{ scale: 1.1, rotate: 5 }}
               transition={{ duration: 0.2 }}
             >
-              <Building2 className="w-5 h-5 text-orange-600" />
+              <Mail className="w-5 h-5 text-orange-600" />
             </motion.div>
             <div>
               <h2 className="text-2xl font-semibold text-neutral-900">
-                Dealerships
+                Invited Dealerships
               </h2>
               <p className="text-sm text-neutral-600">
-                All dealership partners and details
+                Pending dealership invitations and status
               </p>
             </div>
           </motion.div>
-        
+          <motion.button
+            onClick={handleOpenInviteModal}
+            className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.4 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <UserPlus className="w-4 h-4" />
+            Invite Dealership
+          </motion.button>
         </motion.div>
+
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -343,19 +342,7 @@ const DealerShips = () => {
               {error.type === "permission" ? (
                 <>
                   <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                    <svg
-                      className="w-8 h-8 text-red-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 15v2m0 0v2m0-2h2m-2 0H10m2-7V9a2 2 0 00-2-2H9a2 2 0 00-2 2v1m4 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v1m4 0h2a2 2 0 012 2v1a2 2 0 01-2 2h-2m-4 0H9a2 2 0 01-2-2v-1a2 2 0 012-2h2m-4 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v1m4 0h2a2 2 0 012 2v1a2 2 0 01-2 2h-2"
-                      />
-                    </svg>
+                    <XCircle className="w-8 h-8 text-red-500" />
                   </div>
                   <div className="text-red-500 text-lg mb-2 font-semibold">
                     Access Denied
@@ -364,7 +351,7 @@ const DealerShips = () => {
                     {error.message}
                   </div>
                   <div className="text-gray-500 text-xs mb-6">
-                    Contact your administrator to request access to dealership
+                    Contact your administrator to request access to invitation
                     management
                   </div>
                   <button
@@ -377,19 +364,7 @@ const DealerShips = () => {
               ) : error.type === "auth" ? (
                 <>
                   <div className="w-16 h-16 mx-auto mb-4 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <svg
-                      className="w-8 h-8 text-yellow-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                      />
-                    </svg>
+                    <Clock className="w-8 h-8 text-yellow-500" />
                   </div>
                   <div className="text-yellow-600 text-lg mb-2 font-semibold">
                     Authentication Required
@@ -407,19 +382,7 @@ const DealerShips = () => {
               ) : error.type === "network" ? (
                 <>
                   <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
-                    <svg
-                      className="w-8 h-8 text-blue-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"
-                      />
-                    </svg>
+                    <Building2 className="w-8 h-8 text-blue-500" />
                   </div>
                   <div className="text-blue-500 text-lg mb-2 font-semibold">
                     Connection Error
@@ -428,7 +391,7 @@ const DealerShips = () => {
                     {error.message}
                   </div>
                   <button
-                    onClick={() => fetchDealerships(currentPage, itemsPerPage)}
+                    onClick={() => fetchInvitations(currentPage, itemsPerPage)}
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                   >
                     Try Again
@@ -437,19 +400,7 @@ const DealerShips = () => {
               ) : error.type === "rateLimit" ? (
                 <>
                   <div className="w-16 h-16 mx-auto mb-4 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <svg
-                      className="w-8 h-8 text-yellow-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
+                    <Clock className="w-8 h-8 text-yellow-500" />
                   </div>
                   <div className="text-yellow-600 text-lg mb-2 font-semibold">
                     Rate Limit Exceeded
@@ -461,7 +412,7 @@ const DealerShips = () => {
                     Please wait a moment before trying again
                   </div>
                   <button
-                    onClick={() => fetchDealerships(currentPage, itemsPerPage)}
+                    onClick={() => fetchInvitations(currentPage, itemsPerPage)}
                     className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
                   >
                     Try Again
@@ -470,28 +421,16 @@ const DealerShips = () => {
               ) : (
                 <>
                   <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                    <svg
-                      className="w-8 h-8 text-red-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
+                    <XCircle className="w-8 h-8 text-red-500" />
                   </div>
                   <div className="text-red-500 text-lg mb-2 font-semibold">
-                    Error Loading Dealerships
+                    Error Loading Invitations
                   </div>
                   <div className="text-red-400 text-sm mb-4">
                     {error.message}
                   </div>
                   <button
-                    onClick={() => fetchDealerships(currentPage, itemsPerPage)}
+                    onClick={() => fetchInvitations(currentPage, itemsPerPage)}
                     className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
                   >
                     Try Again
@@ -499,42 +438,55 @@ const DealerShips = () => {
                 </>
               )}
             </div>
-          ) : dealerships.length > 0 ? (
+          ) : invitations.length > 0 ? (
             <>
               {user?.role == "admin" || user?.role == "sales_manager" ? (
                 <DealershipContainer
-                  dealerships={dealerships}
+                  dealerships={invitations}
                   currentPage={currentPage}
                   totalPages={totalPages}
                   totalCount={totalCount}
                   onPageChange={handlePageChange}
-                  onViewDealership={handleViewDealership}
-                  onEditDealership={handleEditDealership}
-                  onDeleteDealership={handleDeleteDealership}
-                  onContactDealership={handleContactDealership}
-                  onActivateDealership={handleActivateDealership}
-                  onDeactivateDealership={handleDeactivateDealership}
+                  onViewDealership={handleViewInvitation}
+                  onEditDealership={() => {}} // Not applicable for invitations
+                  onDeleteDealership={handleCancelInvitation}
+                  onContactDealership={() => {}} // Not applicable for invitations
+                  onActivateDealership={() => {}} // Not applicable for invitations
+                  onDeactivateDealership={() => {}} // Not applicable for invitations
+                  // Custom actions for invitations
+                  onResendInvitation={handleResendInvitation}
+                  onCancelInvitation={handleCancelInvitation}
+                  isInvitationView={true}
                 />
               ) : (
                 <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-12 text-center">
                   <div className="text-neutral-500 text-lg mb-2">
-                    You are not authorized to view dealerships
+                    You are not authorized to view invitations
                   </div>
                   <div className="text-neutral-400 text-sm">
                     Please contact your administrator to request access to
-                    dealership management
+                    invitation management
                   </div>
                 </div>
               )}
             </>
           ) : (
             <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-12 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                <Mail className="w-8 h-8 text-gray-400" />
+              </div>
               <div className="text-neutral-500 text-lg mb-2">
-                No dealerships found
+                No invitations found
               </div>
-              <div className="text-neutral-400 text-sm">
-                Try refreshing the page or check back later
+              <div className="text-neutral-400 text-sm mb-4">
+                No dealership invitations have been sent yet
               </div>
+              <button
+                onClick={handleOpenInviteModal}
+                className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+              >
+                Send First Invitation
+              </button>
             </div>
           )}
         </motion.div>
@@ -561,10 +513,14 @@ const DealerShips = () => {
         <InviteDealershipsModal
           isOpen={isInviteModalOpen}
           onClose={handleCloseInviteModal}
+          onSuccess={() => {
+            handleCloseInviteModal();
+            fetchInvitations(currentPage, itemsPerPage);
+          }}
         />
       </motion.div>
     </AnimatePresence>
   );
 };
 
-export default DealerShips;
+export default InvitedDealerships;

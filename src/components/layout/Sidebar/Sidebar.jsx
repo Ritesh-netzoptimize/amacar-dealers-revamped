@@ -62,6 +62,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
     { name: 'Active customers', href: '/active-customers', icon: Users },
     // Conditionally include DealerShips based on user role
     ...(canAccessDealerships ? [{ name: 'DealerShips', href: '/dealerships', icon: Home }] : []),
+    ...(canAccessDealerships ? [{ name: 'Invited Dealerships', href: '/invited-dealerships', icon: UserPlus }] : []),
     { name: 'Reports', href: '/reports', icon: BarChart  },
 
   ];

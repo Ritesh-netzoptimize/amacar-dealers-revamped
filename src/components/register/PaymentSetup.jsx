@@ -71,7 +71,7 @@ const PaymentForm = ({
         confirmPassword: formData.confirmPassword,
         agreementAccepted: formData.agreementAccepted,
         inviteToken: invitationData?.invite_token || null,
-        invitedByManagerId: invitationData?.id
+        invitedByManagerId: invitationData?.sales_manager_id
       };
 
       console.log("Dispatching registration with data:", registrationData);
