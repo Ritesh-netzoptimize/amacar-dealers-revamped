@@ -182,7 +182,7 @@ export const updateProfile = createAsyncThunk(
         zip: profileData.zipcode,
       };
 
-      const response = await api.put("/auth/profile", apiData);
+      const response = await api.put("/profile/info", apiData);
       if (response.data.success) {
         return response.data.user;
       }
