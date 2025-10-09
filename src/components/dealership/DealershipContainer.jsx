@@ -54,10 +54,9 @@ const DealershipContainer = ({
   onPageChange = () => {},
   onViewDealership = () => {},
   onEditDealership = () => {},
-  onDeleteDealership = () => {},
+  onDeactivateDealership = () => {},
   onContactDealership = () => {},
   onActivateDealership = () => {},
-  onDeactivateDealership = () => {},
   // Invitation-specific props
   onResendInvitation = () => {},
   onCancelInvitation = () => {},
@@ -289,15 +288,7 @@ const DealershipContainer = ({
                         <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                         <span>Contact</span>
                       </DropdownMenuItem>
-                      {row.original.status === "Active" ? (
-                        <DropdownMenuItem
-                          onClick={() => onDeactivateDealership(row.original.id)}
-                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
-                        >
-                          <UserX className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
-                          <span>Deactivate</span>
-                        </DropdownMenuItem>
-                      ) : (
+                      {row.original.status === "Inactive" ? (
                         <DropdownMenuItem
                           onClick={() => onActivateDealership(row.original.id)}
                           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-700 focus:bg-green-50 focus:text-green-700 focus:outline-none transition-all duration-200 group"
@@ -305,14 +296,15 @@ const DealershipContainer = ({
                           <UserCheck className="w-4 h-4 text-neutral-500 group-hover:text-green-600 group-focus:text-green-600 transition-colors duration-200" />
                           <span>Activate</span>
                         </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem
+                          onClick={() => onDeactivateDealership(row.original.id)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
+                        >
+                          <UserX className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
+                          <span>Deactivate</span>
+                        </DropdownMenuItem>
                       )}
-                      <DropdownMenuItem
-                        onClick={() => onDeleteDealership(row.original.id)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
-                      >
-                        <Trash2 className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
-                        <span>Delete</span>
-                      </DropdownMenuItem>
                     </>
                   )}
                 </DropdownMenuContent>
@@ -328,10 +320,9 @@ const DealershipContainer = ({
       columnHelper,
       onViewDealership,
       onEditDealership,
-      onDeleteDealership,
+      onDeactivateDealership,
       onContactDealership,
       onActivateDealership,
-      onDeactivateDealership,
       onResendInvitation,
       onCancelInvitation,
       isInvitationView,
@@ -657,15 +648,7 @@ const DealershipContainer = ({
                           <Phone className="w-4 h-4 mr-3 text-neutral-500" />
                           <span className="font-medium">Contact</span>
                         </DropdownMenuItem>
-                        {row.original.status === "Active" ? (
-                          <DropdownMenuItem
-                            onClick={() => onDeactivateDealership(row.original.id)}
-                            className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-red-700 hover:bg-red-50 hover:text-red-900 rounded-md transition-colors duration-150 focus:bg-red-50 focus:text-red-900 focus:outline-none"
-                          >
-                            <UserX className="w-4 h-4 mr-3 text-red-500" />
-                            <span className="font-medium">Deactivate</span>
-                          </DropdownMenuItem>
-                        ) : (
+                        {row.original.status === "Inactive" ? (
                           <DropdownMenuItem
                             onClick={() => onActivateDealership(row.original.id)}
                             className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-green-700 hover:bg-green-50 hover:text-green-900 rounded-md transition-colors duration-150 focus:bg-green-50 focus:text-green-900 focus:outline-none"
@@ -673,14 +656,15 @@ const DealershipContainer = ({
                             <UserCheck className="w-4 h-4 mr-3 text-green-500" />
                             <span className="font-medium">Activate</span>
                           </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() => onDeactivateDealership(row.original.id)}
+                            className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-red-700 hover:bg-red-50 hover:text-red-900 rounded-md transition-colors duration-150 focus:bg-red-50 focus:text-red-900 focus:outline-none"
+                          >
+                            <UserX className="w-4 h-4 mr-3 text-red-500" />
+                            <span className="font-medium">Deactivate</span>
+                          </DropdownMenuItem>
                         )}
-                        <DropdownMenuItem
-                          onClick={() => onDeleteDealership(row.original.id)}
-                          className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-red-700 hover:bg-red-50 hover:text-red-900 rounded-md transition-colors duration-150 focus:bg-red-50 focus:text-red-900 focus:outline-none"
-                        >
-                          <Trash2 className="w-4 h-4 mr-3 text-red-500" />
-                          <span className="font-medium">Delete</span>
-                        </DropdownMenuItem>
                       </>
                     )}
                   </DropdownMenuContent>

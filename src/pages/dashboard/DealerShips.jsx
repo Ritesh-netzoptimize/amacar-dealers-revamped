@@ -5,6 +5,7 @@ import DealershipContainer from "@/components/dealership/DealershipContainer";
 import DealershipSkeleton from "@/components/skeletons/Dealership/DealershipSkeleton";
 import Pagination from "@/components/common/Pagination/Pagination";
 import InviteDealershipsModal from "@/components/ui/InviteDealershipsModal";
+import ActivateDeactivateModal from "@/components/ui/ActivateDeactivateModal";
 import { Building2, UserPlus } from "lucide-react";
 import api from "@/lib/api";
 import { useSelector } from "react-redux";
@@ -19,6 +20,9 @@ const DealerShips = () => {
   const [pagination, setPagination] = useState({});
   const [retryCount, setRetryCount] = useState(0);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isActivateDeactivateModalOpen, setIsActivateDeactivateModalOpen] = useState(false);
+  const [selectedDealership, setSelectedDealership] = useState(null);
+  const [modalAction, setModalAction] = useState(null); // 'activate' or 'deactivate'
 
   const { user } = useSelector((state) => state.user);
 
@@ -250,9 +254,13 @@ const DealerShips = () => {
     // Open edit modal or navigate to edit page
   };
 
-  const handleDeleteDealership = (dealershipId) => {
-    console.log("Delete dealership:", dealershipId);
-    // Show confirmation dialog and delete
+  const handleDeactivateDealership = (dealershipId) => {
+    const dealership = dealerships.find(d => d.id === dealershipId);
+    if (dealership) {
+      setSelectedDealership(dealership);
+      setModalAction('deactivate');
+      setIsActivateDeactivateModalOpen(true);
+    }
   };
 
   const handleContactDealership = (dealershipId) => {
@@ -261,14 +269,15 @@ const DealerShips = () => {
   };
 
   const handleActivateDealership = (dealershipId) => {
-    console.log("Activate dealership:", dealershipId);
-    // Update dealership status to active
+    const dealership = dealerships.find(d => d.id === dealershipId);
+    if (dealership) {
+      setSelectedDealership(dealership);
+      setModalAction('activate');
+      setIsActivateDeactivateModalOpen(true);
+    }
   };
 
-  const handleDeactivateDealership = (dealershipId) => {
-    console.log("Deactivate dealership:", dealershipId);
-    // Update dealership status to inactive
-  };
+
 
   const handleOpenInviteModal = () => {
     setIsInviteModalOpen(true);
@@ -276,6 +285,23 @@ const DealerShips = () => {
 
   const handleCloseInviteModal = () => {
     setIsInviteModalOpen(false);
+  };
+
+  const handleCloseActivateDeactivateModal = () => {
+    setIsActivateDeactivateModalOpen(false);
+    setSelectedDealership(null);
+    setModalAction(null);
+  };
+
+  const handleActivateDeactivateSuccess = (dealershipId, isActivated) => {
+    // Update the dealership status in the local state
+    setDealerships(prevDealerships => 
+      prevDealerships.map(dealership => 
+        dealership.id === dealershipId 
+          ? { ...dealership, status: isActivated ? 'Active' : 'Inactive' }
+          : dealership
+      )
+    );
   };
 
   if (loading) {
@@ -510,10 +536,9 @@ const DealerShips = () => {
                   onPageChange={handlePageChange}
                   onViewDealership={handleViewDealership}
                   onEditDealership={handleEditDealership}
-                  onDeleteDealership={handleDeleteDealership}
+                  onDeactivateDealership={handleDeactivateDealership}
                   onContactDealership={handleContactDealership}
                   onActivateDealership={handleActivateDealership}
-                  onDeactivateDealership={handleDeactivateDealership}
                 />
               ) : (
                 <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-12 text-center">
@@ -561,6 +586,16 @@ const DealerShips = () => {
         <InviteDealershipsModal
           isOpen={isInviteModalOpen}
           onClose={handleCloseInviteModal}
+        />
+
+        {/* Activate/Deactivate Dealership Modal */}
+        <ActivateDeactivateModal
+          isOpen={isActivateDeactivateModalOpen}
+          onClose={handleCloseActivateDeactivateModal}
+          action={modalAction}
+          dealershipId={selectedDealership?.id}
+          dealershipName={selectedDealership?.name}
+          onSuccess={handleActivateDeactivateSuccess}
         />
       </motion.div>
     </AnimatePresence>
