@@ -252,6 +252,7 @@ export const updateProfile = createAsyncThunk(
 
       const response = await api.put("/profile/info", apiData);
       if (response.data.success) {
+        console.log("response.data profile", response.data)
         return response.data.user;
       }
       return rejectWithValue(response.data.message || "Profile update failed");
@@ -420,6 +421,8 @@ export const fetchProfileInfo = createAsyncThunk(
       const response = await api.get("/profile/info");
 
       if (response.data.success) {
+        console.log("response.data profile", response.data)
+
         return response.data.profile;
       } else {
         return rejectWithValue(

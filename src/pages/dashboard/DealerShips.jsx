@@ -6,6 +6,7 @@ import DealershipSkeleton from "@/components/skeletons/Dealership/DealershipSkel
 import Pagination from "@/components/common/Pagination/Pagination";
 import InviteDealershipsModal from "@/components/ui/InviteDealershipsModal";
 import ActivateDeactivateModal from "@/components/ui/ActivateDeactivateModal";
+import CreateDealershipModal from "@/components/ui/CreateDealershipModal";
 import { Building2, UserPlus } from "lucide-react";
 import api from "@/lib/api";
 import { useSelector } from "react-redux";
@@ -21,6 +22,7 @@ const DealerShips = () => {
   const [retryCount, setRetryCount] = useState(0);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isActivateDeactivateModalOpen, setIsActivateDeactivateModalOpen] = useState(false);
+  const [isCreateDealershipModalOpen, setIsCreateDealershipModalOpen] = useState(false);
   const [selectedDealership, setSelectedDealership] = useState(null);
   const [modalAction, setModalAction] = useState(null); // 'activate' or 'deactivate'
 
@@ -287,6 +289,19 @@ const DealerShips = () => {
     setIsInviteModalOpen(false);
   };
 
+  const handleOpenCreateDealershipModal = () => {
+    setIsCreateDealershipModalOpen(true);
+  };
+
+  const handleCloseCreateDealershipModal = () => {
+    setIsCreateDealershipModalOpen(false);
+  };
+
+  const handleCreateDealershipSuccess = () => {
+    // Refresh the dealerships list after successful creation
+    fetchDealerships(currentPage, itemsPerPage);
+  };
+
   const handleCloseActivateDeactivateModal = () => {
     setIsActivateDeactivateModalOpen(false);
     setSelectedDealership(null);
@@ -336,26 +351,44 @@ const DealerShips = () => {
           transition={{ duration: 0.5 }}
         >
           <motion.div
-            className="flex items-center gap-3"
+            className="flex items-center justify-between w-full"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1, duration: 0.4 }}
           >
-            <motion.div
-              className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center"
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Building2 className="w-5 h-5 text-orange-600" />
-            </motion.div>
-            <div>
-              <h2 className="text-2xl font-semibold text-neutral-900">
-                Dealerships
-              </h2>
-              <p className="text-sm text-neutral-600">
-                All dealership partners and details
-              </p>
+            <div className="flex items-center gap-3">
+              <motion.div
+                className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Building2 className="w-5 h-5 text-orange-600" />
+              </motion.div>
+              <div>
+                <h2 className="text-2xl font-semibold text-neutral-900">
+                  Dealerships
+                </h2>
+                <p className="text-sm text-neutral-600">
+                  All dealership partners and details
+                </p>
+              </div>
             </div>
+            
+            {/* Create Dealership Button - Only for dealers with active subscription */}
+            {user?.role === 'dealer' && (user?.subscription_details?.is_active || user?.subscription_status === "active") && (
+              <motion.button
+                onClick={handleOpenCreateDealershipModal}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <UserPlus className="w-4 h-4" />
+                Create Dealership
+              </motion.button>
+            )}
           </motion.div>
         
         </motion.div>
@@ -586,6 +619,13 @@ const DealerShips = () => {
         <InviteDealershipsModal
           isOpen={isInviteModalOpen}
           onClose={handleCloseInviteModal}
+        />
+
+        {/* Create Dealership Modal */}
+        <CreateDealershipModal
+          isOpen={isCreateDealershipModalOpen}
+          onClose={handleCloseCreateDealershipModal}
+          onSuccess={handleCreateDealershipSuccess}
         />
 
         {/* Activate/Deactivate Dealership Modal */}

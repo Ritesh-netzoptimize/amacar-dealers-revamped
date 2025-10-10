@@ -49,7 +49,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
 
   // Get user roles from Redux state
   const userRole = user?.role;
-  const canAccessDealerships = userRole === 'sales_manager' || userRole === 'administrator';
+  const canAccessDealerships = userRole === 'sales_manager' || userRole === 'administrator' || (userRole === 'dealer' && (user?.subscription_details?.is_active || user?.subscription_status === "active"));
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },

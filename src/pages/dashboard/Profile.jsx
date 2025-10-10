@@ -106,7 +106,7 @@ const Profile = () => {
         firstName: user.first_name || user.display_name?.split(" ")[0] || "",
         lastName: user.last_name || user.display_name?.split(" ")[1] || "",
         email: user.email || "",
-        phone: user.phone || "",
+        phone: user.phone ||  "",
         zipcode: user.zipcode || "",
         state: user.state || "",
         city: user.city || "",
@@ -487,7 +487,7 @@ const Profile = () => {
                 <div className="flex items-center space-x-2 text-sm sm:text-base text-neutral-600">
                   <Phone className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="truncate">
-                    {profile.phone || "Not provided"}
+                    {user.phone || "Not provided"}
                   </span>
                 </div>
               </div>
@@ -511,7 +511,7 @@ const Profile = () => {
                 <div className="flex items-center space-x-2 text-sm sm:text-base text-neutral-600">
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="truncate">
-                    {profile.state || "Not provided"}
+                    {user?.meta.state || "Not provided"}
                   </span>
                 </div>
               </div>
@@ -523,7 +523,7 @@ const Profile = () => {
                 <div className="flex items-center space-x-2 text-sm sm:text-base text-neutral-600">
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="truncate">
-                    {profile.zipcode || "Not provided"}
+                    {user?.meta.zipcode || "Not provided"}
                   </span>
                 </div>
               </div>
