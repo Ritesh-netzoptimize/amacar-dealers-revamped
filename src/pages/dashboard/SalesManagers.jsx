@@ -495,7 +495,7 @@ const SalesManagers = () => {
             </div>
           ) : salesManagers.length > 0 ? (
             <>
-              {user?.role == "admin" || user?.role == "sales_manager" ? (
+              {user?.role == "administrator" || user?.role == "sales_manager" ? (
                 <SalesManagerContainer
                   salesManagers={salesManagers}
                   currentPage={currentPage}

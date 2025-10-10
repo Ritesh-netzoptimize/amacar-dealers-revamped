@@ -572,6 +572,7 @@ const DealerShips = () => {
                   onDeactivateDealership={handleDeactivateDealership}
                   onContactDealership={handleContactDealership}
                   onActivateDealership={handleActivateDealership}
+                  onRefresh={() => fetchDealerships(currentPage, itemsPerPage)}
                 />
               ) : (
                 <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-12 text-center">

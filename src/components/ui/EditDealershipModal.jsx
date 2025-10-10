@@ -28,7 +28,8 @@ const EditDealershipModal = ({
   isOpen, 
   onClose, 
   dealershipData,
-  onSuccess 
+  onSuccess,
+  onRefresh = () => {} // Add refresh callback
 }) => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
@@ -38,6 +39,8 @@ const EditDealershipModal = ({
     zip: "",
     city: "",
     state: "",
+    website: "",
+    notes: "",
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -56,6 +59,8 @@ const EditDealershipModal = ({
         zip: dealershipData.zip || "",
         city: dealershipData.city || "",
         state: dealershipData.state || "",
+        website: dealershipData.website || "",
+        notes: dealershipData.notes || "",
       });
       setErrors({});
       setSuccess(false);
@@ -157,6 +162,15 @@ const EditDealershipModal = ({
         hasErrors = true;
       }
 
+      // Validate website URL format if provided
+      if (formData.website && formData.website.trim()) {
+        const urlRegex = /^https?:\/\/.+\..+/;
+        if (!urlRegex.test(formData.website)) {
+          newErrors.website = "Please enter a valid website URL (e.g., https://example.com)";
+          hasErrors = true;
+        }
+      }
+
       if (hasErrors) {
         setErrors(newErrors);
         setLoading(false);
@@ -164,16 +178,22 @@ const EditDealershipModal = ({
       }
 
       // Make API call to update dealership
-      const response = await api.put(`/dealerships/${dealershipData.id}`, {
+      console.log("before calling update ninofr api")
+      const response = await api.put(`/dealerships/${dealershipData.id}/update-info`, {
         phone: formData.phone,
         zip: formData.zip,
         city: formData.city,
         state: formData.state,
+        website: formData.website,
+        notes: formData.notes,
       });
 
       if (response.data.success) {
         setSuccess(true);
         toast.success(response.data.message || "Dealership updated successfully!");
+        
+        // Call refresh callback to update the data
+        onRefresh();
         
         // Call success callback if provided
         if (onSuccess) {
@@ -246,6 +266,8 @@ const EditDealershipModal = ({
         zip: "",
         city: "",
         state: "",
+        website: "",
+        notes: "",
       });
       setErrors({});
       setSuccess(false);
@@ -481,6 +503,74 @@ const EditDealershipModal = ({
                   >
                     <AlertCircle className="w-3 h-3" />
                     {errors.zip}
+                  </motion.p>
+                )}
+              </div>
+            </div>
+
+            {/* Additional Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-neutral-800 flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-orange-600" />
+                Additional Information
+              </h3>
+              
+              {/* Website */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <Building2 className="w-4 h-4" />
+                  Website
+                </label>
+                <input
+                  type="url"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleInputChange}
+                  placeholder="https://example-dealership.com"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                    errors.website ? 'border-red-500' : 'border-neutral-300'
+                  }`}
+                  disabled={loading}
+                />
+                {errors.website && (
+                  <motion.p
+                    className="text-red-500 text-xs flex items-center gap-1"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.website}
+                  </motion.p>
+                )}
+              </div>
+
+              {/* Notes */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <Building2 className="w-4 h-4" />
+                  Notes
+                </label>
+                <textarea
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleInputChange}
+                  placeholder="Additional notes about the dealership..."
+                  rows={3}
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 resize-none ${
+                    errors.notes ? 'border-red-500' : 'border-neutral-300'
+                  }`}
+                  disabled={loading}
+                />
+                {errors.notes && (
+                  <motion.p
+                    className="text-red-500 text-xs flex items-center gap-1"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.notes}
                   </motion.p>
                 )}
               </div>

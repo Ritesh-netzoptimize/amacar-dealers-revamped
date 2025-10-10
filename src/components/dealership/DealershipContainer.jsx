@@ -58,6 +58,7 @@ const DealershipContainer = ({
   onDeactivateDealership = () => {},
   onContactDealership = () => {},
   onActivateDealership = () => {},
+  onRefresh = () => {}, // Add refresh callback
   // Invitation-specific props
   onResendInvitation = () => {},
   onCancelInvitation = () => {},
@@ -716,6 +717,7 @@ const DealershipContainer = ({
         onClose={handleEditModalClose}
         dealershipData={selectedDealership}
         onSuccess={handleEditSuccess}
+        onRefresh={onRefresh}
       />
     </motion.div>
   );
