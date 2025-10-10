@@ -130,7 +130,6 @@ const EditSalesManagerModal = ({
       const requiredFields = [
         "first_name",
         "last_name",
-        "email",
         "phone",
       ];
 
@@ -204,7 +203,6 @@ const EditSalesManagerModal = ({
       const requestBody = {
         first_name: formData.first_name,
         last_name: formData.last_name,
-        email: formData.email,
         phone: formData.phone,
         city: formData.city,
         state: formData.state,
@@ -452,35 +450,23 @@ const EditSalesManagerModal = ({
                 </div>
               </div>
 
-              {/* Email */}
+              {/* Email - Disabled and Prefilled */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
                   <Mail className="w-4 h-4" />
-                  Email Address *
+                  Email Address
                 </label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="john.smith@example.com"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.email ? 'border-red-500' : 'border-neutral-300'
-                  }`}
-                  disabled={loading}
-                  required
+                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg bg-neutral-100 text-neutral-600 cursor-not-allowed"
+                  disabled
+                  title="Email address cannot be changed"
                 />
-                {errors.email && (
-                  <motion.p
-                    className="text-red-500 text-xs flex items-center gap-1"
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <AlertCircle className="w-3 h-3" />
-                    {errors.email}
-                  </motion.p>
-                )}
+                <p className="text-xs text-neutral-500">
+                  Email address cannot be modified
+                </p>
               </div>
 
               {/* Phone */}
