@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Eye,
@@ -44,6 +44,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import EditDealershipModal from "@/components/ui/EditDealershipModal";
 import { useNavigate } from "react-router-dom";
 
 const DealershipContainer = ({
@@ -65,6 +66,31 @@ const DealershipContainer = ({
   const navigate = useNavigate();
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedDealership, setSelectedDealership] = useState(null);
+
+  // Handle edit dealership
+  const handleEditDealership = useCallback((dealershipId) => {
+    const dealership = dealerships.find(d => d.id === dealershipId);
+    if (dealership) {
+      setSelectedDealership(dealership);
+      setEditModalOpen(true);
+    }
+  }, [dealerships]);
+
+  // Handle edit modal close
+  const handleEditModalClose = () => {
+    setEditModalOpen(false);
+    setSelectedDealership(null);
+  };
+
+  // Handle edit success
+  const handleEditSuccess = () => {
+    // Call the parent's onEditDealership callback if provided
+    if (onEditDealership) {
+      onEditDealership(selectedDealership.id);
+    }
+  };
 
   // Animation variants
   const containerVariants = {
@@ -236,7 +262,7 @@ const DealershipContainer = ({
                   sideOffset={4}
                   className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
                 >
-                  {!isInvitationView && (
+                  {/* {!isInvitationView && (
                     <DropdownMenuItem
                       onClick={() => onViewDealership(row.original.id)}
                       className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
@@ -244,7 +270,7 @@ const DealershipContainer = ({
                       <Eye className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                       <span>View Details</span>
                     </DropdownMenuItem>
-                  )}
+                  )} */}
 
                   {isInvitationView ? (
                     // Invitation-specific actions based on status
@@ -280,7 +306,7 @@ const DealershipContainer = ({
                     // Regular dealership actions
                     <>
                       <DropdownMenuItem
-                        onClick={() => onEditDealership(row.original.id)}
+                        onClick={() => handleEditDealership(row.original.id)}
                         className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                       >
                         <Edit className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
@@ -324,7 +350,7 @@ const DealershipContainer = ({
     [
       columnHelper,
       onViewDealership,
-      onEditDealership,
+      handleEditDealership,
       onDeactivateDealership,
       onContactDealership,
       onActivateDealership,
@@ -645,7 +671,7 @@ const DealershipContainer = ({
                       // Regular dealership actions for mobile
                       <>
                         <DropdownMenuItem
-                          onClick={() => onEditDealership(row.original.id)}
+                          onClick={() => handleEditDealership(row.original.id)}
                           className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-colors duration-150 focus:bg-neutral-50 focus:text-neutral-900 focus:outline-none"
                         >
                           <Edit className="w-4 h-4 mr-3 text-neutral-500" />
@@ -684,6 +710,14 @@ const DealershipContainer = ({
           </motion.div>
         ))}
       </div>
+
+      {/* Edit Dealership Modal */}
+      <EditDealershipModal
+        isOpen={editModalOpen}
+        onClose={handleEditModalClose}
+        dealershipData={selectedDealership}
+        onSuccess={handleEditSuccess}
+      />
     </motion.div>
   );
 };
