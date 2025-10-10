@@ -848,7 +848,7 @@ const Profile = () => {
                       </div>
 
                       {/* Cancel Subscription Button - Only show for active subscriptions */}
-                      {subscription.has_subscription && (!cancellationStatus.has_request) &&
+                      {subscription?.has_subscription && (!cancellationStatus?.has_request) &&
                         (subscription.status === "active" ||
                           subscription.status === "trialing") && (
                           <div className="mt-6 pt-6 border-t border-neutral-200">
