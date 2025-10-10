@@ -4,7 +4,6 @@ import { toast } from "react-hot-toast";
 import SalesManagerContainer from "@/components/sales-managers/SalesManagerContainer";
 import DealershipSkeleton from "@/components/skeletons/Dealership/DealershipSkeleton";
 import Pagination from "@/components/common/Pagination/Pagination";
-import ActivateDeactivateModal from "@/components/ui/ActivateDeactivateModal";
 import CreateSalesManagersModal from "@/components/ui/CreateSalesManagersModal";
 import { User, UserPlus } from "lucide-react";
 import api from "@/lib/api";
@@ -19,10 +18,7 @@ const SalesManagers = () => {
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({});
   const [retryCount, setRetryCount] = useState(0);
-  const [isActivateDeactivateModalOpen, setIsActivateDeactivateModalOpen] = useState(false);
   const [isCreateSalesManagerModalOpen, setIsCreateSalesManagerModalOpen] = useState(false);
-  const [selectedSalesManager, setSelectedSalesManager] = useState(null);
-  const [modalAction, setModalAction] = useState(null); // 'activate' or 'deactivate'
 
   const { user } = useSelector((state) => state.user);
 
@@ -240,44 +236,9 @@ const SalesManagers = () => {
     // Open edit modal or navigate to edit page
   };
 
-  const handleDeactivateSalesManager = (salesManagerId) => {
-    const salesManager = salesManagers.find(sm => sm.id === salesManagerId);
-    if (salesManager) {
-      setSelectedSalesManager(salesManager);
-      setModalAction('deactivate');
-      setIsActivateDeactivateModalOpen(true);
-    }
-  };
-
   const handleContactSalesManager = (salesManagerId) => {
     console.log("Contact sales manager:", salesManagerId);
     // Open contact modal or initiate contact
-  };
-
-  const handleActivateSalesManager = (salesManagerId) => {
-    const salesManager = salesManagers.find(sm => sm.id === salesManagerId);
-    if (salesManager) {
-      setSelectedSalesManager(salesManager);
-      setModalAction('activate');
-      setIsActivateDeactivateModalOpen(true);
-    }
-  };
-
-  const handleCloseActivateDeactivateModal = () => {
-    setIsActivateDeactivateModalOpen(false);
-    setSelectedSalesManager(null);
-    setModalAction(null);
-  };
-
-  const handleActivateDeactivateSuccess = (salesManagerId, isActivated) => {
-    // Update the sales manager status in the local state
-    setSalesManagers(prevSalesManagers => 
-      prevSalesManagers.map(salesManager => 
-        salesManager.id === salesManagerId 
-          ? { ...salesManager, status: isActivated ? 'Active' : 'Inactive' }
-          : salesManager
-      )
-    );
   };
 
   const handleOpenCreateSalesManagerModal = () => {
@@ -543,9 +504,8 @@ const SalesManagers = () => {
                   onPageChange={handlePageChange}
                   onViewSalesManager={handleViewSalesManager}
                   onEditSalesManager={handleEditSalesManager}
-                  onDeactivateSalesManager={handleDeactivateSalesManager}
                   onContactSalesManager={handleContactSalesManager}
-                  onActivateSalesManager={handleActivateSalesManager}
+                  onRefresh={() => fetchSalesManagers(currentPage, itemsPerPage)}
                 />
               ) : (
                 <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-12 text-center">
@@ -588,16 +548,6 @@ const SalesManagers = () => {
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Activate/Deactivate Sales Manager Modal */}
-        <ActivateDeactivateModal
-          isOpen={isActivateDeactivateModalOpen}
-          onClose={handleCloseActivateDeactivateModal}
-          action={modalAction}
-          dealershipId={selectedSalesManager?.id}
-          dealershipName={selectedSalesManager?.display_name}
-          onSuccess={handleActivateDeactivateSuccess}
-        />
 
         {/* Create Sales Manager Modal */}
         <CreateSalesManagersModal

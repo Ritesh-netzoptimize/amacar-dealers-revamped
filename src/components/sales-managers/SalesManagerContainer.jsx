@@ -45,6 +45,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
+import ActDeActModalSales from "@/components/ui/ActDeActModalSales";
 
 const SalesManagerContainer = ({
   salesManagers = [],
@@ -54,19 +55,56 @@ const SalesManagerContainer = ({
   onPageChange = () => {},
   onViewSalesManager = () => {},
   onEditSalesManager = () => {},
-  onDeactivateSalesManager = () => {},
   onContactSalesManager = () => {},
-  onActivateSalesManager = () => {},
+  onRefresh = () => {}, // Add refresh callback
 }) => {
   const navigate = useNavigate();
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  
+  // Modal state
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    action: null, // 'activate' or 'deactivate'
+    salesManagerId: null,
+    salesManagerName: null,
+  });
 
   // Handle edit sales manager
   const handleEditSalesManager = useCallback((salesManagerId) => {
     console.log("Edit sales manager:", salesManagerId);
     // Open edit modal or navigate to edit page
   }, []);
+
+  // Handle activate/deactivate modal
+  const handleActivateDeactivate = useCallback((salesManagerId, action) => {
+    const salesManager = salesManagers.find(sm => sm.id === salesManagerId);
+    if (salesManager) {
+      setModalState({
+        isOpen: true,
+        action,
+        salesManagerId,
+        salesManagerName: salesManager.display_name,
+      });
+    }
+  }, [salesManagers]);
+
+  // Handle modal close
+  const handleModalClose = useCallback(() => {
+    setModalState({
+      isOpen: false,
+      action: null,
+      salesManagerId: null,
+      salesManagerName: null,
+    });
+  }, []);
+
+  // Handle modal success
+  const handleModalSuccess = useCallback((salesManagerId, isActivated) => {
+    // Call refresh callback to update the data
+    onRefresh();
+    console.log(`Sales manager ${salesManagerId} ${isActivated ? 'activated' : 'deactivated'} successfully`);
+  }, [onRefresh]);
 
   // Animation variants
   const containerVariants = {
@@ -231,7 +269,7 @@ const SalesManagerContainer = ({
                   
                   {row.original.status === "Inactive" ? (
                     <DropdownMenuItem
-                      onClick={() => onActivateSalesManager(row.original.id)}
+                      onClick={() => handleActivateDeactivate(row.original.id, 'activate')}
                       className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-700 focus:bg-green-50 focus:text-green-700 focus:outline-none transition-all duration-200 group"
                     >
                       <UserCheck className="w-4 h-4 text-neutral-500 group-hover:text-green-600 group-focus:text-green-600 transition-colors duration-200" />
@@ -239,7 +277,7 @@ const SalesManagerContainer = ({
                     </DropdownMenuItem>
                   ) : (
                     <DropdownMenuItem
-                      onClick={() => onDeactivateSalesManager(row.original.id)}
+                      onClick={() => handleActivateDeactivate(row.original.id, 'deactivate')}
                       className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
                     >
                       <UserX className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
@@ -259,9 +297,8 @@ const SalesManagerContainer = ({
       columnHelper,
       onViewSalesManager,
       handleEditSalesManager,
-      onDeactivateSalesManager,
+      handleActivateDeactivate,
       onContactSalesManager,
-      onActivateSalesManager,
     ]
   );
 
@@ -526,7 +563,7 @@ const SalesManagerContainer = ({
                     
                     {row.original.status === "Inactive" ? (
                       <DropdownMenuItem
-                        onClick={() => onActivateSalesManager(row.original.id)}
+                        onClick={() => handleActivateDeactivate(row.original.id, 'activate')}
                         className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-green-700 hover:bg-green-50 hover:text-green-900 rounded-md transition-colors duration-150 focus:bg-green-50 focus:text-green-900 focus:outline-none"
                       >
                         <UserCheck className="w-4 h-4 mr-3 text-green-500" />
@@ -534,7 +571,7 @@ const SalesManagerContainer = ({
                       </DropdownMenuItem>
                     ) : (
                       <DropdownMenuItem
-                        onClick={() => onDeactivateSalesManager(row.original.id)}
+                        onClick={() => handleActivateDeactivate(row.original.id, 'deactivate')}
                         className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-red-700 hover:bg-red-50 hover:text-red-900 rounded-md transition-colors duration-150 focus:bg-red-50 focus:text-red-900 focus:outline-none"
                       >
                         <UserX className="w-4 h-4 mr-3 text-red-500" />
@@ -548,6 +585,16 @@ const SalesManagerContainer = ({
           </motion.div>
         ))}
       </div>
+
+      {/* Activate/Deactivate Modal */}
+      <ActDeActModalSales
+        isOpen={modalState.isOpen}
+        onClose={handleModalClose}
+        action={modalState.action}
+        salesManagerId={modalState.salesManagerId}
+        salesManagerName={modalState.salesManagerName}
+        onSuccess={handleModalSuccess}
+      />
     </motion.div>
   );
 };
