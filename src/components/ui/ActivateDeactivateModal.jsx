@@ -45,9 +45,8 @@ const ActivateDeactivateModal = ({
         ? `/dealerships/${dealershipId}/activate` 
         : `/dealerships/${dealershipId}/deactivate`;
       
-      const method = isActivate ? 'patch' : 'patch';
       
-      const response = await api[method](endpoint);
+      const response = await api.post(endpoint);
 
       if (response.data.success) {
         setSuccess(true);
