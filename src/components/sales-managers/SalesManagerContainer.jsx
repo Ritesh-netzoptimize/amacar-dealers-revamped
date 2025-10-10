@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import ActDeActModalSales from "@/components/ui/ActDeActModalSales";
+import EditSalesManagerModal from "@/components/ui/EditSalesManagerModal";
 
 const SalesManagerContainer = ({
   salesManagers = [],
@@ -70,11 +71,22 @@ const SalesManagerContainer = ({
     salesManagerName: null,
   });
 
+  // Edit modal state
+  const [editModalState, setEditModalState] = useState({
+    isOpen: false,
+    salesManagerData: null,
+  });
+
   // Handle edit sales manager
   const handleEditSalesManager = useCallback((salesManagerId) => {
-    console.log("Edit sales manager:", salesManagerId);
-    // Open edit modal or navigate to edit page
-  }, []);
+    const salesManager = salesManagers.find(sm => sm.id === salesManagerId);
+    if (salesManager) {
+      setEditModalState({
+        isOpen: true,
+        salesManagerData: salesManager,
+      });
+    }
+  }, [salesManagers]);
 
   // Handle activate/deactivate modal
   const handleActivateDeactivate = useCallback((salesManagerId, action) => {
@@ -104,6 +116,21 @@ const SalesManagerContainer = ({
     // Call refresh callback to update the data
     onRefresh();
     console.log(`Sales manager ${salesManagerId} ${isActivated ? 'activated' : 'deactivated'} successfully`);
+  }, [onRefresh]);
+
+  // Handle edit modal close
+  const handleEditModalClose = useCallback(() => {
+    setEditModalState({
+      isOpen: false,
+      salesManagerData: null,
+    });
+  }, []);
+
+  // Handle edit modal success
+  const handleEditModalSuccess = useCallback(() => {
+    // Call refresh callback to update the data
+    onRefresh();
+    console.log("Sales manager updated successfully");
   }, [onRefresh]);
 
   // Animation variants
@@ -594,6 +621,14 @@ const SalesManagerContainer = ({
         salesManagerId={modalState.salesManagerId}
         salesManagerName={modalState.salesManagerName}
         onSuccess={handleModalSuccess}
+      />
+
+      {/* Edit Sales Manager Modal */}
+      <EditSalesManagerModal
+        isOpen={editModalState.isOpen}
+        onClose={handleEditModalClose}
+        salesManagerData={editModalState.salesManagerData}
+        onSuccess={handleEditModalSuccess}
       />
     </motion.div>
   );
