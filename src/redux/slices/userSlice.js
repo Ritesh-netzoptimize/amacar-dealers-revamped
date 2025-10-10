@@ -371,8 +371,7 @@ export const logoutUser = createAsyncThunk(
   "user/logout",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/logout");
-      return response.data;
+      console.log("logout success")
     } catch (error) {
       // Even if the API call fails, we should still clear local state
       console.warn("Logout API call failed:", error);
