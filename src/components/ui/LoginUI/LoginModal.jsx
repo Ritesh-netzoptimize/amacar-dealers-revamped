@@ -54,6 +54,7 @@ export default function LoginModal({
   const [resetToken, setResetToken] = useState(null);
   const [twoFactorData, setTwoFactorData] = useState(null);
   const [shouldResetEmailValidation, setShouldResetEmailValidation] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   // Email validation hook - validate when email is not empty
   const emailValidation = useEmailValidation(

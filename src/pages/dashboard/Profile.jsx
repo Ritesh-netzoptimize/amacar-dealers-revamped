@@ -14,6 +14,7 @@ import {
   Camera,
   X,
   XCircle,
+  AlertTriangle,
 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -101,6 +102,22 @@ const Profile = () => {
     user?.requires_2fa === "enabled" ||
     user?.requires_2fa === true ||
     user?.requires_2fa === 1;
+
+  // Check if user is deactivated and should show warning banner
+  const shouldShowDeactivationWarning = () => {
+    if (!user) return false;
+
+    // Check if user is inactive
+    const isInactive = user.account_status === "inactive";
+
+    // Check if user role is one of the specified roles
+    const validRoles = ["dealer", "sales_manager", "dealer_user"];
+    const hasValidRole =
+      validRoles.includes(user.role) ||
+      (user.roles && user.roles.some((role) => validRoles.includes(role)));
+
+    return isInactive && hasValidRole;
+  };
 
   // Load user data from Redux state and fetch profile info
   useEffect(() => {
@@ -363,6 +380,48 @@ const Profile = () => {
           initial="hidden"
           animate="visible"
         >
+          {/* Deactivation Warning Banner */}
+          {shouldShowDeactivationWarning() && (
+            <motion.div
+              variants={itemVariants}
+              className="card p-4 sm:p-6 mb-6 sm:mb-8 border-l-4 border-red-500 bg-red-50"
+            >
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <AlertTriangle className="w-6 h-6 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-red-800 mb-2">
+                    Account Deactivated
+                  </h3>
+                  <p className="text-red-700 mb-3">
+                    Your account has been deactivated and you have limited
+                    access to the platform. Please contact support to reactivate
+                    your account.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <button
+                      onClick={() =>
+                        window.open("mailto:support@amacar.com", "_blank")
+                      }
+                      className="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors duration-200"
+                    >
+                      <Mail className="w-4 h-4 mr-2" />
+                      Contact Support
+                    </button>
+                    <button
+                      onClick={() => window.open("tel:+1-800-AMACAR", "_blank")}
+                      className="inline-flex items-center px-4 py-2 bg-red-100 text-red-700 text-sm font-medium rounded-lg hover:bg-red-200 transition-colors duration-200"
+                    >
+                      <Phone className="w-4 h-4 mr-2" />
+                      Call Support
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Header */}
           <motion.div
             variants={itemVariants}
@@ -668,7 +727,9 @@ const Profile = () => {
                             </div>
                             <div className="text-right">
                               <div className="text-3xl font-bold text-blue-900">
-                                ${subscription.trial_amount * subscription.quantity}
+                                $
+                                {subscription.trial_amount *
+                                  subscription.quantity}
                               </div>
                               <div className="text-sm text-blue-700">
                                 Trial Amount
@@ -848,7 +909,8 @@ const Profile = () => {
                       </div>
 
                       {/* Cancel Subscription Button - Only show for active subscriptions */}
-                      {subscription?.has_subscription && (!cancellationStatus?.has_request) &&
+                      {subscription?.has_subscription &&
+                        !cancellationStatus?.has_request &&
                         (subscription.status === "active" ||
                           subscription.status === "trialing") && (
                           <div className="mt-6 pt-6 border-t border-neutral-200">

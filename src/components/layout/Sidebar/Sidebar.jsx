@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { logoutUser } from '@/redux/slices/userSlice';
 import LogoutModal from '@/components/ui/LogoutUI/LogoutModal';
+import DeactivationWarningModal from '@/components/ui/DeactivationWarningModal';
 import { useDispatch, useSelector } from 'react-redux';
 // import Modal from '@/components/ui/modal';
 // import LogoutModal from '@/components/ui/LogoutModal';
@@ -32,6 +33,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
   const location = useLocation();
   // const [isModalOpen, setIsModalOpen] = useState(false);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const [deactivationWarningOpen, setDeactivationWarningOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isManualToggle, setIsManualToggle] = useState(false);
   const prevPathRef = useRef(location.pathname);
@@ -50,6 +52,34 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
   // Get user roles from Redux state
   const userRole = user?.role;
   const canAccessDealerships = userRole === 'sales_manager' || userRole === 'administrator' || (userRole === 'dealer' && (user?.subscription_details?.is_active || user?.subscription_status === "active"));
+
+  // Check if user is deactivated and should show warning modal
+  const shouldShowDeactivationWarning = () => {
+    if (!user) return false;
+    
+    // Check if user is inactive
+    const isInactive = user.account_status === "inactive";
+    
+    // Check if user role is one of the specified roles
+    const validRoles = ['dealer', 'sales_manager', 'dealer_user'];
+    const hasValidRole = validRoles.includes(user.role) || 
+                        (user.roles && user.roles.some(role => validRoles.includes(role)));
+    
+    return isInactive && hasValidRole;
+  };
+
+  // Handle navigation with deactivation check
+  const handleNavigation = (href, e) => {
+    // If user is deactivated and trying to navigate to non-profile page
+    if (shouldShowDeactivationWarning() && href !== '/profile') {
+      e.preventDefault();
+      setDeactivationWarningOpen(true);
+      return;
+    }
+    
+    // Normal navigation
+    navigate(href);
+  };
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -229,6 +259,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
                   ) : (
                     <Link
                       to={item.href}
+                      onClick={(e) => handleNavigation(item.href, e)}
                       className={`group flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${isActive
                         ? 'bg-primary-100 text-primary-700 font-semibold'
                         : 'text-neutral-600 hover:text-primary-600 hover:bg-primary-50'
@@ -290,6 +321,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
                 <Link
                   key={item.name}
                   to={item.href}
+                  onClick={(e) => handleNavigation(item.href, e)}
                   className={`group flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${isActive
                     ? "bg-primary-100 text-primary-700 font-semibold"
                     : "text-neutral-600 hover:text-primary-600 hover:bg-primary-50"
@@ -361,6 +393,12 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
         isOpen={logoutModalOpen}
         onClose={() => setLogoutModalOpen(false)}
         onConfirm={handleConfirmLogout}
+      />
+
+      {/* Deactivation Warning Modal */}
+      <DeactivationWarningModal
+        isOpen={deactivationWarningOpen}
+        onClose={() => setDeactivationWarningOpen(false)}
       />
     </>
   );
