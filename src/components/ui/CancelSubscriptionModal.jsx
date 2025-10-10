@@ -23,7 +23,8 @@ const CancelSubscriptionModal = ({
   onClose, 
   onSuccess,
   mode = "request", // "request" or "status"
-  cancellationStatus: propCancellationStatus = null
+  cancellationStatus: propCancellationStatus = null,
+  subscription = null
 }) => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -254,27 +255,27 @@ const CancelSubscriptionModal = ({
                       Your subscription has been cancelled. You can restart your subscription to regain access to all features.
                     </p>
                     
-                    {/* Request Details */}
-                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 mb-6">
-                      <h4 className="font-semibold text-gray-900 mb-3">Cancellation Details</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Cancelled At:</span>
-                          <span className="font-medium">
-                            {cancellationStatus.requested_at 
-                              ? new Date(cancellationStatus.requested_at).toLocaleString()
-                              : 'N/A'
-                            }
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Reason:</span>
-                          <span className="font-medium text-right max-w-48">
-                            {cancellationStatus.message || 'No reason provided'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                     {/* Request Details */}
+                     <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 mb-6">
+                       <h4 className="font-semibold text-gray-900 mb-3">Cancellation Details</h4>
+                       <div className="space-y-2 text-sm">
+                         <div className="flex justify-between">
+                           <span className="text-gray-600">Cancelled At:</span>
+                           <span className="font-medium">
+                             {cancellationStatus.requested_at 
+                               ? new Date(cancellationStatus.requested_at).toLocaleString()
+                               : 'N/A'
+                             }
+                           </span>
+                         </div>
+                         <div className="flex justify-between">
+                           <span className="text-gray-600">Amount:</span>
+                           <span className="font-medium text-right">
+                             ${(subscription?.trial_amount || 0) * (subscription?.quantity || 1)}
+                           </span>
+                         </div>
+                       </div>
+                     </div>
                   </div>
                 ) : (
                   // Pending/Other Status - Show Status Card and Details

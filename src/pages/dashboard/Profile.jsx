@@ -1035,6 +1035,7 @@ const Profile = () => {
         onSuccess={handleCancelSubscriptionSuccess}
         mode={cancelModalMode}
         cancellationStatus={cancellationStatus}
+        subscription={subscription}
       />
     </div>
   );
