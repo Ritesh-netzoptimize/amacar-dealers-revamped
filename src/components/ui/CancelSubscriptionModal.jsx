@@ -275,23 +275,6 @@ const CancelSubscriptionModal = ({
                         </div>
                       </div>
                     </div>
-
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        // TODO: Implement restart subscription functionality
-                        toast.success("Restart subscription functionality will be implemented soon!");
-                        handleClose();
-                      }}
-                      className="bg-green-500 hover:bg-green-600 text-white px-6 py-2"
-                    >
-                      <div className="flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        Restart Subscription
-                      </div>
-                    </Button>
                   </div>
                 ) : (
                   // Pending/Other Status - Show Status Card and Details
@@ -461,33 +444,51 @@ const CancelSubscriptionModal = ({
 
         <DialogFooter className="gap-2">
           {mode === "status" ? (
-            // Status mode - only close button
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={loading}
-              className="flex-1 sm:flex-none"
-            >
-              Close
-            </Button>
+            // Status mode - close button and restart button for cancelled status
+            <>
+              <button
+                type="button"
+                onClick={handleClose}
+                disabled={loading}
+                className="btn-secondary flex-1 sm:flex-none"
+              >
+                Close
+              </button>
+              {(cancellationStatus?.status === 'cancelled' || cancellationStatus?.status === 'canceled') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    // TODO: Implement restart subscription functionality
+                    toast.success("Restart subscription functionality will be implemented soon!");
+                    handleClose();
+                  }}
+                  className="btn-primary flex-1 sm:flex-none"
+                >
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Restart Subscription
+                  </div>
+                </button>
+              )}
+            </>
           ) : !success ? (
             // Request mode - close and submit buttons
             <>
-              <Button
+              <button
                 type="button"
-                variant="outline"
                 onClick={handleClose}
                 disabled={loading}
-                className="flex-1 sm:flex-none"
+                className="btn-secondary flex-1 sm:flex-none"
               >
                 Close
-              </Button>
-              <Button
+              </button>
+              <button
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="flex-1 sm:flex-none bg-red-500 hover:bg-red-600 text-white disabled:opacity-70 disabled:cursor-not-allowed"
+                className="btn-primary flex-1 sm:flex-none disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <motion.div
@@ -504,7 +505,7 @@ const CancelSubscriptionModal = ({
                     Submit Cancellation Request
                   </div>
                 )}
-              </Button>
+              </button>
             </>
           ) : null}
         </DialogFooter>
