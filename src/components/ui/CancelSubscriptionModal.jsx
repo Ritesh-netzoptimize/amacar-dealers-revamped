@@ -22,7 +22,8 @@ const CancelSubscriptionModal = ({
   isOpen, 
   onClose, 
   onSuccess,
-  mode = "request" // "request" or "status"
+  mode = "request", // "request" or "status"
+  cancellationStatus: propCancellationStatus = null
 }) => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,12 +31,16 @@ const CancelSubscriptionModal = ({
   const [error, setError] = useState("");
   const [cancellationStatus, setCancellationStatus] = useState(null);
 
-  // Fetch cancellation status when modal opens in status mode
+  // Use prop cancellation status or fetch when modal opens in status mode
   useEffect(() => {
     if (isOpen && mode === "status") {
-      fetchCancellationStatus();
+      if (propCancellationStatus) {
+        setCancellationStatus(propCancellationStatus);
+      } else {
+        fetchCancellationStatus();
+      }
     }
-  }, [isOpen, mode]);
+  }, [isOpen, mode, propCancellationStatus]);
 
   const handleInputChange = (e) => {
     setMessage(e.target.value);

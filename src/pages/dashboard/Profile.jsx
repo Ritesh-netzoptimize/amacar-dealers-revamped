@@ -31,6 +31,7 @@ import toast from "react-hot-toast";
 import ChangePasswordModal from "@/components/ui/ProfileUI/ChangePasswrdModa";
 import TwoFactorAuthModal from "@/components/ui/ProfileUI/TwoFactorAuthModal";
 import CancelSubscriptionModal from "@/components/ui/CancelSubscriptionModal";
+import api from "@/lib/api";
 // import ChangePasswordModal from "@/components/ui/ChangePasswordModal";
 // import TwoFactorAuthModal from "@/components/ui/TwoFactorAuthModal";
 
@@ -59,6 +60,8 @@ const Profile = () => {
     useState(false);
   const [cancelModalMode, setCancelModalMode] = useState("request"); // "request" or "status"
   const [isHoveringAvatar, setIsHoveringAvatar] = useState(false);
+  const [cancellationStatus, setCancellationStatus] = useState(null);
+  const [cancellationStatusLoading, setCancellationStatusLoading] = useState(false);
 
   // Default profile data structure
   const defaultProfile = {
@@ -140,6 +143,13 @@ const Profile = () => {
     console.log("subscription", subscription);
   }, [subscription]);
 
+  // Fetch cancellation status when subscription data is available
+  useEffect(() => {
+    if (subscription && subscription.has_subscription) {
+      fetchCancellationStatus();
+    }
+  }, [subscription]);
+
   const handleEdit = () => {
     setEditData({ ...profile });
     setShowEditModal(true);
@@ -178,6 +188,25 @@ const Profile = () => {
   const handleOpenCancelModal = (mode) => {
     setCancelModalMode(mode);
     setShowCancelSubscriptionModal(true);
+  };
+
+  // Fetch cancellation status from API
+  const fetchCancellationStatus = async () => {
+    try {
+      setCancellationStatusLoading(true);
+      const response = await api.get('/subscription/cancellation-status');
+      
+      if (response.data.success) {
+        setCancellationStatus(response.data.cancellation_status);
+      } else {
+        setCancellationStatus(null);
+      }
+    } catch (error) {
+      console.error('Error fetching cancellation status:', error);
+      setCancellationStatus(null);
+    } finally {
+      setCancellationStatusLoading(false);
+    }
   };
 
   // Handle profile picture upload
@@ -487,7 +516,7 @@ const Profile = () => {
                 <div className="flex items-center space-x-2 text-sm sm:text-base text-neutral-600">
                   <Phone className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="truncate">
-                    {user.phone || "Not provided"}
+                    {user?.phone || "Not provided"}
                   </span>
                 </div>
               </div>
@@ -817,12 +846,12 @@ const Profile = () => {
                           <div className="flex items-center justify-between">
                             <div>
                               <h5 className="text-sm font-semibold text-neutral-800 mb-1">
-                                {subscription.status === "cancelled"
+                                {cancellationStatus?.has_request
                                   ? "Cancellation Status"
                                   : "Cancel Subscription"}
                               </h5>
                               <p className="text-xs text-neutral-600">
-                                {subscription.status === "cancelled"
+                                {cancellationStatus?.has_request
                                   ? "View the status of your cancellation request"
                                   : "Cancel your subscription to stop future charges"}
                               </p>
@@ -830,21 +859,29 @@ const Profile = () => {
                             <button
                               onClick={() =>
                                 handleOpenCancelModal(
-                                  subscription.status === "cancelled"
-                                    ? "status"
-                                    : "request"
+                                  cancellationStatus?.has_request ? "status" : "request"
                                 )
                               }
+                              disabled={cancellationStatusLoading}
                               className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2 ${
-                                subscription.status === "cancelled"
+                                cancellationStatus?.has_request
                                   ? "bg-blue-500 hover:bg-blue-600"
                                   : "bg-red-500 hover:bg-red-600"
-                              }`}
+                              } ${cancellationStatusLoading ? "opacity-50 cursor-not-allowed" : ""}`}
                             >
-                              <XCircle className="w-4 h-4" />
-                              {subscription.status === "cancelled"
-                                ? "Show Cancel Status"
-                                : "Cancel Subscription"}
+                              {cancellationStatusLoading ? (
+                                <>
+                                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                  Loading...
+                                </>
+                              ) : (
+                                <>
+                                  <XCircle className="w-4 h-4" />
+                                  {cancellationStatus?.has_request
+                                    ? "Show Cancel Status"
+                                    : "Cancel Subscription"}
+                                </>
+                              )}
                             </button>
                           </div>
                         </div>
@@ -972,6 +1009,7 @@ const Profile = () => {
         onClose={() => setShowCancelSubscriptionModal(false)}
         onSuccess={handleCancelSubscriptionSuccess}
         mode={cancelModalMode}
+        cancellationStatus={cancellationStatus}
       />
     </div>
   );
