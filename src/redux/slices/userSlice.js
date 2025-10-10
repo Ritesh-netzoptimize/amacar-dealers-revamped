@@ -270,15 +270,8 @@ export const toggleTwoFactorAuth = createAsyncThunk(
     try {
       const response = await api.post("/profile/twofa", { enabled });
       if (response.data.success) {
-        // After successful 2FA toggle, fetch updated user profile
-        const profileResponse = await api.get("/profile/info");
-        if (profileResponse.data.success) {
-          return profileResponse.data.user;
-        }
-        // If profile fetch fails, return the 2FA response data
-        return (
-          response.data.user || { two_fa: enabled ? "enabled" : "disabled" }
-        );
+        console.log("toggle two fa response", response);
+        return response.data;
       }
       return rejectWithValue(
         response.data.message || "Failed to update 2FA settings"
@@ -855,13 +848,15 @@ const userSlice = createSlice({
       })
       .addCase(toggleTwoFactorAuth.fulfilled, (state, action) => {
         state.status = "succeeded";
-        // Only update user data if payload is valid
+        // Update user data with 2FA status from response
         if (action.payload && typeof action.payload === "object") {
-          state.user = action.payload;
-          // Update localStorage with new user data
-          localStorage.setItem("authUser", JSON.stringify(action.payload));
+          // Update the user's 2FA status
+          if (state.user) {
+            state.user.two_fa = action.payload["2fa_enabled"] ? "enabled" : "disabled";
+            // Update localStorage with new user data
+            localStorage.setItem("authUser", JSON.stringify(state.user));
+          }
         }
-        // If payload is invalid, keep existing user data
       })
       .addCase(toggleTwoFactorAuth.rejected, (state, action) => {
         state.status = "failed";
