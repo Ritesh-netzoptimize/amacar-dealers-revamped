@@ -24,6 +24,7 @@ import CheckoutPage from "./components/stripe/CheckoutPage";
 import PaymentSuccess from "./components/stripe/PaymentSuccess";
 import { SearchProvider } from "./context/SearchContext";
 import InvitedDealerships from "./pages/dashboard/InvitedDealerships";
+import SalesManagers from "./pages/dashboard/SalesManagers";
 
 function App() {
   // const location = useLocation();
@@ -186,7 +187,16 @@ function App() {
               // </PrivateRoute>
             }
           />
-          
+          <Route
+            path="/sales-managers"
+            element={
+              // <PrivateRoute>
+              <DashboardLayout>
+                <SalesManagers />
+              </DashboardLayout>
+              // </PrivateRoute>
+            }
+          />
           <Route
             path="/reports"
             element={

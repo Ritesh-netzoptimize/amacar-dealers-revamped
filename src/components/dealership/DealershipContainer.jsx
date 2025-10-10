@@ -349,7 +349,6 @@ const DealershipContainer = ({
     },
     [
       columnHelper,
-      onViewDealership,
       handleEditDealership,
       onDeactivateDealership,
       onContactDealership,
