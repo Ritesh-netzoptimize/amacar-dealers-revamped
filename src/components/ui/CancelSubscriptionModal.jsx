@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
 import { 
   AlertTriangle, 
   XCircle, 
@@ -17,6 +18,7 @@ import {
 } from "./dialog";
 import { Button } from "./Button";
 import api from "@/lib/api";
+import { restartSubscription, cancelSubscriptionRequest } from "@/redux/slices/userSlice";
 
 const CancelSubscriptionModal = ({ 
   isOpen, 
@@ -24,8 +26,10 @@ const CancelSubscriptionModal = ({
   onSuccess,
   mode = "request", // "request" or "status"
   cancellationStatus: propCancellationStatus = null,
-  subscription = null
+  subscription = null,
+  user = null
 }) => {
+  const dispatch = useDispatch();
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -108,14 +112,12 @@ const CancelSubscriptionModal = ({
     setError("");
 
     try {
-      // Make API call to cancel subscription
-      const response = await api.post('/subscription/cancel-request', {
-        message: message.trim(),
-      });
-
-      if (response.data.success) {
+      // Dispatch the cancel subscription request thunk
+      const result = await dispatch(cancelSubscriptionRequest(message.trim())).unwrap();
+      
+      if (result.success) {
         setSuccess(true);
-        toast.success(response.data.message || "Cancellation request submitted successfully!");
+        toast.success(result.message || "Cancellation request submitted successfully!");
         
         // Call success callback if provided
         if (onSuccess) {
@@ -126,51 +128,44 @@ const CancelSubscriptionModal = ({
         setTimeout(() => {
           handleClose();
         }, 2000);
-      } else {
-        throw new Error(response.data.message || "Failed to submit cancellation request");
       }
     } catch (error) {
       console.error("Error cancelling subscription:", error);
-      
-      // Handle different types of errors
-      if (error.response) {
-        const { status, data } = error.response;
-        
-        switch (status) {
-          case 400:
-            toast.error(data?.message || "Invalid request to submit cancellation request.");
-            break;
-          case 401:
-            toast.error("You are not authorized to submit cancellation requests.");
-            break;
-          case 403:
-            toast.error("You don't have permission to submit cancellation requests.");
-            break;
-          case 404:
-            toast.error("Subscription not found.");
-            break;
-          case 409:
-            toast.error("Cancellation request already submitted.");
-            break;
-          case 422:
-            toast.error(data?.message || "Validation failed. Cannot submit cancellation request.");
-            break;
-          case 429:
-            toast.error("Too many requests. Please wait a moment and try again.");
-            break;
-          case 500:
-            toast.error("Server error. Please try again later.");
-            break;
-          default:
-            toast.error(data?.message || "Failed to submit cancellation request. Please try again.");
-        }
-      } else if (error.request) {
-        toast.error("Network error. Please check your connection and try again.");
-      } else {
-        toast.error("An unexpected error occurred while cancelling subscription.");
-      }
+      toast.error(error || "Failed to submit cancellation request. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRestartSubscription = async () => {
+    try {
+      // Get dealer_id from user data
+      const dealerId = subscription?.dealer_id || user?.id || user?.dealer_id;
+      
+      if (!dealerId) {
+        toast.error("Dealer ID not found");
+        return;
+      }
+
+      // Dispatch the restart subscription thunk
+      const result = await dispatch(restartSubscription(dealerId)).unwrap();
+      
+      if (result.success) {
+        toast.success(result.message || "Subscription restarted successfully!");
+        
+        // Call success callback if provided
+        if (onSuccess) {
+          onSuccess();
+        }
+        
+        // Auto-close modal after 2 seconds
+        setTimeout(() => {
+          handleClose();
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("Error restarting subscription:", error);
+      toast.error(error || "Failed to restart subscription. Please try again.");
     }
   };
 
@@ -455,24 +450,28 @@ const CancelSubscriptionModal = ({
               >
                 Close
               </button>
-              {(cancellationStatus?.status === 'cancelled' || cancellationStatus?.status === 'canceled') && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    // TODO: Implement restart subscription functionality
-                    toast.success("Restart subscription functionality will be implemented soon!");
-                    handleClose();
-                  }}
-                  className="btn-primary flex-1 sm:flex-none"
-                >
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Restart Subscription
-                  </div>
-                </button>
-              )}
+               {(cancellationStatus?.status === 'cancelled' || cancellationStatus?.status === 'canceled') && (
+                 <button
+                   type="button"
+                   onClick={handleRestartSubscription}
+                   disabled={loading}
+                   className="btn-primary flex-1 sm:flex-none disabled:opacity-70 disabled:cursor-not-allowed"
+                 >
+                   {loading ? (
+                     <div className="flex items-center gap-2">
+                       <Loader2 className="w-4 h-4 animate-spin" />
+                       Restarting...
+                     </div>
+                   ) : (
+                     <div className="flex items-center gap-2">
+                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                       </svg>
+                       Restart Subscription
+                     </div>
+                   )}
+                 </button>
+               )}
             </>
           ) : !success ? (
             // Request mode - close and submit buttons

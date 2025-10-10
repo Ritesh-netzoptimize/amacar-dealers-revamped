@@ -23,6 +23,8 @@ import {
   fetchBillingInfo,
   uploadProfilePicture,
   removeProfilePicture,
+  restartSubscription,
+  cancelSubscriptionRequest,
 } from "@/redux/slices/userSlice";
 
 import EditProfileModal from "@/components/ui/ProfileUI/EditProfileModal";
@@ -52,6 +54,10 @@ const Profile = () => {
     uploadProfilePictureError,
     removeProfilePictureLoading,
     removeProfilePictureError,
+    restartSubscriptionLoading,
+    restartSubscriptionError,
+    cancelSubscriptionRequestLoading,
+    cancelSubscriptionRequestError,
   } = useSelector((state) => state.user);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
@@ -662,7 +668,7 @@ const Profile = () => {
                             </div>
                             <div className="text-right">
                               <div className="text-3xl font-bold text-blue-900">
-                                ${subscription.trial_amount}
+                                ${subscription.trial_amount * subscription.quantity}
                               </div>
                               <div className="text-sm text-blue-700">
                                 Trial Amount
@@ -842,74 +848,88 @@ const Profile = () => {
                       </div>
 
                       {/* Cancel Subscription Button - Only show for active subscriptions */}
-                      {subscription.has_subscription && subscription.status === "active" && (
-                        <div className="mt-6 pt-6 border-t border-neutral-200">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h5 className="text-sm font-semibold text-neutral-800 mb-1">
-                                Cancel Subscription
-                              </h5>
-                              <p className="text-xs text-neutral-600">
-                                Cancel your subscription to stop future charges
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => handleOpenCancelModal("request")}
-                              disabled={cancellationStatusLoading}
-                              className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2 bg-red-500 hover:bg-red-600 ${cancellationStatusLoading ? "opacity-50 cursor-not-allowed" : ""}`}
-                            >
-                              {cancellationStatusLoading ? (
-                                <>
-                                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                  Loading...
-                                </>
-                              ) : (
-                                <>
-                                  <XCircle className="w-4 h-4" />
+                      {subscription.has_subscription && (!cancellationStatus.has_request) &&
+                        (subscription.status === "active" ||
+                          subscription.status === "trialing") && (
+                          <div className="mt-6 pt-6 border-t border-neutral-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="text-sm font-semibold text-neutral-800 mb-1">
                                   Cancel Subscription
-                                </>
-                              )}
-                            </button>
+                                </h5>
+                                <p className="text-xs text-neutral-600">
+                                  Cancel your subscription to stop future
+                                  charges
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => handleOpenCancelModal("request")}
+                                disabled={cancellationStatusLoading}
+                                className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2 bg-red-500 hover:bg-red-600 ${
+                                  cancellationStatusLoading
+                                    ? "opacity-50 cursor-not-allowed"
+                                    : ""
+                                }`}
+                              >
+                                {cancellationStatusLoading ? (
+                                  <>
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    Loading...
+                                  </>
+                                ) : (
+                                  <>
+                                    <XCircle className="w-4 h-4" />
+                                    Cancel Subscription
+                                  </>
+                                )}
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
                       {/* Cancellation Status Button - Show for pending */}
-                      {subscription.has_subscription && cancellationStatus?.has_request && cancellationStatus?.status === "pending" && (
-                        <div className="mt-6 pt-6 border-t border-neutral-200">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h5 className="text-sm font-semibold text-neutral-800 mb-1">
-                                Cancellation Status
-                              </h5>
-                              <p className="text-xs text-neutral-600">
-                                View the status of your cancellation request
-                              </p>
+                      {subscription.has_subscription &&
+                        cancellationStatus?.has_request &&
+                        cancellationStatus?.status === "pending" && (
+                          <div className="mt-6 pt-6 border-t border-neutral-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h5 className="text-sm font-semibold text-neutral-800 mb-1">
+                                  Cancellation Status
+                                </h5>
+                                <p className="text-xs text-neutral-600">
+                                  View the status of your cancellation request
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => handleOpenCancelModal("status")}
+                                disabled={cancellationStatusLoading}
+                                className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2 bg-blue-500 hover:bg-blue-600 ${
+                                  cancellationStatusLoading
+                                    ? "opacity-50 cursor-not-allowed"
+                                    : ""
+                                }`}
+                              >
+                                {cancellationStatusLoading ? (
+                                  <>
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    Loading...
+                                  </>
+                                ) : (
+                                  <>
+                                    <XCircle className="w-4 h-4" />
+                                    Show Cancel Status
+                                  </>
+                                )}
+                              </button>
                             </div>
-                            <button
-                              onClick={() => handleOpenCancelModal("status")}
-                              disabled={cancellationStatusLoading}
-                              className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2 bg-blue-500 hover:bg-blue-600 ${cancellationStatusLoading ? "opacity-50 cursor-not-allowed" : ""}`}
-                            >
-                              {cancellationStatusLoading ? (
-                                <>
-                                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                  Loading...
-                                </>
-                              ) : (
-                                <>
-                                  <XCircle className="w-4 h-4" />
-                                  Show Cancel Status
-                                </>
-                              )}
-                            </button>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   )}
 
-                  {(!subscription.has_subscription || subscription.status === "canceled") && (
+                  {(!subscription.has_subscription ||
+                    subscription.status === "canceled") && (
                     <div className="text-center py-8">
                       <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <svg
@@ -927,16 +947,22 @@ const Profile = () => {
                         </svg>
                       </div>
                       <h4 className="text-lg font-semibold text-neutral-800 mb-2">
-                        {subscription.status === "canceled" ? "Subscription Cancelled" : "No Active Subscription"}
+                        {subscription.status === "canceled"
+                          ? "Subscription Cancelled"
+                          : "No Active Subscription"}
                       </h4>
                       <p className="text-neutral-600 mb-4">
-                        {subscription.status === "canceled" 
+                        {subscription.status === "canceled"
                           ? "Your subscription has been cancelled. Choose a plan to reactivate your account."
-                          : "Get started with a subscription to access all features"
-                        }
+                          : "Get started with a subscription to access all features"}
                       </p>
-                      <button onClick={() => handleOpenCancelModal("status")} className="btn-primary">
-                        {subscription.status === "canceled" ? "Restart Subscription" : "Choose a Plan"}
+                      <button
+                        onClick={() => handleOpenCancelModal("status")}
+                        className="btn-primary"
+                      >
+                        {subscription.status === "canceled"
+                          ? "Restart Subscription"
+                          : "Choose a Plan"}
                       </button>
                     </div>
                   )}
@@ -1036,6 +1062,7 @@ const Profile = () => {
         mode={cancelModalMode}
         cancellationStatus={cancellationStatus}
         subscription={subscription}
+        user={user}
       />
     </div>
   );

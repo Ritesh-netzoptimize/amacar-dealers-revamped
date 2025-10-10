@@ -448,6 +448,7 @@ export const fetchSubscriptionStatus = createAsyncThunk(
       const response = await api.get("/profile/subscription-status");
 
       if (response.data.success) {
+        console.log("subscription response in thunk", response)
         return response.data.subscription;
       } else {
         return rejectWithValue(
@@ -546,6 +547,60 @@ export const uploadProfilePicture = createAsyncThunk(
   }
 );
 
+// Cancel subscription request
+export const cancelSubscriptionRequest = createAsyncThunk(
+  "user/cancelSubscriptionRequest",
+  async (message, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await api.post("/subscription/cancel-request", {
+        message: message.trim()
+      });
+
+      if (response.data.success) {
+        // Fetch updated subscription status after successful cancellation request
+        dispatch(fetchSubscriptionStatus());
+        return response.data;
+      } else {
+        return rejectWithValue(
+          response.data.message || "Failed to submit cancellation request"
+        );
+      }
+    } catch (error) {
+      console.error("Cancel subscription request error:", error);
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to submit cancellation request"
+      );
+    }
+  }
+);
+
+// Restart subscription
+export const restartSubscription = createAsyncThunk(
+  "user/restartSubscription",
+  async (dealerId, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await api.post("/profile/subscription/restart", {
+        dealer_id: dealerId
+      });
+
+      if (response.data.success) {
+        // Fetch updated subscription status after successful restart
+        dispatch(fetchSubscriptionStatus());
+        return response.data;
+      } else {
+        return rejectWithValue(
+          response.data.message || "Failed to restart subscription"
+        );
+      }
+    } catch (error) {
+      console.error("Restart subscription error:", error);
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to restart subscription"
+      );
+    }
+  }
+);
+
 // Remove profile picture
 export const removeProfilePicture = createAsyncThunk(
   "user/removeProfilePicture",
@@ -594,6 +649,10 @@ const userSlice = createSlice({
     uploadProfilePictureError: null,
     removeProfilePictureLoading: false,
     removeProfilePictureError: null,
+    restartSubscriptionLoading: false,
+    restartSubscriptionError: null,
+    cancelSubscriptionRequestLoading: false,
+    cancelSubscriptionRequestError: null,
     form: {
       values: {},
       errors: {},
@@ -968,6 +1027,34 @@ const userSlice = createSlice({
       .addCase(removeProfilePicture.rejected, (state, action) => {
         state.removeProfilePictureLoading = false;
         state.removeProfilePictureError = action.payload;
+      })
+      // Cancel Subscription Request
+      .addCase(cancelSubscriptionRequest.pending, (state) => {
+        state.cancelSubscriptionRequestLoading = true;
+        state.cancelSubscriptionRequestError = null;
+      })
+      .addCase(cancelSubscriptionRequest.fulfilled, (state, action) => {
+        state.cancelSubscriptionRequestLoading = false;
+        state.cancelSubscriptionRequestError = null;
+        // Subscription status will be automatically updated via fetchSubscriptionStatus dispatch
+      })
+      .addCase(cancelSubscriptionRequest.rejected, (state, action) => {
+        state.cancelSubscriptionRequestLoading = false;
+        state.cancelSubscriptionRequestError = action.payload;
+      })
+      // Restart Subscription
+      .addCase(restartSubscription.pending, (state) => {
+        state.restartSubscriptionLoading = true;
+        state.restartSubscriptionError = null;
+      })
+      .addCase(restartSubscription.fulfilled, (state, action) => {
+        state.restartSubscriptionLoading = false;
+        state.restartSubscriptionError = null;
+        // Subscription status will be automatically updated via fetchSubscriptionStatus dispatch
+      })
+      .addCase(restartSubscription.rejected, (state, action) => {
+        state.restartSubscriptionLoading = false;
+        state.restartSubscriptionError = action.payload;
       });
   },
 });
