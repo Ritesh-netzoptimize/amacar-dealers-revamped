@@ -247,29 +247,34 @@ const DealershipContainer = ({
                   )}
 
                   {isInvitationView ? (
-                    // Invitation-specific actions
+                    // Invitation-specific actions based on status
                     <>
-                      {row.original.status === "Pending" &&
-                        !row.original.isExpired && (
-                          <DropdownMenuItem
-                            onClick={() =>
-                              onResendInvitation(row.original.invitationId)
-                            }
-                            className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-700 focus:outline-none transition-all duration-200 group"
-                          >
-                            <RotateCcw className="w-4 h-4 text-neutral-500 group-hover:text-blue-600 group-focus:text-blue-600 transition-colors duration-200" />
-                            <span>Resend Invitation</span>
-                          </DropdownMenuItem>
-                        )}
-                      <DropdownMenuItem
-                        onClick={() =>
-                          onCancelInvitation(row.original.invitationId)
-                        }
-                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
-                      >
-                        <X className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
-                        <span>Cancel Invitation</span>
-                      </DropdownMenuItem>
+                      {/* Show Resend Invitation for Cancelled and Pending statuses */}
+                      {(row.original.status === "Cancelled" || 
+                        (row.original.status === "Pending" && !row.original.isExpired)) && (
+                        <DropdownMenuItem
+                          onClick={() =>
+                            onResendInvitation(row.original.invitationId)
+                          }
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-700 focus:outline-none transition-all duration-200 group"
+                        >
+                          <RotateCcw className="w-4 h-4 text-neutral-500 group-hover:text-blue-600 group-focus:text-blue-600 transition-colors duration-200" />
+                          <span>Resend Invitation</span>
+                        </DropdownMenuItem>
+                      )}
+                      
+                      {/* Show Cancel Invitation for Pending and Accepted statuses */}
+                      {(row.original.status === "Pending" || row.original.status === "Accepted") && (
+                        <DropdownMenuItem
+                          onClick={() =>
+                            onCancelInvitation(row.original.invitationId)
+                          }
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
+                        >
+                          <X className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
+                          <span>Cancel Invitation</span>
+                        </DropdownMenuItem>
+                      )}
                     </>
                   ) : (
                     // Regular dealership actions
@@ -607,29 +612,34 @@ const DealershipContainer = ({
                     )}
 
                     {isInvitationView ? (
-                      // Invitation-specific actions for mobile
+                      // Invitation-specific actions for mobile based on status
                       <>
-                        {row.original.status === "Pending" &&
-                          !row.original.isExpired && (
-                            <DropdownMenuItem
-                              onClick={() =>
-                                onResendInvitation(row.original.invitationId)
-                              }
-                              className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-blue-700 hover:bg-blue-50 hover:text-blue-900 rounded-md transition-colors duration-150 focus:bg-blue-50 focus:text-blue-900 focus:outline-none"
-                            >
-                              <RotateCcw className="w-4 h-4 mr-3 text-blue-500" />
-                              <span className="font-medium">Resend Invitation</span>
-                            </DropdownMenuItem>
-                          )}
-                        <DropdownMenuItem
-                          onClick={() =>
-                            onCancelInvitation(row.original.invitationId)
-                          }
-                          className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-red-700 hover:bg-red-50 hover:text-red-900 rounded-md transition-colors duration-150 focus:bg-red-50 focus:text-red-900 focus:outline-none"
-                        >
-                          <X className="w-4 h-4 mr-3 text-red-500" />
-                          <span className="font-medium">Cancel Invitation</span>
-                        </DropdownMenuItem>
+                        {/* Show Resend Invitation for Cancelled and Pending statuses */}
+                        {(row.original.status === "Cancelled" || 
+                          (row.original.status === "Pending" && !row.original.isExpired)) && (
+                          <DropdownMenuItem
+                            onClick={() =>
+                              onResendInvitation(row.original.invitationId)
+                            }
+                            className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-blue-700 hover:bg-blue-50 hover:text-blue-900 rounded-md transition-colors duration-150 focus:bg-blue-50 focus:text-blue-900 focus:outline-none"
+                          >
+                            <RotateCcw className="w-4 h-4 mr-3 text-blue-500" />
+                            <span className="font-medium">Resend Invitation</span>
+                          </DropdownMenuItem>
+                        )}
+                        
+                        {/* Show Cancel Invitation for Pending and Accepted statuses */}
+                        {(row.original.status === "Pending" || row.original.status === "Accepted") && (
+                          <DropdownMenuItem
+                            onClick={() =>
+                              onCancelInvitation(row.original.invitationId)
+                            }
+                            className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-red-700 hover:bg-red-50 hover:text-red-900 rounded-md transition-colors duration-150 focus:bg-red-50 focus:text-red-900 focus:outline-none"
+                          >
+                            <X className="w-4 h-4 mr-3 text-red-500" />
+                            <span className="font-medium">Cancel Invitation</span>
+                          </DropdownMenuItem>
+                        )}
                       </>
                     ) : (
                       // Regular dealership actions for mobile

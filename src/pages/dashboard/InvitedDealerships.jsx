@@ -96,7 +96,7 @@ const InvitedDealerships = () => {
         state: "N/A", // Not provided in API
         zip: "N/A", // Not provided in API
         street: "N/A", // Not provided in API
-        status: isExpired ? "Expired" : (item.status === "pending" ? "Pending" : item.status === "accepted" ? "Accepted" : "Unknown"),
+        status: isExpired ? "Expired" : (item.status === "pending" ? "Pending" : item.status === "accepted" ? "Accepted" : item.status === "cancelled" ? "Cancelled": "Unknown"),
         role: "Invited Dealer",
         salesManager: fullName,
         joinDate: item.created_at,
