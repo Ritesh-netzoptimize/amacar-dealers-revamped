@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
 import { 
   Building2, 
   Mail, 
@@ -20,6 +21,8 @@ import {
 } from "./dialog";
 import { Button } from "./Button";
 import api from "@/lib/api";
+import useDebounce from "@/hooks/useDebounce";
+import { fetchCityStateByZip } from "@/redux/slices/userSlice";
 
 const EditDealershipModal = ({ 
   isOpen, 
@@ -27,6 +30,7 @@ const EditDealershipModal = ({
   dealershipData,
   onSuccess 
 }) => {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     dealership_name: "",
@@ -38,6 +42,9 @@ const EditDealershipModal = ({
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
+
+  // Debounce zipcode for API calls
+  const debouncedZipcode = useDebounce(formData.zip, 500);
 
   // Populate form data when dealership data changes
   useEffect(() => {
@@ -54,6 +61,37 @@ const EditDealershipModal = ({
       setSuccess(false);
     }
   }, [dealershipData, isOpen]);
+
+  // Fetch city and state when zipcode changes
+  useEffect(() => {
+    const fetchLocationData = async () => {
+      if (debouncedZipcode && debouncedZipcode.length === 5 && /^\d{5}$/.test(debouncedZipcode)) {
+        try {
+          const result = await dispatch(fetchCityStateByZip(debouncedZipcode));
+          if (fetchCityStateByZip.fulfilled.match(result)) {
+            setFormData(prev => ({
+              ...prev,
+              city: result.payload.city,
+              state: result.payload.state
+            }));
+          } else {
+            // console.log("Failed to fetch location data:", result.payload);
+          }
+        } catch (error) {
+          // console.error("Error fetching location data:", error);
+        }
+      } else if (debouncedZipcode && debouncedZipcode.length < 5) {
+        // Clear city and state when zipcode is incomplete
+        setFormData(prev => ({
+          ...prev,
+          city: '',
+          state: ''
+        }));
+      }
+    };
+
+    fetchLocationData();
+  }, [debouncedZipcode, dispatch]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -83,8 +121,6 @@ const EditDealershipModal = ({
         "dealership_name",
         "phone",
         "zip",
-        "city",
-        "state",
       ];
 
       const newErrors = {};
@@ -110,9 +146,15 @@ const EditDealershipModal = ({
         hasErrors = true;
       }
 
-      // Validate ZIP code format
+      // Validate ZIP code format - more lenient since we auto-fill city/state
       if (formData.zip && !/^\d{5}(-\d{4})?$/.test(formData.zip)) {
         newErrors.zip = "Please enter a valid ZIP code (e.g., 12345 or 12345-6789)";
+        hasErrors = true;
+      }
+
+      // Check if city and state are populated (should be auto-filled from ZIP)
+      if (formData.zip && (!formData.city || !formData.state)) {
+        newErrors.zip = "Please enter a valid ZIP code to auto-fill city and state";
         hasErrors = true;
       }
 
@@ -395,25 +437,14 @@ const EditDealershipModal = ({
                     type="text"
                     name="city"
                     value={formData.city}
-                    onChange={handleInputChange}
-                    placeholder="New York"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.city ? 'border-red-500' : 'border-neutral-300'
-                    }`}
-                    disabled={loading}
-                    required
+                    placeholder="Auto-filled from ZIP code"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg bg-neutral-100 text-neutral-600 cursor-not-allowed"
+                    disabled
+                    title="City is automatically filled from ZIP code"
                   />
-                  {errors.city && (
-                    <motion.p
-                      className="text-red-500 text-xs flex items-center gap-1"
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <AlertCircle className="w-3 h-3" />
-                      {errors.city}
-                    </motion.p>
-                  )}
+                  <p className="text-xs text-neutral-500">
+                    City is automatically filled from ZIP code
+                  </p>
                 </div>
 
                 {/* State */}
@@ -426,25 +457,14 @@ const EditDealershipModal = ({
                     type="text"
                     name="state"
                     value={formData.state}
-                    onChange={handleInputChange}
-                    placeholder="NY"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.state ? 'border-red-500' : 'border-neutral-300'
-                    }`}
-                    disabled={loading}
-                    required
+                    placeholder="Auto-filled from ZIP code"
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-lg bg-neutral-100 text-neutral-600 cursor-not-allowed"
+                    disabled
+                    title="State is automatically filled from ZIP code"
                   />
-                  {errors.state && (
-                    <motion.p
-                      className="text-red-500 text-xs flex items-center gap-1"
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <AlertCircle className="w-3 h-3" />
-                      {errors.state}
-                    </motion.p>
-                  )}
+                  <p className="text-xs text-neutral-500">
+                    State is automatically filled from ZIP code
+                  </p>
                 </div>
               </div>
 
