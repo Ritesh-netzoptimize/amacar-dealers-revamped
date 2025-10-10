@@ -241,71 +241,128 @@ const CancelSubscriptionModal = ({
               </div>
             ) : cancellationStatus ? (
               <div className="space-y-4">
-                {/* Status Card */}
-                <div className={`p-4 rounded-lg border-l-4 ${
-                  cancellationStatus.status === 'pending' 
-                    ? 'bg-yellow-50 border-yellow-400' 
-                    : cancellationStatus.status === 'approved'
-                    ? 'bg-green-50 border-green-400'
-                    : 'bg-red-50 border-red-400'
-                }`}>
-                  <div className="flex items-start gap-2">
-                    <AlertTriangle className={`w-5 h-5 mt-0.5 ${
-                      cancellationStatus.status === 'pending' 
-                        ? 'text-yellow-500' 
-                        : cancellationStatus.status === 'approved'
-                        ? 'text-green-500'
-                        : 'text-red-500'
-                    }`} />
-                    <div className="text-sm">
-                      <p className={`font-medium ${
-                        cancellationStatus.status === 'pending' 
-                          ? 'text-yellow-800' 
-                          : cancellationStatus.status === 'approved'
-                          ? 'text-green-800'
-                          : 'text-red-800'
-                      }`}>
-                        Status: {cancellationStatus.status?.charAt(0).toUpperCase() + cancellationStatus.status?.slice(1)}
-                      </p>
-                      <p className={`mt-1 ${
-                        cancellationStatus.status === 'pending' 
-                          ? 'text-yellow-700' 
-                          : cancellationStatus.status === 'approved'
-                          ? 'text-green-700'
-                          : 'text-red-700'
-                      }`}>
-                        {cancellationStatus.status === 'pending' 
-                          ? 'Your cancellation request is being reviewed by our team.'
-                          : cancellationStatus.status === 'approved'
-                          ? 'Your cancellation request has been approved.'
-                          : 'Your cancellation request has been processed.'
-                        }
-                      </p>
+                {(cancellationStatus.status === 'cancelled' || cancellationStatus.status === 'canceled') ? (
+                  // Cancelled Status - Show Restart Subscription Option
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <XCircle className="w-8 h-8 text-red-500" />
                     </div>
-                  </div>
-                </div>
+                    <h3 className="text-lg font-semibold text-red-600 mb-2">
+                      Subscription Cancelled
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-6">
+                      Your subscription has been cancelled. You can restart your subscription to regain access to all features.
+                    </p>
+                    
+                    {/* Request Details */}
+                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 mb-6">
+                      <h4 className="font-semibold text-gray-900 mb-3">Cancellation Details</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Cancelled At:</span>
+                          <span className="font-medium">
+                            {cancellationStatus.requested_at 
+                              ? new Date(cancellationStatus.requested_at).toLocaleString()
+                              : 'N/A'
+                            }
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Reason:</span>
+                          <span className="font-medium text-right max-w-48">
+                            {cancellationStatus.message || 'No reason provided'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
 
-                {/* Request Details */}
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <h4 className="font-semibold text-gray-900 mb-3">Request Details</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Requested At:</span>
-                      <span className="font-medium">
-                        {cancellationStatus.requested_at 
-                          ? new Date(cancellationStatus.requested_at).toLocaleString()
-                          : 'N/A'
-                        }
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Message:</span>
-                      <span className="font-medium text-right max-w-48">
-                        {cancellationStatus.message || 'No message provided'}
-                      </span>
-                    </div>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        // TODO: Implement restart subscription functionality
+                        toast.success("Restart subscription functionality will be implemented soon!");
+                        handleClose();
+                      }}
+                      className="bg-green-500 hover:bg-green-600 text-white px-6 py-2"
+                    >
+                      <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Restart Subscription
+                      </div>
+                    </Button>
                   </div>
-                </div>
+                ) : (
+                  // Pending/Other Status - Show Status Card and Details
+                  <>
+                    {/* Status Card */}
+                    <div className={`p-4 rounded-lg border-l-4 ${
+                      cancellationStatus.status === 'pending' 
+                        ? 'bg-yellow-50 border-yellow-400' 
+                        : cancellationStatus.status === 'approved'
+                        ? 'bg-green-50 border-green-400'
+                        : 'bg-red-50 border-red-400'
+                    }`}>
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className={`w-5 h-5 mt-0.5 ${
+                          cancellationStatus.status === 'pending' 
+                            ? 'text-yellow-500' 
+                            : cancellationStatus.status === 'approved'
+                            ? 'text-green-500'
+                            : 'text-red-500'
+                        }`} />
+                        <div className="text-sm">
+                          <p className={`font-medium ${
+                            cancellationStatus.status === 'pending' 
+                              ? 'text-yellow-800' 
+                              : cancellationStatus.status === 'approved'
+                              ? 'text-green-800'
+                              : 'text-red-800'
+                          }`}>
+                            Status: {cancellationStatus.status?.charAt(0).toUpperCase() + cancellationStatus.status?.slice(1)}
+                          </p>
+                          <p className={`mt-1 ${
+                            cancellationStatus.status === 'pending' 
+                              ? 'text-yellow-700' 
+                              : cancellationStatus.status === 'approved'
+                              ? 'text-green-700'
+                              : 'text-red-700'
+                          }`}>
+                            {cancellationStatus.status === 'pending' 
+                              ? 'Your cancellation request is being reviewed by our team.'
+                              : cancellationStatus.status === 'approved'
+                              ? 'Your cancellation request has been approved.'
+                              : 'Your cancellation request has been processed.'
+                            }
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Request Details */}
+                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      <h4 className="font-semibold text-gray-900 mb-3">Request Details</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Requested At:</span>
+                          <span className="font-medium">
+                            {cancellationStatus.requested_at 
+                              ? new Date(cancellationStatus.requested_at).toLocaleString()
+                              : 'N/A'
+                            }
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Message:</span>
+                          <span className="font-medium text-right max-w-48">
+                            {cancellationStatus.message || 'No message provided'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             ) : (
               <div className="text-center py-8">

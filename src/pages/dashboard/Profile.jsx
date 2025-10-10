@@ -61,7 +61,8 @@ const Profile = () => {
   const [cancelModalMode, setCancelModalMode] = useState("request"); // "request" or "status"
   const [isHoveringAvatar, setIsHoveringAvatar] = useState(false);
   const [cancellationStatus, setCancellationStatus] = useState(null);
-  const [cancellationStatusLoading, setCancellationStatusLoading] = useState(false);
+  const [cancellationStatusLoading, setCancellationStatusLoading] =
+    useState(false);
 
   // Default profile data structure
   const defaultProfile = {
@@ -109,10 +110,10 @@ const Profile = () => {
         firstName: user.first_name || user.display_name?.split(" ")[0] || "",
         lastName: user.last_name || user.display_name?.split(" ")[1] || "",
         email: user.email || "",
-        phone: user.phone ||  "",
-        zipcode: user.zipcode || "",
-        state: user.state || "",
-        city: user.city || "",
+        phone: user.phone || user.meta?.phone || "",
+        zipcode: user.meta?.zip || user.meta?.zip_code || user.zip_code || "",
+        state: user.state || user.meta?.state || "",
+        city: user.city || user.meta?.city || "",
         bio:
           user.bio || "Car enthusiast and frequent seller on Amacar platform.",
         joinDate: user.user_registered
@@ -194,15 +195,15 @@ const Profile = () => {
   const fetchCancellationStatus = async () => {
     try {
       setCancellationStatusLoading(true);
-      const response = await api.get('/subscription/cancellation-status');
-      
+      const response = await api.get("/subscription/cancellation-status");
+
       if (response.data.success) {
         setCancellationStatus(response.data.cancellation_status);
       } else {
         setCancellationStatus(null);
       }
     } catch (error) {
-      console.error('Error fetching cancellation status:', error);
+      console.error("Error fetching cancellation status:", error);
       setCancellationStatus(null);
     } finally {
       setCancellationStatusLoading(false);
@@ -540,7 +541,7 @@ const Profile = () => {
                 <div className="flex items-center space-x-2 text-sm sm:text-base text-neutral-600">
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="truncate">
-                    {user?.meta.state || "Not provided"}
+                    {profile.state || "Not provided"}
                   </span>
                 </div>
               </div>
@@ -552,7 +553,7 @@ const Profile = () => {
                 <div className="flex items-center space-x-2 text-sm sm:text-base text-neutral-600">
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="truncate">
-                    {user?.meta.zipcode || "Not provided"}
+                    {profile.zipcode || "Not provided"}
                   </span>
                 </div>
               </div>
@@ -840,34 +841,22 @@ const Profile = () => {
                         </div>
                       </div>
 
-                      {/* Cancel Subscription Button */}
-                      {subscription.has_subscription && (
+                      {/* Cancel Subscription Button - Only show for active subscriptions */}
+                      {subscription.has_subscription && subscription.status === "active" && (
                         <div className="mt-6 pt-6 border-t border-neutral-200">
                           <div className="flex items-center justify-between">
                             <div>
                               <h5 className="text-sm font-semibold text-neutral-800 mb-1">
-                                {cancellationStatus?.has_request
-                                  ? "Cancellation Status"
-                                  : "Cancel Subscription"}
+                                Cancel Subscription
                               </h5>
                               <p className="text-xs text-neutral-600">
-                                {cancellationStatus?.has_request
-                                  ? "View the status of your cancellation request"
-                                  : "Cancel your subscription to stop future charges"}
+                                Cancel your subscription to stop future charges
                               </p>
                             </div>
                             <button
-                              onClick={() =>
-                                handleOpenCancelModal(
-                                  cancellationStatus?.has_request ? "status" : "request"
-                                )
-                              }
+                              onClick={() => handleOpenCancelModal("request")}
                               disabled={cancellationStatusLoading}
-                              className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2 ${
-                                cancellationStatus?.has_request
-                                  ? "bg-blue-500 hover:bg-blue-600"
-                                  : "bg-red-500 hover:bg-red-600"
-                              } ${cancellationStatusLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+                              className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2 bg-red-500 hover:bg-red-600 ${cancellationStatusLoading ? "opacity-50 cursor-not-allowed" : ""}`}
                             >
                               {cancellationStatusLoading ? (
                                 <>
@@ -877,9 +866,40 @@ const Profile = () => {
                               ) : (
                                 <>
                                   <XCircle className="w-4 h-4" />
-                                  {cancellationStatus?.has_request
-                                    ? "Show Cancel Status"
-                                    : "Cancel Subscription"}
+                                  Cancel Subscription
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Cancellation Status Button - Show for pending */}
+                      {subscription.has_subscription && cancellationStatus?.has_request && cancellationStatus?.status === "pending" && (
+                        <div className="mt-6 pt-6 border-t border-neutral-200">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h5 className="text-sm font-semibold text-neutral-800 mb-1">
+                                Cancellation Status
+                              </h5>
+                              <p className="text-xs text-neutral-600">
+                                View the status of your cancellation request
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => handleOpenCancelModal("status")}
+                              disabled={cancellationStatusLoading}
+                              className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2 bg-blue-500 hover:bg-blue-600 ${cancellationStatusLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+                            >
+                              {cancellationStatusLoading ? (
+                                <>
+                                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                  Loading...
+                                </>
+                              ) : (
+                                <>
+                                  <XCircle className="w-4 h-4" />
+                                  Show Cancel Status
                                 </>
                               )}
                             </button>
@@ -889,7 +909,7 @@ const Profile = () => {
                     </div>
                   )}
 
-                  {!subscription.has_subscription && (
+                  {(!subscription.has_subscription || subscription.status === "canceled") && (
                     <div className="text-center py-8">
                       <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <svg
@@ -907,12 +927,17 @@ const Profile = () => {
                         </svg>
                       </div>
                       <h4 className="text-lg font-semibold text-neutral-800 mb-2">
-                        No Active Subscription
+                        {subscription.status === "canceled" ? "Subscription Cancelled" : "No Active Subscription"}
                       </h4>
                       <p className="text-neutral-600 mb-4">
-                        Get started with a subscription to access all features
+                        {subscription.status === "canceled" 
+                          ? "Your subscription has been cancelled. Choose a plan to reactivate your account."
+                          : "Get started with a subscription to access all features"
+                        }
                       </p>
-                      <button className="btn-primary">Choose a Plan</button>
+                      <button onClick={() => handleOpenCancelModal("status")} className="btn-primary">
+                        {subscription.status === "canceled" ? "Restart Subscription" : "Choose a Plan"}
+                      </button>
                     </div>
                   )}
                 </div>
