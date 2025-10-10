@@ -5,6 +5,7 @@ import SalesManagerContainer from "@/components/sales-managers/SalesManagerConta
 import DealershipSkeleton from "@/components/skeletons/Dealership/DealershipSkeleton";
 import Pagination from "@/components/common/Pagination/Pagination";
 import ActivateDeactivateModal from "@/components/ui/ActivateDeactivateModal";
+import CreateSalesManagersModal from "@/components/ui/CreateSalesManagersModal";
 import { User, UserPlus } from "lucide-react";
 import api from "@/lib/api";
 import { useSelector } from "react-redux";
@@ -19,6 +20,7 @@ const SalesManagers = () => {
   const [pagination, setPagination] = useState({});
   const [retryCount, setRetryCount] = useState(0);
   const [isActivateDeactivateModalOpen, setIsActivateDeactivateModalOpen] = useState(false);
+  const [isCreateSalesManagerModalOpen, setIsCreateSalesManagerModalOpen] = useState(false);
   const [selectedSalesManager, setSelectedSalesManager] = useState(null);
   const [modalAction, setModalAction] = useState(null); // 'activate' or 'deactivate'
 
@@ -278,6 +280,19 @@ const SalesManagers = () => {
     );
   };
 
+  const handleOpenCreateSalesManagerModal = () => {
+    setIsCreateSalesManagerModalOpen(true);
+  };
+
+  const handleCloseCreateSalesManagerModal = () => {
+    setIsCreateSalesManagerModalOpen(false);
+  };
+
+  const handleCreateSalesManagerSuccess = () => {
+    // Refresh the sales managers list after successful creation
+    fetchSalesManagers(currentPage, itemsPerPage);
+  };
+
   if (loading) {
     return (
       <motion.div
@@ -332,6 +347,22 @@ const SalesManagers = () => {
                 </p>
               </div>
             </div>
+            
+            {/* Add Sales Manager Button - Only for admin users */}
+            {/* {user?.role === 'admin' && ( */}
+              <motion.button
+                onClick={handleOpenCreateSalesManagerModal}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <UserPlus className="w-4 h-4" />
+                Add Sales Manager
+              </motion.button>
+            {/* )} */}
           </motion.div>
         </motion.div>
 
@@ -566,6 +597,13 @@ const SalesManagers = () => {
           dealershipId={selectedSalesManager?.id}
           dealershipName={selectedSalesManager?.display_name}
           onSuccess={handleActivateDeactivateSuccess}
+        />
+
+        {/* Create Sales Manager Modal */}
+        <CreateSalesManagersModal
+          isOpen={isCreateSalesManagerModalOpen}
+          onClose={handleCloseCreateSalesManagerModal}
+          onSuccess={handleCreateSalesManagerSuccess}
         />
       </motion.div>
     </AnimatePresence>
