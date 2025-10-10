@@ -118,7 +118,6 @@ const EditDealershipModal = ({
     try {
       // Validate required fields
       const requiredFields = [
-        "dealership_name",
         "phone",
         "zip",
       ];
@@ -166,7 +165,6 @@ const EditDealershipModal = ({
 
       // Make API call to update dealership
       const response = await api.put(`/dealerships/${dealershipData.id}`, {
-        name: formData.dealership_name,
         phone: formData.phone,
         zip: formData.zip,
         city: formData.city,
@@ -356,35 +354,23 @@ const EditDealershipModal = ({
                 </p>
               </div>
 
-              {/* Dealership Name */}
+              {/* Dealership Name - Disabled and Prefilled */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
                   <Building2 className="w-4 h-4" />
-                  Dealership Name *
+                  Dealership Name
                 </label>
                 <input
                   type="text"
                   name="dealership_name"
                   value={formData.dealership_name}
-                  onChange={handleInputChange}
-                  placeholder="ABC Motors"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.dealership_name ? 'border-red-500' : 'border-neutral-300'
-                  }`}
-                  disabled={loading}
-                  required
+                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg bg-neutral-100 text-neutral-600 cursor-not-allowed"
+                  disabled
+                  title="Dealership name cannot be changed"
                 />
-                {errors.dealership_name && (
-                  <motion.p
-                    className="text-red-500 text-xs flex items-center gap-1"
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <AlertCircle className="w-3 h-3" />
-                    {errors.dealership_name}
-                  </motion.p>
-                )}
+                <p className="text-xs text-neutral-500">
+                  Dealership name cannot be modified
+                </p>
               </div>
 
               {/* Phone */}
