@@ -183,12 +183,15 @@ const AccountSetup = ({ formData, updateFormData, errors }) => {
             <div className="text-sm">
               <label htmlFor="agreement" className="text-neutral-700 cursor-pointer">
                 I agree to the{' '}
-                <a href="#" className="text-primary-600 hover:text-primary-700 underline">
+                <a href="/terms-conditions" className="text-primary-600 hover:text-primary-700 underline">
                   Terms of Service
                 </a>{' '}
                 and{' '}
-                <a href="#" className="text-primary-600 hover:text-primary-700 underline">
+                <a href="privacy-policy" className="text-primary-600 hover:text-primary-700 underline">
                   Privacy Policy
+                </a>
+                <a href="dealership-agreement" className="text-primary-600 hover:text-primary-700 underline">
+                  Dealership agreement
                 </a>
                 *
               </label>

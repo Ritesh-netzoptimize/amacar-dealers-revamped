@@ -308,17 +308,24 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                 >
                   I agree to the{" "}
                   <a
-                    href="#"
+                    href="terms-conditions"
                     className="text-primary-600 hover:text-primary-700 underline"
                   >
                     Terms of Service
-                  </a>{" "}
-                  and{" "}
+                  </a>
+                  {", "}
                   <a
-                    href="#"
+                    href="privacy-policy"
                     className="text-primary-600 hover:text-primary-700 underline"
                   >
                     Privacy Policy
+                  </a>
+                  and{" "}
+                  <a
+                    href="/dealership-agreement"
+                    className="text-primary-600 hover:text-primary-700 underline"
+                  >
+                    Dealership agreement
                   </a>
                   *
                 </label>

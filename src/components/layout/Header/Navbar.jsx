@@ -59,6 +59,7 @@ export default function Navbar() {
           <motion.div
             whileHover={{ scale: 1.05 }}
             className="flex items-center space-x-2"
+            onClick={navigate('/')}
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
               <Car className="w-6 h-6 text-white" />

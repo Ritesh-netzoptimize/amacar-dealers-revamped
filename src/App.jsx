@@ -28,6 +28,9 @@ import SalesManagers from "./pages/dashboard/SalesManagers";
 import DealershipUsers from "./pages/dashboard/DealershipUsers";
 import SubscriptionCancellationRequests from "./pages/dashboard/SubscriptionCancellationRequests";
 import PartnerDealers from "./pages/dashboard/PartnerDealers";
+import PrivacyPolicy from "./pages/privacy-policy/PrivacyPolicy";
+import TermsOfService from "./pages/terms-conditions/TermsOfService";
+import DealershipAgreement from "./pages/dealership-agreement/DealershipAgreement";
 
 function App() {
   // const location = useLocation();
@@ -256,6 +259,24 @@ function App() {
               <DashboardLayout>
                 <VehicleDetails />
               </DashboardLayout>
+            }
+          />
+          <Route
+            path="/privacy-policy"
+            element={
+                <PrivacyPolicy />
+            }
+          />
+          <Route
+            path="/terms-conditions"
+            element={
+                <TermsOfService />
+            }
+          />
+          <Route
+            path="/dealership-agreement"
+            element={
+                <DealershipAgreement />
             }
           />
           <Route path="/checkout" element={<CheckoutPage />} />

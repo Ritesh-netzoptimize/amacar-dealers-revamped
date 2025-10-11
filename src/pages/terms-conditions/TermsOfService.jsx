@@ -2,10 +2,12 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, FileText, Shield, Scale, Users, AlertTriangle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import Seo from '@/components/SEO/Seo';
-import { seoData } from '@/config/seoConfig';
+import Navbar from '@/components/layout/Header/Navbar';
+import Footer from '@/components/layout/Footer/Footer';
+// import Seo from '@/components/SEO/Seo';
+// import { seoData } from '@/config/seoConfig';
 
-const TermsOfService = () => {
+export default function TermsOfService() {
     const navigate = useNavigate();
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -116,7 +118,9 @@ You and the dealers agree that any Disputes will be resolved on an individual ba
 
     return (
         <>
-            <Seo title={seoData.terms.title} description={seoData.terms.description} />
+            {/* <Seo title={seoData.terms.title} description={seoData.terms.description} /> */}
+            <Navbar />
+
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 pt-20">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
                     {/* Header */}
@@ -195,8 +199,9 @@ You and the dealers agree that any Disputes will be resolved on an individual ba
                     </motion.div>
                 </div>
             </div>
+            <Footer />
+
         </>
     );
 };
 
-export default TermsOfService;

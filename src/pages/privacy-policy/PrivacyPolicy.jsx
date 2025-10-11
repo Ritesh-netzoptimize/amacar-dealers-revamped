@@ -12,7 +12,8 @@ import {
   FileText,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-
+import Navbar from "@/components/layout/Header/Navbar";
+import Footer from "@/components/layout/Footer/Footer";
 const PrivacyPolicy = () => {
   const navigate = useNavigate();
   const containerVariants = {
@@ -177,98 +178,102 @@ California and EU users may exercise their additional rights as stipulated in th
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 pt-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-        {/* Header */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="mb-12"
-        >
-          <div className="flex items-center mb-6">
-            <button
-              onClick={() => navigate(-1)}
-              className="mr-4 p-2 hover:bg-slate-100 rounded-lg transition-colors duration-200"
-            >
-              <ArrowLeft className="w-5 h-5 text-slate-600" />
-            </button>
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-4">
-                <Shield className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-slate-900">
-                  Privacy Policy
-                </h1>
-                <p className="text-slate-600 mt-1">
-                  Last updated: {new Date().toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Content */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="space-y-8"
-        >
-          {sections.map((section, index) => {
-            const IconComponent = section.icon;
-            return (
-              <motion.div
-                key={section.id}
-                variants={itemVariants}
-                className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8"
-              >
-                <div className="flex items-start space-x-4 mb-6">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <IconComponent className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-slate-900">
-                    {section.title}
-                  </h2>
-                </div>
-                <div className="prose prose-slate max-w-none">
-                  <p className="text-slate-700 leading-relaxed whitespace-pre-line">
-                    {section.content}
-                  </p>
-                </div>
-              </motion.div>
-            );
-          })}
-
-          {/* Contact Information */}
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 pt-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+          {/* Header */}
           <motion.div
-            variants={itemVariants}
-            className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="mb-12"
           >
-            <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 mb-4">
-                  Contact Us
-                </h3>
-                <p className="text-slate-700 leading-relaxed mb-4">
-                  If you have any questions about this Privacy Policy or our
-                  data practices, please contact us:
-                </p>
-                <div className="space-y-2">
-                  <p className="text-slate-700">
-                    <strong>Company:</strong> Amacar LLC
+            <div className="flex items-center mb-6">
+              <button
+                onClick={() => navigate(-1)}
+                className="mr-4 p-2 hover:bg-slate-100 rounded-lg transition-colors duration-200"
+              >
+                <ArrowLeft className="w-5 h-5 text-slate-600" />
+              </button>
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-4">
+                  <Shield className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-slate-900">
+                    Privacy Policy
+                  </h1>
+                  <p className="text-slate-600 mt-1">
+                    Last updated: {new Date().toLocaleDateString()}
                   </p>
                 </div>
               </div>
             </div>
           </motion.div>
-        </motion.div>
+
+          {/* Content */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-8"
+          >
+            {sections.map((section, index) => {
+              const IconComponent = section.icon;
+              return (
+                <motion.div
+                  key={section.id}
+                  variants={itemVariants}
+                  className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8"
+                >
+                  <div className="flex items-start space-x-4 mb-6">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <IconComponent className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-slate-900">
+                      {section.title}
+                    </h2>
+                  </div>
+                  <div className="prose prose-slate max-w-none">
+                    <p className="text-slate-700 leading-relaxed whitespace-pre-line">
+                      {section.content}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
+
+            {/* Contact Information */}
+            <motion.div
+              variants={itemVariants}
+              className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200"
+            >
+              <div className="flex items-start space-x-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Shield className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-4">
+                    Contact Us
+                  </h3>
+                  <p className="text-slate-700 leading-relaxed mb-4">
+                    If you have any questions about this Privacy Policy or our
+                    data practices, please contact us:
+                  </p>
+                  <div className="space-y-2">
+                    <p className="text-slate-700">
+                      <strong>Company:</strong> Amacar LLC
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
-    </div>
+      <Footer/>
+    </>
   );
 };
 

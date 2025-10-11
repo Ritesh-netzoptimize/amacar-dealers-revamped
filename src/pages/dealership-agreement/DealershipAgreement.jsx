@@ -14,6 +14,8 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import Navbar from "@/components/layout/Header/Navbar";
+import Footer from "@/components/layout/Footer/Footer";
 
 const DealershipAgreement = () => {
   const navigate = useNavigate();
@@ -147,193 +149,202 @@ Amacar provides an online platform for vehicle appraisals and auctions, enabling
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 pt-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-        {/* Header */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="mb-12"
-        >
-          <div className="flex items-center mb-6">
-            <button
-              onClick={() => navigate(-1)}
-              className="mr-4 p-2 hover:bg-slate-100 rounded-lg transition-colors duration-200"
-            >
-              <ArrowLeft className="w-5 h-5 text-slate-600" />
-            </button>
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-4">
-                <FileText className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-slate-900">
-                  Dealership Agreement
-                </h1>
-                <p className="text-slate-600 mt-1">
-                  Last updated: {new Date().toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Introduction */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="mb-8"
-        >
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200">
-            <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-slate-900 mb-4">
-                  Agreement Introduction
-                </h2>
-                <p className="text-slate-700 leading-relaxed">
-                  This Dealership Agreement ("Agreement") is entered into by and between Amacar LLC, a company organized and existing under the California Corporation Code, and [Insert the dealership name], a dealership entity ("Dealership" or "You").
-                </p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Content */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="space-y-8"
-        >
-          {sections.map((section, index) => {
-            const IconComponent = section.icon;
-            return (
-              <motion.div
-                key={section.id}
-                variants={itemVariants}
-                className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8"
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 pt-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+          {/* Header */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="mb-12"
+          >
+            <div className="flex items-center mb-6">
+              <button
+                onClick={() => navigate(-1)}
+                className="mr-4 p-2 hover:bg-slate-100 rounded-lg transition-colors duration-200"
               >
-                <div className="flex items-start space-x-4 mb-6">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <IconComponent className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-slate-900">
-                    {section.title}
+                <ArrowLeft className="w-5 h-5 text-slate-600" />
+              </button>
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-4">
+                  <FileText className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-slate-900">
+                    Dealership Agreement
+                  </h1>
+                  <p className="text-slate-600 mt-1">
+                    Last updated: {new Date().toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Introduction */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="mb-8"
+          >
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200">
+              <div className="flex items-start space-x-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900 mb-4">
+                    Agreement Introduction
                   </h2>
-                </div>
-                <div className="prose prose-slate max-w-none">
-                  <p className="text-slate-700 leading-relaxed whitespace-pre-line">
-                    {section.content}
-                  </p>
-                </div>
-              </motion.div>
-            );
-          })}
-
-          {/* Acknowledgment Section */}
-          <motion.div
-            variants={itemVariants}
-            className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-200"
-          >
-            <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <CheckCircle className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 mb-6">
-                  Acknowledgment and Acceptance
-                </h3>
-                <p className="text-slate-700 leading-relaxed mb-6">
-                  By signing below, the Dealership acknowledges that it has read, understood, and agrees to be bound by this Agreement.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Dealership Name:
-                      </label>
-                      <div className="border-b border-slate-300 h-8"></div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Authorized Representative:
-                      </label>
-                      <div className="border-b border-slate-300 h-8"></div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Signature:
-                      </label>
-                      <div className="border-b border-slate-300 h-8"></div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Date:
-                      </label>
-                      <div className="border-b border-slate-300 h-8"></div>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Amacar LLC Representative:
-                      </label>
-                      <div className="border-b border-slate-300 h-8"></div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Title:
-                      </label>
-                      <div className="border-b border-slate-300 h-8"></div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Date:
-                      </label>
-                      <div className="border-b border-slate-300 h-8"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Contact Information */}
-          <motion.div
-            variants={itemVariants}
-            className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200"
-          >
-            <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 mb-4">
-                  Contact Us
-                </h3>
-                <p className="text-slate-700 leading-relaxed mb-4">
-                  If you have any questions about this Dealership Agreement or need
-                  assistance, please contact us:
-                </p>
-                <div className="space-y-2">
-                  <p className="text-slate-700">
-                    <strong>Company:</strong> Amacar LLC
-                  </p>
-                  <p className="text-slate-700">
-                    <strong>Email:</strong> info@amacar.com
+                  <p className="text-slate-700 leading-relaxed">
+                    This Dealership Agreement ("Agreement") is entered into by
+                    and between Amacar LLC, a company organized and existing
+                    under the California Corporation Code, and [Insert the
+                    dealership name], a dealership entity ("Dealership" or
+                    "You").
                   </p>
                 </div>
               </div>
             </div>
           </motion.div>
-        </motion.div>
+
+          {/* Content */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-8"
+          >
+            {sections.map((section, index) => {
+              const IconComponent = section.icon;
+              return (
+                <motion.div
+                  key={section.id}
+                  variants={itemVariants}
+                  className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8"
+                >
+                  <div className="flex items-start space-x-4 mb-6">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <IconComponent className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-slate-900">
+                      {section.title}
+                    </h2>
+                  </div>
+                  <div className="prose prose-slate max-w-none">
+                    <p className="text-slate-700 leading-relaxed whitespace-pre-line">
+                      {section.content}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
+
+            {/* Acknowledgment Section */}
+            <motion.div
+              variants={itemVariants}
+              className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-200"
+            >
+              <div className="flex items-start space-x-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <CheckCircle className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-6">
+                    Acknowledgment and Acceptance
+                  </h3>
+                  <p className="text-slate-700 leading-relaxed mb-6">
+                    By signing below, the Dealership acknowledges that it has
+                    read, understood, and agrees to be bound by this Agreement.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Dealership Name:
+                        </label>
+                        <div className="border-b border-slate-300 h-8"></div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Authorized Representative:
+                        </label>
+                        <div className="border-b border-slate-300 h-8"></div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Signature:
+                        </label>
+                        <div className="border-b border-slate-300 h-8"></div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Date:
+                        </label>
+                        <div className="border-b border-slate-300 h-8"></div>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Amacar LLC Representative:
+                        </label>
+                        <div className="border-b border-slate-300 h-8"></div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Title:
+                        </label>
+                        <div className="border-b border-slate-300 h-8"></div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Date:
+                        </label>
+                        <div className="border-b border-slate-300 h-8"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Contact Information */}
+            <motion.div
+              variants={itemVariants}
+              className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200"
+            >
+              <div className="flex items-start space-x-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Shield className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-4">
+                    Contact Us
+                  </h3>
+                  <p className="text-slate-700 leading-relaxed mb-4">
+                    If you have any questions about this Dealership Agreement or
+                    need assistance, please contact us:
+                  </p>
+                  <div className="space-y-2">
+                    <p className="text-slate-700">
+                      <strong>Company:</strong> Amacar LLC
+                    </p>
+                    <p className="text-slate-700">
+                      <strong>Email:</strong> info@amacar.com
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 };
 
