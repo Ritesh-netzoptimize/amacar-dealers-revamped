@@ -45,6 +45,7 @@ const EditDealershipModal = ({
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
+  const [zipLoading, setZipLoading] = useState(false);
 
   // Debounce zipcode for API calls
   const debouncedZipcode = useDebounce(formData.zip, 500);
@@ -75,6 +76,7 @@ const EditDealershipModal = ({
         debouncedZipcode.length === 5 &&
         /^\d{5}$/.test(debouncedZipcode)
       ) {
+        setZipLoading(true);
         try {
           const result = await dispatch(fetchCityStateByZip(debouncedZipcode));
           if (fetchCityStateByZip.fulfilled.match(result)) {
@@ -88,6 +90,8 @@ const EditDealershipModal = ({
           }
         } catch (error) {
           // console.error("Error fetching location data:", error);
+        } finally {
+          setZipLoading(false);
         }
       } else if (debouncedZipcode && debouncedZipcode.length < 5) {
         // Clear city and state when zipcode is incomplete
@@ -96,6 +100,9 @@ const EditDealershipModal = ({
           city: "",
           state: "",
         }));
+        setZipLoading(false);
+      } else {
+        setZipLoading(false);
       }
     };
 
@@ -460,18 +467,25 @@ const EditDealershipModal = ({
                     <MapPin className="w-4 h-4" />
                     ZIP Code *
                   </label>
-                  <input
-                    type="text"
-                    name="zip"
-                    value={formData.zip}
-                    onChange={handleInputChange}
-                    placeholder="10001"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.zip ? "border-red-500" : "border-neutral-300"
-                    }`}
-                    disabled={loading}
-                    required
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="zip"
+                      value={formData.zip}
+                      onChange={handleInputChange}
+                      placeholder="10001"
+                      className={`w-full px-3 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                        errors.zip ? "border-red-500" : "border-neutral-300"
+                      }`}
+                      disabled={loading}
+                      required
+                    />
+                    {zipLoading && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <Loader2 className="w-4 h-4 animate-spin text-orange-500" />
+                      </div>
+                    )}
+                  </div>
                   {errors.zip && (
                     <motion.p
                       className="text-red-500 text-xs flex items-center gap-1"
@@ -483,6 +497,9 @@ const EditDealershipModal = ({
                       {errors.zip}
                     </motion.p>
                   )}
+                  <p className="text-xs text-neutral-500">
+                    Enter ZIP code to automatically fill city and state
+                  </p>
                 </div>
 
                 {/* City */}
