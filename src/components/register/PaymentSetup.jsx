@@ -415,7 +415,7 @@ const PaymentForm = ({
           </div>
           <div className="flex justify-between items-center text-xs text-neutral-500">
             <span>After trial (monthly)</span>
-            <span>$99.00</span>
+            <span>${import.meta.VITE_SUBSCRIPTION_PRICE}</span>
           </div>
           <div className="border-t border-neutral-200 pt-2">
             <div className="flex justify-between items-center">

@@ -756,7 +756,7 @@ const CreateDealershipModal = ({ isOpen, onClose, onSuccess }) => {
                   </h4>
                   <p className="text-sm text-orange-700">
                     You will be charged{" "}
-                    <span className="font-semibold">$890</span> more in the next
+                    <span className="font-semibold">${import.meta.VITE_SUBSCRIPTION_PRICE}</span> more in the next
                     billing cycle if you create this dealership.
                   </p>
                 </div>
