@@ -43,6 +43,7 @@ const HighestBids = () => {
           ? `$${highestBid.amount.toLocaleString()}`
           : "No bids",
         highestBidder: highestBid?.bidder?.name || "No bidder",
+        dealershipName: highestBid?.dealership_name || "No dealership",
         finalPrice: highestBid?.amount
           ? `$${highestBid.amount.toLocaleString()}`
           : "No bids",

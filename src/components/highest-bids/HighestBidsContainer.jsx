@@ -11,6 +11,7 @@ import {
   Gavel,
   Percent,
   Check,
+  Building2,
 } from "lucide-react";
 import PhotoSwipeGallery from "@/components/ui/PhotoSwipeGallery";
 import { Button } from "@/components/ui/button";
@@ -129,6 +130,17 @@ const HighestBidsContainer = ({ auctions = [] }) => {
                         {vehicle.highestBidder}
                       </p>
                     </div>
+                    <div className="flex items-center justify-between p-3 border border-neutral-200 rounded-lg hover:border-purple-300 transition-colors duration-300">
+                      <div className="flex items-center">
+                        <Building2 className="w-4 h-4 mr-2 text-purple-600" />
+                        <span className="text-sm font-medium text-neutral-600">
+                          Dealership
+                        </span>
+                      </div>
+                      <p className="text-sm font-semibold text-purple-800">
+                        {vehicle.dealershipName}
+                      </p>
+                    </div>
                     <div className="flex items-center justify-between p-3 border border-neutral-200 rounded-lg hover:border-orange-300 transition-colors duration-300">
                       <div className="flex items-center">
                         <Calendar className="w-4 h-4 mr-2 text-orange-600" />
@@ -212,7 +224,7 @@ const HighestBidsContainer = ({ auctions = [] }) => {
                 </div>
 
                 {/* Auction Details Grid - Bottom */}
-                <div className="grid grid-cols-6 gap-3 justify-end">
+                <div className="grid grid-cols-7 gap-3 justify-end">
                   <div className="flex flex-col p-3  rounded-lg transition-all duration-200">
                     <div className="flex items-center mb-1">
                       <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
@@ -237,7 +249,17 @@ const HighestBidsContainer = ({ auctions = [] }) => {
                   </div>
                   <div className="flex flex-col  p-3  rounded-lg transition-all duration-200">
                     <div className="flex items-center mb-1">
-                      <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
+                      <Building2 className="w-3.5 h-3.5 mr-1 text-purple-400" />
+                      <span className="text-xs font-normal text-neutral-500">
+                        Dealership
+                      </span>
+                    </div>
+                    <p className="text-base font-semibold ">
+                      {vehicle.dealershipName}
+                    </p>
+                  </div>
+                  <div className="flex flex-col  p-3  rounded-lg transition-all duration-200">
+                    <div className="flex items-center mb-1">
                       <span className="text-xs font-normal text-neutral-500">
                         VIN
                       </span>
@@ -273,7 +295,7 @@ const HighestBidsContainer = ({ auctions = [] }) => {
                         Auction Ends
                       </span>
                     </div>
-                    <p className="text-sm font-medium  text-center">
+                    <p className="text-sm font-medium text-center whitespace-nowrap">
                       {vehicle.auctionEnds}
                     </p>
                   </div>
