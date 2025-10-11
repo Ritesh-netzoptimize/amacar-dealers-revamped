@@ -41,6 +41,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import ActDeActModalDealershipUsers from "@/components/ui/ActDeActModalDealershipUsers";
 
 const DealershipUsersContainer = ({
   users,
@@ -58,6 +59,9 @@ const DealershipUsersContainer = ({
   const [hoveredUser, setHoveredUser] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalAction, setModalAction] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -92,6 +96,40 @@ const DealershipUsersContainer = ({
     if (diffDays < 7) return `${diffDays} days ago`;
     return formatDate(dateString);
   }, []);
+
+  // Modal handlers
+  const handleActivateUser = useCallback((userId) => {
+    const user = users.find(u => u.id === userId);
+    if (user) {
+      setSelectedUser(user);
+      setModalAction('activate');
+      setModalOpen(true);
+    }
+  }, [users]);
+
+  const handleDeactivateUser = useCallback((userId) => {
+    const user = users.find(u => u.id === userId);
+    if (user) {
+      setSelectedUser(user);
+      setModalAction('deactivate');
+      setModalOpen(true);
+    }
+  }, [users]);
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setModalAction(null);
+    setSelectedUser(null);
+  };
+
+  const handleModalSuccess = (userId, isActivated) => {
+    // Call the parent's callback if provided
+    if (isActivated && onActivateUser) {
+      onActivateUser(userId);
+    } else if (!isActivated && onDeactivateUser) {
+      onDeactivateUser(userId);
+    }
+  };
 
   // Column helper
   const columnHelper = createColumnHelper();
@@ -229,9 +267,9 @@ const DealershipUsersContainer = ({
                   <MessageSquare className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                   <span>Contact</span>
                 </DropdownMenuItem>
-                {row.original.status === "active" ? (
+                {row.original.status.account_status === "active" ? (
                   <DropdownMenuItem
-                    onClick={() => onDeactivateUser(row.original.id)}
+                    onClick={() => handleDeactivateUser(row.original.id)}
                     className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
                   >
                     <UserX className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
@@ -239,7 +277,7 @@ const DealershipUsersContainer = ({
                   </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem
-                    onClick={() => onActivateUser(row.original.id)}
+                    onClick={() => handleActivateUser(row.original.id)}
                     className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-700 focus:bg-green-50 focus:text-green-700 focus:outline-none transition-all duration-200 group"
                   >
                     <UserCheck className="w-4 h-4 text-neutral-500 group-hover:text-green-600 group-focus:text-green-600 transition-colors duration-200" />
@@ -252,7 +290,7 @@ const DealershipUsersContainer = ({
         ),
       }),
     ],
-    [columnHelper, onViewUser, onEditUser, onContactUser, onDeactivateUser, onActivateUser]
+    [columnHelper, onViewUser, onEditUser, onContactUser, handleActivateUser, handleDeactivateUser]
   );
 
   // Create table instance
@@ -581,9 +619,9 @@ const DealershipUsersContainer = ({
                         <MessageSquare className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                         <span>Contact</span>
                       </DropdownMenuItem>
-                      {row.original.status === "active" ? (
+                      {row.original.status.account_status === "active" ? (
                         <DropdownMenuItem
-                          onClick={() => onDeactivateUser(row.original.id)}
+                          onClick={() => handleDeactivateUser(row.original.id)}
                           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
                         >
                           <UserX className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
@@ -591,7 +629,7 @@ const DealershipUsersContainer = ({
                         </DropdownMenuItem>
                       ) : (
                         <DropdownMenuItem
-                          onClick={() => onActivateUser(row.original.id)}
+                          onClick={() => handleActivateUser(row.original.id)}
                           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-700 focus:bg-green-50 focus:text-green-700 focus:outline-none transition-all duration-200 group"
                         >
                           <UserCheck className="w-4 h-4 text-neutral-500 group-hover:text-green-600 group-focus:text-green-600 transition-colors duration-200" />
@@ -619,6 +657,16 @@ const DealershipUsersContainer = ({
           </div>
         )}
       </motion.div>
+
+      {/* Activate/Deactivate Modal */}
+      <ActDeActModalDealershipUsers
+        isOpen={modalOpen}
+        onClose={handleModalClose}
+        action={modalAction}
+        userId={selectedUser?.id}
+        userName={selectedUser?.display_name || `${selectedUser?.first_name} ${selectedUser?.last_name}`}
+        onSuccess={handleModalSuccess}
+      />
     </motion.div>
   );
 };
