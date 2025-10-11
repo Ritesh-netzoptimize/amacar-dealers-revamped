@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
   Loader2,
   CheckCircle,
   AlertCircle,
   Eye,
-  EyeOff
+  EyeOff,
 } from "lucide-react";
 import {
   Dialog,
@@ -26,11 +26,11 @@ import api from "@/lib/api";
 import useDebounce from "@/hooks/useDebounce";
 import { fetchCityStateByZip } from "@/redux/slices/userSlice";
 
-const EditSalesManagerModal = ({ 
-  isOpen, 
-  onClose, 
+const EditSalesManagerModal = ({
+  isOpen,
+  onClose,
   salesManagerData,
-  onSuccess 
+  onSuccess,
 }) => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
@@ -75,14 +75,18 @@ const EditSalesManagerModal = ({
   // Fetch city and state when zipcode changes
   useEffect(() => {
     const fetchLocationData = async () => {
-      if (debouncedZipcode && debouncedZipcode.length === 5 && /^\d{5}$/.test(debouncedZipcode)) {
+      if (
+        debouncedZipcode &&
+        debouncedZipcode.length === 5 &&
+        /^\d{5}$/.test(debouncedZipcode)
+      ) {
         try {
           const result = await dispatch(fetchCityStateByZip(debouncedZipcode));
           if (fetchCityStateByZip.fulfilled.match(result)) {
-            setFormData(prev => ({
+            setFormData((prev) => ({
               ...prev,
               city: result.payload.city,
-              state: result.payload.state
+              state: result.payload.state,
             }));
           } else {
             // console.log("Failed to fetch location data:", result.payload);
@@ -92,10 +96,10 @@ const EditSalesManagerModal = ({
         }
       } else if (debouncedZipcode && debouncedZipcode.length < 5) {
         // Clear city and state when zipcode is incomplete
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          city: '',
-          state: ''
+          city: "",
+          state: "",
         }));
       }
     };
@@ -105,12 +109,12 @@ const EditSalesManagerModal = ({
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
-    
+
     // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
@@ -127,11 +131,7 @@ const EditSalesManagerModal = ({
 
     try {
       // Validate required fields
-      const requiredFields = [
-        "first_name",
-        "last_name",
-        "phone",
-      ];
+      const requiredFields = ["first_name", "last_name", "phone"];
 
       const newErrors = {};
       let hasErrors = false;
@@ -144,13 +144,19 @@ const EditSalesManagerModal = ({
       }
 
       // Validate first name length
-      if (formData.first_name && (formData.first_name.length < 2 || formData.first_name.length > 50)) {
+      if (
+        formData.first_name &&
+        (formData.first_name.length < 2 || formData.first_name.length > 50)
+      ) {
         newErrors.first_name = "First name must be between 2 and 50 characters";
         hasErrors = true;
       }
 
       // Validate last name length
-      if (formData.last_name && (formData.last_name.length < 2 || formData.last_name.length > 50)) {
+      if (
+        formData.last_name &&
+        (formData.last_name.length < 2 || formData.last_name.length > 50)
+      ) {
         newErrors.last_name = "Last name must be between 2 and 50 characters";
         hasErrors = true;
       }
@@ -169,7 +175,7 @@ const EditSalesManagerModal = ({
       }
 
       // Validate phone length (minimum 10 digits)
-      const phoneDigits = formData.phone.replace(/\D/g, '');
+      const phoneDigits = formData.phone.replace(/\D/g, "");
       if (formData.phone && phoneDigits.length < 10) {
         newErrors.phone = "Phone number must have at least 10 digits";
         hasErrors = true;
@@ -177,13 +183,15 @@ const EditSalesManagerModal = ({
 
       // Validate ZIP code format
       if (formData.zip && !/^\d{5}(-\d{4})?$/.test(formData.zip)) {
-        newErrors.zip = "Please enter a valid ZIP code (e.g., 12345 or 12345-6789)";
+        newErrors.zip =
+          "Please enter a valid ZIP code (e.g., 12345 or 12345-6789)";
         hasErrors = true;
       }
 
       // Check if city and state are populated (should be auto-filled from ZIP)
       if (formData.zip && (!formData.city || !formData.state)) {
-        newErrors.zip = "Please enter a valid ZIP code to auto-fill city and state";
+        newErrors.zip =
+          "Please enter a valid ZIP code to auto-fill city and state";
         hasErrors = true;
       }
 
@@ -216,34 +224,44 @@ const EditSalesManagerModal = ({
       }
 
       // Make API call to update sales manager
-      const response = await api.put(`/sales-managers/${salesManagerData.id}`, requestBody);
+      const response = await api.put(
+        `/sales-managers/${salesManagerData.id}`,
+        requestBody
+      );
 
       if (response.data.success) {
         setSuccess(true);
-        toast.success(response.data.message || "Sales manager updated successfully!");
-        
+        toast.success(
+          response.data.message || "Sales manager updated successfully!"
+        );
+
         // Call success callback if provided
         if (onSuccess) {
           onSuccess();
         }
-        
+
         // Auto-close modal after 2 seconds
         setTimeout(() => {
           handleClose();
         }, 2000);
       } else {
-        throw new Error(response.data.message || "Failed to update sales manager");
+        throw new Error(
+          response.data.message || "Failed to update sales manager"
+        );
       }
     } catch (error) {
       console.error("Error updating sales manager:", error);
-      
+
       // Handle different types of errors
       if (error.response) {
         const { status, data } = error.response;
-        
+
         switch (status) {
           case 400:
-            toast.error(data?.message || "Invalid data provided. Please check your inputs.");
+            toast.error(
+              data?.message ||
+                "Invalid data provided. Please check your inputs."
+            );
             break;
           case 401:
             toast.error("You are not authorized to update sales managers.");
@@ -262,20 +280,29 @@ const EditSalesManagerModal = ({
             if (data?.errors) {
               setErrors(data.errors);
             } else {
-              toast.error(data?.message || "Validation failed. Please check your inputs.");
+              toast.error(
+                data?.message || "Validation failed. Please check your inputs."
+              );
             }
             break;
           case 429:
-            toast.error("Too many requests. Please wait a moment and try again.");
+            toast.error(
+              "Too many requests. Please wait a moment and try again."
+            );
             break;
           case 500:
             toast.error("Server error. Please try again later.");
             break;
           default:
-            toast.error(data?.message || "Failed to update sales manager. Please try again.");
+            toast.error(
+              data?.message ||
+                "Failed to update sales manager. Please try again."
+            );
         }
       } else if (error.request) {
-        toast.error("Network error. Please check your connection and try again.");
+        toast.error(
+          "Network error. Please check your connection and try again."
+        );
       } else {
         toast.error("An unexpected error occurred. Please try again.");
       }
@@ -306,7 +333,7 @@ const EditSalesManagerModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <motion.div
             className="flex items-center gap-3 mb-2"
@@ -331,10 +358,9 @@ const EditSalesManagerModal = ({
                 {success ? "Sales Manager Updated!" : "Edit Sales Manager"}
               </DialogTitle>
               <DialogDescription className="text-neutral-600">
-                {success 
+                {success
                   ? "The sales manager has been updated successfully."
-                  : "Update the sales manager information below."
-                }
+                  : "Update the sales manager information below."}
               </DialogDescription>
             </div>
           </motion.div>
@@ -361,7 +387,8 @@ const EditSalesManagerModal = ({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              {formData.first_name} {formData.last_name} has been updated successfully.
+              {formData.first_name} {formData.last_name} has been updated
+              successfully.
             </motion.p>
             <motion.p
               className="text-xs text-gray-500 mt-2"
@@ -385,7 +412,7 @@ const EditSalesManagerModal = ({
                 <User className="w-5 h-5 text-orange-600" />
                 Personal Information
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* First Name */}
                 <div className="space-y-2">
@@ -400,7 +427,9 @@ const EditSalesManagerModal = ({
                     onChange={handleInputChange}
                     placeholder="John"
                     className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.first_name ? 'border-red-500' : 'border-neutral-300'
+                      errors.first_name
+                        ? "border-red-500"
+                        : "border-neutral-300"
                     }`}
                     disabled={loading}
                     required
@@ -431,7 +460,7 @@ const EditSalesManagerModal = ({
                     onChange={handleInputChange}
                     placeholder="Smith"
                     className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.last_name ? 'border-red-500' : 'border-neutral-300'
+                      errors.last_name ? "border-red-500" : "border-neutral-300"
                     }`}
                     disabled={loading}
                     required
@@ -482,7 +511,7 @@ const EditSalesManagerModal = ({
                   onChange={handleInputChange}
                   placeholder="+1234567890"
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.phone ? 'border-red-500' : 'border-neutral-300'
+                    errors.phone ? "border-red-500" : "border-neutral-300"
                   }`}
                   disabled={loading}
                   required
@@ -507,8 +536,38 @@ const EditSalesManagerModal = ({
                 <MapPin className="w-5 h-5 text-orange-600" />
                 Location Information
               </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* ZIP Code */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                    <MapPin className="w-4 h-4" />
+                    ZIP Code *
+                  </label>
+                  <input
+                    type="text"
+                    name="zip"
+                    value={formData.zip}
+                    onChange={handleInputChange}
+                    placeholder="90210"
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                      errors.zip ? "border-red-500" : "border-neutral-300"
+                    }`}
+                    disabled={loading}
+                    required
+                  />
+                  {errors.zip && (
+                    <motion.p
+                      className="text-red-500 text-xs flex items-center gap-1"
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <AlertCircle className="w-3 h-3" />
+                      {errors.zip}
+                    </motion.p>
+                  )}
+                </div>
                 {/* City */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
@@ -524,9 +583,7 @@ const EditSalesManagerModal = ({
                     disabled
                     title="City is automatically filled from ZIP code"
                   />
-                  <p className="text-xs text-neutral-500">
-                    City is automatically filled from ZIP code
-                  </p>
+               
                 </div>
 
                 {/* State */}
@@ -544,117 +601,8 @@ const EditSalesManagerModal = ({
                     disabled
                     title="State is automatically filled from ZIP code"
                   />
-                  <p className="text-xs text-neutral-500">
-                    State is automatically filled from ZIP code
-                  </p>
+                
                 </div>
-              </div>
-
-              {/* ZIP Code */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  ZIP Code *
-                </label>
-                <input
-                  type="text"
-                  name="zip"
-                  value={formData.zip}
-                  onChange={handleInputChange}
-                  placeholder="90210"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.zip ? 'border-red-500' : 'border-neutral-300'
-                  }`}
-                  disabled={loading}
-                  required
-                />
-                {errors.zip && (
-                  <motion.p
-                    className="text-red-500 text-xs flex items-center gap-1"
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <AlertCircle className="w-3 h-3" />
-                    {errors.zip}
-                  </motion.p>
-                )}
-              </div>
-            </div>
-
-            {/* Security Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-neutral-800 flex items-center gap-2">
-                <User className="w-5 h-5 text-orange-600" />
-                Security Information
-              </h3>
-              
-              {/* Password */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  New Password (Optional)
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="Leave blank to keep current password"
-                    className={`w-full px-3 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.password ? 'border-red-500' : 'border-neutral-300'
-                    }`}
-                    disabled={loading}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors duration-200"
-                    disabled={loading}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-                {errors.password && (
-                  <motion.p
-                    className="text-red-500 text-xs flex items-center gap-1"
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <AlertCircle className="w-3 h-3" />
-                    {errors.password}
-                  </motion.p>
-                )}
-                <p className="text-xs text-neutral-500">
-                  Leave blank to keep the current password. Must be at least 8 characters if provided.
-                </p>
-              </div>
-
-              {/* Notification Email */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    name="send_notification_email"
-                    checked={formData.send_notification_email}
-                    onChange={handleInputChange}
-                    className="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
-                    disabled={loading}
-                  />
-                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
-                    Send notification email about changes
-                  </label>
-                </div>
-                <p className="text-xs text-neutral-500">
-                  The sales manager will be notified via email about the changes made to their account.
-                </p>
               </div>
             </div>
           </motion.div>
