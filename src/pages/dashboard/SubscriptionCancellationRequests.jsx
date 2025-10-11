@@ -7,6 +7,7 @@ import { MessageSquare, RefreshCw } from "lucide-react";
 import api from "@/lib/api";
 import { useSelector } from "react-redux";
 import { getUserPermissions } from "@/utils/rolePermissions";
+import DealershipSkeleton from "@/components/skeletons/Dealership/DealershipSkeleton";
 
 const SubscriptionCancellationRequests = () => {
   const [cancellationRequests, setCancellationRequests] = useState([]);
@@ -252,12 +253,7 @@ const SubscriptionCancellationRequests = () => {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-12 text-center">
-          <div className="flex items-center justify-center space-x-2">
-            <RefreshCw className="w-5 h-5 animate-spin text-blue-500" />
-            <span className="text-neutral-600">Loading cancellation requests...</span>
-          </div>
-        </div>
+        <DealershipSkeleton/>
       </motion.div>
     );
   }

@@ -170,65 +170,6 @@ const SubscriptionCancellationRequestsContainer = ({
       animate="visible"
       className="space-y-6"
     >
-      {/* Stats Cards */}
-      <motion.div
-        variants={itemVariants}
-        className="grid grid-cols-1 md:grid-cols-4 gap-6"
-      >
-        <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-neutral-600">Total Requests</p>
-              <p className="text-2xl font-bold text-neutral-900">{totalCount}</p>
-            </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <MessageSquare className="w-6 h-6 text-blue-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-neutral-600">Pending</p>
-              <p className="text-2xl font-bold text-yellow-600">
-                {cancellationRequests.filter(req => req.status === "pending").length}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <Clock className="w-6 h-6 text-yellow-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-neutral-600">Approved</p>
-              <p className="text-2xl font-bold text-green-600">
-                {cancellationRequests.filter(req => req.status === "approved").length}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-neutral-600">Rejected</p>
-              <p className="text-2xl font-bold text-red-600">
-                {cancellationRequests.filter(req => req.status === "rejected").length}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-              <XCircle className="w-6 h-6 text-red-600" />
-            </div>
-          </div>
-        </div>
-      </motion.div>
 
       {/* Table */}
       <motion.div
@@ -326,13 +267,7 @@ const SubscriptionCancellationRequestsContainer = ({
                           sideOffset={4}
                           className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
                         >
-                          <DropdownMenuItem
-                            onClick={() => handleViewRequest(request.dealer_id)}
-                            className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
-                          >
-                            <Eye className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-                            <span>View Details</span>
-                          </DropdownMenuItem>
+                          
                           {request.status === "pending" && (
                             <>
                               <DropdownMenuItem
@@ -342,14 +277,6 @@ const SubscriptionCancellationRequestsContainer = ({
                               >
                                 <CheckCircle className="w-4 h-4 text-neutral-500 group-hover:text-green-600 group-focus:text-green-600 transition-colors duration-200" />
                                 <span>Approve Request</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleRejectRequest(request.dealer_id)}
-                                className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
-                                disabled={loading}
-                              >
-                                <XCircle className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
-                                <span>Reject Request</span>
                               </DropdownMenuItem>
                             </>
                           )}
