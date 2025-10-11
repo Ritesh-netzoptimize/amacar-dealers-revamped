@@ -26,7 +26,8 @@ const ActDeActModalDealershipUsers = ({
   action, // 'activate' or 'deactivate'
   userId, 
   userName,
-  onSuccess 
+  onSuccess,
+  onRefresh
 }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -61,6 +62,11 @@ const ActDeActModalDealershipUsers = ({
         // Call success callback if provided
         if (onSuccess) {
           onSuccess(userId, isActivate);
+        }
+        
+        // Call refresh callback to update the data
+        if (onRefresh) {
+          onRefresh();
         }
         
         // Auto-close modal after 2 seconds

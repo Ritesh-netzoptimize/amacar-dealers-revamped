@@ -666,6 +666,7 @@ const DealershipUsersContainer = ({
         userId={selectedUser?.id}
         userName={selectedUser?.display_name || `${selectedUser?.first_name} ${selectedUser?.last_name}`}
         onSuccess={handleModalSuccess}
+        onRefresh={onRefresh}
       />
     </motion.div>
   );
