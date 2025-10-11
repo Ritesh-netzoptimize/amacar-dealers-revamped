@@ -71,13 +71,16 @@ const DealershipContainer = ({
   const [selectedDealership, setSelectedDealership] = useState(null);
 
   // Handle edit dealership
-  const handleEditDealership = useCallback((dealershipId) => {
-    const dealership = dealerships.find(d => d.id === dealershipId);
-    if (dealership) {
-      setSelectedDealership(dealership);
-      setEditModalOpen(true);
-    }
-  }, [dealerships]);
+  const handleEditDealership = useCallback(
+    (dealershipId) => {
+      const dealership = dealerships.find((d) => d.id === dealershipId);
+      if (dealership) {
+        setSelectedDealership(dealership);
+        setEditModalOpen(true);
+      }
+    },
+    [dealerships]
+  );
 
   // Handle edit modal close
   const handleEditModalClose = () => {
@@ -137,133 +140,132 @@ const DealershipContainer = ({
   const columnHelper = createColumnHelper();
 
   // Define columns
-  const columns = useMemo(
-    () => {
-      const baseColumns = [
-        columnHelper.accessor("name", {
-          header: "Dealership Name",
-          cell: ({ row }) => (
-            <div>
-              <div className="font-semibold text-neutral-900 text-sm">
-                {row.original.name}
-              </div>
-              <div className="text-xs text-neutral-500 mt-0.5">
-                {row.original.email}
-              </div>
+  const columns = useMemo(() => {
+    const baseColumns = [
+      columnHelper.accessor("name", {
+        header: "Dealership Name",
+        cell: ({ row }) => (
+          <div>
+            <div className="font-semibold text-neutral-900 text-sm">
+              {row.original.name}
             </div>
+            <div className="text-xs text-neutral-500 mt-0.5">
+              {row.original.email}
+            </div>
+          </div>
+        ),
+      }),
+    ];
+
+    // Add columns based on view type
+    if (isInvitationView) {
+      // For invitation view: First Name, Last Name
+      baseColumns.push(
+        columnHelper.accessor("firstName", {
+          header: "First Name",
+          cell: ({ getValue }) => (
+            <div className="text-sm text-neutral-700">{getValue()}</div>
           ),
         }),
-      ];
-
-      // Add columns based on view type
-      if (isInvitationView) {
-        // For invitation view: First Name, Last Name
-        baseColumns.push(
-          columnHelper.accessor("firstName", {
-            header: "First Name",
-            cell: ({ getValue }) => (
-              <div className="text-sm text-neutral-700">{getValue()}</div>
-            ),
-          }),
-          columnHelper.accessor("lastName", {
-            header: "Last Name",
-            cell: ({ getValue }) => (
-              <div className="text-sm text-neutral-700">{getValue()}</div>
-            ),
-          })
-        );
-      } else {
-        // For regular dealership view: Phone, City
-        baseColumns.push(
-          columnHelper.accessor("phone", {
-            header: "Phone",
-            cell: ({ getValue }) => (
-              <div className="text-sm text-neutral-700">{getValue()}</div>
-            ),
-          }),
-          columnHelper.accessor("city", {
-            header: "City",
-            cell: ({ getValue }) => (
-              <div className="text-sm text-neutral-700">{getValue()}</div>
-            ),
-          })
-        );
-      }
-
-      // Add common columns
-      baseColumns.push(
-        columnHelper.accessor("status", {
-          header: "Status",
-          cell: ({ getValue }) => {
-            const status = getValue();
-            const statusColors = {
-              Active: "bg-green-100 text-green-800",
-              Pending: "bg-yellow-100 text-yellow-800",
-              Inactive: "bg-red-100 text-red-800",
-              Expired: "bg-gray-100 text-gray-800",
-              Accepted: "bg-blue-100 text-blue-800",
-            };
-            return (
-              <span
-                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  statusColors[status] || "bg-gray-100 text-gray-800"
-                }`}
-              >
-                {status}
-              </span>
-            );
-          },
-        }),
-        columnHelper.accessor("role", {
-          header: "Role",
+        columnHelper.accessor("lastName", {
+          header: "Last Name",
           cell: ({ getValue }) => (
-            <div className="text-sm text-neutral-700 capitalize">
+            <div className="text-sm text-neutral-700">{getValue()}</div>
+          ),
+        })
+      );
+    } else {
+      // For regular dealership view: Phone, City
+      baseColumns.push(
+        columnHelper.accessor("phone", {
+          header: "Phone",
+          cell: ({ getValue }) => (
+            <div className="text-sm text-neutral-700">{getValue()}</div>
+          ),
+        }),
+        columnHelper.accessor("city", {
+          header: "City",
+          cell: ({ getValue }) => (
+            <div className="text-sm text-neutral-700">{getValue()}</div>
+          ),
+        })
+      );
+    }
+
+    // Add common columns
+    baseColumns.push(
+      columnHelper.accessor("status", {
+        header: "Status",
+        cell: ({ getValue }) => {
+          const status = getValue();
+          const statusColors = {
+            Active: "bg-green-100 text-green-800",
+            Pending: "bg-yellow-100 text-yellow-800",
+            Inactive: "bg-red-100 text-red-800",
+            Expired: "bg-gray-100 text-gray-800",
+            Accepted: "bg-blue-100 text-blue-800",
+          };
+          return (
+            <span
+              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                statusColors[status] || "bg-gray-100 text-gray-800"
+              }`}
+            >
+              {status}
+            </span>
+          );
+        },
+      }),
+      columnHelper.accessor("role", {
+        header: "Role",
+        cell: ({ getValue }) => (
+          <div className="text-sm text-neutral-700 capitalize">
+            {getValue()}
+          </div>
+        ),
+      })
+    );
+
+    // Add Sales Manager column only for regular dealership view
+    if (!isInvitationView) {
+      baseColumns.push(
+        columnHelper.accessor("salesManager", {
+          header: "Sales Manager",
+          cell: ({ getValue }) => (
+            <div
+              className="text-sm text-neutral-700 w-[140px] whitespace-nowrap overflow-hidden"
+              title={getValue()}
+            >
               {getValue()}
             </div>
           ),
         })
       );
+    }
 
-      // Add Sales Manager column only for regular dealership view
-      if (!isInvitationView) {
-        baseColumns.push(
-          columnHelper.accessor("salesManager", {
-            header: "Sales Manager",
-            cell: ({ getValue }) => (
-              <div
-                className="text-sm text-neutral-700 w-[140px] whitespace-nowrap overflow-hidden"
-                title={getValue()}
-              >
-                {getValue()}
-              </div>
-            ),
-          })
-        );
-      }
-
-      // Add actions column
-      baseColumns.push(
-        columnHelper.accessor("actions", {
-          header: "Actions",
-          cell: ({ row }) => (
-            <div className="flex justify-end items-center h-full">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 w-8 p-0 hover:bg-neutral-100 cursor-pointer"
-                  >
-                    <MoreHorizontal className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  side="bottom"
-                  sideOffset={4}
-                  className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
+    // Add actions column
+    baseColumns.push(
+      columnHelper.accessor("actions", {
+        header: "Actions",
+        cell: ({ row }) => (
+          <div className="flex justify-end items-center h-full">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-neutral-100 cursor-pointer"
                 >
-                  {/* {!isInvitationView && (
+                  <MoreHorizontal className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                side="bottom"
+                sideOffset={4}
+                className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
+              >
+                {/* {!isInvitationView && (
                     <DropdownMenuItem
                       onClick={() => onViewDealership(row.original.id)}
                       className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
@@ -273,92 +275,92 @@ const DealershipContainer = ({
                     </DropdownMenuItem>
                   )} */}
 
-                  {isInvitationView ? (
-                    // Invitation-specific actions based on status
-                    <>
-                      {/* Show Resend Invitation for Cancelled and Pending statuses */}
-                      {(row.original.status === "Cancelled" || 
-                        (row.original.status === "Pending" && !row.original.isExpired)) && (
-                        <DropdownMenuItem
-                          onClick={() =>
-                            onResendInvitation(row.original.invitationId)
-                          }
-                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-700 focus:outline-none transition-all duration-200 group"
-                        >
-                          <RotateCcw className="w-4 h-4 text-neutral-500 group-hover:text-blue-600 group-focus:text-blue-600 transition-colors duration-200" />
-                          <span>Resend Invitation</span>
-                        </DropdownMenuItem>
-                      )}
-                      
-                      {/* Show Cancel Invitation for Pending and Accepted statuses */}
-                      {(row.original.status === "Pending" || row.original.status === "Accepted") && (
-                        <DropdownMenuItem
-                          onClick={() =>
-                            onCancelInvitation(row.original.invitationId)
-                          }
-                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
-                        >
-                          <X className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
-                          <span>Cancel Invitation</span>
-                        </DropdownMenuItem>
-                      )}
-                    </>
-                  ) : (
-                    // Regular dealership actions
-                    <>
+                {isInvitationView ? (
+                  // Invitation-specific actions based on status
+                  <>
+                    {/* Show Resend Invitation for Cancelled and Pending statuses */}
+                    {(row.original.status === "Cancelled" ||
+                      (row.original.status === "Pending" &&
+                        !row.original.isExpired)) && (
                       <DropdownMenuItem
-                        onClick={() => handleEditDealership(row.original.id)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                        onClick={() =>
+                          onResendInvitation(row.original.invitationId)
+                        }
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 hover:text-blue-700 focus:bg-blue-50 focus:text-blue-700 focus:outline-none transition-all duration-200 group"
                       >
-                        <Edit className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-                        <span>Edit Dealership</span>
+                        <RotateCcw className="w-4 h-4 text-neutral-500 group-hover:text-blue-600 group-focus:text-blue-600 transition-colors duration-200" />
+                        <span>Resend Invitation</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => onContactDealership(row.original.id)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
-                      >
-                        <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-                        <span>Contact</span>
-                      </DropdownMenuItem>
-                      {row.original.status === "Inactive" ? (
-                        <DropdownMenuItem
-                          onClick={() => onActivateDealership(row.original.id)}
-                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-700 focus:bg-green-50 focus:text-green-700 focus:outline-none transition-all duration-200 group"
-                        >
-                          <UserCheck className="w-4 h-4 text-neutral-500 group-hover:text-green-600 group-focus:text-green-600 transition-colors duration-200" />
-                          <span>Activate</span>
-                        </DropdownMenuItem>
-                      ) : (
-                        <DropdownMenuItem
-                          onClick={() => onDeactivateDealership(row.original.id)}
-                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
-                        >
-                          <UserX className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
-                          <span>Deactivate</span>
-                        </DropdownMenuItem>
-                      )}
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ),
-        })
-      );
+                    )}
 
-      return baseColumns;
-    },
-    [
-      columnHelper,
-      handleEditDealership,
-      onDeactivateDealership,
-      onContactDealership,
-      onActivateDealership,
-      onResendInvitation,
-      onCancelInvitation,
-      isInvitationView,
-    ]
-  );
+                    {/* Show Cancel Invitation for Pending and Accepted statuses */}
+                    {(row.original.status === "Pending" ||
+                      row.original.status === "Accepted") && (
+                      <DropdownMenuItem
+                        onClick={() =>
+                          onCancelInvitation(row.original.invitationId)
+                        }
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
+                      >
+                        <X className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
+                        <span>Cancel Invitation</span>
+                      </DropdownMenuItem>
+                    )}
+                  </>
+                ) : (
+                  // Regular dealership actions
+                  <>
+                    <DropdownMenuItem
+                      onClick={() => handleEditDealership(row.original.id)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                    >
+                      <Edit className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                      <span>Edit Dealership</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={(e) => e.stopPropagation()}
+                      href={`tel:${row.original.phone}`}
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                    >
+                      <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                      <span>Contact</span>
+                    </DropdownMenuItem>
+                    {row.original.status === "Inactive" ? (
+                      <DropdownMenuItem
+                        onClick={() => onActivateDealership(row.original.id)}
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-700 focus:bg-green-50 focus:text-green-700 focus:outline-none transition-all duration-200 group"
+                      >
+                        <UserCheck className="w-4 h-4 text-neutral-500 group-hover:text-green-600 group-focus:text-green-600 transition-colors duration-200" />
+                        <span>Activate</span>
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem
+                        onClick={() => onDeactivateDealership(row.original.id)}
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
+                      >
+                        <UserX className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
+                        <span>Deactivate</span>
+                      </DropdownMenuItem>
+                    )}
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ),
+      })
+    );
+
+    return baseColumns;
+  }, [
+    columnHelper,
+    handleEditDealership,
+    onDeactivateDealership,
+    onActivateDealership,
+    onResendInvitation,
+    onCancelInvitation,
+    isInvitationView,
+  ]);
 
   // Create table instance
   const table = useReactTable({
@@ -641,8 +643,9 @@ const DealershipContainer = ({
                       // Invitation-specific actions for mobile based on status
                       <>
                         {/* Show Resend Invitation for Cancelled and Pending statuses */}
-                        {(row.original.status === "Cancelled" || 
-                          (row.original.status === "Pending" && !row.original.isExpired)) && (
+                        {(row.original.status === "Cancelled" ||
+                          (row.original.status === "Pending" &&
+                            !row.original.isExpired)) && (
                           <DropdownMenuItem
                             onClick={() =>
                               onResendInvitation(row.original.invitationId)
@@ -650,12 +653,15 @@ const DealershipContainer = ({
                             className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-blue-700 hover:bg-blue-50 hover:text-blue-900 rounded-md transition-colors duration-150 focus:bg-blue-50 focus:text-blue-900 focus:outline-none"
                           >
                             <RotateCcw className="w-4 h-4 mr-3 text-blue-500" />
-                            <span className="font-medium">Resend Invitation</span>
+                            <span className="font-medium">
+                              Resend Invitation
+                            </span>
                           </DropdownMenuItem>
                         )}
-                        
+
                         {/* Show Cancel Invitation for Pending and Accepted statuses */}
-                        {(row.original.status === "Pending" || row.original.status === "Accepted") && (
+                        {(row.original.status === "Pending" ||
+                          row.original.status === "Accepted") && (
                           <DropdownMenuItem
                             onClick={() =>
                               onCancelInvitation(row.original.invitationId)
@@ -663,7 +669,9 @@ const DealershipContainer = ({
                             className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-red-700 hover:bg-red-50 hover:text-red-900 rounded-md transition-colors duration-150 focus:bg-red-50 focus:text-red-900 focus:outline-none"
                           >
                             <X className="w-4 h-4 mr-3 text-red-500" />
-                            <span className="font-medium">Cancel Invitation</span>
+                            <span className="font-medium">
+                              Cancel Invitation
+                            </span>
                           </DropdownMenuItem>
                         )}
                       </>
@@ -678,7 +686,8 @@ const DealershipContainer = ({
                           <span className="font-medium">Edit Dealership</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => onContactDealership(row.original.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          href={`tel:${row.original.phone}`}
                           className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-colors duration-150 focus:bg-neutral-50 focus:text-neutral-900 focus:outline-none"
                         >
                           <Phone className="w-4 h-4 mr-3 text-neutral-500" />
@@ -686,7 +695,9 @@ const DealershipContainer = ({
                         </DropdownMenuItem>
                         {row.original.status === "Inactive" ? (
                           <DropdownMenuItem
-                            onClick={() => onActivateDealership(row.original.id)}
+                            onClick={() =>
+                              onActivateDealership(row.original.id)
+                            }
                             className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-green-700 hover:bg-green-50 hover:text-green-900 rounded-md transition-colors duration-150 focus:bg-green-50 focus:text-green-900 focus:outline-none"
                           >
                             <UserCheck className="w-4 h-4 mr-3 text-green-500" />
@@ -694,7 +705,9 @@ const DealershipContainer = ({
                           </DropdownMenuItem>
                         ) : (
                           <DropdownMenuItem
-                            onClick={() => onDeactivateDealership(row.original.id)}
+                            onClick={() =>
+                              onDeactivateDealership(row.original.id)
+                            }
                             className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-red-700 hover:bg-red-50 hover:text-red-900 rounded-md transition-colors duration-150 focus:bg-red-50 focus:text-red-900 focus:outline-none"
                           >
                             <UserX className="w-4 h-4 mr-3 text-red-500" />

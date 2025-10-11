@@ -94,30 +94,36 @@ const DealershipUsersContainer = ({
     const now = new Date();
     const diffTime = Math.abs(now - date);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 1) return "Yesterday";
     if (diffDays < 7) return `${diffDays} days ago`;
     return formatDate(dateString);
   }, []);
 
   // Modal handlers
-  const handleActivateUser = useCallback((userId) => {
-    const user = users.find(u => u.id === userId);
-    if (user) {
-      setSelectedUser(user);
-      setModalAction('activate');
-      setModalOpen(true);
-    }
-  }, [users]);
+  const handleActivateUser = useCallback(
+    (userId) => {
+      const user = users.find((u) => u.id === userId);
+      if (user) {
+        setSelectedUser(user);
+        setModalAction("activate");
+        setModalOpen(true);
+      }
+    },
+    [users]
+  );
 
-  const handleDeactivateUser = useCallback((userId) => {
-    const user = users.find(u => u.id === userId);
-    if (user) {
-      setSelectedUser(user);
-      setModalAction('deactivate');
-      setModalOpen(true);
-    }
-  }, [users]);
+  const handleDeactivateUser = useCallback(
+    (userId) => {
+      const user = users.find((u) => u.id === userId);
+      if (user) {
+        setSelectedUser(user);
+        setModalAction("deactivate");
+        setModalOpen(true);
+      }
+    },
+    [users]
+  );
 
   const handleModalClose = () => {
     setModalOpen(false);
@@ -135,13 +141,16 @@ const DealershipUsersContainer = ({
   };
 
   // Edit modal handlers
-  const handleEditUser = useCallback((userId) => {
-    const user = users.find(u => u.id === userId);
-    if (user) {
-      setEditingUser(user);
-      setEditModalOpen(true);
-    }
-  }, [users]);
+  const handleEditUser = useCallback(
+    (userId) => {
+      const user = users.find((u) => u.id === userId);
+      if (user) {
+        setEditingUser(user);
+        setEditModalOpen(true);
+      }
+    },
+    [users]
+  );
 
   const handleEditModalClose = () => {
     setEditModalOpen(false);
@@ -180,7 +189,8 @@ const DealershipUsersContainer = ({
             </div>
             <div className="ml-4">
               <div className="text-sm font-medium text-neutral-900">
-                {row.original.display_name || `${row.original.first_name} ${row.original.last_name}`}
+                {row.original.display_name ||
+                  `${row.original.first_name} ${row.original.last_name}`}
               </div>
               <div className="text-sm text-neutral-500">
                 @{row.original.username}
@@ -203,10 +213,9 @@ const DealershipUsersContainer = ({
         cell: ({ row }) => (
           <div className="flex items-center text-sm text-neutral-900">
             <MapPin className="h-4 w-4 text-neutral-400 mr-2" />
-            {row.original.address ? 
-              `${row.original.address.city}, ${row.original.address.state}` : 
-              "N/A"
-            }
+            {row.original.address
+              ? `${row.original.address.city}, ${row.original.address.state}`
+              : "N/A"}
           </div>
         ),
       }),
@@ -242,11 +251,12 @@ const DealershipUsersContainer = ({
         cell: ({ row }) => (
           <div className="space-y-1">
             <Badge
-              className={`${getStatusColor(row.original.status?.formatted_status)} border`}
+              className={`${getStatusColor(
+                row.original.status?.formatted_status
+              )} border`}
             >
               {row.original.status?.formatted_status || "Unknown"}
             </Badge>
-        
           </div>
         ),
       }),
@@ -278,7 +288,9 @@ const DealershipUsersContainer = ({
                   <span>Edit User</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onContactUser(row.original.id)}
+                  //   onClick={() => onContactUser(row.original.id)}
+                  onClick={(e) => e.stopPropagation()}
+                  href={`tel:${row.original.phone}`}
                   className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                 >
                   <MessageSquare className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
@@ -307,7 +319,14 @@ const DealershipUsersContainer = ({
         ),
       }),
     ],
-    [columnHelper, onViewUser, handleEditUser, onContactUser, handleActivateUser, handleDeactivateUser]
+    [
+      columnHelper,
+    //   onViewUser,
+      handleEditUser,
+    //   onContactUser,
+      handleActivateUser,
+      handleDeactivateUser,
+    ]
   );
 
   // Create table instance
@@ -372,8 +391,6 @@ const DealershipUsersContainer = ({
       animate="visible"
       className="space-y-6"
     >
-
-
       {/* Users Table */}
       <motion.div
         variants={itemVariants}
@@ -426,7 +443,9 @@ const DealershipUsersContainer = ({
                           isSortable
                             ? "cursor-pointer hover:text-neutral-900 hover:bg-neutral-50 group"
                             : "cursor-default"
-                        } ${header.column.id === "actions" ? "text-right" : ""}`}
+                        } ${
+                          header.column.id === "actions" ? "text-right" : ""
+                        }`}
                         onClick={
                           isSortable
                             ? header.column.getToggleSortingHandler()
@@ -479,7 +498,10 @@ const DealershipUsersContainer = ({
                           : ""
                       }`}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </motion.tr>
@@ -533,7 +555,8 @@ const DealershipUsersContainer = ({
                     </div>
                     <div className="ml-4">
                       <h4 className="font-semibold text-neutral-900 text-base">
-                        {row.original.display_name || `${row.original.first_name} ${row.original.last_name}`}
+                        {row.original.display_name ||
+                          `${row.original.first_name} ${row.original.last_name}`}
                       </h4>
                       <p className="text-sm text-neutral-500">
                         @{row.original.username}
@@ -557,10 +580,9 @@ const DealershipUsersContainer = ({
                   </div>
                   <div className="text-sm text-neutral-600 flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
-                    {row.original.address ? 
-                      `${row.original.address.city}, ${row.original.address.state}` : 
-                      "N/A"
-                    }
+                    {row.original.address
+                      ? `${row.original.address.city}, ${row.original.address.state}`
+                      : "N/A"}
                   </div>
                 </div>
 
@@ -591,7 +613,9 @@ const DealershipUsersContainer = ({
                 {/* Status */}
                 <div className="flex gap-2 items-center">
                   <Badge
-                    className={`${getStatusColor(row.original.status?.formatted_status)} border`}
+                    className={`${getStatusColor(
+                      row.original.status?.formatted_status
+                    )} border`}
                   >
                     {row.original.status?.formatted_status || "Unknown"}
                   </Badge>
@@ -623,7 +647,9 @@ const DealershipUsersContainer = ({
                         <span>Edit User</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => onContactUser(row.original.id)}
+                        // onClick={() => onContactUser(row.original.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        href={`tel:${row.original.phone}`}
                         className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                       >
                         <MessageSquare className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
@@ -674,7 +700,10 @@ const DealershipUsersContainer = ({
         onClose={handleModalClose}
         action={modalAction}
         userId={selectedUser?.id}
-        userName={selectedUser?.display_name || `${selectedUser?.first_name} ${selectedUser?.last_name}`}
+        userName={
+          selectedUser?.display_name ||
+          `${selectedUser?.first_name} ${selectedUser?.last_name}`
+        }
         onSuccess={handleModalSuccess}
         onRefresh={onRefresh}
       />

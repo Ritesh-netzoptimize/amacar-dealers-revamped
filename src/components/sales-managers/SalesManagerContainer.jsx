@@ -270,13 +270,13 @@ const SalesManagerContainer = ({
                   sideOffset={4}
                   className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
                 >
-                  <DropdownMenuItem
+                  {/* <DropdownMenuItem
                     onClick={() => onViewSalesManager(row.original.id)}
                     className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                   >
                     <Eye className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                     <span>View Details</span>
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
 
                   <DropdownMenuItem
                     onClick={() => handleEditSalesManager(row.original.id)}
@@ -287,7 +287,9 @@ const SalesManagerContainer = ({
                   </DropdownMenuItem>
                   
                   <DropdownMenuItem
-                    onClick={() => onContactSalesManager(row.original.id)}
+                    // onClick={() => onContactSalesManager(row.original.id)}
+                    onClick={(e) => e.stopPropagation()}
+                    href={`tel:${row.original.phone}`}
                     className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                   >
                     <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
@@ -322,10 +324,10 @@ const SalesManagerContainer = ({
     },
     [
       columnHelper,
-      onViewSalesManager,
+    //   onViewSalesManager,
       handleEditSalesManager,
       handleActivateDeactivate,
-      onContactSalesManager,
+    //   onContactSalesManager,
     ]
   );
 
@@ -564,13 +566,13 @@ const SalesManagerContainer = ({
                     sideOffset={4}
                     className="w-52 p-1 shadow-lg border border-neutral-200 bg-white rounded-lg absolute top-full right-0 mt-2 z-50"
                   >
-                    <DropdownMenuItem
+                    {/* <DropdownMenuItem
                       onClick={() => onViewSalesManager(row.original.id)}
                       className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-colors duration-150 focus:bg-neutral-50 focus:text-neutral-900 focus:outline-none"
                     >
                       <Eye className="w-4 h-4 mr-3 text-neutral-500" />
                       <span className="font-medium">View Details</span>
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
 
                     <DropdownMenuItem
                       onClick={() => handleEditSalesManager(row.original.id)}
@@ -581,7 +583,9 @@ const SalesManagerContainer = ({
                     </DropdownMenuItem>
                     
                     <DropdownMenuItem
-                      onClick={() => onContactSalesManager(row.original.id)}
+                    //   onClick={() => onContactSalesManager(row.original.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      href={`tel:${row.original.phone}`}
                       className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-colors duration-150 focus:bg-neutral-50 focus:text-neutral-900 focus:outline-none"
                     >
                       <Phone className="w-4 h-4 mr-3 text-neutral-500" />
