@@ -23,6 +23,7 @@ import { logoutUser } from '@/redux/slices/userSlice';
 import LogoutModal from '@/components/ui/LogoutUI/LogoutModal';
 import DeactivationWarningModal from '@/components/ui/DeactivationWarningModal';
 import { useDispatch, useSelector } from 'react-redux';
+import { getUserPermissions } from '@/utils/rolePermissions';
 // import Modal from '@/components/ui/modal';
 // import LogoutModal from '@/components/ui/LogoutModal';
 // import { useDispatch, useSelector } from 'react-redux';
@@ -50,9 +51,17 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
     email: user?.email || '',
   };
 
-  // Get user roles from Redux state
+  // Get user permissions using the centralized utility
   const userRole = user?.role;
-  const canAccessDealerships = userRole === 'sales_manager' || userRole === 'administrator' || (userRole === 'dealer' && (user?.subscription_details?.is_active || user?.subscription_status === "active"));
+  const permissions = getUserPermissions(userRole, user);
+  const {
+    canAccessDealershipUsers,
+    canAccessDealerships,
+    canAccessInvitedDealerships,
+    canAccessSalesManagers,
+    canAccessPartnerDealers,
+    canAccessSubscriptionCancellationRequest
+  } = permissions;
 
   // Check if user is deactivated and should show warning modal
   const shouldShowDeactivationWarning = () => {
@@ -91,11 +100,14 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
     { name: 'My bids', href: '/my-bids', icon: ShoppingCart  },
     { name: 'Highest Bids', href: '/highest-bids', icon: ArrowUp },
     { name: 'Active customers', href: '/active-customers', icon: Users },
-    { name: 'Dealership users', href: '/dealership-users', icon: UserPlus2},
-    // Conditionally include DealerShips based on user role
+    ...(canAccessDealershipUsers ? [{ name: 'Dealership users', href: '/dealership-users', icon: UserPlus2 }] : []),
     ...(canAccessDealerships ? [{ name: 'DealerShips', href: '/dealerships', icon: Home }] : []),
-    ...(canAccessDealerships ? [{ name: 'Invited Dealerships', href: '/invited-dealerships', icon: UserPlus }] : []),
-    ...(canAccessDealerships ? [{ name: 'Sales managers', href: '/sales-managers', icon: User }] : []),
+    ...(canAccessInvitedDealerships ? [{ name: 'Invited Dealerships', href: '/invited-dealerships', icon: UserPlus }] : []),
+    ...(canAccessSalesManagers ? [{ name: 'Sales managers', href: '/sales-managers', icon: User }] : []),
+    ...(canAccessPartnerDealers ? [{ name: 'Partners', href: '/partner-dealers', icon: User }] : []),
+    ...(canAccessSubscriptionCancellationRequest ? [{ name: 'Subscription Cancellation Requests', href: '/subscription-cancellation-requests', icon: User }] : []),
+
+    // Conditionally include DealerShips based on user role
     { name: 'Reports', href: '/reports', icon: BarChart  },
 
   ];

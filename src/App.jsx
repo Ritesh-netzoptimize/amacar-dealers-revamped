@@ -26,6 +26,8 @@ import { SearchProvider } from "./context/SearchContext";
 import InvitedDealerships from "./pages/dashboard/InvitedDealerships";
 import SalesManagers from "./pages/dashboard/SalesManagers";
 import DealershipUsers from "./pages/dashboard/DealershipUsers";
+import SubscriptionCancellationRequests from "./pages/dashboard/SubscriptionCancellationRequests";
+import PartnerDealers from "./pages/dashboard/PartnerDealers";
 
 function App() {
   // const location = useLocation();
@@ -194,6 +196,26 @@ function App() {
               // <PrivateRoute>
               <DashboardLayout>
                 <InvitedDealerships />
+              </DashboardLayout>
+              // </PrivateRoute>
+            }
+          />
+          <Route
+            path="/subscription-cancellation-requests"
+            element={
+              // <PrivateRoute>
+              <DashboardLayout>
+                <SubscriptionCancellationRequests />
+              </DashboardLayout>
+              // </PrivateRoute>
+            }
+          />
+          <Route
+            path="/partner-dealers"
+            element={
+              // <PrivateRoute>
+              <DashboardLayout>
+                <PartnerDealers />
               </DashboardLayout>
               // </PrivateRoute>
             }
