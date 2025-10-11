@@ -220,10 +220,12 @@ const SubscriptionCancellationRequests = () => {
     // Navigate to request details page or open modal
   };
 
-  const handleApproveRequest = async (requestId) => {
+  const handleApproveRequest = async (requestId, adminNotes) => {
     try {
-      // API call to approve request
-      await api.put(`/subscription/cancellation-requests/${requestId}/approve`);
+      // API call to approve request with admin notes
+      await api.put(`/subscription/cancellation-requests/${requestId}/approve`, {
+        admin_notes: adminNotes,
+      });
       // Refresh the list
       fetchCancellationRequests(currentPage, itemsPerPage);
     } catch (error) {

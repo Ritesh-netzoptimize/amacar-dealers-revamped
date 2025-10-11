@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "react-hot-toast";
+import ApproveSubscriptionCancellationRequestsModal from "@/components/ui/ApproveSubscriptionCancellationRequestsModal";
 
 const SubscriptionCancellationRequestsContainer = ({
   cancellationRequests,
@@ -43,6 +44,8 @@ const SubscriptionCancellationRequestsContainer = ({
   onRefresh,
 }) => {
   const [loading, setLoading] = useState(false);
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
 
   // Animation variants
   const containerVariants = {
@@ -70,13 +73,20 @@ const SubscriptionCancellationRequestsContainer = ({
     onViewRequest(requestId);
   };
 
-  const handleApproveRequest = async (requestId) => {
+  const handleApproveRequest = (requestId) => {
+    const request = cancellationRequests.find(req => req.dealer_id === requestId);
+    if (request) {
+      setSelectedRequest(request);
+      setIsApproveModalOpen(true);
+    }
+  };
+
+  const handleApproveConfirm = async (requestId, adminNotes) => {
     setLoading(true);
     try {
-      await onApproveRequest(requestId);
-      toast.success("Cancellation request approved successfully");
-    } catch (error) {
-      toast.error("Failed to approve cancellation request");
+      await onApproveRequest(requestId, adminNotes);
+      setIsApproveModalOpen(false);
+      setSelectedRequest(null);
     } finally {
       setLoading(false);
     }
@@ -315,6 +325,18 @@ const SubscriptionCancellationRequestsContainer = ({
           </Button>
         </motion.div>
       )}
+
+      {/* Approve Modal */}
+      <ApproveSubscriptionCancellationRequestsModal
+        isOpen={isApproveModalOpen}
+        onClose={() => {
+          setIsApproveModalOpen(false);
+          setSelectedRequest(null);
+        }}
+        onApprove={handleApproveConfirm}
+        requestData={selectedRequest}
+        loading={loading}
+      />
     </motion.div>
   );
 };
