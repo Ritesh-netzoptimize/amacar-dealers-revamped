@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { 
-  Users, 
-  Mail, 
-  Phone, 
-  MapPin, 
+import {
+  Users,
+  Mail,
+  Phone,
+  MapPin,
   Loader2,
   CheckCircle,
   AlertCircle,
@@ -14,7 +14,7 @@ import {
   EyeOff,
   Building2,
   Globe,
-  FileText
+  FileText,
 } from "lucide-react";
 import {
   Dialog,
@@ -29,11 +29,11 @@ import api from "@/lib/api";
 import useDebounce from "@/hooks/useDebounce";
 import { fetchCityStateByZip } from "@/redux/slices/userSlice";
 
-const EditDealershipUsersModal = ({ 
-  isOpen, 
-  onClose, 
+const EditDealershipUsersModal = ({
+  isOpen,
+  onClose,
   dealershipUserData,
-  onSuccess 
+  onSuccess,
 }) => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
@@ -90,14 +90,18 @@ const EditDealershipUsersModal = ({
   // Fetch city and state when zipcode changes
   useEffect(() => {
     const fetchLocationData = async () => {
-      if (debouncedZipcode && debouncedZipcode.length === 5 && /^\d{5}$/.test(debouncedZipcode)) {
+      if (
+        debouncedZipcode &&
+        debouncedZipcode.length === 5 &&
+        /^\d{5}$/.test(debouncedZipcode)
+      ) {
         try {
           const result = await dispatch(fetchCityStateByZip(debouncedZipcode));
           if (fetchCityStateByZip.fulfilled.match(result)) {
-            setFormData(prev => ({
+            setFormData((prev) => ({
               ...prev,
               city: result.payload.city,
-              state: result.payload.state
+              state: result.payload.state,
             }));
           } else {
             // console.log("Failed to fetch location data:", result.payload);
@@ -107,10 +111,10 @@ const EditDealershipUsersModal = ({
         }
       } else if (debouncedZipcode && debouncedZipcode.length < 5) {
         // Clear city and state when zipcode is incomplete
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          city: '',
-          state: ''
+          city: "",
+          state: "",
         }));
       }
     };
@@ -120,12 +124,12 @@ const EditDealershipUsersModal = ({
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
-    
+
     // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
@@ -167,7 +171,7 @@ const EditDealershipUsersModal = ({
       }
 
       // Validate phone length (minimum 10 digits)
-      const phoneDigits = formData.phone.replace(/\D/g, '');
+      const phoneDigits = formData.phone.replace(/\D/g, "");
       if (formData.phone && phoneDigits.length < 10) {
         newErrors.phone = "Phone number must have at least 10 digits";
         hasErrors = true;
@@ -175,13 +179,15 @@ const EditDealershipUsersModal = ({
 
       // Validate ZIP code format
       if (formData.zip && !/^\d{5}(-\d{4})?$/.test(formData.zip)) {
-        newErrors.zip = "Please enter a valid ZIP code (e.g., 12345 or 12345-6789)";
+        newErrors.zip =
+          "Please enter a valid ZIP code (e.g., 12345 or 12345-6789)";
         hasErrors = true;
       }
 
       // Check if city and state are populated (should be auto-filled from ZIP)
       if (formData.zip && (!formData.city || !formData.state)) {
-        newErrors.zip = "Please enter a valid ZIP code to auto-fill city and state";
+        newErrors.zip =
+          "Please enter a valid ZIP code to auto-fill city and state";
         hasErrors = true;
       }
 
@@ -189,7 +195,8 @@ const EditDealershipUsersModal = ({
       if (formData.website && formData.website.trim()) {
         const urlRegex = /^https?:\/\/.+\..+/;
         if (!urlRegex.test(formData.website)) {
-          newErrors.website = "Please enter a valid website URL (e.g., https://example.com)";
+          newErrors.website =
+            "Please enter a valid website URL (e.g., https://example.com)";
           hasErrors = true;
         }
       }
@@ -227,66 +234,89 @@ const EditDealershipUsersModal = ({
       }
 
       // Make API call to update dealership user
-      const response = await api.put(`/dealership-users/${dealershipUserData.id}`, requestBody);
+      const response = await api.put(
+        `/dealership-users/${dealershipUserData.id}`,
+        requestBody
+      );
 
       if (response.data.success) {
         setSuccess(true);
-        toast.success(response.data.message || "Dealership user updated successfully!");
-        
+        toast.success(
+          response.data.message || "Dealership user updated successfully!"
+        );
+
         // Call success callback if provided
         if (onSuccess) {
           onSuccess();
         }
-        
+
         // Auto-close modal after 2 seconds
         setTimeout(() => {
           handleClose();
         }, 2000);
       } else {
-        throw new Error(response.data.message || "Failed to update dealership user");
+        throw new Error(
+          response.data.message || "Failed to update dealership user"
+        );
       }
     } catch (error) {
       console.error("Error updating dealership user:", error);
-      
+
       // Handle different types of errors
       if (error.response) {
         const { status, data } = error.response;
-        
+
         switch (status) {
           case 400:
-            toast.error(data?.message || "Invalid data provided. Please check your inputs.");
+            toast.error(
+              data?.message ||
+                "Invalid data provided. Please check your inputs."
+            );
             break;
           case 401:
             toast.error("You are not authorized to update dealership users.");
             break;
           case 403:
-            toast.error("You don't have permission to update dealership users.");
+            toast.error(
+              "You don't have permission to update dealership users."
+            );
             break;
           case 404:
             toast.error("Dealership user not found.");
             break;
           case 409:
-            toast.error("A dealership user with this information already exists.");
+            toast.error(
+              "A dealership user with this information already exists."
+            );
             break;
           case 422:
             // Handle validation errors from server
             if (data?.errors) {
               setErrors(data.errors);
             } else {
-              toast.error(data?.message || "Validation failed. Please check your inputs.");
+              toast.error(
+                data?.message || "Validation failed. Please check your inputs."
+              );
             }
             break;
           case 429:
-            toast.error("Too many requests. Please wait a moment and try again.");
+            toast.error(
+              "Too many requests. Please wait a moment and try again."
+            );
             break;
           case 500:
             toast.error("Server error. Please try again later.");
             break;
           default:
-            toast.error(data?.message || "Failed to update dealership user. Please try again.");
+            toast.error(
+              data?.message ||
+                "Failed to update dealership user. Please try again."
+            );
         }
       } else if (error.request) {
-        toast.error("Network error. Please check your connection and try again.");
+        toast.error(
+          "Network error. Please check your connection and try again."
+        );
       } else {
         toast.error("An unexpected error occurred. Please try again.");
       }
@@ -348,10 +378,9 @@ const EditDealershipUsersModal = ({
                 {success ? "Dealership User Updated!" : "Edit Dealership User"}
               </DialogTitle>
               <DialogDescription className="text-neutral-600">
-                {success 
+                {success
                   ? "The dealership user has been updated successfully."
-                  : "Update the dealership user information below."
-                }
+                  : "Update the dealership user information below."}
               </DialogDescription>
             </div>
           </motion.div>
@@ -378,7 +407,8 @@ const EditDealershipUsersModal = ({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              {formData.first_name} {formData.last_name} has been updated successfully.
+              {formData.first_name} {formData.last_name} has been updated
+              successfully.
             </motion.p>
             <motion.p
               className="text-xs text-gray-500 mt-2"
@@ -402,7 +432,7 @@ const EditDealershipUsersModal = ({
                 <Users className="w-5 h-5 text-orange-600" />
                 Personal Information
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* First Name - Disabled */}
                 <div className="space-y-2">
@@ -475,7 +505,7 @@ const EditDealershipUsersModal = ({
                   onChange={handleInputChange}
                   placeholder="+1234567890"
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.phone ? 'border-red-500' : 'border-neutral-300'
+                    errors.phone ? "border-red-500" : "border-neutral-300"
                   }`}
                   disabled={loading}
                   required
@@ -500,7 +530,7 @@ const EditDealershipUsersModal = ({
                 <MapPin className="w-5 h-5 text-orange-600" />
                 Location Information
               </h3>
-              
+
               {/* Address */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
@@ -514,7 +544,7 @@ const EditDealershipUsersModal = ({
                   onChange={handleInputChange}
                   placeholder="123 Main Street"
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.address ? 'border-red-500' : 'border-neutral-300'
+                    errors.address ? "border-red-500" : "border-neutral-300"
                   }`}
                   disabled={loading}
                   required
@@ -533,6 +563,37 @@ const EditDealershipUsersModal = ({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* ZIP Code */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                    <MapPin className="w-4 h-4" />
+                    ZIP Code *
+                  </label>
+                  <input
+                    type="text"
+                    name="zip"
+                    value={formData.zip}
+                    onChange={handleInputChange}
+                    placeholder="90210"
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                      errors.zip ? "border-red-500" : "border-neutral-300"
+                    }`}
+                    disabled={loading}
+                    required
+                  />
+                  {errors.zip && (
+                    <motion.p
+                      className="text-red-500 text-xs flex items-center gap-1"
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <AlertCircle className="w-3 h-3" />
+                      {errors.zip}
+                    </motion.p>
+                  )}
+                </div>
+
                 {/* City - Disabled */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
@@ -571,37 +632,6 @@ const EditDealershipUsersModal = ({
                   <p className="text-xs text-neutral-500">
                     Auto-filled from ZIP code
                   </p>
-                </div>
-
-                {/* ZIP Code */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    ZIP Code *
-                  </label>
-                  <input
-                    type="text"
-                    name="zip"
-                    value={formData.zip}
-                    onChange={handleInputChange}
-                    placeholder="90210"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.zip ? 'border-red-500' : 'border-neutral-300'
-                    }`}
-                    disabled={loading}
-                    required
-                  />
-                  {errors.zip && (
-                    <motion.p
-                      className="text-red-500 text-xs flex items-center gap-1"
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <AlertCircle className="w-3 h-3" />
-                      {errors.zip}
-                    </motion.p>
-                  )}
                 </div>
               </div>
             </div>
@@ -720,7 +750,6 @@ const EditDealershipUsersModal = ({
                 />
               </div>
             </div> */}
-
           </motion.div>
         )}
 
