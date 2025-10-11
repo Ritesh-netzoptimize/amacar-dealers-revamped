@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { 
   Building2, 
@@ -11,7 +11,11 @@ import {
   FileText,
   Hash,
   Loader2,
-  CheckCircle
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
+  Lock,
+  Send
 } from "lucide-react";
 import {
   Dialog,
@@ -29,6 +33,7 @@ const CreateDealershipModal = ({
   onClose, 
   onSuccess 
 }) => {
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     dealership_name: "",
     dealer_code: "",
@@ -47,6 +52,137 @@ const CreateDealershipModal = ({
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
+
+  const totalSteps = 4;
+
+  const steps = [
+    {
+      number: 1,
+      title: "Dealership Information",
+      description: "Basic dealership details",
+      icon: Building2,
+    },
+    {
+      number: 2,
+      title: "Contact Information",
+      description: "Primary contact details",
+      icon: User,
+    },
+    {
+      number: 3,
+      title: "Address Information",
+      description: "Location and address details",
+      icon: MapPin,
+    },
+    {
+      number: 4,
+      title: "Additional Information",
+      description: "Notes and additional details",
+      icon: FileText,
+    },
+  ];
+
+  const validateStep = (step) => {
+    const newErrors = {};
+    let hasErrors = false;
+
+    switch (step) {
+      case 1: // Dealership Information
+        if (!formData.dealership_name.trim()) {
+          newErrors.dealership_name = "Dealership name is required";
+          hasErrors = true;
+        }
+
+        if (!formData.dealer_code.trim()) {
+          newErrors.dealer_code = "Dealer code is required";
+          hasErrors = true;
+        }
+
+        if (formData.website && formData.website.trim()) {
+          const websiteRegex = /^https?:\/\/.+\..+/;
+          if (!websiteRegex.test(formData.website)) {
+            newErrors.website = "Please enter a valid website URL (e.g., https://example.com)";
+            hasErrors = true;
+          }
+        }
+        break;
+
+      case 2: // Contact Information
+        if (!formData.first_name.trim()) {
+          newErrors.first_name = "First name is required";
+          hasErrors = true;
+        }
+
+        if (!formData.last_name.trim()) {
+          newErrors.last_name = "Last name is required";
+          hasErrors = true;
+        }
+
+        if (!formData.email.trim()) {
+          newErrors.email = "Email is required";
+          hasErrors = true;
+        } else {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(formData.email)) {
+            newErrors.email = "Please enter a valid email address";
+            hasErrors = true;
+          }
+        }
+
+        if (!formData.phone.trim()) {
+          newErrors.phone = "Phone is required";
+          hasErrors = true;
+        } else if (!/^[\d\s\-()]+$/.test(formData.phone)) {
+          newErrors.phone = "Please enter a valid phone number";
+          hasErrors = true;
+        }
+        break;
+
+      case 3: // Address Information
+        if (!formData.address.trim()) {
+          newErrors.address = "Address is required";
+          hasErrors = true;
+        }
+
+        if (!formData.city.trim()) {
+          newErrors.city = "City is required";
+          hasErrors = true;
+        }
+
+        if (!formData.state.trim()) {
+          newErrors.state = "State is required";
+          hasErrors = true;
+        }
+
+        if (!formData.zip.trim()) {
+          newErrors.zip = "ZIP code is required";
+          hasErrors = true;
+        }
+
+        if (!formData.country.trim()) {
+          newErrors.country = "Country is required";
+          hasErrors = true;
+        }
+        break;
+
+      case 4: // Additional Information
+        // No required fields in this step
+        break;
+    }
+
+    setErrors(newErrors);
+    return !hasErrors;
+  };
+
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(prev => Math.min(prev + 1, totalSteps));
+    }
+  };
+
+  const handlePrevious = () => {
+    setCurrentStep(prev => Math.max(prev - 1, 1));
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -76,63 +212,15 @@ const CreateDealershipModal = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateStep(currentStep)) {
+      return;
+    }
+
     setLoading(true);
     setErrors({});
 
     try {
-      // Validate required fields - only show red border, no error messages
-      const requiredFields = [
-        "dealership_name",
-        "dealer_code",
-        "first_name",
-        "last_name",
-        "email",
-        "phone",
-        "address",
-        "city",
-        "state",
-        "zip",
-        "country",
-      ];
-
-      const newErrors = {};
-      let hasErrors = false;
-
-      for (const field of requiredFields) {
-        if (!formData[field].trim()) {
-          newErrors[field] = "required"; // Just mark as required for red border
-          hasErrors = true;
-        }
-      }
-
-      // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (formData.email && !emailRegex.test(formData.email)) {
-        newErrors.email = "Please enter a valid email address";
-        hasErrors = true;
-      }
-
-      // Validate website format if provided
-      if (formData.website && formData.website.trim()) {
-        const websiteRegex = /^https?:\/\/.+\..+/;
-        if (!websiteRegex.test(formData.website)) {
-          newErrors.website = "Please enter a valid website URL (e.g., https://example.com)";
-          hasErrors = true;
-        }
-      }
-
-      // Validate phone format
-      if (formData.phone && !/^[\d\s\-()]+$/.test(formData.phone)) {
-        newErrors.phone = "Please enter a valid phone number";
-        hasErrors = true;
-      }
-
-      if (hasErrors) {
-        setErrors(newErrors);
-        setLoading(false);
-        return;
-      }
-
       // Make API call to create dealership
       const response = await api.post('/dealerships/create', formData);
 
@@ -218,7 +306,363 @@ const CreateDealershipModal = ({
       });
       setErrors({});
       setSuccess(false);
+      setCurrentStep(1);
       onClose();
+    }
+  };
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1: // Dealership Information
+        return (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <Building2 className="w-4 h-4" />
+                  Dealership Name *
+                </label>
+                <input
+                  type="text"
+                  name="dealership_name"
+                  value={formData.dealership_name}
+                  onChange={handleInputChange}
+                  placeholder="ABC Motors"
+                  title="Dealership name is required"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                    errors.dealership_name ? 'border-red-500' : 'border-neutral-300'
+                  }`}
+                  disabled={loading}
+                  required
+                />
+                {errors.dealership_name && (
+                  <p className="text-sm text-red-500">{errors.dealership_name}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <Hash className="w-4 h-4" />
+                  Dealer Code *
+                </label>
+                <input
+                  type="text"
+                  name="dealer_code"
+                  value={formData.dealer_code}
+                  onChange={handleInputChange}
+                  placeholder="ABC123"
+                  title="Dealer code is required (alphanumeric only)"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                    errors.dealer_code ? 'border-red-500' : 'border-neutral-300'
+                  }`}
+                  disabled={loading}
+                  required
+                />
+                {errors.dealer_code && (
+                  <p className="text-sm text-red-500">{errors.dealer_code}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                <Globe className="w-4 h-4" />
+                Website
+              </label>
+              <input
+                type="url"
+                name="website"
+                value={formData.website}
+                onChange={handleInputChange}
+                placeholder="https://abcmotors.com"
+                title="Enter a valid website URL (optional)"
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                  errors.website ? 'border-red-500' : 'border-neutral-300'
+                }`}
+                disabled={loading}
+              />
+              {errors.website && (
+                <p className="text-sm text-red-500">{errors.website}</p>
+              )}
+            </div>
+          </div>
+        );
+
+      case 2: // Contact Information
+        return (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  First Name *
+                </label>
+                <input
+                  type="text"
+                  name="first_name"
+                  value={formData.first_name}
+                  onChange={handleInputChange}
+                  placeholder="John"
+                  title="First name is required"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                    errors.first_name ? 'border-red-500' : 'border-neutral-300'
+                  }`}
+                  disabled={loading}
+                  required
+                />
+                {errors.first_name && (
+                  <p className="text-sm text-red-500">{errors.first_name}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Last Name *
+                </label>
+                <input
+                  type="text"
+                  name="last_name"
+                  value={formData.last_name}
+                  onChange={handleInputChange}
+                  placeholder="Doe"
+                  title="Last name is required"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                    errors.last_name ? 'border-red-500' : 'border-neutral-300'
+                  }`}
+                  disabled={loading}
+                  required
+                />
+                {errors.last_name && (
+                  <p className="text-sm text-red-500">{errors.last_name}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="john@abcmotors.com"
+                  title="Email address is required"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                    errors.email ? 'border-red-500' : 'border-neutral-300'
+                  }`}
+                  disabled={loading}
+                  required
+                />
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  Phone *
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="555-123-4567"
+                  title="Phone number is required"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                    errors.phone ? 'border-red-500' : 'border-neutral-300'
+                  }`}
+                  disabled={loading}
+                  required
+                />
+                {errors.phone && (
+                  <p className="text-sm text-red-500">{errors.phone}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 3: // Address Information
+        return (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                Address *
+              </label>
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleInputChange}
+                placeholder="123 Main Street"
+                title="Street address is required"
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                  errors.address ? 'border-red-500' : 'border-neutral-300'
+                }`}
+                disabled={loading}
+                required
+              />
+              {errors.address && (
+                <p className="text-sm text-red-500">{errors.address}</p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  City *
+                </label>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleInputChange}
+                  placeholder="New York"
+                  title="City is required"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                    errors.city ? 'border-red-500' : 'border-neutral-300'
+                  }`}
+                  disabled={loading}
+                  required
+                />
+                {errors.city && (
+                  <p className="text-sm text-red-500">{errors.city}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  State *
+                </label>
+                <input
+                  type="text"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleInputChange}
+                  placeholder="NY"
+                  title="State is required"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                    errors.state ? 'border-red-500' : 'border-neutral-300'
+                  }`}
+                  disabled={loading}
+                  required
+                />
+                {errors.state && (
+                  <p className="text-sm text-red-500">{errors.state}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  ZIP Code *
+                </label>
+                <input
+                  type="text"
+                  name="zip"
+                  value={formData.zip}
+                  onChange={handleInputChange}
+                  placeholder="10001"
+                  title="ZIP code is required"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                    errors.zip ? 'border-red-500' : 'border-neutral-300'
+                  }`}
+                  disabled={loading}
+                  required
+                />
+                {errors.zip && (
+                  <p className="text-sm text-red-500">{errors.zip}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                Country *
+              </label>
+              <select
+                name="country"
+                value={formData.country}
+                onChange={handleInputChange}
+                title="Country is required"
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                  errors.country ? 'border-red-500' : 'border-neutral-300'
+                }`}
+                disabled={loading}
+                required
+              >
+                <option value="US">United States</option>
+                <option value="CA">Canada</option>
+                <option value="MX">Mexico</option>
+                <option value="GB">United Kingdom</option>
+                <option value="AU">Australia</option>
+              </select>
+              {errors.country && (
+                <p className="text-sm text-red-500">{errors.country}</p>
+              )}
+            </div>
+          </div>
+        );
+
+      case 4: // Additional Information
+        return (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Notes
+              </label>
+              <textarea
+                name="notes"
+                value={formData.notes}
+                onChange={handleInputChange}
+                placeholder="Additional notes about the dealership..."
+                title="Optional additional information"
+                rows={3}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 resize-none ${
+                  errors.notes ? 'border-red-500' : 'border-neutral-300'
+                }`}
+                disabled={loading}
+              />
+              {errors.notes && (
+                <p className="text-sm text-red-500">{errors.notes}</p>
+              )}
+            </div>
+
+            {/* Billing Information */}
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                    <Hash className="w-4 h-4 text-orange-600" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-sm font-semibold text-orange-800 mb-1">
+                    Billing Information
+                  </h4>
+                  <p className="text-sm text-orange-700">
+                    You will be charged <span className="font-semibold">$890</span> more in the next billing cycle if you create this dealership.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
     }
   };
 
@@ -297,307 +741,62 @@ const CreateDealershipModal = ({
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.3 }}
           >
-            {/* Dealership Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-neutral-800 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-orange-600" />
-                Dealership Information
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                    <Building2 className="w-4 h-4" />
-                    Dealership Name *
-                  </label>
-                  <input
-                    type="text"
-                    name="dealership_name"
-                    value={formData.dealership_name}
-                    onChange={handleInputChange}
-                    placeholder="ABC Motors"
-                    title="Dealership name is required"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.dealership_name ? 'border-red-500' : 'border-neutral-300'
-                    }`}
-                    disabled={loading}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                    <Hash className="w-4 h-4" />
-                    Dealer Code *
-                  </label>
-                  <input
-                    type="text"
-                    name="dealer_code"
-                    value={formData.dealer_code}
-                    onChange={handleInputChange}
-                    placeholder="ABC123"
-                    title="Dealer code is required (alphanumeric only)"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.dealer_code ? 'border-red-500' : 'border-neutral-300'
-                    }`}
-                    disabled={loading}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                  <Globe className="w-4 h-4" />
-                  Website
-                </label>
-                <input
-                  type="url"
-                  name="website"
-                  value={formData.website}
-                  onChange={handleInputChange}
-                  placeholder="https://abcmotors.com"
-                  title="Enter a valid website URL (optional)"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.website ? 'border-red-500' : 'border-neutral-300'
-                  }`}
-                  disabled={loading}
-                />
-              </div>
+            {/* Step Progress */}
+            <div className="flex items-center justify-between mb-6">
+              {steps.map((step, index) => {
+                const StepIcon = step.icon;
+                const isActive = currentStep === step.number;
+                const isCompleted = currentStep > step.number;
+                
+                return (
+                  <div key={step.number} className="flex items-center">
+                    <div className="flex flex-col items-center">
+                      <div
+                        className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-200 ${
+                          isActive
+                            ? "bg-orange-500 border-orange-500 text-white"
+                            : isCompleted
+                            ? "bg-green-500 border-green-500 text-white"
+                            : "bg-white border-neutral-300 text-neutral-400"
+                        }`}
+                      >
+                        {isCompleted ? (
+                          <CheckCircle className="w-5 h-5" />
+                        ) : (
+                          <StepIcon className="w-5 h-5" />
+                        )}
+                      </div>
+                      <div className="mt-2 text-center">
+                        <p className={`text-xs font-medium ${
+                          isActive ? "text-orange-600" : isCompleted ? "text-green-600" : "text-neutral-400"
+                        }`}>
+                          {step.title}
+                        </p>
+                        <p className="text-xs text-neutral-500">{step.description}</p>
+                      </div>
+                    </div>
+                    {index < steps.length - 1 && (
+                      <div className={`w-16 h-0.5 mx-2 ${
+                        isCompleted ? "bg-green-500" : "bg-neutral-300"
+                      }`} />
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
-            {/* Contact Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-neutral-800 flex items-center gap-2">
-                <User className="w-5 h-5 text-orange-600" />
-                Contact Information
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    First Name *
-                  </label>
-                  <input
-                    type="text"
-                    name="first_name"
-                    value={formData.first_name}
-                    onChange={handleInputChange}
-                    placeholder="John"
-                    title="First name is required"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.first_name ? 'border-red-500' : 'border-neutral-300'
-                    }`}
-                    disabled={loading}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    Last Name *
-                  </label>
-                  <input
-                    type="text"
-                    name="last_name"
-                    value={formData.last_name}
-                    onChange={handleInputChange}
-                    placeholder="Doe"
-                    title="Last name is required"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.last_name ? 'border-red-500' : 'border-neutral-300'
-                    }`}
-                    disabled={loading}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
-                    Email *
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="john@abcmotors.com"
-                    title="Email address is required"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.email ? 'border-red-500' : 'border-neutral-300'
-                    }`}
-                    disabled={loading}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                    <Phone className="w-4 h-4" />
-                    Phone *
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    placeholder="555-123-4567"
-                    title="Phone number is required"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.phone ? 'border-red-500' : 'border-neutral-300'
-                    }`}
-                    disabled={loading}
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Address Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-neutral-800 flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-orange-600" />
-                Address Information
-              </h3>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  Address *
-                </label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  placeholder="123 Main Street"
-                  title="Street address is required"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.address ? 'border-red-500' : 'border-neutral-300'
-                  }`}
-                  disabled={loading}
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    City *
-                  </label>
-                  <input
-                    type="text"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                    placeholder="New York"
-                    title="City is required"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.city ? 'border-red-500' : 'border-neutral-300'
-                    }`}
-                    disabled={loading}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    State *
-                  </label>
-                  <input
-                    type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    placeholder="NY"
-                    title="State is required"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.state ? 'border-red-500' : 'border-neutral-300'
-                    }`}
-                    disabled={loading}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    ZIP Code *
-                  </label>
-                  <input
-                    type="text"
-                    name="zip"
-                    value={formData.zip}
-                    onChange={handleInputChange}
-                    placeholder="10001"
-                    title="ZIP code is required"
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                      errors.zip ? 'border-red-500' : 'border-neutral-300'
-                    }`}
-                    disabled={loading}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  Country *
-                </label>
-                <select
-                  name="country"
-                  value={formData.country}
-                  onChange={handleInputChange}
-                  title="Country is required"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.country ? 'border-red-500' : 'border-neutral-300'
-                  }`}
-                  disabled={loading}
-                  required
-                >
-                  <option value="US">United States</option>
-                  <option value="CA">Canada</option>
-                  <option value="MX">Mexico</option>
-                  <option value="GB">United Kingdom</option>
-                  <option value="AU">Australia</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Additional Notes */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-neutral-800 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-orange-600" />
-                Additional Information
-              </h3>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  Notes
-                </label>
-                <textarea
-                  name="notes"
-                  value={formData.notes}
-                  onChange={handleInputChange}
-                  placeholder="Additional notes about the dealership..."
-                  title="Optional additional information"
-                  rows={3}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 resize-none ${
-                    errors.notes ? 'border-red-500' : 'border-neutral-300'
-                  }`}
-                  disabled={loading}
-                />
-              </div>
-            </div>
+            {/* Step Content */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {renderStepContent()}
+              </motion.div>
+            </AnimatePresence>
           </motion.div>
         )}
 
@@ -613,28 +812,54 @@ const CreateDealershipModal = ({
               >
                 Cancel
               </Button>
-              <Button
-                type="button"
-                onClick={handleSubmit}
-                disabled={loading}
-                className="flex-1 sm:flex-none bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <motion.div
-                    className="flex items-center gap-2"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  >
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Creating Dealership...
-                  </motion.div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <Building2 className="w-4 h-4" />
-                    Create Dealership
-                  </div>
-                )}
-              </Button>
+              
+              {currentStep > 1 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handlePrevious}
+                  disabled={loading}
+                  className="flex-1 sm:flex-none"
+                >
+                  <ChevronLeft className="w-4 h-4 mr-2" />
+                  Previous
+                </Button>
+              )}
+              
+              {currentStep < totalSteps ? (
+                <Button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={loading}
+                  className="flex-1 sm:flex-none bg-orange-500 hover:bg-orange-600 text-white"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="flex-1 sm:flex-none bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <motion.div
+                      className="flex items-center gap-2"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    >
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Creating Dealership...
+                    </motion.div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4" />
+                      Create Dealership
+                    </div>
+                  )}
+                </Button>
+              )}
             </>
           )}
         </DialogFooter>
