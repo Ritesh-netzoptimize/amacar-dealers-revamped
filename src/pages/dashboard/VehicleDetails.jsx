@@ -396,13 +396,13 @@ const VehicleDetails = () => {
                     Back
                   </span>
                 </button>
-                <Button
+                {/* <Button
                   onClick={() => handleBidNow(vehicleData)}
                   className="flex-1 h-full text-xs bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-all duration-200 w-full sm:w-auto px-3 sm:px-4 py-3"
                 >
                   <Gavel className="w-3.5 h-3.5 mr-1" />
                   Bid
-                </Button>
+                </Button> */}
               </div>
             </div>
           </motion.div>
