@@ -127,50 +127,50 @@ const DealershipUsersContainer = ({
           </div>
         ),
       }),
-      columnHelper.accessor("email", {
-        header: "Contact",
+      columnHelper.accessor("phone", {
+        header: "Phone",
         cell: ({ row }) => (
-          <div className="space-y-1">
-            <div className="flex items-center text-sm text-neutral-900">
-              <Mail className="h-4 w-4 text-neutral-400 mr-2" />
-              {row.original.email}
-            </div>
-            {row.original.phone && (
-              <div className="flex items-center text-sm text-neutral-500">
-                <Phone className="h-4 w-4 text-neutral-400 mr-2" />
-                {row.original.phone}
-              </div>
-            )}
-            {row.original.address && (
-              <div className="flex items-center text-sm text-neutral-500">
-                <MapPin className="h-4 w-4 text-neutral-400 mr-2" />
-                {row.original.address.city}, {row.original.address.state}
-              </div>
-            )}
+          <div className="flex items-center text-sm text-neutral-900">
+            <Phone className="h-4 w-4 text-neutral-400 mr-2" />
+            {row.original.phone || "N/A"}
           </div>
         ),
       }),
-      columnHelper.accessor("business", {
-        header: "Business",
+      columnHelper.accessor("address", {
+        header: "Location",
         cell: ({ row }) => (
-          <div className="space-y-1">
-            <div className="text-sm font-medium text-neutral-900">
-              {row.original.business?.dealership_name || "N/A"}
-            </div>
-            <div className="text-sm text-neutral-500">
-              Code: {row.original.business?.dealer_code || "N/A"}
-            </div>
-            {row.original.business?.website && (
-              <div className="text-sm text-blue-600">
-                <a
-                  href={row.original.business.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline"
-                >
-                  {row.original.business.website}
-                </a>
-              </div>
+          <div className="flex items-center text-sm text-neutral-900">
+            <MapPin className="h-4 w-4 text-neutral-400 mr-2" />
+            {row.original.address ? 
+              `${row.original.address.city}, ${row.original.address.state}` : 
+              "N/A"
+            }
+          </div>
+        ),
+      }),
+      columnHelper.accessor("dealer_code", {
+        header: "Dealer Code",
+        cell: ({ row }) => (
+          <div className="text-sm font-medium text-neutral-900">
+            {row.original.business?.dealer_code || "N/A"}
+          </div>
+        ),
+      }),
+      columnHelper.accessor("website", {
+        header: "Website",
+        cell: ({ row }) => (
+          <div className="text-sm">
+            {row.original.business?.website ? (
+              <a
+                href={row.original.business.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                {row.original.business.website}
+              </a>
+            ) : (
+              <span className="text-neutral-500">N/A</span>
             )}
           </div>
         ),
@@ -184,22 +184,7 @@ const DealershipUsersContainer = ({
             >
               {row.original.status?.formatted_status || "Unknown"}
             </Badge>
-            <div className="text-xs text-neutral-500">
-              {row.original.status?.user_status || "N/A"}
-            </div>
-          </div>
-        ),
-      }),
-      columnHelper.accessor("dates", {
-        header: "Last Login",
-        cell: ({ row }) => (
-          <div>
-            <div className="text-sm text-neutral-900">
-              {formatLastLogin(row.original.dates?.last_login)}
-            </div>
-            <div className="text-xs text-neutral-500">
-              Joined {formatDate(row.original.dates?.created_at)}
-            </div>
+        
           </div>
         ),
       }),
@@ -217,34 +202,48 @@ const DealershipUsersContainer = ({
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onViewUser(row.original.id)}>
-                  <Eye className="mr-2 h-4 w-4" />
-                  View Details
+              <DropdownMenuContent
+                align="end"
+                side="bottom"
+                sideOffset={4}
+                className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
+              >
+                <DropdownMenuItem
+                  onClick={() => onViewUser(row.original.id)}
+                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                >
+                  <Eye className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                  <span>View Details</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onEditUser(row.original.id)}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit User
+                <DropdownMenuItem
+                  onClick={() => onEditUser(row.original.id)}
+                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                >
+                  <Edit className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                  <span>Edit User</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onContactUser(row.original.id)}>
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  Contact
+                <DropdownMenuItem
+                  onClick={() => onContactUser(row.original.id)}
+                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                >
+                  <MessageSquare className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                  <span>Contact</span>
                 </DropdownMenuItem>
                 {row.original.status === "active" ? (
                   <DropdownMenuItem
                     onClick={() => onDeactivateUser(row.original.id)}
-                    className="text-red-600"
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
                   >
-                    <UserX className="mr-2 h-4 w-4" />
-                    Deactivate
+                    <UserX className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
+                    <span>Deactivate</span>
                   </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem
                     onClick={() => onActivateUser(row.original.id)}
-                    className="text-green-600"
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-700 focus:bg-green-50 focus:text-green-700 focus:outline-none transition-all duration-200 group"
                   >
-                    <UserCheck className="mr-2 h-4 w-4" />
-                    Activate
+                    <UserCheck className="w-4 h-4 text-neutral-500 group-hover:text-green-600 group-focus:text-green-600 transition-colors duration-200" />
+                    <span>Activate</span>
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -253,7 +252,7 @@ const DealershipUsersContainer = ({
         ),
       }),
     ],
-    [columnHelper, formatLastLogin, onViewUser, onEditUser, onContactUser, onDeactivateUser, onActivateUser]
+    [columnHelper, onViewUser, onEditUser, onContactUser, onDeactivateUser, onActivateUser]
   );
 
   // Create table instance
@@ -318,65 +317,7 @@ const DealershipUsersContainer = ({
       animate="visible"
       className="space-y-6"
     >
-      {/* Header Stats */}
-      <motion.div
-        variants={itemVariants}
-        className="grid grid-cols-1 md:grid-cols-4 gap-4"
-      >
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-neutral-600">Total Users</p>
-              <p className="text-2xl font-bold text-neutral-900">{totalCount}</p>
-            </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Users className="w-6 h-6 text-blue-600" />
-            </div>
-          </div>
-        </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-neutral-600">Active Users</p>
-              <p className="text-2xl font-bold text-green-600">
-                {users?.filter(user => user.status === "active").length}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <UserCheck className="w-6 h-6 text-green-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-neutral-600">Inactive Users</p>
-              <p className="text-2xl font-bold text-red-600">
-                {users?.filter(user => user.status === "inactive").length}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-              <UserX className="w-6 h-6 text-red-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-neutral-600">Pending Users</p>
-              <p className="text-2xl font-bold text-yellow-600">
-                {users?.filter(user => user.status === "pending").length}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-yellow-600" />
-            </div>
-          </div>
-        </div>
-      </motion.div>
 
       {/* Users Table */}
       <motion.div
@@ -555,18 +496,17 @@ const DealershipUsersContainer = ({
                     <Mail className="w-4 h-4" />
                     {row.original.email}
                   </div>
-                  {row.original.phone && (
-                    <div className="text-sm text-neutral-600 flex items-center gap-2">
-                      <Phone className="w-4 h-4" />
-                      {row.original.phone}
-                    </div>
-                  )}
-                  {row.original.address && (
-                    <div className="text-sm text-neutral-600 flex items-center gap-2">
-                      <MapPin className="w-4 h-4" />
-                      {row.original.address.city}, {row.original.address.state}
-                    </div>
-                  )}
+                  <div className="text-sm text-neutral-600 flex items-center gap-2">
+                    <Phone className="w-4 h-4" />
+                    {row.original.phone || "N/A"}
+                  </div>
+                  <div className="text-sm text-neutral-600 flex items-center gap-2">
+                    <MapPin className="w-4 h-4" />
+                    {row.original.address ? 
+                      `${row.original.address.city}, ${row.original.address.state}` : 
+                      "N/A"
+                    }
+                  </div>
                 </div>
 
                 {/* Business Info */}
@@ -577,30 +517,29 @@ const DealershipUsersContainer = ({
                   <div className="text-sm text-neutral-500">
                     Code: {row.original.business?.dealer_code || "N/A"}
                   </div>
-                  {row.original.business?.website && (
-                    <div className="text-sm text-blue-600">
+                  <div className="text-sm">
+                    {row.original.business?.website ? (
                       <a
                         href={row.original.business.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:underline"
+                        className="text-blue-600 hover:underline"
                       >
                         {row.original.business.website}
                       </a>
-                    </div>
-                  )}
+                    ) : (
+                      <span className="text-neutral-500">Website: N/A</span>
+                    )}
+                  </div>
                 </div>
 
-                {/* Status and Last Login */}
-                <div className="flex gap-2 items-center justify-between">
+                {/* Status */}
+                <div className="flex gap-2 items-center">
                   <Badge
                     className={`${getStatusColor(row.original.status?.formatted_status)} border`}
                   >
                     {row.original.status?.formatted_status || "Unknown"}
                   </Badge>
-                  <div className="text-xs text-neutral-500">
-                    {formatLastLogin(row.original.dates?.last_login)}
-                  </div>
                 </div>
 
                 {/* Action Buttons */}
@@ -619,44 +558,44 @@ const DealershipUsersContainer = ({
                       align="end"
                       side="bottom"
                       sideOffset={4}
-                      className="w-52 p-1 shadow-lg border border-neutral-200 bg-white rounded-lg absolute top-full right-0 mt-2 z-50"
+                      className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
                     >
                       <DropdownMenuItem
                         onClick={() => onViewUser(row.original.id)}
-                        className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-colors duration-150 focus:bg-neutral-50 focus:text-neutral-900 focus:outline-none"
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                       >
-                        <Eye className="w-4 h-4 mr-3 text-neutral-500" />
-                        <span className="font-medium">View Details</span>
+                        <Eye className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                        <span>View Details</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => onEditUser(row.original.id)}
-                        className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-colors duration-150 focus:bg-neutral-50 focus:text-neutral-900 focus:outline-none"
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                       >
-                        <Edit className="w-4 h-4 mr-3 text-neutral-500" />
-                        <span className="font-medium">Edit User</span>
+                        <Edit className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                        <span>Edit User</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => onContactUser(row.original.id)}
-                        className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-colors duration-150 focus:bg-neutral-50 focus:text-neutral-900 focus:outline-none"
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                       >
-                        <MessageSquare className="w-4 h-4 mr-3 text-neutral-500" />
-                        <span className="font-medium">Contact</span>
+                        <MessageSquare className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                        <span>Contact</span>
                       </DropdownMenuItem>
                       {row.original.status === "active" ? (
                         <DropdownMenuItem
                           onClick={() => onDeactivateUser(row.original.id)}
-                          className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-red-700 hover:bg-red-50 hover:text-red-900 rounded-md transition-colors duration-150 focus:bg-red-50 focus:text-red-900 focus:outline-none"
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
                         >
-                          <UserX className="w-4 h-4 mr-3 text-red-500" />
-                          <span className="font-medium">Deactivate</span>
+                          <UserX className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
+                          <span>Deactivate</span>
                         </DropdownMenuItem>
                       ) : (
                         <DropdownMenuItem
                           onClick={() => onActivateUser(row.original.id)}
-                          className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-green-700 hover:bg-green-50 hover:text-green-900 rounded-md transition-colors duration-150 focus:bg-green-50 focus:text-green-900 focus:outline-none"
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-700 focus:bg-green-50 focus:text-green-700 focus:outline-none transition-all duration-200 group"
                         >
-                          <UserCheck className="w-4 h-4 mr-3 text-green-500" />
-                          <span className="font-medium">Activate</span>
+                          <UserCheck className="w-4 h-4 text-neutral-500 group-hover:text-green-600 group-focus:text-green-600 transition-colors duration-200" />
+                          <span>Activate</span>
                         </DropdownMenuItem>
                       )}
                     </DropdownMenuContent>
