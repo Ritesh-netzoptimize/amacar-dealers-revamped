@@ -39,6 +39,16 @@ export const USER_ROLES = {
 };
 
 /**
+ * check if user can update delete dealerships
+ * @params {string} userRole - the user's role
+ * @return {boolean} - Whether user can update delete dealerships
+ */
+export const canUpdateDeleteDealerships = (userRole) => {
+    return userRole === USER_ROLES.ADMINISTRATOR || USER_ROLES.SALES_MANAGER;
+};
+
+
+/**
  * Check if user can create dealership users
  * @param {string} userRole - The user's role
  * @returns {boolean} - Whether user can create dealership users
@@ -144,6 +154,7 @@ export const canAccessSubscriptionCancellationRequest = (userRole) => {
  */
 export const getUserPermissions = (userRole, user = null) => {
   return {
+    canUpdateDeleteDealerships: canUpdateDeleteDealerships(userRole),
     canCreateDealershipUsers: canCreateDealershipUsers(userRole),
     canDeleteUpdateDealershipUsers: canDeleteUpdateDealershipUsers(userRole),
     canAccessDealershipUsers: canAccessDealershipUsers(userRole),

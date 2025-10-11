@@ -46,6 +46,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import EditDealershipModal from "@/components/ui/EditDealershipModal";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { getUserPermissions } from "@/utils/rolePermissions";
 
 const DealershipContainer = ({
   dealerships = [],
@@ -69,6 +71,12 @@ const DealershipContainer = ({
   const [globalFilter, setGlobalFilter] = useState("");
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedDealership, setSelectedDealership] = useState(null);
+
+  const { user } = useSelector((state) => state.user);
+
+  const userRole = user?.role;
+  const permissions = getUserPermissions(userRole, user);
+  const { canUpdateDeleteDealerships } = permissions;
 
   // Handle edit dealership
   const handleEditDealership = useCallback(
@@ -310,13 +318,15 @@ const DealershipContainer = ({
                 ) : (
                   // Regular dealership actions
                   <>
-                    <DropdownMenuItem
-                      onClick={() => handleEditDealership(row.original.id)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
-                    >
-                      <Edit className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-                      <span>Edit Dealership</span>
-                    </DropdownMenuItem>
+                    {canUpdateDeleteDealerships && (
+                      <DropdownMenuItem
+                        onClick={() => handleEditDealership(row.original.id)}
+                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                      >
+                        <Edit className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                        <span>Edit Dealership</span>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem
                       onClick={(e) => e.stopPropagation()}
                       href={`tel:${row.original.phone}`}
@@ -325,7 +335,7 @@ const DealershipContainer = ({
                       <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                       <span>Contact</span>
                     </DropdownMenuItem>
-                    {row.original.status === "Inactive" ? (
+                    {row.original.status === "Inactive" && canUpdateDeleteDealerships ?  (
                       <DropdownMenuItem
                         onClick={() => onActivateDealership(row.original.id)}
                         className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-700 focus:bg-green-50 focus:text-green-700 focus:outline-none transition-all duration-200 group"
