@@ -455,7 +455,7 @@ const CancelSubscriptionModal = ({
                    type="button"
                    onClick={handleRestartSubscription}
                    disabled={loading}
-                   className="btn-primary flex-1 sm:flex-none disabled:opacity-70 disabled:cursor-not-allowed"
+                   className="btn-primary bg-blue-500 hover:bg-blue-500 flex-1 sm:flex-none disabled:opacity-70 disabled:cursor-not-allowed"
                  >
                    {loading ? (
                      <div className="flex items-center gap-2">
@@ -488,7 +488,7 @@ const CancelSubscriptionModal = ({
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="btn-primary flex-1 sm:flex-none disabled:opacity-70 disabled:cursor-not-allowed"
+                className="btn-primary bg-red-500 hover:bg-red-500 flex-1 sm:flex-none disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <motion.div

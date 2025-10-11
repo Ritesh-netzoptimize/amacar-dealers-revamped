@@ -795,7 +795,7 @@ const CreateSalesManagersModal = ({
                     <motion.div
                       className="flex items-center gap-2"
                       initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
+                      anim  ate={{ opacity: 1 }}
                     >
                       <Loader2 className="w-4 h-4 animate-spin" />
                       Creating Sales Manager...

@@ -175,7 +175,7 @@
 
 @layer base {
   ::placeholder {
-    @apply text-black opacity-100;
+    @apply text-gray-400 opacity-100;
   }
 }
 
