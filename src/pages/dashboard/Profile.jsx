@@ -15,6 +15,9 @@ import {
   X,
   XCircle,
   AlertTriangle,
+  Download,
+  FileText,
+  Receipt,
 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -70,6 +73,9 @@ const Profile = () => {
   const [cancellationStatus, setCancellationStatus] = useState(null);
   const [cancellationStatusLoading, setCancellationStatusLoading] =
     useState(false);
+  const [invoices, setInvoices] = useState([]);
+  const [invoicesLoading, setInvoicesLoading] = useState(false);
+  const [invoicesError, setInvoicesError] = useState(null);
 
   // Default profile data structure
   const defaultProfile = {
@@ -119,6 +125,41 @@ const Profile = () => {
     return isInactive && hasValidRole;
   };
 
+  // Fetch invoices
+  const fetchInvoices = async () => {
+    setInvoicesLoading(true);
+    setInvoicesError(null);
+    try {
+      const response = await api.get('/profile/invoices');
+      if (response.data.success) {
+        setInvoices(response.data.invoices || []);
+      } else {
+        setInvoicesError('Failed to fetch invoices');
+      }
+    } catch (error) {
+      console.error('Error fetching invoices:', error);
+      setInvoicesError('Failed to fetch invoices');
+    } finally {
+      setInvoicesLoading(false);
+    }
+  };
+
+  // Download invoice PDF
+  const downloadInvoice = (invoicePdfUrl, invoiceNumber) => {
+    try {
+      const link = document.createElement('a');
+      link.href = invoicePdfUrl;
+      link.download = `invoice-${invoiceNumber}.pdf`;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error downloading invoice:', error);
+      toast.error('Failed to download invoice');
+    }
+  };
+
   // Load user data from Redux state and fetch profile info
   useEffect(() => {
     console.log("uploadProfilePictureLoading", uploadProfilePictureLoading);
@@ -162,6 +203,13 @@ const Profile = () => {
     dispatch(fetchSubscriptionStatus());
     dispatch(fetchBillingInfo());
   }, [dispatch]);
+
+  // Fetch invoices when user is loaded and is a dealer
+  useEffect(() => {
+    if (user && (user.role === 'dealer' || (user.roles && user.roles.includes('dealer')))) {
+      fetchInvoices();
+    }
+  }, [user]);
 
   useEffect(() => {
     console.log("subscription", subscription);
@@ -1038,6 +1086,95 @@ const Profile = () => {
               </div>
             )}
           </motion.div>
+
+          {/* Previous 5 Bills - Only show for dealers */}
+          {user && (user.role === 'dealer' || (user.roles && user.roles.includes('dealer'))) && (
+            <motion.div
+              variants={itemVariants}
+              className="card p-4 sm:p-6 lg:p-8"
+            >
+              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-neutral-800 mb-4 sm:mb-6">
+                Previous 5 Bills
+              </h3>
+
+              {invoicesLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-4"></div>
+                  <p className="text-neutral-600">Loading invoices...</p>
+                </div>
+              ) : invoicesError ? (
+                <div className="text-center py-8">
+                  <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                  <p className="text-red-600 mb-4">{invoicesError}</p>
+                  <button
+                    onClick={fetchInvoices}
+                    className="btn-secondary"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              ) : invoices.length === 0 ? (
+                <div className="text-center py-8">
+                  <Receipt className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
+                  <p className="text-neutral-600">No invoices found</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {invoices.slice(0, 5).map((invoice) => (
+                    <div
+                      key={invoice.id}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-neutral-200 gap-4"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                            <FileText className="w-5 h-5 text-orange-600" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm sm:text-base font-semibold text-neutral-800">
+                              {invoice.number}
+                            </h4>
+                            <p className="text-xs sm:text-sm text-neutral-600">
+                              {invoice.description}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-neutral-500">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {invoice.created}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <DollarSign className="w-3 h-3" />
+                            ${invoice.amount} {invoice.currency}
+                          </span>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              invoice.status === 'paid'
+                                ? 'bg-green-100 text-green-700'
+                                : invoice.status === 'pending'
+                                ? 'bg-yellow-100 text-yellow-700'
+                                : 'bg-red-100 text-red-700'
+                            }`}
+                          >
+                            {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => downloadInvoice(invoice.invoice_pdf, invoice.number)}
+                        className="cursor-pointer btn-secondary flex items-center justify-center sm:justify-start space-x-2 w-full sm:w-auto"
+                        disabled={!invoice.invoice_pdf}
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>Download PDF</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          )}
 
           {/* Account Settings */}
           <motion.div
