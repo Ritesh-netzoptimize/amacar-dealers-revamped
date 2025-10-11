@@ -39,12 +39,22 @@ export const USER_ROLES = {
 };
 
 /**
+ * check if user can bid/pass on vehicle
+ * @params {string} userRole - the user's role
+ * @return {boolean} - Whether user can bid pass on vehicle
+ */
+export const canBidPass = (userRole) => {
+    return userRole === USER_ROLES.DEALER_USER || userRole === USER_ROLES.DEALER;
+};
+
+
+/**
  * check if user can update delete dealerships
  * @params {string} userRole - the user's role
  * @return {boolean} - Whether user can update delete dealerships
  */
 export const canUpdateDeleteDealerships = (userRole) => {
-    return userRole === USER_ROLES.ADMINISTRATOR || USER_ROLES.SALES_MANAGER;
+    return userRole === USER_ROLES.ADMINISTRATOR || userRole === USER_ROLES.SALES_MANAGER;
 };
 
 
@@ -63,7 +73,7 @@ export const canCreateDealershipUsers = (userRole) => {
  * @returns {boolean} - Whether user can create dealership users
  */
 export const canDeleteUpdateDealershipUsers = (userRole) => {
-    return userRole === USER_ROLES.DEALER || USER_ROLES.ADMINISTRATOR || USER_ROLES.SALES_MANAGER;
+    return userRole === USER_ROLES.DEALER || userRole === USER_ROLES.ADMINISTRATOR || userRole === USER_ROLES.SALES_MANAGER;
   };
 
 /**
@@ -162,8 +172,8 @@ export const getUserPermissions = (userRole, user = null) => {
     canAccessInvitedDealerships: canAccessInvitedDealerships(userRole),
     canAccessSalesManagers: canAccessSalesManagers(userRole),
     canAccessPartnerDealers: canAccessPartnerDealers(userRole, user),
-    canAccessSubscriptionCancellationRequest:
-      canAccessSubscriptionCancellationRequest(userRole),
+    canAccessSubscriptionCancellationRequest: canAccessSubscriptionCancellationRequest(userRole),
+    canBidPass: canBidPass(userRole),
   };
 };
 

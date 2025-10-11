@@ -6,16 +6,24 @@ import PhotoSwipeGallery from "@/components/ui/PhotoSwipeGallery";
 import { Button } from "@/components/ui/button";
 import BidDialog from "@/components/common/BidDialog/BidDialog";
 import PassDialog from "@/components/common/PassDialog/PassDialog";
+import { getUserPermissions } from "@/utils/rolePermissions";
+import { useSelector } from "react-redux";
 
-const LiveAuctionsContainer = ({ 
-  auctions = [], 
-  onPassUnpassSuccess = () => {} 
+const LiveAuctionsContainer = ({
+  auctions = [],
+  onPassUnpassSuccess = () => {},
 }) => {
   const navigate = useNavigate();
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
   const [isPassDialogOpen, setIsPassDialogOpen] = useState(false);
-  const [passDialogMode, setPassDialogMode] = useState('pass'); // 'pass' or 'unpass'
+  const [passDialogMode, setPassDialogMode] = useState("pass"); // 'pass' or 'unpass'
+
+  const { user } = useSelector((state) => state.user);
+
+  const userRole = user?.role;
+  const permissions = getUserPermissions(userRole, user);
+  const { canBidPass } = permissions;
 
   // Animation variants
   const containerVariants = {
@@ -58,13 +66,13 @@ const LiveAuctionsContainer = ({
 
   const handlePassVehicle = (vehicle) => {
     setSelectedVehicle(vehicle);
-    setPassDialogMode('pass');
+    setPassDialogMode("pass");
     setIsPassDialogOpen(true);
   };
 
   const handleUnpassVehicle = (vehicle) => {
     setSelectedVehicle(vehicle);
-    setPassDialogMode('unpass');
+    setPassDialogMode("unpass");
     setIsPassDialogOpen(true);
   };
 
@@ -100,11 +108,11 @@ const LiveAuctionsContainer = ({
 
   const handleViewVehicle = (vehicle) => {
     console.log("View Vehicle:", vehicle.id);
-    navigate(`/vehicle-details/${vehicle.id}`, { 
-      state: { 
+    navigate(`/vehicle-details/${vehicle.id}`, {
+      state: {
         productId: vehicle.id,
-        vehicleData: vehicle 
-      } 
+        vehicleData: vehicle,
+      },
     });
   };
 
@@ -127,8 +135,8 @@ const LiveAuctionsContainer = ({
             variants={cardVariants}
             className={`bg-white rounded-xl border overflow-hidden transition-all duration-300 group ${
               isVehiclePassed(vehicle)
-                ? 'border-gray-300 opacity-75 hover:shadow-md hover:border-gray-400'
-                : 'border-neutral-200 hover:shadow-lg hover:border-orange-200'
+                ? "border-gray-300 opacity-75 hover:shadow-md hover:border-gray-400"
+                : "border-neutral-200 hover:shadow-lg hover:border-orange-200"
             }`}
           >
             {/* Compact Card Layout */}
@@ -143,12 +151,14 @@ const LiveAuctionsContainer = ({
                   showOverlay={true}
                 />
                 {/* Status Badge */}
-                <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${
-                  isVehiclePassed(vehicle)
-                    ? 'bg-gray-500 text-white'
-                    : 'bg-orange-500 text-white'
-                }`}>
-                  {isVehiclePassed(vehicle) ? 'Passed' : 'Live'}
+                <div
+                  className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${
+                    isVehiclePassed(vehicle)
+                      ? "bg-gray-500 text-white"
+                      : "bg-orange-500 text-white"
+                  }`}
+                >
+                  {isVehiclePassed(vehicle) ? "Passed" : "Live"}
                 </div>
               </div>
 
@@ -169,7 +179,9 @@ const LiveAuctionsContainer = ({
                     <div className="bg-neutral-50 rounded-lg p-3">
                       <div className="flex items-center mb-1">
                         <DollarSign className="w-3.5 h-3.5 mr-1.5 text-neutral-500" />
-                        <span className="text-xs text-neutral-600">Cash Offer</span>
+                        <span className="text-xs text-neutral-600">
+                          Cash Offer
+                        </span>
                       </div>
                       <p className="text-sm font-semibold text-neutral-900">
                         {vehicle.cashOffer}
@@ -178,7 +190,9 @@ const LiveAuctionsContainer = ({
                     <div className="bg-green-50 rounded-lg p-3">
                       <div className="flex items-center mb-1">
                         <DollarSign className="w-3.5 h-3.5 mr-1.5 text-green-600" />
-                        <span className="text-xs text-neutral-600">Highest Bid</span>
+                        <span className="text-xs text-neutral-600">
+                          Highest Bid
+                        </span>
                       </div>
                       <p className="text-sm font-semibold text-green-700">
                         {vehicle.highestBid}
@@ -191,7 +205,9 @@ const LiveAuctionsContainer = ({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <Clock className="w-3.5 h-3.5 mr-1.5 text-orange-600" />
-                        <span className="text-xs text-neutral-600">Ends At</span>
+                        <span className="text-xs text-neutral-600">
+                          Ends At
+                        </span>
                       </div>
                       <p className="text-sm font-semibold text-orange-700">
                         {vehicle.endsAt}
@@ -210,9 +226,9 @@ const LiveAuctionsContainer = ({
                     <Eye className="w-3.5 h-3.5 mr-1" />
                     View
                   </Button>
-                  
+
                   {/* Conditional Pass/Unpass Button */}
-                  {isVehiclePassed(vehicle) ? (
+                  {isVehiclePassed(vehicle) && canBidPass ? (
                     <Button
                       variant="outline"
                       onClick={() => handleUnpassVehicle(vehicle)}
@@ -222,33 +238,40 @@ const LiveAuctionsContainer = ({
                       Unpass
                     </Button>
                   ) : (
+                    canBidPass && (
+                      <Button
+                        variant="outline"
+                        onClick={() => handlePassVehicle(vehicle)}
+                        className="flex-1 h-9 text-xs border-neutral-200 hover:border-red-300 hover:bg-red-50 text-neutral-600 hover:text-red-600 font-medium rounded-lg transition-all duration-200"
+                      >
+                        <X className="w-3.5 h-3.5 mr-1" />
+                        Pass
+                      </Button>
+                    )
+                  )}
+
+                  {canBidPass && (
                     <Button
-                      variant="outline"
-                      onClick={() => handlePassVehicle(vehicle)}
-                      className="flex-1 h-9 text-xs border-neutral-200 hover:border-red-300 hover:bg-red-50 text-neutral-600 hover:text-red-600 font-medium rounded-lg transition-all duration-200"
+                      onClick={() => handleBidNow(vehicle)}
+                      disabled={isVehiclePassed(vehicle)}
+                      className={`flex-1 h-9 text-xs font-medium rounded-lg transition-all duration-200 ${
+                        isVehiclePassed(vehicle)
+                          ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
+                          : "bg-orange-500 hover:bg-orange-600 text-white"
+                      }`}
+                      title={
+                        isVehiclePassed(vehicle)
+                          ? "Cannot bid on passed vehicle"
+                          : "Place a bid"
+                      }
                     >
-                      <X className="w-3.5 h-3.5 mr-1" />
-                      Pass
+                      <Gavel className="w-3.5 h-3.5 mr-1" />
+                      Bid
                     </Button>
                   )}
-                  
-                  <Button
-                    onClick={() => handleBidNow(vehicle)}
-                    disabled={isVehiclePassed(vehicle)}
-                    className={`flex-1 h-9 text-xs font-medium rounded-lg transition-all duration-200 ${
-                      isVehiclePassed(vehicle)
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
-                        : 'bg-orange-500 hover:bg-orange-600 text-white'
-                    }`}
-                    title={isVehiclePassed(vehicle) ? 'Cannot bid on passed vehicle' : 'Place a bid'}
-                  >
-                    <Gavel className="w-3.5 h-3.5 mr-1" />
-                    Bid
-                  </Button>
                 </div>
               </div>
             </div>
-
           </motion.div>
         ))}
       </div>
@@ -270,8 +293,12 @@ const LiveAuctionsContainer = ({
           onClose={handleClosePassDialog}
           vehicle={selectedVehicle}
           mode={passDialogMode}
-          onSuccess={passDialogMode === 'pass' ? handlePassSuccess : handleUnpassSuccess}
-          onError={passDialogMode === 'pass' ? handlePassError : handleUnpassError}
+          onSuccess={
+            passDialogMode === "pass" ? handlePassSuccess : handleUnpassSuccess
+          }
+          onError={
+            passDialogMode === "pass" ? handlePassError : handleUnpassError
+          }
         />
       )}
     </motion.div>
