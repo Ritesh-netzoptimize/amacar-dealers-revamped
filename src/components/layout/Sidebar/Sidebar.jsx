@@ -16,7 +16,8 @@ import {
   Users,
   Home,
   BarChart,
-  ArrowUp
+  ArrowUp,
+  UserPlus2
 } from 'lucide-react';
 import { logoutUser } from '@/redux/slices/userSlice';
 import LogoutModal from '@/components/ui/LogoutUI/LogoutModal';
@@ -90,6 +91,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
     { name: 'My bids', href: '/my-bids', icon: ShoppingCart  },
     { name: 'Highest Bids', href: '/highest-bids', icon: ArrowUp },
     { name: 'Active customers', href: '/active-customers', icon: Users },
+    { name: 'Dealership users', href: '/dealership-users', icon: UserPlus2},
     // Conditionally include DealerShips based on user role
     ...(canAccessDealerships ? [{ name: 'DealerShips', href: '/dealerships', icon: Home }] : []),
     ...(canAccessDealerships ? [{ name: 'Invited Dealerships', href: '/invited-dealerships', icon: UserPlus }] : []),

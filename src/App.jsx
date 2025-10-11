@@ -25,6 +25,7 @@ import PaymentSuccess from "./components/stripe/PaymentSuccess";
 import { SearchProvider } from "./context/SearchContext";
 import InvitedDealerships from "./pages/dashboard/InvitedDealerships";
 import SalesManagers from "./pages/dashboard/SalesManagers";
+import DealershipUsers from "./pages/dashboard/DealershipUsers";
 
 function App() {
   // const location = useLocation();
@@ -163,6 +164,16 @@ function App() {
               // <PrivateRoute>
               <DashboardLayout>
                 <ActiveCustomers />
+              </DashboardLayout>
+              // </PrivateRoute>
+            }
+          />
+          <Route
+            path="/dealership-users"
+            element={
+              // <PrivateRoute>
+              <DashboardLayout>
+                <DealershipUsers />
               </DashboardLayout>
               // </PrivateRoute>
             }
