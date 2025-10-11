@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   User,
@@ -76,6 +76,7 @@ const Profile = () => {
   const [invoices, setInvoices] = useState([]);
   const [invoicesLoading, setInvoicesLoading] = useState(false);
   const [invoicesError, setInvoicesError] = useState(null);
+  const [invoicesFetched, setInvoicesFetched] = useState(false);
 
   // Default profile data structure
   const defaultProfile = {
@@ -126,37 +127,42 @@ const Profile = () => {
   };
 
   // Fetch invoices
-  const fetchInvoices = async () => {
+  const fetchInvoices = useCallback(async () => {
+    if (invoicesLoading || invoicesFetched) {
+      return; // Prevent duplicate calls
+    }
+
     setInvoicesLoading(true);
     setInvoicesError(null);
     try {
-      const response = await api.get('/profile/invoices');
+      const response = await api.get("/profile/invoices");
       if (response.data.success) {
         setInvoices(response.data.invoices || []);
+        setInvoicesFetched(true);
       } else {
-        setInvoicesError('Failed to fetch invoices');
+        setInvoicesError("Failed to fetch invoices");
       }
     } catch (error) {
-      console.error('Error fetching invoices:', error);
-      setInvoicesError('Failed to fetch invoices');
+      console.error("Error fetching invoices:", error);
+      setInvoicesError("Failed to fetch invoices");
     } finally {
       setInvoicesLoading(false);
     }
-  };
+  }, [invoicesLoading, invoicesFetched]);
 
   // Download invoice PDF
   const downloadInvoice = (invoicePdfUrl, invoiceNumber) => {
     try {
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = invoicePdfUrl;
       link.download = `invoice-${invoiceNumber}.pdf`;
-      link.target = '_blank';
+      link.target = "_blank";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error downloading invoice:', error);
-      toast.error('Failed to download invoice');
+      console.error("Error downloading invoice:", error);
+      toast.error("Failed to download invoice");
     }
   };
 
@@ -206,10 +212,15 @@ const Profile = () => {
 
   // Fetch invoices when user is loaded and is a dealer
   useEffect(() => {
-    if (user && (user.role === 'dealer' || (user.roles && user.roles.includes('dealer')))) {
+    if (
+      user &&
+      (user.role === "dealer" ||
+        (user.roles && user.roles.includes("dealer"))) &&
+      !invoicesFetched
+    ) {
       fetchInvoices();
     }
-  }, [user]);
+  }, [user, invoicesFetched, fetchInvoices]);
 
   useEffect(() => {
     console.log("subscription", subscription);
@@ -685,496 +696,517 @@ const Profile = () => {
             </div>
           </motion.div>
 
-          {/* Subscription Status */}
-          <motion.div
-            variants={itemVariants}
-            className="card p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8"
-          >
-            <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-neutral-800 mb-4 sm:mb-6">
-              Subscription Status
-            </h3>
-
-            {subscriptionLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-                <span className="ml-2 text-neutral-600">
-                  Loading subscription...
-                </span>
-              </div>
-            ) : subscriptionError ? (
-              <div className="text-center py-8">
-                <p className="text-red-600 mb-4">{subscriptionError}</p>
-                <button
-                  onClick={() => dispatch(fetchSubscriptionStatus())}
-                  className="btn-primary"
+          {user &&
+            (user.role === "dealer" ||
+              (user.roles && user.roles.includes("dealer"))) && (
+              <div>
+                {/* Subscription Status */}
+                <motion.div
+                  variants={itemVariants}
+                  className="card p-4 sm:p-6 lg:p-8 mb-6 sm:mb-8"
                 >
-                  Retry
-                </button>
-              </div>
-            ) : subscription ? (
-              <div className="space-y-4">
-                {/* Subscription Status Card */}
-                <div
-                  className={`p-4 sm:p-6 rounded-xl border-2 ${
-                    subscription.has_subscription
-                      ? subscription.status === "trialing"
-                        ? "bg-blue-50 border-blue-200"
-                        : "bg-green-50 border-green-200"
-                      : "bg-gray-50 border-gray-200"
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div
-                        className={`w-3 h-3 rounded-full ${
-                          subscription.has_subscription
-                            ? subscription.status === "trialing"
-                              ? "bg-blue-500"
-                              : "bg-green-500"
-                            : "bg-gray-400"
-                        }`}
-                      ></div>
-                      <h4 className="text-lg font-semibold text-neutral-800">
-                        {subscription.has_subscription
-                          ? "Active Subscription"
-                          : "No Subscription"}
-                      </h4>
+                  <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-neutral-800 mb-4 sm:mb-6">
+                    Subscription Status
+                  </h3>
+
+                  {subscriptionLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                      <span className="ml-2 text-neutral-600">
+                        Loading subscription...
+                      </span>
                     </div>
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        subscription.status === "trialing"
-                          ? "bg-blue-100 text-blue-800"
-                          : subscription.status === "active"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {subscription.status?.charAt(0).toUpperCase() +
-                        subscription.status?.slice(1) || "Unknown"}
-                    </span>
-                  </div>
-
-                  {subscription.has_subscription && (
-                    <div className="space-y-6">
-                      {/* Trial Information - Prominent Display */}
-                      {subscription.is_trialing && (
-                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200">
-                          <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center">
-                              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                                <Calendar className="w-6 h-6 text-blue-600" />
-                              </div>
-                              <div>
-                                <h4 className="text-xl font-bold text-blue-900">
-                                  Trial Period Active
-                                </h4>
-                                <p className="text-blue-700">
-                                  You're currently in your trial period
-                                </p>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <div className="text-3xl font-bold text-blue-900">
-                                $
-                                {subscription.trial_amount *
-                                  subscription.quantity}
-                              </div>
-                              <div className="text-sm text-blue-700">
-                                Trial Amount
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-white p-4 rounded-lg border border-blue-200">
-                              <div className="flex items-center mb-2">
-                                <Calendar className="w-4 h-4 text-blue-600 mr-2" />
-                                <span className="text-sm font-medium text-blue-800">
-                                  Trial Started
-                                </span>
-                              </div>
-                              <div className="text-lg font-semibold text-blue-900">
-                                {subscription.trial_start_date
-                                  ? new Date(
-                                      subscription.trial_start_date
-                                    ).toLocaleDateString("en-US", {
-                                      weekday: "long",
-                                      year: "numeric",
-                                      month: "long",
-                                      day: "numeric",
-                                    })
-                                  : "N/A"}
-                              </div>
-                            </div>
-
-                            <div className="bg-white p-4 rounded-lg border border-blue-200">
-                              <div className="flex items-center mb-2">
-                                <Calendar className="w-4 h-4 text-blue-600 mr-2" />
-                                <span className="text-sm font-medium text-blue-800">
-                                  Trial Ends
-                                </span>
-                              </div>
-                              <div className="text-lg font-semibold text-blue-900">
-                                {subscription.trial_end_date
-                                  ? new Date(
-                                      subscription.trial_end_date
-                                    ).toLocaleDateString("en-US", {
-                                      weekday: "long",
-                                      year: "numeric",
-                                      month: "long",
-                                      day: "numeric",
-                                    })
-                                  : "N/A"}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Subscription Details */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="bg-white p-4 rounded-lg border border-neutral-200">
-                          <div className="flex items-center mb-3">
-                            <CreditCard className="w-5 h-5 text-neutral-600 mr-2" />
-                            <h5 className="font-semibold text-neutral-800">
-                              Subscription Details
-                            </h5>
-                          </div>
-                          <div className="space-y-3 text-sm">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center">
-                                <CreditCard className="w-4 h-4 text-neutral-500 mr-1" />
-                                <span className="text-neutral-600">
-                                  Stripe ID:
-                                </span>
-                              </div>
-                              <span className="font-mono text-xs text-neutral-500 truncate max-w-24">
-                                {subscription.stripe_subscription_id || "N/A"}
-                              </span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center">
-                                <Settings className="w-4 h-4 text-neutral-500 mr-1" />
-                                <span className="text-neutral-600">
-                                  Status:
-                                </span>
-                              </div>
-                              <span className="font-medium capitalize">
-                                {subscription.status || "Unknown"}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Billing Information */}
-                        <div className="bg-white p-4 rounded-lg border border-neutral-200">
-                          <div className="flex items-center mb-3">
-                            <DollarSign className="w-5 h-5 text-neutral-600 mr-2" />
-                            <h5 className="font-semibold text-neutral-800">
-                              Billing Information
-                            </h5>
-                          </div>
-                          {billingLoading ? (
-                            <div className="flex items-center justify-center py-4">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
-                              <span className="ml-2 text-sm text-neutral-600">
-                                Loading billing...
-                              </span>
-                            </div>
-                          ) : billingError ? (
-                            <div className="text-center py-4">
-                              <p className="text-red-600 text-sm mb-2">
-                                {billingError}
-                              </p>
-                              <button
-                                onClick={() => dispatch(fetchBillingInfo())}
-                                className="btn-primary text-xs py-1 px-2"
-                              >
-                                Retry
-                              </button>
-                            </div>
-                          ) : billing ? (
-                            <div className="space-y-3 text-sm">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                  <CreditCard className="w-4 h-4 text-neutral-500 mr-1" />
-                                  <span className="text-neutral-600">
-                                    Has Billing:
-                                  </span>
-                                </div>
-                                <span
-                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                    billing.has_billing
-                                      ? "bg-green-100 text-green-800"
-                                      : "bg-gray-100 text-gray-800"
-                                  }`}
-                                >
-                                  {billing.has_billing ? "Yes" : "No"}
-                                </span>
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                  <CreditCard className="w-4 h-4 text-neutral-500 mr-1" />
-                                  <span className="text-neutral-600">
-                                    Customer ID:
-                                  </span>
-                                </div>
-                                <span className="font-mono text-xs text-neutral-500 truncate max-w-24">
-                                  {billing.stripe_customer_id || "N/A"}
-                                </span>
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                  <DollarSign className="w-4 h-4 text-neutral-500 mr-1" />
-                                  <span className="text-neutral-600">
-                                    Trial Amount:
-                                  </span>
-                                </div>
-                                <span className="font-medium">
-                                  ${billing.trial_amount || 0}
-                                </span>
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                  <DollarSign className="w-4 h-4 text-neutral-500 mr-1" />
-                                  <span className="text-neutral-600">
-                                    Currency:
-                                  </span>
-                                </div>
-                                <span className="font-medium">
-                                  {billing.currency || "USD"}
-                                </span>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="text-center py-4">
-                              <p className="text-neutral-600 text-sm">
-                                No billing data available
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Cancel Subscription Button - Only show for active subscriptions */}
-                      {subscription?.has_subscription &&
-                        !cancellationStatus?.has_request &&
-                        (subscription.status === "active" ||
-                          subscription.status === "trialing") && (
-                          <div className="mt-6 pt-6 border-t border-neutral-200">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <h5 className="text-sm font-semibold text-neutral-800 mb-1">
-                                  Cancel Subscription
-                                </h5>
-                                <p className="text-xs text-neutral-600">
-                                  Cancel your subscription to stop future
-                                  charges
-                                </p>
-                              </div>
-                              <button
-                                onClick={() => handleOpenCancelModal("request")}
-                                disabled={cancellationStatusLoading}
-                                className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2 bg-red-500 hover:bg-red-600 ${
-                                  cancellationStatusLoading
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : ""
-                                }`}
-                              >
-                                {cancellationStatusLoading ? (
-                                  <>
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                    Loading...
-                                  </>
-                                ) : (
-                                  <>
-                                    <XCircle className="w-4 h-4" />
-                                    Cancel Subscription
-                                  </>
-                                )}
-                              </button>
-                            </div>
-                          </div>
-                        )}
-
-                      {/* Cancellation Status Button - Show for pending */}
-                      {subscription.has_subscription &&
-                        cancellationStatus?.has_request &&
-                        cancellationStatus?.status === "pending" && (
-                          <div className="mt-6 pt-6 border-t border-neutral-200">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <h5 className="text-sm font-semibold text-neutral-800 mb-1">
-                                  Cancellation Status
-                                </h5>
-                                <p className="text-xs text-neutral-600">
-                                  View the status of your cancellation request
-                                </p>
-                              </div>
-                              <button
-                                onClick={() => handleOpenCancelModal("status")}
-                                disabled={cancellationStatusLoading}
-                                className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2 bg-blue-500 hover:bg-blue-600 ${
-                                  cancellationStatusLoading
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : ""
-                                }`}
-                              >
-                                {cancellationStatusLoading ? (
-                                  <>
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                    Loading...
-                                  </>
-                                ) : (
-                                  <>
-                                    <XCircle className="w-4 h-4" />
-                                    Show Cancel Status
-                                  </>
-                                )}
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                    </div>
-                  )}
-
-                  {(!subscription.has_subscription ||
-                    subscription.status === "canceled") && (
+                  ) : subscriptionError ? (
                     <div className="text-center py-8">
-                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg
-                          className="w-8 h-8 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                          />
-                        </svg>
-                      </div>
-                      <h4 className="text-lg font-semibold text-neutral-800 mb-2">
-                        {subscription.status === "canceled"
-                          ? "Subscription Cancelled"
-                          : "No Active Subscription"}
-                      </h4>
-                      <p className="text-neutral-600 mb-4">
-                        {subscription.status === "canceled"
-                          ? "Your subscription has been cancelled. Choose a plan to reactivate your account."
-                          : "Get started with a subscription to access all features"}
-                      </p>
+                      <p className="text-red-600 mb-4">{subscriptionError}</p>
                       <button
-                        onClick={() => handleOpenCancelModal("status")}
+                        onClick={() => dispatch(fetchSubscriptionStatus())}
                         className="btn-primary"
                       >
-                        {subscription.status === "canceled"
-                          ? "Restart Subscription"
-                          : "Choose a Plan"}
+                        Retry
                       </button>
                     </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-neutral-600">
-                  No subscription data available
-                </p>
-              </div>
-            )}
-          </motion.div>
-
-          {/* Previous 5 Bills - Only show for dealers */}
-          {user && (user.role === 'dealer' || (user.roles && user.roles.includes('dealer'))) && (
-            <motion.div
-              variants={itemVariants}
-              className="card p-4 sm:p-6 lg:p-8"
-            >
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-neutral-800 mb-4 sm:mb-6">
-                Previous 5 Bills
-              </h3>
-
-              {invoicesLoading ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-4"></div>
-                  <p className="text-neutral-600">Loading invoices...</p>
-                </div>
-              ) : invoicesError ? (
-                <div className="text-center py-8">
-                  <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                  <p className="text-red-600 mb-4">{invoicesError}</p>
-                  <button
-                    onClick={fetchInvoices}
-                    className="btn-secondary"
-                  >
-                    Try Again
-                  </button>
-                </div>
-              ) : invoices.length === 0 ? (
-                <div className="text-center py-8">
-                  <Receipt className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
-                  <p className="text-neutral-600">No invoices found</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {invoices.slice(0, 5).map((invoice) => (
-                    <div
-                      key={invoice.id}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-neutral-200 gap-4"
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-orange-600" />
-                          </div>
-                          <div>
-                            <h4 className="text-sm sm:text-base font-semibold text-neutral-800">
-                              {invoice.number}
+                  ) : subscription ? (
+                    <div className="space-y-4">
+                      {/* Subscription Status Card */}
+                      <div
+                        className={`p-4 sm:p-6 rounded-xl border-2 ${
+                          subscription.has_subscription
+                            ? subscription.status === "trialing"
+                              ? "bg-blue-50 border-blue-200"
+                              : "bg-green-50 border-green-200"
+                            : "bg-gray-50 border-gray-200"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-3">
+                            <div
+                              className={`w-3 h-3 rounded-full ${
+                                subscription.has_subscription
+                                  ? subscription.status === "trialing"
+                                    ? "bg-blue-500"
+                                    : "bg-green-500"
+                                  : "bg-gray-400"
+                              }`}
+                            ></div>
+                            <h4 className="text-lg font-semibold text-neutral-800">
+                              {subscription.has_subscription
+                                ? "Active Subscription"
+                                : "No Subscription"}
                             </h4>
-                            <p className="text-xs sm:text-sm text-neutral-600">
-                              {invoice.description}
-                            </p>
                           </div>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-neutral-500">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            {invoice.created}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <DollarSign className="w-3 h-3" />
-                            ${invoice.amount} {invoice.currency}
-                          </span>
                           <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              invoice.status === 'paid'
-                                ? 'bg-green-100 text-green-700'
-                                : invoice.status === 'pending'
-                                ? 'bg-yellow-100 text-yellow-700'
-                                : 'bg-red-100 text-red-700'
+                            className={`px-3 py-1 rounded-full text-sm font-medium ${
+                              subscription.status === "trialing"
+                                ? "bg-blue-100 text-blue-800"
+                                : subscription.status === "active"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-gray-100 text-gray-800"
                             }`}
                           >
-                            {invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)}
+                            {subscription.status?.charAt(0).toUpperCase() +
+                              subscription.status?.slice(1) || "Unknown"}
                           </span>
                         </div>
+
+                        {subscription.has_subscription && (
+                          <div className="space-y-6">
+                            {/* Trial Information - Prominent Display */}
+                            {subscription.is_trialing && (
+                              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200">
+                                <div className="flex items-center justify-between mb-6">
+                                  <div className="flex items-center">
+                                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                      <Calendar className="w-6 h-6 text-blue-600" />
+                                    </div>
+                                    <div>
+                                      <h4 className="text-xl font-bold text-blue-900">
+                                        Trial Period Active
+                                      </h4>
+                                      <p className="text-blue-700">
+                                        You're currently in your trial period
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <div className="text-3xl font-bold text-blue-900">
+                                      $
+                                      {subscription.trial_amount *
+                                        subscription.quantity}
+                                    </div>
+                                    <div className="text-sm text-blue-700">
+                                      Trial Amount
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                  <div className="bg-white p-4 rounded-lg border border-blue-200">
+                                    <div className="flex items-center mb-2">
+                                      <Calendar className="w-4 h-4 text-blue-600 mr-2" />
+                                      <span className="text-sm font-medium text-blue-800">
+                                        Trial Started
+                                      </span>
+                                    </div>
+                                    <div className="text-lg font-semibold text-blue-900">
+                                      {subscription.trial_start_date
+                                        ? new Date(
+                                            subscription.trial_start_date
+                                          ).toLocaleDateString("en-US", {
+                                            weekday: "long",
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                          })
+                                        : "N/A"}
+                                    </div>
+                                  </div>
+
+                                  <div className="bg-white p-4 rounded-lg border border-blue-200">
+                                    <div className="flex items-center mb-2">
+                                      <Calendar className="w-4 h-4 text-blue-600 mr-2" />
+                                      <span className="text-sm font-medium text-blue-800">
+                                        Trial Ends
+                                      </span>
+                                    </div>
+                                    <div className="text-lg font-semibold text-blue-900">
+                                      {subscription.trial_end_date
+                                        ? new Date(
+                                            subscription.trial_end_date
+                                          ).toLocaleDateString("en-US", {
+                                            weekday: "long",
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                          })
+                                        : "N/A"}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Subscription Details */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div className="bg-white p-4 rounded-lg border border-neutral-200">
+                                <div className="flex items-center mb-3">
+                                  <CreditCard className="w-5 h-5 text-neutral-600 mr-2" />
+                                  <h5 className="font-semibold text-neutral-800">
+                                    Subscription Details
+                                  </h5>
+                                </div>
+                                <div className="space-y-3 text-sm">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center">
+                                      <CreditCard className="w-4 h-4 text-neutral-500 mr-1" />
+                                      <span className="text-neutral-600">
+                                        Stripe ID:
+                                      </span>
+                                    </div>
+                                    <span className="font-mono text-xs text-neutral-500 truncate max-w-24">
+                                      {subscription.stripe_subscription_id ||
+                                        "N/A"}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center">
+                                      <Settings className="w-4 h-4 text-neutral-500 mr-1" />
+                                      <span className="text-neutral-600">
+                                        Status:
+                                      </span>
+                                    </div>
+                                    <span className="font-medium capitalize">
+                                      {subscription.status || "Unknown"}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Billing Information */}
+                              <div className="bg-white p-4 rounded-lg border border-neutral-200">
+                                <div className="flex items-center mb-3">
+                                  <DollarSign className="w-5 h-5 text-neutral-600 mr-2" />
+                                  <h5 className="font-semibold text-neutral-800">
+                                    Billing Information
+                                  </h5>
+                                </div>
+                                {billingLoading ? (
+                                  <div className="flex items-center justify-center py-4">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
+                                    <span className="ml-2 text-sm text-neutral-600">
+                                      Loading billing...
+                                    </span>
+                                  </div>
+                                ) : billingError ? (
+                                  <div className="text-center py-4">
+                                    <p className="text-red-600 text-sm mb-2">
+                                      {billingError}
+                                    </p>
+                                    <button
+                                      onClick={() =>
+                                        dispatch(fetchBillingInfo())
+                                      }
+                                      className="btn-primary text-xs py-1 px-2"
+                                    >
+                                      Retry
+                                    </button>
+                                  </div>
+                                ) : billing ? (
+                                  <div className="space-y-3 text-sm">
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center">
+                                        <CreditCard className="w-4 h-4 text-neutral-500 mr-1" />
+                                        <span className="text-neutral-600">
+                                          Has Billing:
+                                        </span>
+                                      </div>
+                                      <span
+                                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                          billing.has_billing
+                                            ? "bg-green-100 text-green-800"
+                                            : "bg-gray-100 text-gray-800"
+                                        }`}
+                                      >
+                                        {billing.has_billing ? "Yes" : "No"}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center">
+                                        <CreditCard className="w-4 h-4 text-neutral-500 mr-1" />
+                                        <span className="text-neutral-600">
+                                          Customer ID:
+                                        </span>
+                                      </div>
+                                      <span className="font-mono text-xs text-neutral-500 truncate max-w-24">
+                                        {billing.stripe_customer_id || "N/A"}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center">
+                                        <DollarSign className="w-4 h-4 text-neutral-500 mr-1" />
+                                        <span className="text-neutral-600">
+                                          Trial Amount:
+                                        </span>
+                                      </div>
+                                      <span className="font-medium">
+                                        ${billing.trial_amount || 0}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center">
+                                        <DollarSign className="w-4 h-4 text-neutral-500 mr-1" />
+                                        <span className="text-neutral-600">
+                                          Currency:
+                                        </span>
+                                      </div>
+                                      <span className="font-medium">
+                                        {billing.currency || "USD"}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="text-center py-4">
+                                    <p className="text-neutral-600 text-sm">
+                                      No billing data available
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Cancel Subscription Button - Only show for active subscriptions */}
+                            {subscription?.has_subscription &&
+                              !cancellationStatus?.has_request &&
+                              (subscription.status === "active" ||
+                                subscription.status === "trialing") && (
+                                <div className="mt-6 pt-6 border-t border-neutral-200">
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <h5 className="text-sm font-semibold text-neutral-800 mb-1">
+                                        Cancel Subscription
+                                      </h5>
+                                      <p className="text-xs text-neutral-600">
+                                        Cancel your subscription to stop future
+                                        charges
+                                      </p>
+                                    </div>
+                                    <button
+                                      onClick={() =>
+                                        handleOpenCancelModal("request")
+                                      }
+                                      disabled={cancellationStatusLoading}
+                                      className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2 bg-red-500 hover:bg-red-600 ${
+                                        cancellationStatusLoading
+                                          ? "opacity-50 cursor-not-allowed"
+                                          : ""
+                                      }`}
+                                    >
+                                      {cancellationStatusLoading ? (
+                                        <>
+                                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                          Loading...
+                                        </>
+                                      ) : (
+                                        <>
+                                          <XCircle className="w-4 h-4" />
+                                          Cancel Subscription
+                                        </>
+                                      )}
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+
+                            {/* Cancellation Status Button - Show for pending */}
+                            {subscription.has_subscription &&
+                              cancellationStatus?.has_request &&
+                              cancellationStatus?.status === "pending" && (
+                                <div className="mt-6 pt-6 border-t border-neutral-200">
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <h5 className="text-sm font-semibold text-neutral-800 mb-1">
+                                        Cancellation Status
+                                      </h5>
+                                      <p className="text-xs text-neutral-600">
+                                        View the status of your cancellation
+                                        request
+                                      </p>
+                                    </div>
+                                    <button
+                                      onClick={() =>
+                                        handleOpenCancelModal("status")
+                                      }
+                                      disabled={cancellationStatusLoading}
+                                      className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2 bg-blue-500 hover:bg-blue-600 ${
+                                        cancellationStatusLoading
+                                          ? "opacity-50 cursor-not-allowed"
+                                          : ""
+                                      }`}
+                                    >
+                                      {cancellationStatusLoading ? (
+                                        <>
+                                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                          Loading...
+                                        </>
+                                      ) : (
+                                        <>
+                                          <XCircle className="w-4 h-4" />
+                                          Show Cancel Status
+                                        </>
+                                      )}
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                          </div>
+                        )}
+
+                        {(!subscription.has_subscription ||
+                          subscription.status === "canceled") && (
+                          <div className="text-center py-8">
+                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                              <svg
+                                className="w-8 h-8 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                                />
+                              </svg>
+                            </div>
+                            <h4 className="text-lg font-semibold text-neutral-800 mb-2">
+                              {subscription.status === "canceled"
+                                ? "Subscription Cancelled"
+                                : "No Active Subscription"}
+                            </h4>
+                            <p className="text-neutral-600 mb-4">
+                              {subscription.status === "canceled"
+                                ? "Your subscription has been cancelled. Choose a plan to reactivate your account."
+                                : "Get started with a subscription to access all features"}
+                            </p>
+                            <button
+                              onClick={() => handleOpenCancelModal("status")}
+                              className="btn-primary"
+                            >
+                              {subscription.status === "canceled"
+                                ? "Restart Subscription"
+                                : "Choose a Plan"}
+                            </button>
+                          </div>
+                        )}
                       </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-neutral-600">
+                        No subscription data available
+                      </p>
+                    </div>
+                  )}
+                </motion.div>
+
+                {/* Previous 5 Bills - Only show for dealers */}
+                <motion.div
+                  variants={itemVariants}
+                  className="card p-4 sm:p-6 lg:p-8 mb-8"
+                >
+                  <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-neutral-800 mb-4 sm:mb-6">
+                    Previous 5 Bills
+                  </h3>
+
+                  {invoicesLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-4"></div>
+                      <p className="text-neutral-600">Loading invoices...</p>
+                    </div>
+                  ) : invoicesError ? (
+                    <div className="text-center py-8">
+                      <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                      <p className="text-red-600 mb-4">{invoicesError}</p>
                       <button
-                        onClick={() => downloadInvoice(invoice.invoice_pdf, invoice.number)}
-                        className="cursor-pointer btn-secondary flex items-center justify-center sm:justify-start space-x-2 w-full sm:w-auto"
-                        disabled={!invoice.invoice_pdf}
+                        onClick={() => {
+                          setInvoicesFetched(false);
+                          fetchInvoices();
+                        }}
+                        className="btn-secondary"
                       >
-                        <Download className="w-4 h-4" />
-                        <span>Download PDF</span>
+                        Try Again
                       </button>
                     </div>
-                  ))}
-                </div>
-              )}
-            </motion.div>
-          )}
+                  ) : invoices.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Receipt className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
+                      <p className="text-neutral-600">No invoices found</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {invoices.slice(0, 5).map((invoice) => (
+                        <div
+                          key={invoice.id}
+                          className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-neutral-200 gap-4"
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                                <FileText className="w-5 h-5 text-orange-600" />
+                              </div>
+                              <div>
+                                <h4 className="text-sm sm:text-base font-semibold text-neutral-800">
+                                  {invoice.number}
+                                </h4>
+                                <p className="text-xs sm:text-sm text-neutral-600">
+                                  {invoice.description}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-neutral-500">
+                              <span className="flex items-center gap-1">
+                                <Calendar className="w-3 h-3" />
+                                {invoice.created}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <DollarSign className="w-3 h-3" />$
+                                {invoice.amount} {invoice.currency}
+                              </span>
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  invoice.status === "paid"
+                                    ? "bg-green-100 text-green-700"
+                                    : invoice.status === "pending"
+                                    ? "bg-yellow-100 text-yellow-700"
+                                    : "bg-red-100 text-red-700"
+                                }`}
+                              >
+                                {invoice.status.charAt(0).toUpperCase() +
+                                  invoice.status.slice(1)}
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() =>
+                              downloadInvoice(
+                                invoice.invoice_pdf,
+                                invoice.number
+                              )
+                            }
+                            className="cursor-pointer btn-secondary flex items-center justify-center sm:justify-start space-x-2 w-full sm:w-auto"
+                            disabled={!invoice.invoice_pdf}
+                          >
+                            <Download className="w-4 h-4" />
+                            <span>Download PDF</span>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              </div>
+            )}
 
           {/* Account Settings */}
           <motion.div
