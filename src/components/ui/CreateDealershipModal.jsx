@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
-import { 
-  Building2, 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Globe, 
+import { useDispatch } from "react-redux";
+import {
+  Building2,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
   FileText,
   Hash,
   Loader2,
@@ -15,7 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Lock,
-  Send
+  Send,
 } from "lucide-react";
 import {
   Dialog,
@@ -27,12 +28,11 @@ import {
 } from "./dialog";
 import { Button } from "./Button";
 import api from "@/lib/api";
+import useDebounce from "@/hooks/useDebounce";
+import { fetchCityStateByZip } from "@/redux/slices/userSlice";
 
-const CreateDealershipModal = ({ 
-  isOpen, 
-  onClose, 
-  onSuccess 
-}) => {
+const CreateDealershipModal = ({ isOpen, onClose, onSuccess }) => {
+  const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     dealership_name: "",
@@ -52,7 +52,9 @@ const CreateDealershipModal = ({
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
+  const [zipLoading, setZipLoading] = useState(false);
 
+  const debouncedZipcode = useDebounce(formData.zip, 500);
   const totalSteps = 4;
 
   const steps = [
@@ -82,6 +84,63 @@ const CreateDealershipModal = ({
     },
   ];
 
+  // Fetch location data based on zipcode
+  useEffect(() => {
+    const fetchLocationData = async () => {
+      if (
+        debouncedZipcode &&
+        debouncedZipcode.length === 5 &&
+        /^\d{5}$/.test(debouncedZipcode)
+      ) {
+        setZipLoading(true);
+        try {
+          console.log("Fetching location data for ZIP:", debouncedZipcode);
+          const result = await dispatch(fetchCityStateByZip(debouncedZipcode));
+          console.log("Location fetch result:", result);
+
+          if (fetchCityStateByZip.fulfilled.match(result)) {
+            console.log("Location data fetched successfully:", result.payload);
+            setFormData((prev) => ({
+              ...prev,
+              city: result.payload.city || "",
+              state: result.payload.state || "",
+            }));
+          } else {
+            console.log("Failed to fetch location data:", result.payload);
+            // Clear city and state if fetch failed
+            setFormData((prev) => ({
+              ...prev,
+              city: "",
+              state: "",
+            }));
+          }
+        } catch (error) {
+          console.error("Error fetching location data:", error);
+          // Clear city and state on error
+          setFormData((prev) => ({
+            ...prev,
+            city: "",
+            state: "",
+          }));
+        } finally {
+          setZipLoading(false);
+        }
+      } else if (debouncedZipcode && debouncedZipcode.length < 5) {
+        // Clear city and state when zipcode is incomplete
+        setFormData((prev) => ({
+          ...prev,
+          city: "",
+          state: "",
+        }));
+        setZipLoading(false);
+      } else {
+        setZipLoading(false);
+      }
+    };
+
+    fetchLocationData();
+  }, [debouncedZipcode, dispatch]);
+
   const validateStep = (step) => {
     const newErrors = {};
     let hasErrors = false;
@@ -101,7 +160,8 @@ const CreateDealershipModal = ({
         if (formData.website && formData.website.trim()) {
           const websiteRegex = /^https?:\/\/.+\..+/;
           if (!websiteRegex.test(formData.website)) {
-            newErrors.website = "Please enter a valid website URL (e.g., https://example.com)";
+            newErrors.website =
+              "Please enter a valid website URL (e.g., https://example.com)";
             hasErrors = true;
           }
         }
@@ -176,23 +236,30 @@ const CreateDealershipModal = ({
 
   const handleNext = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep(prev => Math.min(prev + 1, totalSteps));
+      setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
     }
   };
 
   const handlePrevious = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
+
     // For dealer_code, only allow alphanumeric input
-    if (name === 'dealer_code') {
-      const alphanumericValue = value.replace(/[^a-zA-Z0-9]/g, '');
+    if (name === "dealer_code") {
+      const alphanumericValue = value.replace(/[^a-zA-Z0-9]/g, "");
       setFormData((prev) => ({
         ...prev,
         [name]: alphanumericValue,
+      }));
+    } else if (name === "zip") {
+      // For ZIP code, only allow numeric input and limit to 5 digits
+      const numericValue = value.replace(/\D/g, "").slice(0, 5);
+      setFormData((prev) => ({
+        ...prev,
+        [name]: numericValue,
       }));
     } else {
       setFormData((prev) => ({
@@ -200,7 +267,7 @@ const CreateDealershipModal = ({
         [name]: value,
       }));
     }
-    
+
     // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
@@ -212,7 +279,7 @@ const CreateDealershipModal = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateStep(currentStep)) {
       return;
     }
@@ -222,17 +289,19 @@ const CreateDealershipModal = ({
 
     try {
       // Make API call to create dealership
-      const response = await api.post('/dealerships/create', formData);
+      const response = await api.post("/dealerships/create", formData);
 
       if (response.data.success) {
         setSuccess(true);
-        toast.success(response.data.message || "Dealership created successfully!");
-        
+        toast.success(
+          response.data.message || "Dealership created successfully!"
+        );
+
         // Call success callback if provided
         if (onSuccess) {
           onSuccess();
         }
-        
+
         // Auto-close modal after 2 seconds
         setTimeout(() => {
           handleClose();
@@ -242,14 +311,17 @@ const CreateDealershipModal = ({
       }
     } catch (error) {
       console.error("Error creating dealership:", error);
-      
+
       // Handle different types of errors
       if (error.response) {
         const { status, data } = error.response;
-        
+
         switch (status) {
           case 400:
-            toast.error(data?.message || "Invalid data provided. Please check your inputs.");
+            toast.error(
+              data?.message ||
+                "Invalid data provided. Please check your inputs."
+            );
             break;
           case 401:
             toast.error("You are not authorized to create dealerships.");
@@ -258,27 +330,37 @@ const CreateDealershipModal = ({
             toast.error("You don't have permission to create dealerships.");
             break;
           case 409:
-            toast.error("A dealership with this email or dealer code already exists.");
+            toast.error(
+              "A dealership with this email or dealer code already exists."
+            );
             break;
           case 422:
             // Handle validation errors from server
             if (data?.errors) {
               setErrors(data.errors);
             } else {
-              toast.error(data?.message || "Validation failed. Please check your inputs.");
+              toast.error(
+                data?.message || "Validation failed. Please check your inputs."
+              );
             }
             break;
           case 429:
-            toast.error("Too many requests. Please wait a moment and try again.");
+            toast.error(
+              "Too many requests. Please wait a moment and try again."
+            );
             break;
           case 500:
             toast.error("Server error. Please try again later.");
             break;
           default:
-            toast.error(data?.message || "Failed to create dealership. Please try again.");
+            toast.error(
+              data?.message || "Failed to create dealership. Please try again."
+            );
         }
       } else if (error.request) {
-        toast.error("Network error. Please check your connection and try again.");
+        toast.error(
+          "Network error. Please check your connection and try again."
+        );
       } else {
         toast.error("An unexpected error occurred. Please try again.");
       }
@@ -330,13 +412,17 @@ const CreateDealershipModal = ({
                   placeholder="ABC Motors"
                   title="Dealership name is required"
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.dealership_name ? 'border-red-500' : 'border-neutral-300'
+                    errors.dealership_name
+                      ? "border-red-500"
+                      : "border-neutral-300"
                   }`}
                   disabled={loading}
                   required
                 />
                 {errors.dealership_name && (
-                  <p className="text-sm text-red-500">{errors.dealership_name}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.dealership_name}
+                  </p>
                 )}
               </div>
 
@@ -353,7 +439,7 @@ const CreateDealershipModal = ({
                   placeholder="ABC123"
                   title="Dealer code is required (alphanumeric only)"
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.dealer_code ? 'border-red-500' : 'border-neutral-300'
+                    errors.dealer_code ? "border-red-500" : "border-neutral-300"
                   }`}
                   disabled={loading}
                   required
@@ -377,7 +463,7 @@ const CreateDealershipModal = ({
                 placeholder="https://abcmotors.com"
                 title="Enter a valid website URL (optional)"
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                  errors.website ? 'border-red-500' : 'border-neutral-300'
+                  errors.website ? "border-red-500" : "border-neutral-300"
                 }`}
                 disabled={loading}
               />
@@ -405,7 +491,7 @@ const CreateDealershipModal = ({
                   placeholder="John"
                   title="First name is required"
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.first_name ? 'border-red-500' : 'border-neutral-300'
+                    errors.first_name ? "border-red-500" : "border-neutral-300"
                   }`}
                   disabled={loading}
                   required
@@ -428,7 +514,7 @@ const CreateDealershipModal = ({
                   placeholder="Doe"
                   title="Last name is required"
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.last_name ? 'border-red-500' : 'border-neutral-300'
+                    errors.last_name ? "border-red-500" : "border-neutral-300"
                   }`}
                   disabled={loading}
                   required
@@ -453,7 +539,7 @@ const CreateDealershipModal = ({
                   placeholder="john@abcmotors.com"
                   title="Email address is required"
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.email ? 'border-red-500' : 'border-neutral-300'
+                    errors.email ? "border-red-500" : "border-neutral-300"
                   }`}
                   disabled={loading}
                   required
@@ -476,7 +562,7 @@ const CreateDealershipModal = ({
                   placeholder="555-123-4567"
                   title="Phone number is required"
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.phone ? 'border-red-500' : 'border-neutral-300'
+                    errors.phone ? "border-red-500" : "border-neutral-300"
                   }`}
                   disabled={loading}
                   required
@@ -505,7 +591,7 @@ const CreateDealershipModal = ({
                 placeholder="123 Main Street"
                 title="Street address is required"
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                  errors.address ? 'border-red-500' : 'border-neutral-300'
+                  errors.address ? "border-red-500" : "border-neutral-300"
                 }`}
                 disabled={loading}
                 required
@@ -516,6 +602,39 @@ const CreateDealershipModal = ({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+               <div className="space-y-2">
+                 <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                   <MapPin className="w-4 h-4" />
+                   ZIP Code *
+                 </label>
+                 <div className="relative">
+                   <input
+                     type="text"
+                     name="zip"
+                     value={formData.zip}
+                     onChange={handleInputChange}
+                     placeholder="10001"
+                     title="ZIP code is required"
+                     maxLength={5}
+                     className={`w-full px-3 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                       errors.zip ? "border-red-500" : "border-neutral-300"
+                     }`}
+                     disabled={loading}
+                     required
+                   />
+                   {zipLoading && (
+                     <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                       <Loader2 className="w-4 h-4 animate-spin text-orange-500" />
+                     </div>
+                   )}
+                 </div>
+                 {errors.zip && (
+                   <p className="text-sm text-red-500">{errors.zip}</p>
+                 )}
+                 <p className="text-xs text-neutral-500">
+                   Enter ZIP code to automatically fill city and state
+                 </p>
+               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
@@ -528,15 +647,18 @@ const CreateDealershipModal = ({
                   onChange={handleInputChange}
                   placeholder="New York"
                   title="City is required"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.city ? 'border-red-500' : 'border-neutral-300'
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 bg-gray-200 cursor-not-allowed ${
+                    errors.city ? "border-red-500" : "border-neutral-300"
                   }`}
-                  disabled={loading}
+                  disabled={loading || true}
                   required
                 />
                 {errors.city && (
                   <p className="text-sm text-red-500">{errors.city}</p>
                 )}
+                <p className="text-xs text-neutral-500">
+                  Auto-filled from ZIP code
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -551,38 +673,18 @@ const CreateDealershipModal = ({
                   onChange={handleInputChange}
                   placeholder="NY"
                   title="State is required"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.state ? 'border-red-500' : 'border-neutral-300'
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 bg-gray-200 cursor-not-allowed ${
+                    errors.state ? "border-red-500" : "border-neutral-300"
                   }`}
-                  disabled={loading}
+                  disabled={loading || true}
                   required
                 />
                 {errors.state && (
                   <p className="text-sm text-red-500">{errors.state}</p>
                 )}
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  ZIP Code *
-                </label>
-                <input
-                  type="text"
-                  name="zip"
-                  value={formData.zip}
-                  onChange={handleInputChange}
-                  placeholder="10001"
-                  title="ZIP code is required"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.zip ? 'border-red-500' : 'border-neutral-300'
-                  }`}
-                  disabled={loading}
-                  required
-                />
-                {errors.zip && (
-                  <p className="text-sm text-red-500">{errors.zip}</p>
-                )}
+                <p className="text-xs text-neutral-500">
+                  Auto-filled from ZIP code
+                </p>
               </div>
             </div>
 
@@ -597,7 +699,7 @@ const CreateDealershipModal = ({
                 onChange={handleInputChange}
                 title="Country is required"
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                  errors.country ? 'border-red-500' : 'border-neutral-300'
+                  errors.country ? "border-red-500" : "border-neutral-300"
                 }`}
                 disabled={loading}
                 required
@@ -631,7 +733,7 @@ const CreateDealershipModal = ({
                 title="Optional additional information"
                 rows={3}
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 resize-none ${
-                  errors.notes ? 'border-red-500' : 'border-neutral-300'
+                  errors.notes ? "border-red-500" : "border-neutral-300"
                 }`}
                 disabled={loading}
               />
@@ -653,7 +755,9 @@ const CreateDealershipModal = ({
                     Billing Information
                   </h4>
                   <p className="text-sm text-orange-700">
-                    You will be charged <span className="font-semibold">$890</span> more in the next billing cycle if you create this dealership.
+                    You will be charged{" "}
+                    <span className="font-semibold">$890</span> more in the next
+                    billing cycle if you create this dealership.
                   </p>
                 </div>
               </div>
@@ -693,10 +797,9 @@ const CreateDealershipModal = ({
                 {success ? "Dealership Created!" : "Create New Dealership"}
               </DialogTitle>
               <DialogDescription className="text-neutral-600">
-                {success 
+                {success
                   ? "The dealership has been created successfully."
-                  : "Fill in the details to create a new dealership."
-                }
+                  : "Fill in the details to create a new dealership."}
               </DialogDescription>
             </div>
           </motion.div>
@@ -747,7 +850,7 @@ const CreateDealershipModal = ({
                 const StepIcon = step.icon;
                 const isActive = currentStep === step.number;
                 const isCompleted = currentStep > step.number;
-                
+
                 return (
                   <div key={step.number} className="flex items-center">
                     <div className="flex flex-col items-center">
@@ -767,18 +870,28 @@ const CreateDealershipModal = ({
                         )}
                       </div>
                       <div className="mt-2 text-center">
-                        <p className={`text-xs font-medium ${
-                          isActive ? "text-orange-600" : isCompleted ? "text-green-600" : "text-neutral-400"
-                        }`}>
+                        <p
+                          className={`text-xs font-medium ${
+                            isActive
+                              ? "text-orange-600"
+                              : isCompleted
+                              ? "text-green-600"
+                              : "text-neutral-400"
+                          }`}
+                        >
                           {step.title}
                         </p>
-                        <p className="text-xs text-neutral-500">{step.description}</p>
+                        <p className="text-xs text-neutral-500">
+                          {step.description}
+                        </p>
                       </div>
                     </div>
                     {index < steps.length - 1 && (
-                      <div className={`w-16 h-0.5 mx-2 ${
-                        isCompleted ? "bg-green-500" : "bg-neutral-300"
-                      }`} />
+                      <div
+                        className={`w-16 h-0.5 mx-2 ${
+                          isCompleted ? "bg-green-500" : "bg-neutral-300"
+                        }`}
+                      />
                     )}
                   </div>
                 );
@@ -812,7 +925,7 @@ const CreateDealershipModal = ({
               >
                 Cancel
               </Button>
-              
+
               {currentStep > 1 && (
                 <Button
                   type="button"
@@ -825,7 +938,7 @@ const CreateDealershipModal = ({
                   Previous
                 </Button>
               )}
-              
+
               {currentStep < totalSteps ? (
                 <Button
                   type="button"

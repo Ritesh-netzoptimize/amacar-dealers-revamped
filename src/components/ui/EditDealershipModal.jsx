@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { 
-  Building2, 
-  Mail, 
-  Phone, 
-  MapPin, 
+import {
+  Building2,
+  Mail,
+  Phone,
+  MapPin,
   Loader2,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 import {
   Dialog,
@@ -24,12 +24,12 @@ import api from "@/lib/api";
 import useDebounce from "@/hooks/useDebounce";
 import { fetchCityStateByZip } from "@/redux/slices/userSlice";
 
-const EditDealershipModal = ({ 
-  isOpen, 
-  onClose, 
+const EditDealershipModal = ({
+  isOpen,
+  onClose,
   dealershipData,
   onSuccess,
-  onRefresh = () => {} // Add refresh callback
+  onRefresh = () => {}, // Add refresh callback
 }) => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
@@ -70,14 +70,18 @@ const EditDealershipModal = ({
   // Fetch city and state when zipcode changes
   useEffect(() => {
     const fetchLocationData = async () => {
-      if (debouncedZipcode && debouncedZipcode.length === 5 && /^\d{5}$/.test(debouncedZipcode)) {
+      if (
+        debouncedZipcode &&
+        debouncedZipcode.length === 5 &&
+        /^\d{5}$/.test(debouncedZipcode)
+      ) {
         try {
           const result = await dispatch(fetchCityStateByZip(debouncedZipcode));
           if (fetchCityStateByZip.fulfilled.match(result)) {
-            setFormData(prev => ({
+            setFormData((prev) => ({
               ...prev,
               city: result.payload.city,
-              state: result.payload.state
+              state: result.payload.state,
             }));
           } else {
             // console.log("Failed to fetch location data:", result.payload);
@@ -87,10 +91,10 @@ const EditDealershipModal = ({
         }
       } else if (debouncedZipcode && debouncedZipcode.length < 5) {
         // Clear city and state when zipcode is incomplete
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          city: '',
-          state: ''
+          city: "",
+          state: "",
         }));
       }
     };
@@ -100,12 +104,12 @@ const EditDealershipModal = ({
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    
+
     // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
@@ -122,10 +126,7 @@ const EditDealershipModal = ({
 
     try {
       // Validate required fields
-      const requiredFields = [
-        "phone",
-        "zip",
-      ];
+      const requiredFields = ["phone", "zip"];
 
       const newErrors = {};
       let hasErrors = false;
@@ -152,13 +153,15 @@ const EditDealershipModal = ({
 
       // Validate ZIP code format - more lenient since we auto-fill city/state
       if (formData.zip && !/^\d{5}(-\d{4})?$/.test(formData.zip)) {
-        newErrors.zip = "Please enter a valid ZIP code (e.g., 12345 or 12345-6789)";
+        newErrors.zip =
+          "Please enter a valid ZIP code (e.g., 12345 or 12345-6789)";
         hasErrors = true;
       }
 
       // Check if city and state are populated (should be auto-filled from ZIP)
       if (formData.zip && (!formData.city || !formData.state)) {
-        newErrors.zip = "Please enter a valid ZIP code to auto-fill city and state";
+        newErrors.zip =
+          "Please enter a valid ZIP code to auto-fill city and state";
         hasErrors = true;
       }
 
@@ -166,7 +169,8 @@ const EditDealershipModal = ({
       if (formData.website && formData.website.trim()) {
         const urlRegex = /^https?:\/\/.+\..+/;
         if (!urlRegex.test(formData.website)) {
-          newErrors.website = "Please enter a valid website URL (e.g., https://example.com)";
+          newErrors.website =
+            "Please enter a valid website URL (e.g., https://example.com)";
           hasErrors = true;
         }
       }
@@ -178,28 +182,33 @@ const EditDealershipModal = ({
       }
 
       // Make API call to update dealership
-      console.log("before calling update ninofr api")
-      const response = await api.put(`/dealerships/${dealershipData.id}/update-info`, {
-        phone: formData.phone,
-        zip: formData.zip,
-        city: formData.city,
-        state: formData.state,
-        website: formData.website,
-        notes: formData.notes,
-      });
+      console.log("before calling update ninofr api");
+      const response = await api.put(
+        `/dealerships/${dealershipData.id}/update-info`,
+        {
+          phone: formData.phone,
+          zip: formData.zip,
+          city: formData.city,
+          state: formData.state,
+          website: formData.website,
+          notes: formData.notes,
+        }
+      );
 
       if (response.data.success) {
         setSuccess(true);
-        toast.success(response.data.message || "Dealership updated successfully!");
-        
+        toast.success(
+          response.data.message || "Dealership updated successfully!"
+        );
+
         // Call refresh callback to update the data
         onRefresh();
-        
+
         // Call success callback if provided
         if (onSuccess) {
           onSuccess();
         }
-        
+
         // Auto-close modal after 2 seconds
         setTimeout(() => {
           handleClose();
@@ -209,14 +218,17 @@ const EditDealershipModal = ({
       }
     } catch (error) {
       console.error("Error updating dealership:", error);
-      
+
       // Handle different types of errors
       if (error.response) {
         const { status, data } = error.response;
-        
+
         switch (status) {
           case 400:
-            toast.error(data?.message || "Invalid data provided. Please check your inputs.");
+            toast.error(
+              data?.message ||
+                "Invalid data provided. Please check your inputs."
+            );
             break;
           case 401:
             toast.error("You are not authorized to update dealerships.");
@@ -235,20 +247,28 @@ const EditDealershipModal = ({
             if (data?.errors) {
               setErrors(data.errors);
             } else {
-              toast.error(data?.message || "Validation failed. Please check your inputs.");
+              toast.error(
+                data?.message || "Validation failed. Please check your inputs."
+              );
             }
             break;
           case 429:
-            toast.error("Too many requests. Please wait a moment and try again.");
+            toast.error(
+              "Too many requests. Please wait a moment and try again."
+            );
             break;
           case 500:
             toast.error("Server error. Please try again later.");
             break;
           default:
-            toast.error(data?.message || "Failed to update dealership. Please try again.");
+            toast.error(
+              data?.message || "Failed to update dealership. Please try again."
+            );
         }
       } else if (error.request) {
-        toast.error("Network error. Please check your connection and try again.");
+        toast.error(
+          "Network error. Please check your connection and try again."
+        );
       } else {
         toast.error("An unexpected error occurred. Please try again.");
       }
@@ -277,7 +297,7 @@ const EditDealershipModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <motion.div
             className="flex items-center gap-3 mb-2"
@@ -302,10 +322,9 @@ const EditDealershipModal = ({
                 {success ? "Dealership Updated!" : "Edit Dealership"}
               </DialogTitle>
               <DialogDescription className="text-neutral-600">
-                {success 
+                {success
                   ? "The dealership has been updated successfully."
-                  : "Update the dealership information below."
-                }
+                  : "Update the dealership information below."}
               </DialogDescription>
             </div>
           </motion.div>
@@ -356,7 +375,7 @@ const EditDealershipModal = ({
                 <Building2 className="w-5 h-5 text-orange-600" />
                 Dealership Information
               </h3>
-              
+
               {/* Email Field - Disabled and Prefilled */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
@@ -408,7 +427,7 @@ const EditDealershipModal = ({
                   onChange={handleInputChange}
                   placeholder="555-123-4567"
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.phone ? 'border-red-500' : 'border-neutral-300'
+                    errors.phone ? "border-red-500" : "border-neutral-300"
                   }`}
                   disabled={loading}
                   required
@@ -433,8 +452,39 @@ const EditDealershipModal = ({
                 <MapPin className="w-5 h-5 text-orange-600" />
                 Location Information
               </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* ZIP Code */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                    <MapPin className="w-4 h-4" />
+                    ZIP Code *
+                  </label>
+                  <input
+                    type="text"
+                    name="zip"
+                    value={formData.zip}
+                    onChange={handleInputChange}
+                    placeholder="10001"
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                      errors.zip ? "border-red-500" : "border-neutral-300"
+                    }`}
+                    disabled={loading}
+                    required
+                  />
+                  {errors.zip && (
+                    <motion.p
+                      className="text-red-500 text-xs flex items-center gap-1"
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <AlertCircle className="w-3 h-3" />
+                      {errors.zip}
+                    </motion.p>
+                  )}
+                </div>
+
                 {/* City */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
@@ -451,7 +501,7 @@ const EditDealershipModal = ({
                     title="City is automatically filled from ZIP code"
                   />
                   <p className="text-xs text-neutral-500">
-                    City is automatically filled from ZIP code
+                    City is automatically filled
                   </p>
                 </div>
 
@@ -471,108 +521,9 @@ const EditDealershipModal = ({
                     title="State is automatically filled from ZIP code"
                   />
                   <p className="text-xs text-neutral-500">
-                    State is automatically filled from ZIP code
+                    State is automatically filled
                   </p>
                 </div>
-              </div>
-
-              {/* ZIP Code */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  ZIP Code *
-                </label>
-                <input
-                  type="text"
-                  name="zip"
-                  value={formData.zip}
-                  onChange={handleInputChange}
-                  placeholder="10001"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.zip ? 'border-red-500' : 'border-neutral-300'
-                  }`}
-                  disabled={loading}
-                  required
-                />
-                {errors.zip && (
-                  <motion.p
-                    className="text-red-500 text-xs flex items-center gap-1"
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <AlertCircle className="w-3 h-3" />
-                    {errors.zip}
-                  </motion.p>
-                )}
-              </div>
-            </div>
-
-            {/* Additional Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-neutral-800 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-orange-600" />
-                Additional Information
-              </h3>
-              
-              {/* Website */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                  <Building2 className="w-4 h-4" />
-                  Website
-                </label>
-                <input
-                  type="url"
-                  name="website"
-                  value={formData.website}
-                  onChange={handleInputChange}
-                  placeholder="https://example-dealership.com"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.website ? 'border-red-500' : 'border-neutral-300'
-                  }`}
-                  disabled={loading}
-                />
-                {errors.website && (
-                  <motion.p
-                    className="text-red-500 text-xs flex items-center gap-1"
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <AlertCircle className="w-3 h-3" />
-                    {errors.website}
-                  </motion.p>
-                )}
-              </div>
-
-              {/* Notes */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                  <Building2 className="w-4 h-4" />
-                  Notes
-                </label>
-                <textarea
-                  name="notes"
-                  value={formData.notes}
-                  onChange={handleInputChange}
-                  placeholder="Additional notes about the dealership..."
-                  rows={3}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 resize-none ${
-                    errors.notes ? 'border-red-500' : 'border-neutral-300'
-                  }`}
-                  disabled={loading}
-                />
-                {errors.notes && (
-                  <motion.p
-                    className="text-red-500 text-xs flex items-center gap-1"
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <AlertCircle className="w-3 h-3" />
-                    {errors.notes}
-                  </motion.p>
-                )}
               </div>
             </div>
           </motion.div>

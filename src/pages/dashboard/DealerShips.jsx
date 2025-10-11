@@ -560,7 +560,7 @@ const DealerShips = () => {
             </div>
           ) : dealerships.length > 0 ? (
             <>
-              {user?.role == "admin" || user?.role == "sales_manager" ? (
+              {user?.role == "administrator" || user?.role == "sales_manager" ? (
                 <DealershipContainer
                   dealerships={dealerships}
                   currentPage={currentPage}
