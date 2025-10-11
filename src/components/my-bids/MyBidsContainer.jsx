@@ -62,6 +62,7 @@ const MyBidsContainer = ({ auctions = [] }) => {
     >
       {/* Full Width Rows Layout */}
       <div className="space-y-6">
+        {console.log("auctions", auctions)}
         {auctions.map((vehicle) => (
           <motion.div
             key={vehicle.id}
@@ -195,7 +196,7 @@ const MyBidsContainer = ({ auctions = [] }) => {
                   {/* CTA Buttons - Top Right */}
                   <div className="flex items-center gap-2">
                     <Button
-                      onClick={() => handleViewVehicle(vehicle.id)}
+                      onClick={() => handleViewVehicle(vehicle.vehicle.id)}
                       className="h-8 px-4 bg-[var(--brand-orange)]  hover:bg-[var(--color-primary-600)] text-white font-medium rounded-md text-sm transition-colors duration-200 cursor-pointer"
                     >
                       View Vehicle

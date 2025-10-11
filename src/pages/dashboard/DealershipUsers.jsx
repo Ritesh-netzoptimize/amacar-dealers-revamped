@@ -8,6 +8,7 @@ import { Users, UserPlus } from "lucide-react";
 import api from "@/lib/api";
 import { useSelector } from "react-redux";
 import DealershipSkeleton from "@/components/skeletons/Dealership/DealershipSkeleton";
+import { getUserPermissions } from "@/utils/rolePermissions";
 
 const DealershipUsers = () => {
   const [users, setUsers] = useState([]);
@@ -25,6 +26,10 @@ const DealershipUsers = () => {
   const itemsPerPage = 10;
   const maxRetries = 3;
 
+  const userRole = user?.role;
+  const permissions = getUserPermissions(userRole, user);
+  const { canCreateDealershipUsers, canDeleteUpdateDealershipUsers } = permissions;
+
   // Error handling utility
   const handleApiError = useCallback((error) => {
     console.error("API Error:", error);
@@ -38,7 +43,8 @@ const DealershipUsers = () => {
       switch (status) {
         case 403:
           errorMessage =
-            data?.message || "You don't have permission to view dealership users";
+            data?.message ||
+            "You don't have permission to view dealership users";
           errorType = "permission";
           break;
         case 401:
@@ -119,72 +125,80 @@ const DealershipUsers = () => {
   };
 
   // Retry function with exponential backoff
-  const retryWithBackoff = useCallback(async (fn, retries = maxRetries) => {
-    try {
-      return await fn();
-    } catch (error) {
-      if (
-        retries > 0 &&
-        (error.response?.status >= 500 || error.code === "NETWORK_ERROR")
-      ) {
-        const delay = Math.pow(2, maxRetries - retries) * 1000; // Exponential backoff
-        console.log(
-          `Retrying in ${delay}ms... (${
-            maxRetries - retries + 1
-          }/${maxRetries})`
-        );
+  const retryWithBackoff = useCallback(
+    async (fn, retries = maxRetries) => {
+      try {
+        return await fn();
+      } catch (error) {
+        if (
+          retries > 0 &&
+          (error.response?.status >= 500 || error.code === "NETWORK_ERROR")
+        ) {
+          const delay = Math.pow(2, maxRetries - retries) * 1000; // Exponential backoff
+          console.log(
+            `Retrying in ${delay}ms... (${
+              maxRetries - retries + 1
+            }/${maxRetries})`
+          );
 
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        return retryWithBackoff(fn, retries - 1);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          return retryWithBackoff(fn, retries - 1);
+        }
+        throw error;
       }
-      throw error;
-    }
-  }, [maxRetries]);
+    },
+    [maxRetries]
+  );
 
   // Fetch dealership users data from API
-  const fetchDealershipUsers = useCallback(async (page = 1, perPage = 10, isRetry = false) => {
-    try {
-      setLoading(true);
-      if (!isRetry) {
-        setError(null);
-        setRetryCount(0);
+  const fetchDealershipUsers = useCallback(
+    async (page = 1, perPage = 10, isRetry = false) => {
+      try {
+        setLoading(true);
+        if (!isRetry) {
+          setError(null);
+          setRetryCount(0);
+        }
+
+        const response = await retryWithBackoff(() =>
+          getDealershipUsers(page, perPage)
+        );
+
+        if (response.success) {
+          const transformedData = transformUserData(response.data);
+          setUsers(transformedData);
+          setPagination(response.pagination);
+          setTotalPages(response.pagination.total_pages || 1);
+          setTotalCount(parseInt(response.pagination.total) || 0);
+          setRetryCount(0); // Reset retry count on success
+        } else {
+          throw new Error(
+            response.message || "Failed to fetch dealership users"
+          );
+        }
+      } catch (error) {
+        const errorInfo = handleApiError(error);
+        setError(errorInfo);
+
+        // Show appropriate toast based on error type
+        const toastMessages = {
+          permission:
+            "Access denied. You don't have permission to view dealership users.",
+          auth: "Please log in to continue.",
+          network: "Network error. Please check your connection.",
+          rateLimit: "Too many requests. Please wait a moment and try again.",
+          server: "Server error. Please try again later.",
+          notFound: "Dealership users endpoint not found.",
+          error: "Failed to load dealership users. Please try again.",
+        };
+
+        toast.error(toastMessages[errorInfo.type] || toastMessages.error);
+      } finally {
+        setLoading(false);
       }
-
-      const response = await retryWithBackoff(() =>
-        getDealershipUsers(page, perPage)
-      );
-
-      if (response.success) {
-        const transformedData = transformUserData(response.data);
-        setUsers(transformedData);
-        setPagination(response.pagination);
-        setTotalPages(response.pagination.total_pages || 1);
-        setTotalCount(parseInt(response.pagination.total) || 0);
-        setRetryCount(0); // Reset retry count on success
-      } else {
-        throw new Error(response.message || "Failed to fetch dealership users");
-      }
-    } catch (error) {
-      const errorInfo = handleApiError(error);
-      setError(errorInfo);
-
-      // Show appropriate toast based on error type
-      const toastMessages = {
-        permission:
-          "Access denied. You don't have permission to view dealership users.",
-        auth: "Please log in to continue.",
-        network: "Network error. Please check your connection.",
-        rateLimit: "Too many requests. Please wait a moment and try again.",
-        server: "Server error. Please try again later.",
-        notFound: "Dealership users endpoint not found.",
-        error: "Failed to load dealership users. Please try again.",
-      };
-
-      toast.error(toastMessages[errorInfo.type] || toastMessages.error);
-    } finally {
-      setLoading(false);
-    }
-  }, [retryWithBackoff, handleApiError]);
+    },
+    [retryWithBackoff, handleApiError]
+  );
 
   // Animation variants
   const pageVariants = {
@@ -309,20 +323,23 @@ const DealershipUsers = () => {
                 </p>
               </div>
             </div>
-            
+
             {/* Create User Button */}
-            <motion.button
-              onClick={handleOpenCreateUserModal}
-              className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2, duration: 0.4 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <UserPlus className="w-4 h-4" />
-              Create Users
-            </motion.button>
+            {canCreateDealershipUsers && (
+              <motion.button
+                onClick={handleOpenCreateUserModal}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <UserPlus className="w-4 h-4" />
+                Create Users
+              </motion.button>
+            )}
+
           </motion.div>
         </motion.div>
 
@@ -421,7 +438,9 @@ const DealershipUsers = () => {
                     {error.message}
                   </div>
                   <button
-                    onClick={() => fetchDealershipUsers(currentPage, itemsPerPage)}
+                    onClick={() =>
+                      fetchDealershipUsers(currentPage, itemsPerPage)
+                    }
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                   >
                     Try Again
@@ -454,7 +473,9 @@ const DealershipUsers = () => {
                     Please wait a moment before trying again
                   </div>
                   <button
-                    onClick={() => fetchDealershipUsers(currentPage, itemsPerPage)}
+                    onClick={() =>
+                      fetchDealershipUsers(currentPage, itemsPerPage)
+                    }
                     className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
                   >
                     Try Again
@@ -484,7 +505,9 @@ const DealershipUsers = () => {
                     {error.message}
                   </div>
                   <button
-                    onClick={() => fetchDealershipUsers(currentPage, itemsPerPage)}
+                    onClick={() =>
+                      fetchDealershipUsers(currentPage, itemsPerPage)
+                    }
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                   >
                     Try Again

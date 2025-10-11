@@ -43,6 +43,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import ActDeActModalDealershipUsers from "@/components/ui/ActDeActModalDealershipUsers";
 import EditDealershipUsersModal from "@/components/ui/EditDealershipUsersModal";
+import { getUserPermissions } from "@/utils/rolePermissions";
+import { useSelector } from "react-redux";
 
 const DealershipUsersContainer = ({
   users,
@@ -65,6 +67,12 @@ const DealershipUsersContainer = ({
   const [selectedUser, setSelectedUser] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+
+  const { user } = useSelector((state) => state.user);
+
+  const userRole = user?.role;
+  const permissions = getUserPermissions(userRole, user);
+  const { canDeleteUpdateDealershipUsers } = permissions;
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -280,13 +288,15 @@ const DealershipUsersContainer = ({
                 sideOffset={4}
                 className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
               >
-                <DropdownMenuItem
-                  onClick={() => handleEditUser(row.original.id)}
-                  className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
-                >
-                  <Edit className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-                  <span>Edit User</span>
-                </DropdownMenuItem>
+                {canDeleteUpdateDealershipUsers && (
+                  <DropdownMenuItem
+                    onClick={() => handleEditUser(row.original.id)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                  >
+                    <Edit className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                    <span>Edit User</span>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
                   //   onClick={() => onContactUser(row.original.id)}
                   onClick={(e) => e.stopPropagation()}
@@ -296,7 +306,7 @@ const DealershipUsersContainer = ({
                   <MessageSquare className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                   <span>Contact</span>
                 </DropdownMenuItem>
-                {row.original.status.account_status === "active" ? (
+                {row.original.status.account_status === "active" && canDeleteUpdateDealershipUsers ? (
                   <DropdownMenuItem
                     onClick={() => handleDeactivateUser(row.original.id)}
                     className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
@@ -321,11 +331,12 @@ const DealershipUsersContainer = ({
     ],
     [
       columnHelper,
-    //   onViewUser,
+      //   onViewUser,
       handleEditUser,
-    //   onContactUser,
+      //   onContactUser,
       handleActivateUser,
       handleDeactivateUser,
+      canDeleteUpdateDealershipUsers
     ]
   );
 
