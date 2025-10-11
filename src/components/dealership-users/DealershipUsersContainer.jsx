@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import ActDeActModalDealershipUsers from "@/components/ui/ActDeActModalDealershipUsers";
+import EditDealershipUsersModal from "@/components/ui/EditDealershipUsersModal";
 
 const DealershipUsersContainer = ({
   users,
@@ -62,6 +63,8 @@ const DealershipUsersContainer = ({
   const [modalOpen, setModalOpen] = useState(false);
   const [modalAction, setModalAction] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -128,6 +131,27 @@ const DealershipUsersContainer = ({
       onActivateUser(userId);
     } else if (!isActivated && onDeactivateUser) {
       onDeactivateUser(userId);
+    }
+  };
+
+  // Edit modal handlers
+  const handleEditUser = useCallback((userId) => {
+    const user = users.find(u => u.id === userId);
+    if (user) {
+      setEditingUser(user);
+      setEditModalOpen(true);
+    }
+  }, [users]);
+
+  const handleEditModalClose = () => {
+    setEditModalOpen(false);
+    setEditingUser(null);
+  };
+
+  const handleEditSuccess = () => {
+    // Call the parent's refresh callback if provided
+    if (onRefresh) {
+      onRefresh();
     }
   };
 
@@ -254,7 +278,7 @@ const DealershipUsersContainer = ({
                   <span>View Details</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onEditUser(row.original.id)}
+                  onClick={() => handleEditUser(row.original.id)}
                   className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                 >
                   <Edit className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
@@ -290,7 +314,7 @@ const DealershipUsersContainer = ({
         ),
       }),
     ],
-    [columnHelper, onViewUser, onEditUser, onContactUser, handleActivateUser, handleDeactivateUser]
+    [columnHelper, onViewUser, handleEditUser, onContactUser, handleActivateUser, handleDeactivateUser]
   );
 
   // Create table instance
@@ -606,7 +630,7 @@ const DealershipUsersContainer = ({
                         <span>View Details</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => onEditUser(row.original.id)}
+                        onClick={() => handleEditUser(row.original.id)}
                         className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                       >
                         <Edit className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
@@ -667,6 +691,14 @@ const DealershipUsersContainer = ({
         userName={selectedUser?.display_name || `${selectedUser?.first_name} ${selectedUser?.last_name}`}
         onSuccess={handleModalSuccess}
         onRefresh={onRefresh}
+      />
+
+      {/* Edit Dealership User Modal */}
+      <EditDealershipUsersModal
+        isOpen={editModalOpen}
+        onClose={handleEditModalClose}
+        dealershipUserData={editingUser}
+        onSuccess={handleEditSuccess}
       />
     </motion.div>
   );
