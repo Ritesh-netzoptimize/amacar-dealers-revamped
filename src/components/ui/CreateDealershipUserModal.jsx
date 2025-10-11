@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
 import { 
   User, 
   Mail, 
@@ -27,12 +28,15 @@ import {
 } from "./dialog";
 import { Button } from "./Button";
 import api from "@/lib/api";
+import useDebounce from "@/hooks/useDebounce";
+import { fetchCityStateByZip } from "@/redux/slices/userSlice";
 
 const CreateDealershipUserModal = ({ 
   isOpen, 
   onClose, 
   onSuccess 
 }) => {
+  const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     first_name: "",
@@ -55,6 +59,7 @@ const CreateDealershipUserModal = ({
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
 
+  const debouncedZipcode = useDebounce(formData.zip, 500);
   const totalSteps = 4;
 
   const steps = [
@@ -84,6 +89,53 @@ const CreateDealershipUserModal = ({
     },
   ];
 
+  // Fetch location data based on zipcode
+  useEffect(() => {
+    const fetchLocationData = async () => {
+      if (debouncedZipcode && debouncedZipcode.length === 5 && /^\d{5}$/.test(debouncedZipcode)) {
+        try {
+          console.log("Fetching location data for ZIP:", debouncedZipcode);
+          const result = await dispatch(fetchCityStateByZip(debouncedZipcode));
+          console.log("Location fetch result:", result);
+          
+          if (fetchCityStateByZip.fulfilled.match(result)) {
+            console.log("Location data fetched successfully:", result.payload);
+            setFormData(prev => ({
+              ...prev,
+              city: result.payload.city || '',
+              state: result.payload.state || ''
+            }));
+          } else {
+            console.log("Failed to fetch location data:", result.payload);
+            // Clear city and state if fetch failed
+            setFormData(prev => ({
+              ...prev,
+              city: '',
+              state: ''
+            }));
+          }
+        } catch (error) {
+          console.error("Error fetching location data:", error);
+          // Clear city and state on error
+          setFormData(prev => ({
+            ...prev,
+            city: '',
+            state: ''
+          }));
+        }
+      } else if (debouncedZipcode && debouncedZipcode.length < 5) {
+        // Clear city and state when zipcode is incomplete
+        setFormData(prev => ({
+          ...prev,
+          city: '',
+          state: ''
+        }));
+      }
+    };
+
+    fetchLocationData();
+  }, [debouncedZipcode, dispatch]);
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     
@@ -93,6 +145,13 @@ const CreateDealershipUserModal = ({
       setFormData((prev) => ({
         ...prev,
         [name]: alphanumericValue,
+      }));
+    } else if (name === 'zip') {
+      // For ZIP code, only allow numeric input and limit to 5 digits
+      const numericValue = value.replace(/\D/g, '').slice(0, 5);
+      setFormData((prev) => ({
+        ...prev,
+        [name]: numericValue,
       }));
     } else if (type === 'checkbox') {
       setFormData((prev) => ({
@@ -175,9 +234,9 @@ const CreateDealershipUserModal = ({
           newErrors.zip = "ZIP code is required";
           hasErrors = true;
         } else {
-          const zipRegex = /^\d{5}(-\d{4})?$/;
+          const zipRegex = /^\d{5}$/;
           if (!zipRegex.test(formData.zip)) {
-            newErrors.zip = "Please enter a valid ZIP code (12345 or 12345-6789)";
+            newErrors.zip = "Please enter a valid 5-digit ZIP code";
             hasErrors = true;
           }
         }
@@ -428,6 +487,31 @@ const CreateDealershipUserModal = ({
             <div className="space-y-2">
               <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
+                ZIP Code *
+              </label>
+              <input
+                type="text"
+                name="zip"
+                value={formData.zip}
+                onChange={handleInputChange}
+                placeholder="10001"
+                maxLength={5}
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                  errors.zip ? 'border-red-500' : 'border-neutral-300'
+                }`}
+                disabled={loading}
+              />
+              {errors.zip && (
+                <p className="text-sm text-red-500">{errors.zip}</p>
+              )}
+              <p className="text-xs text-neutral-500">
+                Enter ZIP code to automatically fill city and state
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
                 Address
               </label>
               <input
@@ -441,7 +525,7 @@ const CreateDealershipUserModal = ({
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
@@ -453,14 +537,17 @@ const CreateDealershipUserModal = ({
                   value={formData.city}
                   onChange={handleInputChange}
                   placeholder="New York"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 bg-gray-200 cursor-not-allowed ${
                     errors.city ? 'border-red-500' : 'border-neutral-300'
                   }`}
-                  disabled={loading}
+                  disabled={loading || true}
                 />
                 {errors.city && (
                   <p className="text-sm text-red-500">{errors.city}</p>
                 )}
+                <p className="text-xs text-neutral-500">
+                  Auto-filled from ZIP code
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -474,35 +561,17 @@ const CreateDealershipUserModal = ({
                   value={formData.state}
                   onChange={handleInputChange}
                   placeholder="NY"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 bg-gray-200 cursor-not-allowed ${
                     errors.state ? 'border-red-500' : 'border-neutral-300'
                   }`}
-                  disabled={loading}
+                  disabled={loading || true}
                 />
                 {errors.state && (
                   <p className="text-sm text-red-500">{errors.state}</p>
                 )}
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  ZIP Code *
-                </label>
-                <input
-                  type="text"
-                  name="zip"
-                  value={formData.zip}
-                  onChange={handleInputChange}
-                  placeholder="10001"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.zip ? 'border-red-500' : 'border-neutral-300'
-                  }`}
-                  disabled={loading}
-                />
-                {errors.zip && (
-                  <p className="text-sm text-red-500">{errors.zip}</p>
-                )}
+                <p className="text-xs text-neutral-500">
+                  Auto-filled from ZIP code
+                </p>
               </div>
             </div>
 

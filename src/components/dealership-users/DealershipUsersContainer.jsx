@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -13,7 +13,26 @@ import {
   Trash2,
   Eye,
   MessageSquare,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  createColumnHelper,
+  flexRender,
+} from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/Button";
 import {
   DropdownMenu,
@@ -37,6 +56,8 @@ const DealershipUsersContainer = ({
   onRefresh,
 }) => {
   const [hoveredUser, setHoveredUser] = useState(null);
+  const [sorting, setSorting] = useState([]);
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -60,7 +81,7 @@ const DealershipUsersContainer = ({
     });
   };
 
-  const formatLastLogin = (dateString) => {
+  const formatLastLogin = useCallback((dateString) => {
     if (!dateString) return "Never";
     const date = new Date(dateString);
     const now = new Date();
@@ -70,13 +91,195 @@ const DealershipUsersContainer = ({
     if (diffDays === 1) return "Yesterday";
     if (diffDays < 7) return `${diffDays} days ago`;
     return formatDate(dateString);
-  };
+  }, []);
 
+  // Column helper
+  const columnHelper = createColumnHelper();
+
+  // Define columns
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor("display_name", {
+        header: "User",
+        cell: ({ row }) => (
+          <div className="flex items-center">
+            <div className="flex-shrink-0 h-10 w-10">
+              {row.original.avatar ? (
+                <img
+                  className="h-10 w-10 rounded-full object-cover"
+                  src={row.original.avatar}
+                  alt={row.original.display_name}
+                />
+              ) : (
+                <div className="h-10 w-10 rounded-full bg-neutral-100 flex items-center justify-center">
+                  <Users className="h-5 w-5 text-neutral-400" />
+                </div>
+              )}
+            </div>
+            <div className="ml-4">
+              <div className="text-sm font-medium text-neutral-900">
+                {row.original.display_name || `${row.original.first_name} ${row.original.last_name}`}
+              </div>
+              <div className="text-sm text-neutral-500">
+                @{row.original.username}
+              </div>
+            </div>
+          </div>
+        ),
+      }),
+      columnHelper.accessor("email", {
+        header: "Contact",
+        cell: ({ row }) => (
+          <div className="space-y-1">
+            <div className="flex items-center text-sm text-neutral-900">
+              <Mail className="h-4 w-4 text-neutral-400 mr-2" />
+              {row.original.email}
+            </div>
+            {row.original.phone && (
+              <div className="flex items-center text-sm text-neutral-500">
+                <Phone className="h-4 w-4 text-neutral-400 mr-2" />
+                {row.original.phone}
+              </div>
+            )}
+            {row.original.address && (
+              <div className="flex items-center text-sm text-neutral-500">
+                <MapPin className="h-4 w-4 text-neutral-400 mr-2" />
+                {row.original.address.city}, {row.original.address.state}
+              </div>
+            )}
+          </div>
+        ),
+      }),
+      columnHelper.accessor("business", {
+        header: "Business",
+        cell: ({ row }) => (
+          <div className="space-y-1">
+            <div className="text-sm font-medium text-neutral-900">
+              {row.original.business?.dealership_name || "N/A"}
+            </div>
+            <div className="text-sm text-neutral-500">
+              Code: {row.original.business?.dealer_code || "N/A"}
+            </div>
+            {row.original.business?.website && (
+              <div className="text-sm text-blue-600">
+                <a
+                  href={row.original.business.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  {row.original.business.website}
+                </a>
+              </div>
+            )}
+          </div>
+        ),
+      }),
+      columnHelper.accessor("status", {
+        header: "Status",
+        cell: ({ row }) => (
+          <div className="space-y-1">
+            <Badge
+              className={`${getStatusColor(row.original.status?.formatted_status)} border`}
+            >
+              {row.original.status?.formatted_status || "Unknown"}
+            </Badge>
+            <div className="text-xs text-neutral-500">
+              {row.original.status?.user_status || "N/A"}
+            </div>
+          </div>
+        ),
+      }),
+      columnHelper.accessor("dates", {
+        header: "Last Login",
+        cell: ({ row }) => (
+          <div>
+            <div className="text-sm text-neutral-900">
+              {formatLastLogin(row.original.dates?.last_login)}
+            </div>
+            <div className="text-xs text-neutral-500">
+              Joined {formatDate(row.original.dates?.created_at)}
+            </div>
+          </div>
+        ),
+      }),
+      columnHelper.accessor("actions", {
+        header: "Actions",
+        cell: ({ row }) => (
+          <div className="flex justify-end items-center h-full">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-neutral-100"
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onViewUser(row.original.id)}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  View Details
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onEditUser(row.original.id)}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit User
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onContactUser(row.original.id)}>
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Contact
+                </DropdownMenuItem>
+                {row.original.status === "active" ? (
+                  <DropdownMenuItem
+                    onClick={() => onDeactivateUser(row.original.id)}
+                    className="text-red-600"
+                  >
+                    <UserX className="mr-2 h-4 w-4" />
+                    Deactivate
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem
+                    onClick={() => onActivateUser(row.original.id)}
+                    className="text-green-600"
+                  >
+                    <UserCheck className="mr-2 h-4 w-4" />
+                    Activate
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ),
+      }),
+    ],
+    [columnHelper, formatLastLogin, onViewUser, onEditUser, onContactUser, onDeactivateUser, onActivateUser]
+  );
+
+  // Create table instance
+  const table = useReactTable({
+    data: users,
+    columns,
+    state: {
+      sorting,
+      globalFilter,
+    },
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+  });
+
+  // Animation variants
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
+      y: 0,
       transition: {
+        duration: 0.6,
+        ease: "easeOut",
         staggerChildren: 0.1,
         delayChildren: 0.2,
       },
@@ -84,11 +287,27 @@ const DealershipUsersContainer = ({
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5, ease: "easeOut" },
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const tableRowVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut",
+      },
     },
   };
 
@@ -121,7 +340,7 @@ const DealershipUsersContainer = ({
             <div>
               <p className="text-sm font-medium text-neutral-600">Active Users</p>
               <p className="text-2xl font-bold text-green-600">
-                {users.filter(user => user.status?.toLowerCase() === "active").length}
+                {users?.filter(user => user.status === "active").length}
               </p>
             </div>
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -135,7 +354,7 @@ const DealershipUsersContainer = ({
             <div>
               <p className="text-sm font-medium text-neutral-600">Inactive Users</p>
               <p className="text-2xl font-bold text-red-600">
-                {users.filter(user => user.status?.toLowerCase() === "inactive").length}
+                {users?.filter(user => user.status === "inactive").length}
               </p>
             </div>
             <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
@@ -149,7 +368,7 @@ const DealershipUsersContainer = ({
             <div>
               <p className="text-sm font-medium text-neutral-600">Pending Users</p>
               <p className="text-2xl font-bold text-yellow-600">
-                {users.filter(user => user.status?.toLowerCase() === "pending").length}
+                {users?.filter(user => user.status === "pending").length}
               </p>
             </div>
             <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -162,206 +381,290 @@ const DealershipUsersContainer = ({
       {/* Users Table */}
       <motion.div
         variants={itemVariants}
-        className="bg-white rounded-2xl shadow-sm border border-neutral-200 overflow-hidden"
+        className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6"
       >
-        <div className="px-6 py-4 border-b border-neutral-200">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-neutral-900">
-              Dealership Users ({totalCount})
-            </h3>
-            <Button
-              onClick={onRefresh}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <Users className="w-4 h-4" />
-              Refresh
-            </Button>
+        {/* Search and Filters */}
+        <motion.div
+          className="mb-6 flex gap-4 items-center"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+        >
+          <div className="flex-1">
+            <motion.input
+              type="text"
+              placeholder="Search users..."
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              className="w-full px-4 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
+            />
           </div>
-        </div>
+          <Button
+            onClick={onRefresh}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <Users className="w-4 h-4" />
+            Refresh
+          </Button>
+        </motion.div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-neutral-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  User
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  Contact
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  Business
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  Last Login
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-neutral-200">
-              {users.map((user, index) => (
-                <motion.tr
-                  key={user.id}
-                  variants={itemVariants}
-                  className={`hover:bg-neutral-50 transition-colors duration-200 ${
-                    hoveredUser === user.id ? "bg-blue-50" : ""
-                  }`}
-                  onMouseEnter={() => setHoveredUser(user.id)}
-                  onMouseLeave={() => setHoveredUser(null)}
+        {/* Desktop Table Layout */}
+        <div className="hidden lg:block overflow-x-auto">
+          <Table className="w-full min-w-[1000px]">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow
+                  key={headerGroup.id}
+                  className="border-neutral-200 hover:bg-transparent"
                 >
-                  {/* User Info */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
-                        {user.avatar ? (
-                          <img
-                            className="h-10 w-10 rounded-full object-cover"
-                            src={user.avatar}
-                            alt={user.display_name}
-                          />
-                        ) : (
-                          <div className="h-10 w-10 rounded-full bg-neutral-100 flex items-center justify-center">
-                            <Users className="h-5 w-5 text-neutral-400" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-neutral-900">
-                          {user.display_name || `${user.first_name} ${user.last_name}`}
-                        </div>
-                        <div className="text-sm text-neutral-500">
-                          @{user.username}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
+                  {headerGroup.headers.map((header) => {
+                    const isSortable = header.column.id !== "actions";
+                    const isSorted = header.column.getIsSorted();
 
-                  {/* Contact Info */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="space-y-1">
-                      <div className="flex items-center text-sm text-neutral-900">
-                        <Mail className="h-4 w-4 text-neutral-400 mr-2" />
-                        {user.email}
-                      </div>
-                      {user.phone && (
-                        <div className="flex items-center text-sm text-neutral-500">
-                          <Phone className="h-4 w-4 text-neutral-400 mr-2" />
-                          {user.phone}
-                        </div>
-                      )}
-                      {user.address && (
-                        <div className="flex items-center text-sm text-neutral-500">
-                          <MapPin className="h-4 w-4 text-neutral-400 mr-2" />
-                          {user.address.city}, {user.address.state}
-                        </div>
-                      )}
-                    </div>
-                  </td>
-
-                  {/* Business Info */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="space-y-1">
-                      <div className="text-sm font-medium text-neutral-900">
-                        {user.business?.dealership_name || "N/A"}
-                      </div>
-                      <div className="text-sm text-neutral-500">
-                        Code: {user.business?.dealer_code || "N/A"}
-                      </div>
-                      {user.business?.website && (
-                        <div className="text-sm text-blue-600">
-                          <a
-                            href={user.business.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:underline"
-                          >
-                            {user.business.website}
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </td>
-
-                  {/* Status */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="space-y-1">
-                      <Badge
-                        className={`${getStatusColor(user.status?.formatted_status)} border`}
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className={`text-neutral-600 font-medium transition-colors duration-200 ${
+                          isSortable
+                            ? "cursor-pointer hover:text-neutral-900 hover:bg-neutral-50 group"
+                            : "cursor-default"
+                        } ${header.column.id === "actions" ? "text-right" : ""}`}
+                        onClick={
+                          isSortable
+                            ? header.column.getToggleSortingHandler()
+                            : undefined
+                        }
                       >
-                        {user.status?.formatted_status || "Unknown"}
-                      </Badge>
-                      <div className="text-xs text-neutral-500">
-                        {user.status?.user_status || "N/A"}
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* Last Login */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-neutral-900">
-                      {formatLastLogin(user.dates?.last_login)}
-                    </div>
-                    <div className="text-xs text-neutral-500">
-                      Joined {formatDate(user.dates?.created_at)}
-                    </div>
-                  </td>
-
-                  {/* Actions */}
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0"
+                        <div
+                          className={`flex items-center gap-2 ${
+                            header.column.id === "actions" ? "justify-end" : ""
+                          }`}
                         >
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => onViewUser(user.id)}>
-                          <Eye className="mr-2 h-4 w-4" />
-                          View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onEditUser(user.id)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit User
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onContactUser(user.id)}>
-                          <MessageSquare className="mr-2 h-4 w-4" />
-                          Contact
-                        </DropdownMenuItem>
-                        {user.status?.toLowerCase() === "active" ? (
-                          <DropdownMenuItem
-                            onClick={() => onDeactivateUser(user.id)}
-                            className="text-red-600"
-                          >
-                            <UserX className="mr-2 h-4 w-4" />
-                            Deactivate
-                          </DropdownMenuItem>
-                        ) : (
-                          <DropdownMenuItem
-                            onClick={() => onActivateUser(user.id)}
-                            className="text-green-600"
-                          >
-                            <UserCheck className="mr-2 h-4 w-4" />
-                            Activate
-                          </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {isSortable && (
+                            <div className="flex items-center">
+                              {isSorted === "asc" ? (
+                                <ArrowUp className="w-3 h-3 text-orange-500" />
+                              ) : isSorted === "desc" ? (
+                                <ArrowDown className="w-3 h-3 text-orange-500" />
+                              ) : (
+                                <ArrowUpDown className="w-3 h-3 text-neutral-400 group-hover:text-neutral-600 transition-colors duration-200" />
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.map((row, index) => (
+                <motion.tr
+                  key={row.id}
+                  variants={tableRowVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ delay: index * 0.05 }}
+                  className="border-neutral-100 hover:bg-neutral-50 transition-colors duration-200"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className={`py-4 ${
+                        cell.column.id === "actions"
+                          ? "text-right align-middle"
+                          : ""
+                      }`}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
                 </motion.tr>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
+          <motion.div
+            className="mt-3 text-xs text-neutral-500 flex items-center gap-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+          >
+            <ArrowUpDown className="w-3 h-3" />
+            <span>Click column headers to sort</span>
+          </motion.div>
+        </div>
+
+        {/* Mobile Card Layout */}
+        <div className="lg:hidden space-y-4">
+          {table.getRowModel().rows.map((row, index) => (
+            <motion.div
+              key={row.id}
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: index * 0.1 }}
+              whileHover={{
+                y: -4,
+                scale: 1.02,
+                transition: { duration: 0.2 },
+              }}
+              whileTap={{ scale: 0.98 }}
+              className="bg-neutral-50 rounded-xl p-4 border border-neutral-200 hover:shadow-lg transition-all duration-300"
+            >
+              <div className="space-y-3">
+                {/* User Info */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 h-10 w-10">
+                      {row.original.avatar ? (
+                        <img
+                          className="h-10 w-10 rounded-full object-cover"
+                          src={row.original.avatar}
+                          alt={row.original.display_name}
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-neutral-100 flex items-center justify-center">
+                          <Users className="h-5 w-5 text-neutral-400" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="ml-4">
+                      <h4 className="font-semibold text-neutral-900 text-base">
+                        {row.original.display_name || `${row.original.first_name} ${row.original.last_name}`}
+                      </h4>
+                      <p className="text-sm text-neutral-500">
+                        @{row.original.username}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-sm text-neutral-500">
+                    #{row.original.id}
+                  </span>
+                </div>
+
+                {/* Contact Info */}
+                <div className="space-y-1">
+                  <div className="text-sm text-neutral-600 flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    {row.original.email}
+                  </div>
+                  {row.original.phone && (
+                    <div className="text-sm text-neutral-600 flex items-center gap-2">
+                      <Phone className="w-4 h-4" />
+                      {row.original.phone}
+                    </div>
+                  )}
+                  {row.original.address && (
+                    <div className="text-sm text-neutral-600 flex items-center gap-2">
+                      <MapPin className="w-4 h-4" />
+                      {row.original.address.city}, {row.original.address.state}
+                    </div>
+                  )}
+                </div>
+
+                {/* Business Info */}
+                <div className="space-y-1">
+                  <div className="text-sm font-medium text-neutral-900">
+                    {row.original.business?.dealership_name || "N/A"}
+                  </div>
+                  <div className="text-sm text-neutral-500">
+                    Code: {row.original.business?.dealer_code || "N/A"}
+                  </div>
+                  {row.original.business?.website && (
+                    <div className="text-sm text-blue-600">
+                      <a
+                        href={row.original.business.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline"
+                      >
+                        {row.original.business.website}
+                      </a>
+                    </div>
+                  )}
+                </div>
+
+                {/* Status and Last Login */}
+                <div className="flex gap-2 items-center justify-between">
+                  <Badge
+                    className={`${getStatusColor(row.original.status?.formatted_status)} border`}
+                  >
+                    {row.original.status?.formatted_status || "Unknown"}
+                  </Badge>
+                  <div className="text-xs text-neutral-500">
+                    {formatLastLogin(row.original.dates?.last_login)}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2 pt-3">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-10 w-10 p-0 hover:bg-neutral-100"
+                      >
+                        <MoreVertical className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      side="bottom"
+                      sideOffset={4}
+                      className="w-52 p-1 shadow-lg border border-neutral-200 bg-white rounded-lg absolute top-full right-0 mt-2 z-50"
+                    >
+                      <DropdownMenuItem
+                        onClick={() => onViewUser(row.original.id)}
+                        className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-colors duration-150 focus:bg-neutral-50 focus:text-neutral-900 focus:outline-none"
+                      >
+                        <Eye className="w-4 h-4 mr-3 text-neutral-500" />
+                        <span className="font-medium">View Details</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => onEditUser(row.original.id)}
+                        className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-colors duration-150 focus:bg-neutral-50 focus:text-neutral-900 focus:outline-none"
+                      >
+                        <Edit className="w-4 h-4 mr-3 text-neutral-500" />
+                        <span className="font-medium">Edit User</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => onContactUser(row.original.id)}
+                        className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-colors duration-150 focus:bg-neutral-50 focus:text-neutral-900 focus:outline-none"
+                      >
+                        <MessageSquare className="w-4 h-4 mr-3 text-neutral-500" />
+                        <span className="font-medium">Contact</span>
+                      </DropdownMenuItem>
+                      {row.original.status === "active" ? (
+                        <DropdownMenuItem
+                          onClick={() => onDeactivateUser(row.original.id)}
+                          className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-red-700 hover:bg-red-50 hover:text-red-900 rounded-md transition-colors duration-150 focus:bg-red-50 focus:text-red-900 focus:outline-none"
+                        >
+                          <UserX className="w-4 h-4 mr-3 text-red-500" />
+                          <span className="font-medium">Deactivate</span>
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem
+                          onClick={() => onActivateUser(row.original.id)}
+                          className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-green-700 hover:bg-green-50 hover:text-green-900 rounded-md transition-colors duration-150 focus:bg-green-50 focus:text-green-900 focus:outline-none"
+                        >
+                          <UserCheck className="w-4 h-4 mr-3 text-green-500" />
+                          <span className="font-medium">Activate</span>
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
 
         {/* Empty State */}
