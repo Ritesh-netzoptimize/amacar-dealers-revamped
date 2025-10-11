@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
 import DealershipUsersContainer from "@/components/dealership-users/DealershipUsersContainer";
 import Pagination from "@/components/common/Pagination/Pagination";
+import CreateDealershipUserModal from "@/components/ui/CreateDealershipUserModal";
 import { Users, UserPlus } from "lucide-react";
 import api from "@/lib/api";
 import { useSelector } from "react-redux";
@@ -17,6 +18,7 @@ const DealershipUsers = () => {
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({});
   const [retryCount, setRetryCount] = useState(0);
+  const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
 
   const { user } = useSelector((state) => state.user);
 
@@ -250,6 +252,19 @@ const DealershipUsers = () => {
     // Open activate modal
   };
 
+  const handleOpenCreateUserModal = () => {
+    setIsCreateUserModalOpen(true);
+  };
+
+  const handleCloseCreateUserModal = () => {
+    setIsCreateUserModalOpen(false);
+  };
+
+  const handleCreateUserSuccess = () => {
+    // Refresh the users list after successful creation
+    fetchDealershipUsers(currentPage, itemsPerPage);
+  };
+
   if (loading) {
     return <DealershipSkeleton />;
   }
@@ -294,6 +309,20 @@ const DealershipUsers = () => {
                 </p>
               </div>
             </div>
+            
+            {/* Create User Button */}
+            <motion.button
+              onClick={handleOpenCreateUserModal}
+              className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <UserPlus className="w-4 h-4" />
+              Create Users
+            </motion.button>
           </motion.div>
         </motion.div>
 
@@ -506,6 +535,13 @@ const DealershipUsers = () => {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Create Dealership User Modal */}
+        <CreateDealershipUserModal
+          isOpen={isCreateUserModalOpen}
+          onClose={handleCloseCreateUserModal}
+          onSuccess={handleCreateUserSuccess}
+        />
       </motion.div>
     </AnimatePresence>
   );
