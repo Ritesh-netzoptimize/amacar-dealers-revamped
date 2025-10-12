@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
 import DashboardStats from "@/components/dashboard/DashboardStats/DashboardStats";
 import MyBidsContainer from "@/components/my-bids/MyBidsContainer";
 import Pagination from "@/components/common/Pagination/Pagination";
@@ -29,6 +30,10 @@ const MyBids = () => {
 
   // Search context
   const { searchQuery, isSearching, debouncedSearchQuery, clearSearch } = useSearch();
+  
+  // Get user role from Redux store
+  const { user } = useSelector((state) => state.user);
+  const userRole = user?.role;
 
   // My Bids API function using the imported api instance
   const getMyBids = useCallback(async (page = 1, perPage = 4, search = '') => {
@@ -66,6 +71,8 @@ const MyBids = () => {
       highestBid: `$${bid.amount?.toLocaleString() || '0'}`, // User's bid amount
       finalPrice: `$${bid.amount?.toLocaleString() || '0'}`, // User's bid amount
       bidder: bid.customer?.name || 'You',
+      bidderDisplayName: bid.bidder_display_name || null, // Add bidder display name
+      dealershipName: bid.dealership_name || null, // Add dealership name
       bidStatus: bid.status?.charAt(0).toUpperCase() + bid.status?.slice(1) || 'Unknown',
       auctionEnds: new Date(bid.vehicle?.ends_at).toLocaleString('en-US', {
         month: 'short',
@@ -326,7 +333,7 @@ const MyBids = () => {
               {isSearchLoading ? (
                 <MyBidsCompactSkeleton />
               ) : bids.length > 0 ? (
-                <MyBidsContainer auctions={bids} />
+                <MyBidsContainer auctions={bids} userRole={userRole} />
               ) : (
                 /* Empty State */
                 <div className="flex flex-col items-center justify-center py-16 px-4">

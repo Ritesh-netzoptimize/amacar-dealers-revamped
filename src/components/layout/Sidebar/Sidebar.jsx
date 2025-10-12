@@ -71,7 +71,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
     const isInactive = user.account_status === "inactive";
     
     // Check if user role is one of the specified roles
-    const validRoles = ['dealer', 'sales_manager', 'dealer_user'];
+    const validRoles = ['dealer', 'sales_manager', 'dealer_user', 'dealership_user'];
     const hasValidRole = validRoles.includes(user.role) || 
                         (user.roles && user.roles.some(role => validRoles.includes(role)));
     
@@ -108,7 +108,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
     ...(canAccessSubscriptionCancellationRequest ? [{ name: 'Subscription Cancellation Requests', href: '/subscription-cancellation-requests', icon: User }] : []),
 
     // Conditionally include DealerShips based on user role
-    { name: 'Reports', href: '/reports', icon: BarChart  },
+    // { name: 'Reports', href: '/reports', icon: BarChart  },
 
   ];
 

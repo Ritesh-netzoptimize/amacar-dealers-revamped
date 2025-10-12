@@ -163,7 +163,7 @@ const NewCustomersContainer = ({
                 </TableCell>
                 <TableCell className="py-3">
                   <div className="text-xs text-neutral-600">
-                    {customer.distance}
+                    {customer.distance || "NULL"}
                   </div>
                 </TableCell>
                 <TableCell className="py-3">
@@ -216,7 +216,7 @@ const NewCustomersContainer = ({
                         className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
                       >
                         <DropdownMenuItem
-                          onClick={() => handleViewCustomer(customer.vehicleId)}
+                          onClick={() => handleViewCustomer(customer.id)}
                           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
                         >
                           <Eye className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
@@ -284,7 +284,7 @@ const NewCustomersContainer = ({
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-neutral-600">Distance</span>
                   <span className="text-xs text-neutral-700">
-                    {customer.distance}
+                    {customer.distance || "NULL"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">

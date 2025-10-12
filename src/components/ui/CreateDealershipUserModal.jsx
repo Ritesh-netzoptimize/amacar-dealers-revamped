@@ -75,14 +75,9 @@ const CreateDealershipUserModal = ({
       description: "Contact information and location",
       icon: MapPin,
     },
+
     {
       number: 3,
-      title: "Business Details",
-      description: "Dealership and business information",
-      icon: Building2,
-    },
-    {
-      number: 4,
       title: "Account Setup",
       description: "Password and preferences",
       icon: Lock,
@@ -597,88 +592,9 @@ const CreateDealershipUserModal = ({
           </div>
         );
 
-      case 3: // Business Details
-        return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                <Building2 className="w-4 h-4" />
-                Dealership Name *
-              </label>
-              <input
-                type="text"
-                name="dealership_name"
-                value={formData.dealership_name}
-                onChange={handleInputChange}
-                placeholder="ABC Motors"
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                  errors.dealership_name ? 'border-red-500' : 'border-neutral-300'
-                }`}
-                disabled={loading}
-              />
-              {errors.dealership_name && (
-                <p className="text-sm text-red-500">{errors.dealership_name}</p>
-              )}
-            </div>
+        
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                  <Hash className="w-4 h-4" />
-                  Dealer Code
-                </label>
-                <input
-                  type="text"
-                  name="dealer_code"
-                  value={formData.dealer_code}
-                  onChange={handleInputChange}
-                  placeholder="ABC123"
-                  className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                  <Globe className="w-4 h-4" />
-                  Website
-                </label>
-                <input
-                  type="url"
-                  name="website"
-                  value={formData.website}
-                  onChange={handleInputChange}
-                  placeholder="https://example.com"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                    errors.website ? 'border-red-500' : 'border-neutral-300'
-                  }`}
-                  disabled={loading}
-                />
-                {errors.website && (
-                  <p className="text-sm text-red-500">{errors.website}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
-                <FileText className="w-4 h-4" />
-                Notes
-              </label>
-              <textarea
-                name="notes"
-                value={formData.notes}
-                onChange={handleInputChange}
-                placeholder="Additional notes about the user..."
-                rows={3}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 resize-none"
-                disabled={loading}
-              />
-            </div>
-          </div>
-        );
-
-      case 4: // Account Setup
+      case 3: // Account Setup
         return (
           <div className="space-y-4">
             <div className="space-y-2">

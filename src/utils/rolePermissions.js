@@ -36,6 +36,7 @@ export const USER_ROLES = {
   SALES_MANAGER: "sales_manager",
   DEALER: "dealer",
   DEALER_USER: "dealer_user",
+  DEALERSHIP_USER: "dealership_user",
 };
 
 /**
@@ -44,7 +45,7 @@ export const USER_ROLES = {
  * @return {boolean} - Whether user can bid pass on vehicle
  */
 export const canBidPass = (userRole) => {
-    return userRole === USER_ROLES.DEALER_USER || userRole === USER_ROLES.DEALER;
+    return userRole === USER_ROLES.DEALER_USER || userRole === USER_ROLES.DEALER || userRole === USER_ROLES.DEALERSHIP_USER;
 };
 
 

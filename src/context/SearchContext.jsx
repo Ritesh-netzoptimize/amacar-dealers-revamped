@@ -55,6 +55,7 @@ export const SearchProvider = ({ children }) => {
       "/highest-bids",
       "/active-customers",
       "/dealerships",
+      "/partner-dealers",
       "/reports",
       "/profile",
     ];

@@ -200,9 +200,6 @@ const DealershipUsersContainer = ({
                 {row.original.display_name ||
                   `${row.original.first_name} ${row.original.last_name}`}
               </div>
-              <div className="text-sm text-neutral-500">
-                @{row.original.username}
-              </div>
             </div>
           </div>
         ),
@@ -227,30 +224,15 @@ const DealershipUsersContainer = ({
           </div>
         ),
       }),
-      columnHelper.accessor("dealer_code", {
-        header: "Dealer Code",
+
+      columnHelper.accessor("email", {
+        header: "Email",
         cell: ({ row }) => (
-          <div className="text-sm font-medium text-neutral-900">
-            {row.original.business?.dealer_code || "N/A"}
-          </div>
-        ),
-      }),
-      columnHelper.accessor("website", {
-        header: "Website",
-        cell: ({ row }) => (
-          <div className="text-sm">
-            {row.original.business?.website ? (
-              <a
-                href={row.original.business.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                {row.original.business.website}
-              </a>
-            ) : (
-              <span className="text-neutral-500">N/A</span>
-            )}
+          <div className="flex items-center text-sm text-neutral-900">
+            <Mail className="h-4 w-4 text-neutral-400 mr-2" />
+            {row.original.email
+              ? `${row.original.email}`
+              : "N/A"}
           </div>
         ),
       }),
@@ -570,7 +552,7 @@ const DealershipUsersContainer = ({
                           `${row.original.first_name} ${row.original.last_name}`}
                       </h4>
                       <p className="text-sm text-neutral-500">
-                        @{row.original.username}
+                        @{row.original.email}
                       </p>
                     </div>
                   </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Car, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import LoginModal from "@/components/ui/LoginUI/LoginModal";
 import { useNavigate } from "react-router-dom";
@@ -58,15 +58,14 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16 sm:h-20">
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="flex items-center space-x-2"
+            className="flex items-center cursor-pointer"
             onClick={navigate('/')}
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
-              <Car className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl sm:text-2xl font-bold bg-[var(--brand-orange)] bg-clip-text text-transparent">
-              Amacar
-            </span>
+            <img 
+              src="https://dealer.amacar.ai/wp-content/uploads/2024/10/logo-4-2048x680.png"
+              alt="Amacar Logo"
+              className="h-8 sm:h-10 w-auto"
+            />
           </motion.div>
 
           {/* Desktop Navigation */}

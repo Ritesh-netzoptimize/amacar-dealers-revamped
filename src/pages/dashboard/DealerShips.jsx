@@ -99,7 +99,7 @@ const DealerShips = () => {
             ? "Inactive"
             : "Unknown",
         role: "Dealer", // Default role since API doesn't provide this
-        salesManager: item.user?.name || "Not Assigned",
+        salesManager: item.invited_by_sales_manager?.name || "Not Assigned",
         joinDate: item.created_at,
         address:
           [

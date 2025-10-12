@@ -74,19 +74,6 @@ const RecentVehiclesSection = () => {
     fetchRecentVehicles();
   }, []);
 
-  // Handle bid success
-  const handleBidSuccess = (vehicleId, bidAmount) => {
-    const vehicle = vehicles.find(v => v.id === vehicleId);
-    if (vehicle) {
-      toast.success(
-        `Bid of $${bidAmount.toLocaleString()} placed successfully for ${vehicle.name}!`,
-        {
-          duration: 4000,
-          position: 'top-right',
-        }
-      );
-    }
-  };
 
   // Animation variants
   const containerVariants = {
@@ -266,7 +253,6 @@ const RecentVehiclesSection = () => {
                 >
                   <VehicleCard 
                     vehicle={vehicle} 
-                    onBidSuccess={handleBidSuccess}
                   />
                 </motion.div>
               ))}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
 import DashboardStats from "@/components/dashboard/DashboardStats/DashboardStats";
 import WonAuctionsContainer from "@/components/won-auctions/WonAuctionsContainer";
 import WonAuctionsSkeleton from "@/components/skeletons/WonAuctions/WonAuctionsSkeleton";
@@ -28,6 +29,10 @@ const WonAuctions = () => {
   });
   const [error, setError] = useState(null);
   const itemsPerPage = 4; // Show 4 vehicles per page
+
+  // Get user role from Redux store
+  const { user } = useSelector((state) => state.user);
+  const userRole = user?.role;
 
   // Search context
   const { searchQuery, isSearching, debouncedSearchQuery, clearSearch } = useSearch();
@@ -71,7 +76,9 @@ const WonAuctions = () => {
       cashOffer: `$${auction.cash_offer?.toLocaleString() || '0'}`,
       highestBid: auction.winning_bid?.amount ? `$${auction.winning_bid.amount.toLocaleString()}` : 'No bid',
       finalPrice: auction.winning_bid?.amount ? `$${auction.winning_bid.amount.toLocaleString()}` : 'No bid',
-      wonBy: auction.customer?.name || 'Unknown',
+      wonBy: auction.customer?.name || 'Unknown', // This will be overridden based on user role
+      bidderDisplayName: auction.winning_bid?.bidder_display_name || null, // Add bidder display name from winning_bid
+      dealershipName: auction.winning_bid?.dealership_name || null, // Add dealership name from winning_bid
       acceptedOn: new Date(auction.won_at).toLocaleString('en-US', {
         month: 'short',
         day: 'numeric',
@@ -350,6 +357,7 @@ const WonAuctions = () => {
                 <WonAuctionsContainer 
                   auctions={auctions} 
                   onScheduleAppointment={handleScheduleAppointment}
+                  userRole={userRole}
                 />
               ) : (
                 /* Empty State */

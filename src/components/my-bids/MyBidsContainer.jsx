@@ -14,7 +14,7 @@ import PhotoSwipeGallery from "@/components/ui/PhotoSwipeGallery";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
-const MyBidsContainer = ({ auctions = [] }) => {
+const MyBidsContainer = ({ auctions = [], userRole = null }) => {
     const navigate = useNavigate();
 
   // Animation variants
@@ -106,6 +106,22 @@ const MyBidsContainer = ({ auctions = [] }) => {
                         {vehicle.yourOffer}
                       </p>
                     </div>
+                    
+                    {/* Bidder Display Name - Only show for dealer role on mobile */}
+                    {userRole === 'dealer' && (
+                      <div className="flex items-center justify-between p-3 border border-neutral-200 rounded-lg hover:border-purple-300 transition-colors duration-300">
+                        <div className="flex items-center">
+                          <User className="w-4 h-4 mr-2 text-purple-600" />
+                          <span className="text-sm font-medium text-neutral-600">
+                            Bidder
+                          </span>
+                        </div>
+                        <p className="text-lg font-bold text-purple-700">
+                          {vehicle.bidderDisplayName || 'N/A'}
+                        </p>
+                      </div>
+                    )}
+                    
                     <div className="flex items-center justify-between p-3 border border-neutral-200 rounded-lg hover:border-green-300 transition-colors duration-300">
                       <div className="flex items-center">
                         <DollarSign className="w-4 h-4 mr-2 text-green-600" />
@@ -205,7 +221,7 @@ const MyBidsContainer = ({ auctions = [] }) => {
                 </div>
 
                 {/* Auction Details Grid - Bottom */}
-                <div className="grid grid-cols-5 gap-3 justify-end">
+                <div className={`grid gap-3 justify-end ${userRole === 'dealer' ? 'grid-cols-6' : 'grid-cols-5'}`}>
                   <div className="flex flex-col  p-3  rounded-lg transition-all duration-200">
                     <div className="flex items-center mb-1">
                       <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400" />
@@ -217,6 +233,21 @@ const MyBidsContainer = ({ auctions = [] }) => {
                       {vehicle.yourOffer}
                     </p>
                   </div>
+                  
+                  {/* Bidder Display Name - Only show for dealer role */}
+                  {userRole === 'dealer' && (
+                    <div className="flex flex-col p-3 rounded-lg transition-all duration-200">
+                      <div className="flex items-center mb-1">
+                        <User className="w-3.5 h-3.5 mr-1 text-purple-400" />
+                        <span className="text-xs font-normal text-neutral-500">
+                          Bidder
+                        </span>
+                      </div>
+                      <p className="text-base font-semibold text-purple-700">
+                        {vehicle.bidderDisplayName || 'N/A'}
+                      </p>
+                    </div>
+                  )}
                   <div className="flex flex-col  p-3  rounded-lg transition-all duration-200">
                     <div className="flex items-center mb-1">
                       <Trophy className="w-3.5 h-3.5 mr-1 text-blue-400" />

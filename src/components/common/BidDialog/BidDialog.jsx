@@ -78,6 +78,14 @@ const BidDialog = ({
         cashOfferAmount
       )}`;
     }
+    
+    // Check if bid meets minimum increment requirement
+    const highestBidAmount = parseCurrencyString(vehicle.highestBid || vehicle.highest_bid);
+    const minimumBidAmount = highestBidAmount + 100;
+    if (numericAmount < minimumBidAmount) {
+      return `Bid amount must be at least ${formatBidAmount(minimumBidAmount)} (highest bid + $100)`;
+    }
+    
     return null;
   };
 
@@ -104,16 +112,27 @@ const BidDialog = ({
         bid_amount: bidAmountParsed,
       });
 
-      if (response.data.success) {
+      if (response.data.success === true) {
         setIsSuccess(true);
         setTimeout(() => {
           onBidSuccess?.(parseFloat(bidAmount));
           handleClose();
         }, 1500);
+      } else {
+        // Handle case where success is false but no error was thrown
+        setIsError(true);
+        setErrorMessage(response.data.message || "Bid submission failed. Please try again.");
       }
     } catch (error) {
       setIsError(true);
-      setErrorMessage(error.message);
+      // Handle different error response formats
+      if (error.response?.data?.message) {
+        setErrorMessage(error.response.data.message);
+      } else if (error.message) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -134,6 +153,17 @@ const BidDialog = ({
     setIsError(false);
     setErrorMessage("");
     setValidationError("");
+  };
+
+  const handleTryAgain = () => {
+    resetStates();
+    // Focus back on the input field
+    setTimeout(() => {
+      const input = document.getElementById("bidAmount");
+      if (input) {
+        input.focus();
+      }
+    }, 100);
   };
 
   useEffect(() => {
@@ -289,6 +319,28 @@ const BidDialog = ({
                 </div>
               </div>
 
+              {/* Minimum Bid Requirement Info */}
+              <motion.div
+                className="bg-blue-50 border border-blue-200 rounded-lg p-3"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <div className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-blue-800">
+                      Minimum Bid Required
+                    </p>
+                    <p className="text-sm text-blue-700">
+                      {formatBidAmount(
+                        parseCurrencyString(vehicle.highestBid || vehicle.highest_bid) + 100
+                      )} (highest bid + $100)
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
               <AnimatePresence>
                 {validationError && (
                   <motion.div
@@ -391,7 +443,7 @@ const BidDialog = ({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={resetStates}
+                      onClick={handleTryAgain}
                       className="bg-white hover:bg-red-50 border-red-300 text-red-700 hover:text-red-800"
                     >
                       Try Again

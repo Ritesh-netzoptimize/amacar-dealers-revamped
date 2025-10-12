@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Eye, Gavel, Calendar } from "lucide-react";
+import { Eye, Calendar } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -10,19 +10,9 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { formatBidAmount, getStatusColor } from "@/lib/utils";
-import { useState } from "react";
-import BidDialog from "@/components/common/BidDialog/BidDialog";
 import { useNavigate } from "react-router-dom";
-const VehicleCard = ({ vehicle, onBidSuccess }) => {
-  const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
+const VehicleCard = ({ vehicle }) => {
   const navigate = useNavigate();
-  const handleBidClick = () => {
-    setIsBidDialogOpen(true);
-  };
-
-  const handleBidSuccess = (bidAmount) => {
-    onBidSuccess?.(vehicle.id, bidAmount);
-  };
 
   const handleViewClick = () => {
     navigate(`/vehicle-details/${vehicle.id}`, {
@@ -122,32 +112,15 @@ const VehicleCard = ({ vehicle, onBidSuccess }) => {
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 h-10 cursor-pointer bg-white hover:bg-neutral-50 border-neutral-200 hover:border-neutral-300 text-neutral-700 hover:text-neutral-900 shadow-sm hover:shadow-md transition-all duration-200 font-medium"
+            className="w-full h-10 cursor-pointer bg-white hover:bg-neutral-50 border-neutral-200 hover:border-neutral-300 text-neutral-700 hover:text-neutral-900 shadow-sm hover:shadow-md transition-all duration-200 font-medium"
             onClick={handleViewClick}
           >
             <Eye className="w-4 h-4 mr-2" />
             View Details
           </Button>
-
-            <Button
-              variant="default"
-              size="sm"
-              className="flex-1 h-10 cursor-pointer bg-[var(--brand-orange)]  text-white shadow-sm hover:shadow-md transition-all duration-200 font-medium hover:scale-[1.02] active:scale-[0.98]"
-              onClick={handleBidClick}
-            >
-              <Gavel className="w-4 h-4 mr-2" />
-              Bid Now
-            </Button>
         </div>
       </div>
 
-      {/* Bid Dialog */}
-      <BidDialog
-        isOpen={isBidDialogOpen}
-        onClose={() => setIsBidDialogOpen(false)}
-        vehicle={vehicle}
-        onBidSuccess={handleBidSuccess}
-      />
     </motion.div>
   );
 };
