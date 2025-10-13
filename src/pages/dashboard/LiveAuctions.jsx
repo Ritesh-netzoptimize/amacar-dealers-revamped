@@ -240,12 +240,12 @@ const LiveAuctions = () => {
               className="mt-8 flex items-center justify-between"
               variants={statsVariants}
             >
-              <VehicleFilterTabs
+              {/* <VehicleFilterTabs
                 activeFilter={activeFilter}
                 onFilterChange={handleFilterChange}
                 isLoading={isFilterLoading}
                 className=""
-              />
+              /> */}
 
               {/* Results Count */}
               <motion.div

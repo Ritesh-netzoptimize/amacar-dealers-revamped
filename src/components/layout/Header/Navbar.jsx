@@ -91,7 +91,7 @@ export default function Navbar() {
                 key={link.id}
                 onClick={() => scrollToSection(link.id)}
                 whileHover={{ y: -2 }}
-                className={`font-semibold font-medium transition-all duration-300 px-3 py-2 rounded-lg ${
+                className={`cursor-pointer font-semibold font-medium transition-all duration-300 px-3 py-2 rounded-lg ${
                   isScrolled 
                     ? "text-[var(--brand-orange)] hover:text-orange-500 hover:bg-orange-50" 
                     : "text-white hover:text-orange-300 hover:bg-white/10 backdrop-blur-sm"
@@ -104,7 +104,7 @@ export default function Navbar() {
               <div className="flex gap-2">
                 <button
                   onClick={() => navigate("/dashboard")}
-                  className="px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+                  className="cursor-pointer px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
                 >
                   Dashboard
                 </button>
@@ -130,7 +130,7 @@ export default function Navbar() {
                 </button>
                 <button 
                   onClick={() => navigate("/register")}
-                  className="w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold shadow-lg bg-white hover:bg-orange-50 transition-colors"
+                  className="cursor-pointer w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold shadow-lg bg-white hover:bg-orange-50 transition-colors"
                 >
                   Join as dealer
                 </button>
@@ -193,7 +193,7 @@ export default function Navbar() {
                   </button>
                   <button 
                     onClick={() => navigate("/register")}
-                    className="w-full px-6 py-3 text-sm text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white hover:bg-orange-50 transition-all"
+                    className="cursor-pointer w-full px-6 py-3 text-sm text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white hover:bg-orange-50 transition-all"
                   >
                     Join as dealer
                   </button>

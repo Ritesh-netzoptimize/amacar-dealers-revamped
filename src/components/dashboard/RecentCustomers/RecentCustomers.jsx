@@ -186,10 +186,10 @@ const RecentCustomers = () => {
             size="sm"
             onClick={fetchRecentCustomers}
             disabled={isLoading}
-            className="flex items-center gap-2"
+            className="cursor-pointer flex items-center gap-2"
           >
             <RefreshCw
-              className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+              className={`cursor-pointer w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
             />
             {isLoading ? "Retrying..." : "Retry"}
           </Button>
@@ -231,10 +231,10 @@ const RecentCustomers = () => {
           size="sm"
           onClick={fetchRecentCustomers}
           disabled={isLoading}
-          className="flex items-center gap-2"
+          className="cursor-pointer flex items-center gap-2"
           title="Refresh customers"
         >
-          <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+          <RefreshCw className={`cursor-pointer w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
           {isLoading ? "Refreshing..." : "Refresh"}
         </Button>
       </div>

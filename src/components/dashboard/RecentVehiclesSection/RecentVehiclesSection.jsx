@@ -112,7 +112,7 @@ const RecentVehiclesSection = () => {
           <Button
             variant="outline"
             size="lg"
-            className="px-8 py-3 text-sm font-medium hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
+            className="cursor-pointer px-8 py-3 text-sm font-medium hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
             onClick={() => navigate('/live-auctions')}
           >
             View All Vehicles

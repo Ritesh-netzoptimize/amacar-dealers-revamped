@@ -22,7 +22,7 @@ export default function CTA () {
               onClick={() => navigate("/dashboard")}
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}
                 whileTap={{ scale: 0.95 }}
-                className="px-10 py-5 bg-white text-orange-600 text-lg font-bold rounded-xl shadow-2xl hover:shadow-3xl transition-all"
+                className="cursor-pointer px-10 py-5 bg-white text-orange-600 text-lg font-bold rounded-xl shadow-2xl hover:shadow-3xl transition-all"
               >
                 Dashboard 
               </motion.button>
@@ -31,7 +31,7 @@ export default function CTA () {
                 onClick={() => navigate('/register')}
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}
                 whileTap={{ scale: 0.95 }}
-                className="w-[50%] h-12 cursor-pointer  px-6 py-2.5 text-md text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white"
+                className="cursor-pointer w-[50%] h-12 cursor-pointer  px-6 py-2.5 text-md text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white"
               >
                 Join as dealer
               </motion.button>

@@ -87,7 +87,7 @@ export default function Hero () {
                 onClick={() => navigate("/dashboard")}
                   whileHover={{ scale: 1.05, boxShadow: "0 10px 40px rgba(246, 133, 31, 0.5)" }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 bg-[var(--brand-orange)] text-white text-lg font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all backdrop-blur-sm border border-orange-400/30"
+                  className="cursor-pointer px-8 py-4 bg-[var(--brand-orange)] text-white text-lg font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all backdrop-blur-sm border border-orange-400/30"
                 >
                   Dashboard →
                 </motion.button>
