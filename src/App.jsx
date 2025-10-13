@@ -233,7 +233,7 @@ function App() {
               // </PrivateRoute>
             }
           />
-          {/* <Route
+          <Route
             path="/reports"
             element={
               // <PrivateRoute>
@@ -242,7 +242,7 @@ function App() {
               </DashboardLayout>
               // </PrivateRoute>
             }
-          /> */}
+          />
           <Route
             path="/profile"
             element={

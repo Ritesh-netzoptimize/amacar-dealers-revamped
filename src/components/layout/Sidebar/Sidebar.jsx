@@ -108,7 +108,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
     ...(canAccessSubscriptionCancellationRequest ? [{ name: 'Subscription Cancellation Requests', href: '/subscription-cancellation-requests', icon: User }] : []),
 
     // Conditionally include DealerShips based on user role
-    // { name: 'Reports', href: '/reports', icon: BarChart  },
+    { name: 'Reports', href: '/reports', icon: BarChart  },
 
   ];
 
