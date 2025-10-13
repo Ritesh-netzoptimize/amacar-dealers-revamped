@@ -64,6 +64,12 @@ export default function LoginModal({
     shouldResetEmailValidation
   );
 
+  const isDisabled =
+    status === "loading" ||
+    emailValidation.isValidating ||
+    emailValidation.isDisposable === true ||
+    emailValidation.isRegistered === false;
+
   // Debug email validation state changes
   useEffect(() => {
     console.log("📧 [LoginModal] Email validation state changed:", {
@@ -750,26 +756,7 @@ export default function LoginModal({
                   <div className="pt-1">
                     <button
                       type="submit"
-                      disabled={(() => {
-                        const isDisabled =
-                          status === "loading" ||
-                          emailValidation.isValidating ||
-                          emailValidation.isDisposable === true ||
-                          emailValidation.isRegistered === false;
-
-                        console.log("🔘 [LoginModal] Submit button state:", {
-                          isDisabled,
-                          status,
-                          emailValidation: {
-                            isValidating: emailValidation.isValidating,
-                            isDisposable: emailValidation.isDisposable,
-                            isRegistered: emailValidation.isRegistered,
-                            isValid: emailValidation.isValid,
-                          },
-                        });
-
-                        return isDisabled;
-                      })()}
+                      disabled={isDisabled}
                       className="cursor-pointer w-full h-11 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white text-sm font-semibold shadow-lg shadow-orange-500/20 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {status === "loading" ? (
