@@ -370,6 +370,7 @@ const DealershipContainer = ({
     onResendInvitation,
     onCancelInvitation,
     isInvitationView,
+    canUpdateDeleteDealerships
   ]);
 
   // Create table instance

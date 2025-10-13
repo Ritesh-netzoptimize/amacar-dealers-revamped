@@ -36,6 +36,7 @@ const EditDealershipModal = ({
     email: "",
     dealership_name: "",
     phone: "",
+    address: "",
     zip: "",
     city: "",
     state: "",
@@ -53,10 +54,13 @@ const EditDealershipModal = ({
   // Populate form data when dealership data changes
   useEffect(() => {
     if (dealershipData && isOpen) {
+      console.log("dealershiop data", dealershipData)
+      console.log("address", dealershipData?.address)
       setFormData({
         email: dealershipData.email || "",
         dealership_name: dealershipData.name || "",
         phone: dealershipData.phone || "",
+        address: dealershipData.address?.street || "",
         zip: dealershipData.zip || "",
         city: dealershipData.city || "",
         state: dealershipData.state || "",
@@ -68,8 +72,12 @@ const EditDealershipModal = ({
     }
   }, [dealershipData, isOpen]);
 
+
   // Fetch city and state when zipcode changes
   useEffect(() => {
+    console.log("dealershiop data", dealershipData)
+    console.log("address", dealershipData?.address)
+    console.log("address", formData?.address)
     const fetchLocationData = async () => {
       if (
         debouncedZipcode &&
@@ -132,18 +140,9 @@ const EditDealershipModal = ({
     setErrors({});
 
     try {
-      // Validate required fields
-      const requiredFields = ["phone", "zip"];
-
+      // All fields are optional - no required field validation
       const newErrors = {};
       let hasErrors = false;
-
-      for (const field of requiredFields) {
-        if (!formData[field].trim()) {
-          newErrors[field] = `${field.replace("_", " ")} is required`;
-          hasErrors = true;
-        }
-      }
 
       // Validate email format (even though it's disabled, we should still validate)
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -165,12 +164,7 @@ const EditDealershipModal = ({
         hasErrors = true;
       }
 
-      // Check if city and state are populated (should be auto-filled from ZIP)
-      if (formData.zip && (!formData.city || !formData.state)) {
-        newErrors.zip =
-          "Please enter a valid ZIP code to auto-fill city and state";
-        hasErrors = true;
-      }
+      // Note: City and state are auto-filled from ZIP, but not required
 
       // Validate website URL format if provided
       if (formData.website && formData.website.trim()) {
@@ -194,6 +188,7 @@ const EditDealershipModal = ({
         `/dealerships/${dealershipData.id}/update-info`,
         {
           phone: formData.phone,
+          address: formData.address,
           zip: formData.zip,
           city: formData.city,
           state: formData.state,
@@ -290,6 +285,7 @@ const EditDealershipModal = ({
         email: "",
         dealership_name: "",
         phone: "",
+        address: "",
         zip: "",
         city: "",
         state: "",
@@ -425,7 +421,7 @@ const EditDealershipModal = ({
               <div className="space-y-2">
                 <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
                   <Phone className="w-4 h-4" />
-                  Phone Number *
+                  Phone Number
                 </label>
                 <input
                   type="tel"
@@ -437,7 +433,6 @@ const EditDealershipModal = ({
                     errors.phone ? "border-red-500" : "border-neutral-300"
                   }`}
                   disabled={loading}
-                  required
                 />
                 {errors.phone && (
                   <motion.p
@@ -448,6 +443,36 @@ const EditDealershipModal = ({
                   >
                     <AlertCircle className="w-3 h-3" />
                     {errors.phone}
+                  </motion.p>
+                )}
+              </div>
+
+              {/* Street Address */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  Street Address
+                </label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  placeholder="123 Main Street, Suite 100"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+                    errors.address ? "border-red-500" : "border-neutral-300"
+                  }`}
+                  disabled={loading}
+                />
+                {errors.address && (
+                  <motion.p
+                    className="text-red-500 text-xs flex items-center gap-1"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.address}
                   </motion.p>
                 )}
               </div>
@@ -465,7 +490,7 @@ const EditDealershipModal = ({
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
-                    ZIP Code *
+                    ZIP Code
                   </label>
                   <div className="relative">
                     <input
@@ -478,7 +503,6 @@ const EditDealershipModal = ({
                         errors.zip ? "border-red-500" : "border-neutral-300"
                       }`}
                       disabled={loading}
-                      required
                     />
                     {zipLoading && (
                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -506,7 +530,7 @@ const EditDealershipModal = ({
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
-                    City *
+                    City
                   </label>
                   <input
                     type="text"
@@ -526,7 +550,7 @@ const EditDealershipModal = ({
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
-                    State *
+                    State
                   </label>
                   <input
                     type="text"
