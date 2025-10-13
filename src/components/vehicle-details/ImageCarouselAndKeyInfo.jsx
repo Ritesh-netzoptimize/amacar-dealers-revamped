@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  DollarSign,
-  Gavel,
-  Image as ImageIcon,
-  Eye,
-} from "lucide-react";
+import { DollarSign, Gavel, Image as ImageIcon, Eye } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import {
   Carousel,
@@ -15,10 +10,40 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { Gallery, Item } from 'react-photoswipe-gallery';
-import 'photoswipe/dist/photoswipe.css';
+import { Gallery, Item } from "react-photoswipe-gallery";
+import "photoswipe/dist/photoswipe.css";
+import { Button } from "../ui/Button";
+import BidDialog from "@/components/common/BidDialog/BidDialog";
 
-const ImageCarouselAndKeyInfo = ({ images, auction, cash_offer, itemVariants, formatRemainingTime, remainingTime }) => {
+const ImageCarouselAndKeyInfo = ({
+  images,
+  auction,
+  cash_offer,
+  itemVariants,
+  formatRemainingTime,
+  remainingTime,
+  vehicleData,
+  onBidNow,
+  canBidPass,
+}) => {
+  const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
+
+  const handleBidNow = () => {
+    if (onBidNow && vehicleData) {
+      onBidNow(vehicleData);
+    } else {
+      setIsBidDialogOpen(true);
+    }
+  };
+
+  const handleCloseBidDialog = () => {
+    setIsBidDialogOpen(false);
+  };
+
+  const handleBidSuccess = (bidAmount) => {
+    console.log("Bid successful:", bidAmount);
+    setIsBidDialogOpen(false);
+  };
   return (
     <div className="px-4 sm:px-6 lg:px-8 pb-6 sm:pb-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -32,13 +57,15 @@ const ImageCarouselAndKeyInfo = ({ images, auction, cash_offer, itemVariants, fo
                   align: "start",
                   loop: true,
                 }}
-                plugins={[
-                  // Autoplay({
-                  //   delay: 3000,
-                  //   stopOnInteraction: false,
-                  //   stopOnMouseEnter: true,
-                  // }),
-                ]}
+                plugins={
+                  [
+                    // Autoplay({
+                    //   delay: 3000,
+                    //   stopOnInteraction: false,
+                    //   stopOnMouseEnter: true,
+                    // }),
+                  ]
+                }
               >
                 <CarouselContent>
                   {images.map((image, index) => (
@@ -72,7 +99,7 @@ const ImageCarouselAndKeyInfo = ({ images, auction, cash_offer, itemVariants, fo
                               >
                                 <ImageIcon className="w-12 h-12 sm:w-16 sm:h-16 text-neutral-400" />
                               </div>
-                              
+
                               {/* PhotoSwipe overlay */}
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -84,7 +111,7 @@ const ImageCarouselAndKeyInfo = ({ images, auction, cash_offer, itemVariants, fo
                                   </div>
                                 </div>
                               </div>
-                              
+
                               {/* Image counter */}
                               {images.length > 1 && (
                                 <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
@@ -190,18 +217,21 @@ const ImageCarouselAndKeyInfo = ({ images, auction, cash_offer, itemVariants, fo
             variants={itemVariants}
             className="card p-3 sm:p-4 bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-200"
           >
-            <div className="flex items-center gap-2 mb-3 sm:mb-4">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-orange-500 to-amber-600 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-              </div>
-              <div>
+            <div className="flex items-center justify-between gap-2 mb-3 sm:mb-4">
+              <div className="h-6  sm:h-8 flex items-center justify-center gap-2 ">
+                <DollarSign className=" " />
                 <h2 className="text-base sm:text-lg font-bold text-neutral-800">
                   Cash Offer
                 </h2>
-                <p className="text-xs sm:text-sm text-neutral-600">
-                  Current offer
-                </p>
               </div>
+              {auction?.is_active && canBidPass && (
+                <Button 
+                  onClick={handleBidNow}
+                  className="bg-orange-500 hover:bg-orange-600 text-white text-sm px-3 py-1.5"
+                >
+                  Bid now
+                </Button>
+              )}
             </div>
 
             <div className="space-y-3">
@@ -241,6 +271,18 @@ const ImageCarouselAndKeyInfo = ({ images, auction, cash_offer, itemVariants, fo
           </motion.div>
         </div>
       </div>
+
+      {/* Bid Dialog */}
+      {vehicleData && (
+        <BidDialog
+          isOpen={isBidDialogOpen}
+          onClose={handleCloseBidDialog}
+          vehicle={vehicleData}
+          onBidSuccess={handleBidSuccess}
+          formatRemainingTime={formatRemainingTime}
+          remainingTime={remainingTime}
+        />
+      )}
     </div>
   );
 };

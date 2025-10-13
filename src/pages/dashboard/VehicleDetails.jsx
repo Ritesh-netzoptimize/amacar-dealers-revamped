@@ -429,6 +429,9 @@ const VehicleDetails = () => {
             itemVariants={itemVariants}
             formatRemainingTime={formatRemainingTime}
             remainingTime={remainingTime}
+            vehicleData={vehicleData}
+            onBidNow={handleBidNow}
+            canBidPass={canBidPass}
           />
 
           {/* Main Content */}
