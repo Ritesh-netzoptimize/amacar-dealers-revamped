@@ -436,17 +436,7 @@ const Register = () => {
                   transition={{ duration: 0.6, delay: 0.2 }}
                   className="absolute top-8 left-8"
                 >
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    className="cursor-pointer"
-                    onClick={() => navigate('/')}
-                  >
-                    <img 
-                      src="https://dealer.amacar.ai/wp-content/uploads/2024/10/logo-4-2048x680.png"
-                      alt="Amacar Logo"
-                      className="h-10 w-auto"
-                    />
-                  </motion.div>
+                  
                 </motion.div>
 
                 <motion.div
