@@ -8,6 +8,7 @@ import SuccessStories from "@/components/home/SuccessStories";
 import Navbar from "@/components/layout/Header/Navbar";
 import React from "react";
 import Footer from "@/components/layout/Footer/Footer";
+import BrandLogosCarousel from "@/components/home/BrandLogosCarousel";
 
 const Home = () => {
   return (
@@ -15,6 +16,7 @@ const Home = () => {
       <Navbar />
       <Hero />
       <Features />
+      <BrandLogosCarousel />
       <Highlights />
       <HowItWorks />
       <SuccessStories />
