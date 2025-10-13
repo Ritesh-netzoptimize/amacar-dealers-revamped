@@ -16,6 +16,8 @@ import BidsSection from "@/components/vehicle-details/BidsSection";
 import { Button } from "@/components/ui/button";
 import { Gavel } from "lucide-react";
 import BidDialog from "@/components/common/BidDialog/BidDialog";
+import { canBidPass, getUserPermissions } from "@/utils/rolePermissions";
+import { useSelector } from "react-redux";
 const VehicleDetails = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -28,16 +30,22 @@ const VehicleDetails = () => {
   const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
 
+  const { user } = useSelector((state) => state.user);
+
+  const userRole = user?.role;
+  const permissions = getUserPermissions(userRole, user);
+  const { canBidPass } = permissions;
+
   // Get current user ID from localStorage or auth context
   const getCurrentUserId = () => {
     try {
-      const authUser = localStorage.getItem('authUser');
+      const authUser = localStorage.getItem("authUser");
       if (authUser) {
         const user = JSON.parse(authUser);
         return user.id || user.user_id;
       }
     } catch (error) {
-      console.error('Error getting current user ID:', error);
+      console.error("Error getting current user ID:", error);
     }
     return null;
   };
@@ -45,11 +53,11 @@ const VehicleDetails = () => {
   // Filter bids to show only current user's bids
   const filterUserBids = (bids, userId) => {
     if (!bids || !userId) {
-      console.log('No bids or userId:', { bids, userId });
+      console.log("No bids or userId:", { bids, userId });
       return [];
     }
-    const userBids = bids.filter(bid => bid.bidder_id === userId.toString());
-    console.log('Filtered user bids:', { allBids: bids, userId, userBids });
+    const userBids = bids.filter((bid) => bid.bidder_id === userId.toString());
+    console.log("Filtered user bids:", { allBids: bids, userId, userBids });
     return userBids;
   };
 
@@ -130,12 +138,13 @@ const VehicleDetails = () => {
         features: vehicleData.condition_assessment.features || [],
       },
       bids: filterUserBids(vehicleData.bids || [], userId),
-      images: vehicleData.images?.map((img) => ({
-        url: img.url,
-        name: img.name,
-        attachment_id: img.attachment_id,
-        meta_key: img.meta_key,
-      })) || [],
+      images:
+        vehicleData.images?.map((img) => ({
+          url: img.url,
+          name: img.name,
+          attachment_id: img.attachment_id,
+          meta_key: img.meta_key,
+        })) || [],
       created_at: vehicleData.created_at,
       updated_at: vehicleData.updated_at,
     };
@@ -182,7 +191,10 @@ const VehicleDetails = () => {
         if (response.data.success) {
           // Transform the API response to match the expected structure
           const userId = getCurrentUserId();
-          const transformedData = transformVehicleData(response.data.vehicle, userId);
+          const transformedData = transformVehicleData(
+            response.data.vehicle,
+            userId
+          );
           setVehicleData(transformedData);
           setRemainingTime(
             response.data.vehicle.auction?.remaining_seconds || 0
@@ -234,7 +246,7 @@ const VehicleDetails = () => {
   // Format remaining time
   const formatRemainingTime = (seconds) => {
     if (seconds === undefined || seconds === null) return "N/A";
-    
+
     if (seconds <= 0) return "Auction Ended";
 
     const days = Math.floor(seconds / 86400);
@@ -396,13 +408,15 @@ const VehicleDetails = () => {
                     Back
                   </span>
                 </button>
-                {/* <Button
-                  onClick={() => handleBidNow(vehicleData)}
-                  className="flex-1 h-full text-xs bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-all duration-200 w-full sm:w-auto px-3 sm:px-4 py-3"
-                >
-                  <Gavel className="w-3.5 h-3.5 mr-1" />
-                  Bid
-                </Button> */}
+                {auction?.is_active && canBidPass && (
+                  <Button
+                    onClick={() => handleBidNow(vehicleData)}
+                    className="flex-1 h-full text-xs bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-all duration-200 w-full sm:w-auto px-3 sm:px-4 py-3"
+                  >
+                    <Gavel className="w-3.5 h-3.5 mr-1" />
+                    Bid
+                  </Button>
+                )}
               </div>
             </div>
           </motion.div>
