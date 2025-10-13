@@ -59,7 +59,7 @@ export default function Navbar() {
           <motion.div
             whileHover={{ scale: 1.05 }}
             className="flex items-center cursor-pointer"
-            onClick={navigate('/')}
+            onClick={() => navigate('/')}
           >
             <img 
               src="https://dealer.amacar.ai/wp-content/uploads/2024/10/logo-4-2048x680.png"

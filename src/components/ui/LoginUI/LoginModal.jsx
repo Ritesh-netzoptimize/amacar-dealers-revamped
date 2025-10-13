@@ -53,8 +53,9 @@ export default function LoginModal({
   const [isForgotPasswordMode, setIsForgotPasswordMode] = useState(false);
   const [resetToken, setResetToken] = useState(null);
   const [twoFactorData, setTwoFactorData] = useState(null);
-  const [shouldResetEmailValidation, setShouldResetEmailValidation] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [shouldResetEmailValidation, setShouldResetEmailValidation] =
+    useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Email validation hook - validate when email is not empty
   const emailValidation = useEmailValidation(
@@ -65,10 +66,10 @@ export default function LoginModal({
 
   // Debug email validation state changes
   useEffect(() => {
-    console.log('📧 [LoginModal] Email validation state changed:', {
+    console.log("📧 [LoginModal] Email validation state changed:", {
       email: values.email,
       emailValidation,
-      shouldResetEmailValidation
+      shouldResetEmailValidation,
     });
   }, [emailValidation, values.email, shouldResetEmailValidation]);
 
@@ -94,25 +95,30 @@ export default function LoginModal({
       emailValidation.isDisposable === true &&
       !emailValidation.isValidating
     ) {
-      console.log('🚫 [LoginModal] Email validation failed - disposable email');
+      console.log("🚫 [LoginModal] Email validation failed - disposable email");
       newErrors.email = "Disposable email addresses are not allowed";
     } else if (
       emailValidation.isRegistered === false &&
       !emailValidation.isValidating
     ) {
-      console.log('🚫 [LoginModal] Email validation failed - email not registered');
-      newErrors.email = "This email is not registered. Please check your email or contact support.";
-    } else if (
-      emailValidation.error &&
-      !emailValidation.isValidating
-    ) {
-      console.log('❌ [LoginModal] Email validation failed - API error:', emailValidation.error);
+      console.log(
+        "🚫 [LoginModal] Email validation failed - email not registered"
+      );
+      newErrors.email =
+        "This email is not registered. Please check your email or contact support.";
+    } else if (emailValidation.error && !emailValidation.isValidating) {
+      console.log(
+        "❌ [LoginModal] Email validation failed - API error:",
+        emailValidation.error
+      );
       newErrors.email = "Unable to verify email. Please try again.";
     } else if (
       emailValidation.isValid === true &&
       !emailValidation.isValidating
     ) {
-      console.log('✅ [LoginModal] Email validation passed - both checks successful');
+      console.log(
+        "✅ [LoginModal] Email validation passed - both checks successful"
+      );
     }
 
     if (!isForgotPasswordMode && !values.password) {
@@ -270,28 +276,28 @@ export default function LoginModal({
 
   // Function to reset modal to default login state
   function resetModalToLogin() {
-    console.log('🔄 [LoginModal] Resetting modal to login state');
-    
+    console.log("🔄 [LoginModal] Resetting modal to login state");
+
     // Reset modal state
     setIsForgotPasswordMode(false);
     setPhase("form");
     setResetToken(null);
     setTwoFactorData(null);
-    
+
     // Reset password visibility states
     setShowPassword(false);
     setShowNewPassword(false);
-    
+
     // Clear all form values and errors (this also clears tooltip errors)
     resetForm();
-    
+
     // Clear Redux error state
     dispatch(clearError());
-    
+
     // Reset email validation state - force reset
     setShouldResetEmailValidation(true);
-    
-    console.log('✅ [LoginModal] Modal reset complete - all states cleared');
+
+    console.log("✅ [LoginModal] Modal reset complete - all states cleared");
   }
 
   // Enhanced onClose handler that resets modal to login mode
@@ -347,7 +353,7 @@ export default function LoginModal({
   // Reset modal state when it opens
   useEffect(() => {
     if (isOpen) {
-      console.log('🔄 [LoginModal] Modal opened - resetting to clean state');
+      console.log("🔄 [LoginModal] Modal opened - resetting to clean state");
       resetModalToLogin();
     }
   }, [isOpen]);
@@ -355,7 +361,7 @@ export default function LoginModal({
   // Force email validation reset when modal opens or phase changes
   useEffect(() => {
     if (isOpen) {
-      console.log('🔄 [LoginModal] Forcing email validation reset');
+      console.log("🔄 [LoginModal] Forcing email validation reset");
       setShouldResetEmailValidation(true);
     }
   }, [isOpen, phase]);
@@ -363,7 +369,7 @@ export default function LoginModal({
   // Cleanup when modal closes
   useEffect(() => {
     if (!isOpen) {
-      console.log('🔄 [LoginModal] Modal closed - performing cleanup');
+      console.log("🔄 [LoginModal] Modal closed - performing cleanup");
       // Additional cleanup if needed
       setShouldResetEmailValidation(true);
     }
@@ -372,22 +378,23 @@ export default function LoginModal({
   // Reset email validation when email field becomes empty
   useEffect(() => {
     if (!values.email || values.email.trim() === "") {
-      console.log('🔄 [LoginModal] Email field is empty - resetting validation state');
+      console.log(
+        "🔄 [LoginModal] Email field is empty - resetting validation state"
+      );
       setShouldResetEmailValidation(true);
     }
   }, [values.email]);
 
   // Force reset email validation when phase changes
   useEffect(() => {
-    console.log('🔄 [LoginModal] Phase changed - resetting email validation');
+    console.log("🔄 [LoginModal] Phase changed - resetting email validation");
     setShouldResetEmailValidation(true);
   }, [phase]);
-
 
   // Memoized email change handler to prevent cursor jumping
   const handleEmailChange = useCallback(
     (e) => {
-      console.log('📝 [LoginModal] Email field changed:', e.target.value);
+      console.log("📝 [LoginModal] Email field changed:", e.target.value);
       setValue("email", e.target.value);
     },
     [setValue]
@@ -539,7 +546,7 @@ export default function LoginModal({
                                   values.email
                                 ? "text-red-500"
                                 : // Default neutral state
-                                "text-slate-400"
+                                  "text-slate-400"
                             }`}
                           >
                             <Mail className="h-4 w-4" />
@@ -567,7 +574,7 @@ export default function LoginModal({
                                 errors.email && !emailValidation.isValidating
                                 ? "border-red-300 bg-red-50 focus:shadow-[0_0_0_4px_rgba(239,68,68,0.08)]"
                                 : // Default neutral state
-                                "border-slate-200 bg-white focus:shadow-[0_0_0_4px_rgba(15,23,42,0.08)]"
+                                  "border-slate-200 bg-white focus:shadow-[0_0_0_4px_rgba(15,23,42,0.08)]"
                             }`}
                           />
                           {/* Validation status indicator - show in both modes */}
@@ -589,7 +596,6 @@ export default function LoginModal({
                       </ReusableTooltip>
                     </div>
                   )}
-
 
                   {/* Password Field (Login Mode) */}
                   {phase === "form" && !isForgotPasswordMode && (
@@ -740,28 +746,28 @@ export default function LoginModal({
                     </div>
                   )}
 
-
                   {/* Submit Button */}
                   <div className="pt-1">
                     <button
                       type="submit"
                       disabled={(() => {
-                        const isDisabled = status === "loading" ||
-                          (emailValidation.isValidating ||
-                            emailValidation.isDisposable === true ||
-                            emailValidation.isRegistered === false);
-                        
-                        console.log('🔘 [LoginModal] Submit button state:', {
+                        const isDisabled =
+                          status === "loading" ||
+                          emailValidation.isValidating ||
+                          emailValidation.isDisposable === true ||
+                          emailValidation.isRegistered === false;
+
+                        console.log("🔘 [LoginModal] Submit button state:", {
                           isDisabled,
                           status,
                           emailValidation: {
                             isValidating: emailValidation.isValidating,
                             isDisposable: emailValidation.isDisposable,
                             isRegistered: emailValidation.isRegistered,
-                            isValid: emailValidation.isValid
-                          }
+                            isValid: emailValidation.isValid,
+                          },
                         });
-                        
+
                         return isDisabled;
                       })()}
                       className="cursor-pointer w-full h-11 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white text-sm font-semibold shadow-lg shadow-orange-500/20 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -803,19 +809,17 @@ export default function LoginModal({
                   )}
 
                   {/* Forgot Password Link (Login Mode Only) */}
-                  {phase === "form" &&
-                    !isForgotPasswordMode && (
-                      <div className="text-center">
-                        <button
-                          type="button"
-                          onClick={handleForgotPassword}
-                          className="cursor-pointer text-sm text-slate-600 hover:text-slate-800 transition-colors underline underline-offset-2"
-                        >
-                          Forgot Password?
-                        </button>
-                      </div>
-                    )}
-
+                  {phase === "form" && !isForgotPasswordMode && (
+                    <div className="text-center">
+                      <button
+                        type="button"
+                        onClick={handleForgotPassword}
+                        className="cursor-pointer text-sm text-slate-600 hover:text-slate-800 transition-colors underline underline-offset-2"
+                      >
+                        Forgot Password?
+                      </button>
+                    </div>
+                  )}
 
                   {/* Security Notice */}
                   <div className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">

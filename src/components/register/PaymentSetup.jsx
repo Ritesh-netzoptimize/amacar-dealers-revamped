@@ -323,7 +323,7 @@ const PaymentForm = ({
               htmlFor="trialAccepted"
               className="text-sm text-neutral-700 cursor-pointer"
             >
-              I understand that I will be charged $99/month after the 7-day free
+              I understand that I will be charged $890/month after the 7-day free
               trial period, and I can cancel anytime during the trial with no
               charges. *
             </label>
@@ -415,7 +415,7 @@ const PaymentForm = ({
           </div>
           <div className="flex justify-between items-center text-xs text-neutral-500">
             <span>After trial (monthly)</span>
-            <span>${import.meta.VITE_SUBSCRIPTION_PRICE}</span>
+            <span>$890</span>
           </div>
           <div className="border-t border-neutral-200 pt-2">
             <div className="flex justify-between items-center">
@@ -464,7 +464,7 @@ const PaymentSetup = ({ formData, updateFormData, errors, isInvitedUser, invitat
         console.log(
           "Using publishable key:",
           import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
-            "pk_test_51POSsaDUuzIKcsNTvzb5ZfgRrI9537WuMyJvmEfY4fmTyCCpYwvcokSGpLFexOej29Y4XqyLCTS8b7LOkhU4Rmak00F1TaGtHe"
+            "pk_live_51POSsaDUuzIKcsNTdDSbfxoDF5K4KMlD4wQPPTAmCS92kHrbsWZucm7cYgZTEcZSCboE8NlBW6UgB8aR6PkzjZaO00ZHXvRJGV"
         );
 
         if (response.data.client_secret) {
@@ -489,7 +489,7 @@ const PaymentSetup = ({ formData, updateFormData, errors, isInvitedUser, invitat
           // Extract account ID from publishable key for debugging
           const pubKey =
             import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
-            "pk_test_51POSsaDUuzIKcsNTvzb5ZfgRrI9537WuMyJvmEfY4fmTyCCpYwvcokSGpLFexOej29Y4XqyLCTS8b7LOkhU4Rmak00F1TaGtHe";
+            "pk_live_51POSsaDUuzIKcsNTdDSbfxoDF5K4KMlD4wQPPTAmCS92kHrbsWZucm7cYgZTEcZSCboE8NlBW6UgB8aR6PkzjZaO00ZHXvRJGV";
           // const pubKey = "pk_test_511SFyPQDUuzIKcsNT7wrDuDxd";
           const pubKeyParts = pubKey.split("_");
           const pubKeyAccountId = pubKeyParts[1];
@@ -500,7 +500,7 @@ const PaymentSetup = ({ formData, updateFormData, errors, isInvitedUser, invitat
           // Create the correct publishable key based on the account ID from client secret
           // const correctPublishableKey = `pk_test_51${accountId}`;
           const correctPublishableKey =
-            "pk_test_51POSsaDUuzIKcsNTvzb5ZfgRrI9537WuMyJvmEfY4fmTyCCpYwvcokSGpLFexOej29Y4XqyLCTS8b7LOkhU4Rmak00F1TaGtHe";
+            "pk_live_51POSsaDUuzIKcsNTdDSbfxoDF5K4KMlD4wQPPTAmCS92kHrbsWZucm7cYgZTEcZSCboE8NlBW6UgB8aR6PkzjZaO00ZHXvRJGV";
           console.log(
             "Correct publishable key should be:",
             correctPublishableKey
