@@ -356,6 +356,17 @@ const Register = () => {
       <div className="lg:hidden bg-white shadow-sm border-b border-neutral-200 sticky top-0 z-40">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center cursor-pointer"
+              onClick={() => navigate('/')}
+            >
+              <img 
+                src="https://dealer.amacar.ai/wp-content/uploads/2024/10/logo-4-2048x680.png"
+                alt="Amacar Logo"
+                className="h-8 w-auto"
+              />
+            </motion.div>
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
                 <CheckCircle className="w-5 h-5 text-white" />
@@ -418,6 +429,26 @@ const Register = () => {
 
               {/* Content Overlay */}
               <div className="relative z-10 h-full flex flex-col justify-center items-center text-white p-12">
+                {/* Logo at the top */}
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="absolute top-8 left-8"
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="cursor-pointer"
+                    onClick={() => navigate('/')}
+                  >
+                    <img 
+                      src="https://dealer.amacar.ai/wp-content/uploads/2024/10/logo-4-2048x680.png"
+                      alt="Amacar Logo"
+                      className="h-10 w-auto"
+                    />
+                  </motion.div>
+                </motion.div>
+
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -506,6 +537,21 @@ const Register = () => {
 
         {/* Right Column - Form */}
         <div className="w-full lg:w-3/5 flex flex-col bg-[#fffcf8]">
+          {/* Desktop Logo */}
+          <div className="hidden lg:block absolute top-8 right-8 z-10">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="cursor-pointer"
+              onClick={() => navigate('/')}
+            >
+              <img 
+                src="https://dealer.amacar.ai/wp-content/uploads/2024/10/logo-4-2048x680.png"
+                alt="Amacar Logo"
+                className="h-8 w-auto"
+              />
+            </motion.div>
+          </div>
+
           <div className="flex-1 flex items-center justify-center p-4 lg:p-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

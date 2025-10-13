@@ -120,8 +120,8 @@ export default function Hero () {
                     <div className="w-20 h-20 bg-orange-500/80 backdrop-blur-sm rounded-full flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-2xl">
                       <Play className="w-8 h-8 text-white ml-1" />
                     </div>
-                    <p className="text-white font-semibold text-lg drop-shadow-lg">Watch Demo</p>
-                    <p className="text-white/80 text-sm mt-1 drop-shadow-md">See how AmacarAI works</p>
+                    <p className="text-white font-semibold text-lg drop-shadow-lg">Watch</p>
+                    <p className="text-white/80 text-sm mt-1 drop-shadow-md">See how Amacar.ai works</p>
                   </div>
                 </div>
               </div>
