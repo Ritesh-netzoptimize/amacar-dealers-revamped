@@ -9,7 +9,12 @@ import { logoutUser } from "@/redux/slices/userSlice";
 
 // Navbar Component
 export default function Navbar() {
-  const navLinks = ["Features", "How it Works", "Success Stories", "FAQ"];
+  const navLinks = [
+    { name: "Features", id: "features" },
+    { name: "How it Works", id: "how-it-works" },
+    { name: "Success Stories", id: "success-stories" },
+    { name: "FAQ", id: "faq" }
+  ];
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -36,6 +41,17 @@ export default function Navbar() {
     // console.log("after calling dispatch logout")
     navigate("/");
     // setLogoutModalOpen(false);
+  };
+
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+    setIsMobileMenuOpen(false);
   };
 
   useEffect(() => {
@@ -71,9 +87,9 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <motion.a
-                key={link}
-                href={`#${link.toLowerCase().replace(" ", "-")}`}
+              <motion.button
+                key={link.id}
+                onClick={() => scrollToSection(link.id)}
                 whileHover={{ y: -2 }}
                 className={`font-semibold font-medium transition-all duration-300 px-3 py-2 rounded-lg ${
                   isScrolled 
@@ -81,8 +97,8 @@ export default function Navbar() {
                     : "text-white hover:text-orange-300 hover:bg-white/10 backdrop-blur-sm"
                 }`}
               >
-                {link}
-              </motion.a>
+                {link.name}
+              </motion.button>
             ))}
             {user ? (
               <div className="flex gap-2">
@@ -148,15 +164,14 @@ export default function Navbar() {
           >
             <div className="bg-white/95 backdrop-blur-md rounded-xl p-4 shadow-lg border border-white/20">
               {navLinks.map((link) => (
-                <motion.a
+                <motion.button
                   animate={{ opacity: 1, height: "auto" }}
-                  key={link}
-                  href={`#${link.toLowerCase().replace(" ", "-")}`}
-                  className="block py-3 px-4 text-[var(--brand-orange)] font-semibold hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  key={link.id}
+                  onClick={() => scrollToSection(link.id)}
+                  className="block w-full text-left py-3 px-4 text-[var(--brand-orange)] font-semibold hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200"
                 >
-                  {link}
-                </motion.a>
+                  {link.name}
+                </motion.button>
               ))}
               {user ? (
                 <button

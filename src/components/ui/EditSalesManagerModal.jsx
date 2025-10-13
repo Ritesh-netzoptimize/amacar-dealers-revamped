@@ -578,7 +578,7 @@ const EditSalesManagerModal = ({
                     type="text"
                     name="city"
                     value={formData.city}
-                    placeholder="Auto-filled from ZIP code"
+                    placeholder=""
                     className="w-full px-3 py-2 border border-neutral-300 rounded-lg bg-neutral-100 text-neutral-600 cursor-not-allowed"
                     disabled
                     title="City is automatically filled from ZIP code"
@@ -596,7 +596,7 @@ const EditSalesManagerModal = ({
                     type="text"
                     name="state"
                     value={formData.state}
-                    placeholder="Auto-filled from ZIP code"
+                    placeholder=""
                     className="w-full px-3 py-2 border border-neutral-300 rounded-lg bg-neutral-100 text-neutral-600 cursor-not-allowed"
                     disabled
                     title="State is automatically filled from ZIP code"
