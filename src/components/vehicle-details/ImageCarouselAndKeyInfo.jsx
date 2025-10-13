@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
   DollarSign,
   Gavel,
   Image as ImageIcon,
+  Eye,
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import {
@@ -14,6 +15,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { Gallery, Item } from 'react-photoswipe-gallery';
+import 'photoswipe/dist/photoswipe.css';
 
 const ImageCarouselAndKeyInfo = ({ images, auction, cash_offer, itemVariants, formatRemainingTime, remainingTime }) => {
   return (
@@ -22,46 +25,83 @@ const ImageCarouselAndKeyInfo = ({ images, auction, cash_offer, itemVariants, fo
         {/* Images Carousel - Takes 2 columns */}
         {images?.length > 0 ? (
           <motion.div variants={itemVariants} className="lg:col-span-2">
-            <Carousel
-              className="shadow-lg w-full"
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              plugins={[
-                Autoplay({
-                  delay: 3000,
-                  stopOnInteraction: false,
-                  stopOnMouseEnter: true,
-                }),
-              ]}
-            >
-              <CarouselContent>
-                {images.map((image, index) => (
-                  <CarouselItem key={image.attachment_id || index}>
-                    <div className="aspect-[4/3] sm:aspect-[3/2] lg:aspect-[4/3] w-full rounded-lg sm:rounded-xl overflow-hidden shadow-sm">
-                      <img
-                        src={image.url}
-                        alt={image.name || `Vehicle image ${index + 1}`}
-                        className="w-full h-full object-contain"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                          e.target.nextSibling.style.display = "flex";
-                        }}
-                      />
-                      <div
-                        className="w-full h-full bg-gradient-to-br from-neutral-100 to-neutral-200 flex items-center justify-center"
-                        style={{ display: "none" }}
-                      >
-                        <ImageIcon className="w-12 h-12 sm:w-16 sm:h-16 text-neutral-400" />
+            <Gallery>
+              <Carousel
+                className="shadow-lg w-full"
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                plugins={[
+                  // Autoplay({
+                  //   delay: 3000,
+                  //   stopOnInteraction: false,
+                  //   stopOnMouseEnter: true,
+                  // }),
+                ]}
+              >
+                <CarouselContent>
+                  {images.map((image, index) => (
+                    <CarouselItem key={image.attachment_id || index}>
+                      <div className="aspect-[4/3] sm:aspect-[3/2] lg:aspect-[4/3] w-full rounded-lg sm:rounded-xl overflow-hidden shadow-sm relative group">
+                        <Item
+                          original={image.url}
+                          thumbnail={image.url}
+                          width="1200"
+                          height="800"
+                          alt={image.name || `Vehicle image ${index + 1}`}
+                        >
+                          {({ ref, open }) => (
+                            <div
+                              ref={ref}
+                              onClick={open}
+                              className="w-full h-full cursor-pointer relative overflow-hidden"
+                            >
+                              <img
+                                src={image.url}
+                                alt={image.name || `Vehicle image ${index + 1}`}
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                onError={(e) => {
+                                  e.target.style.display = "none";
+                                  e.target.nextSibling.style.display = "flex";
+                                }}
+                              />
+                              <div
+                                className="w-full h-full bg-gradient-to-br from-neutral-100 to-neutral-200 flex items-center justify-center"
+                                style={{ display: "none" }}
+                              >
+                                <ImageIcon className="w-12 h-12 sm:w-16 sm:h-16 text-neutral-400" />
+                              </div>
+                              
+                              {/* PhotoSwipe overlay */}
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                  <div className="flex items-center gap-1.5">
+                                    <Eye className="w-3.5 h-3.5 text-white" />
+                                    <span className="text-white text-sm font-medium tracking-wide">
+                                      View Gallery
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Image counter */}
+                              {images.length > 1 && (
+                                <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
+                                  {index + 1} / {images.length}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </Item>
                       </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="left-1 sm:left-2 bg-white/90 hover:bg-white shadow-lg border-0 cursor-pointer w-8 h-8 sm:w-10 sm:h-10" />
-              <CarouselNext className="right-1 sm:right-2 bg-white/90 hover:bg-white shadow-lg border-0 cursor-pointer w-8 h-8 sm:w-10 sm:h-10" />
-            </Carousel>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-1 sm:left-2 bg-white/90 hover:bg-white shadow-lg border-0 cursor-pointer w-8 h-8 sm:w-10 sm:h-10" />
+                <CarouselNext className="right-1 sm:right-2 bg-white/90 hover:bg-white shadow-lg border-0 cursor-pointer w-8 h-8 sm:w-10 sm:h-10" />
+              </Carousel>
+            </Gallery>
           </motion.div>
         ) : (
           <motion.div variants={itemVariants} className="lg:col-span-2">
