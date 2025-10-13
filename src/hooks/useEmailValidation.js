@@ -53,7 +53,7 @@ const useEmailValidation = (email, isRegisterMode, shouldReset = false) => {
     if (!emailToCheck || !isEmailFormatValid) {
       setValidationState({
         isValidating: false,
-        // isDisposable: null,
+        isDisposable: null,
         isEmailAvailable: null,
         isRegistered: null,
         error: null,
@@ -85,7 +85,14 @@ const useEmailValidation = (email, isRegisterMode, shouldReset = false) => {
 
       // If email is disposable, stop here and show error
       if (isDisposable) {
-        
+        setValidationState({
+          isValidating: false,
+          isDisposable: true,
+          isEmailAvailable: null,
+          isRegistered: null,
+          error: null,
+          isValid: false
+        });
         return;
       }
 
