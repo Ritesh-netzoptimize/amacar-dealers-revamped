@@ -693,26 +693,17 @@ const CreateDealershipModal = ({ isOpen, onClose, onSuccess }) => {
                 <MapPin className="w-4 h-4" />
                 Country *
               </label>
-              <select
+              <input
+                type="text"
                 name="country"
-                value={formData.country}
-                onChange={handleInputChange}
-                title="Country is required"
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
-                  errors.country ? "border-red-500" : "border-neutral-300"
-                }`}
-                disabled={loading}
-                required
-              >
-                <option value="US">United States</option>
-                <option value="CA">Canada</option>
-                <option value="MX">Mexico</option>
-                <option value="GB">United Kingdom</option>
-                <option value="AU">Australia</option>
-              </select>
-              {errors.country && (
-                <p className="text-sm text-red-500">{errors.country}</p>
-              )}
+                value="United States"
+                className="w-full px-3 py-2 border border-neutral-300 rounded-lg bg-neutral-100 text-neutral-600 cursor-not-allowed"
+                disabled
+                title="Country is set to United States"
+              />
+              <p className="text-xs text-neutral-500">
+                Only United States is supported
+              </p>
             </div>
           </div>
         );
