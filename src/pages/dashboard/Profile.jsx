@@ -459,22 +459,7 @@ const Profile = () => {
                     your account.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-2">
-                    <button
-                      onClick={() =>
-                        window.open("mailto:support@amacar.com", "_blank")
-                      }
-                      className="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors duration-200"
-                    >
-                      <Mail className="w-4 h-4 mr-2" />
-                      Contact Support
-                    </button>
-                    <button
-                      onClick={() => window.open("tel:+1-800-AMACAR", "_blank")}
-                      className="inline-flex items-center px-4 py-2 bg-red-100 text-red-700 text-sm font-medium rounded-lg hover:bg-red-200 transition-colors duration-200"
-                    >
-                      <Phone className="w-4 h-4 mr-2" />
-                      Call Support
-                    </button>
+                    
                   </div>
                 </div>
               </div>

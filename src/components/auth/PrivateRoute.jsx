@@ -17,6 +17,14 @@ function PrivateRoute({ children }) {
   if (!user || isExpired) {
     return <Navigate to="/" replace />;
   }
+
+  if(user && user.account_status === "inactive") {
+     // Allow inactive users to access the profile page to see their status
+    if (location.pathname === "/profile") {
+      return children;
+    }
+    return <Navigate to="/profile" replace/>
+  }
   
   const userRole = user?.role;
   const currentPath = location.pathname;

@@ -111,7 +111,7 @@ export default function Navbar() {
 
                 <button
                   onClick={handleLogout}
-                  className="w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white"
+                  className="cursor-pointer w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white"
                 >
                   Logout
                 </button>
@@ -124,7 +124,7 @@ export default function Navbar() {
                     setLoginModalOpen(true);
                     setIsMobileMenuOpen(false);
                   }}
-                  className="px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+                  className="cursor-pointer px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
                 >
                   Login
                 </button>
@@ -140,7 +140,7 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <button
-            className={`md:hidden p-2 rounded-lg transition-all duration-300 ${
+            className={`cursor-pointer md:hidden p-2 rounded-lg transition-all duration-300 ${
               isScrolled 
                 ? "text-gray-700 hover:bg-gray-100" 
                 : "text-white hover:bg-white/10 backdrop-blur-sm"
@@ -168,7 +168,7 @@ export default function Navbar() {
                   animate={{ opacity: 1, height: "auto" }}
                   key={link.id}
                   onClick={() => scrollToSection(link.id)}
-                  className="block w-full text-left py-3 px-4 text-[var(--brand-orange)] font-semibold hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                  className="cursor-pointer block w-full text-left py-3 px-4 text-[var(--brand-orange)] font-semibold hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200"
                 >
                   {link.name}
                 </motion.button>
@@ -176,7 +176,7 @@ export default function Navbar() {
               {user ? (
                 <button
                   onClick={() => navigate("/dashboard")}
-                  className="mt-4 w-full px-6 py-3 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+                  className="cursor-pointer mt-4 w-full px-6 py-3 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
                 >
                   Dashboard
                 </button>
@@ -187,7 +187,7 @@ export default function Navbar() {
                       setLoginModalOpen(true);
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full px-6 py-3 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+                    className="cursor-pointer w-full px-6 py-3 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
                   >
                     Login →
                   </button>

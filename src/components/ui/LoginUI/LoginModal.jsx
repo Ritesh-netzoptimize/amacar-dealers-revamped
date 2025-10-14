@@ -57,6 +57,21 @@ export default function LoginModal({
   const [shouldResetEmailValidation, setShouldResetEmailValidation] =
     useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { user } = useSelector((state) => state.user);
+
+  const shouldRedirectToProfile = () => {
+    if (!user) return false;
+    
+    // Check if user is inactive
+    const isInactive = user.user_status_details?.account_status === "inactive";
+    
+    // Check if user role is one of the specified roles
+    const validRoles = ['dealer', 'sales_manager', 'dealer_user', 'dealership_user'];
+    const hasValidRole = validRoles.includes(user.role) || 
+                        (user.roles && user.roles.some(role => validRoles.includes(role)));
+    
+    return isInactive && hasValidRole;
+  };
 
   const navigate = useNavigate();
 
@@ -331,7 +346,11 @@ export default function LoginModal({
       resetModalToLogin();
       // Redirect to dashboard after successful login
       if (phase !== "reset-password") {
-        navigate('/dashboard');
+        if (shouldRedirectToProfile()) {
+          navigate('/profile');
+        } else {
+          navigate('/dashboard');
+        }
       }
     }, 500);
   }
