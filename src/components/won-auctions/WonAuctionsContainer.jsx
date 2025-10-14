@@ -24,17 +24,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const WonAuctionsContainer = ({ 
-  auctions = [], 
+const WonAuctionsContainer = ({
+  auctions = [],
   onScheduleAppointment = () => {},
-  userRole = null
+  userRole = null,
 }) => {
   const navigate = useNavigate();
-  
+
   // Customer modal state
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState(null);
-  const [selectedCustomerName, setSelectedCustomerName] = useState('');
+  const [selectedCustomerName, setSelectedCustomerName] = useState("");
 
   // Animation variants
   const containerVariants = {
@@ -68,7 +68,7 @@ const WonAuctionsContainer = ({
     });
   };
 
-  const handleViewCustomer = (customerId, customerName = '') => {
+  const handleViewCustomer = (customerId, customerName = "") => {
     console.log("View customer:", customerId);
     setSelectedCustomerId(customerId);
     setSelectedCustomerName(customerName);
@@ -78,7 +78,7 @@ const WonAuctionsContainer = ({
   const handleCloseCustomerModal = () => {
     setIsCustomerModalOpen(false);
     setSelectedCustomerId(null);
-    setSelectedCustomerName('');
+    setSelectedCustomerName("");
   };
 
   const handleScheduleAppointment = (vehicle) => {
@@ -127,17 +127,6 @@ const WonAuctionsContainer = ({
                   </div>
 
                   <div className="space-y-2 sm:space-y-3">
-                    <div className="flex items-center justify-between p-2 sm:p-3 border border-neutral-200 rounded-lg hover:border-orange-300 transition-colors duration-300 min-w-0">
-                      <div className="flex items-center min-w-0 flex-1 mr-2">
-                        <DollarSign className="w-4 h-4 mr-2 text-neutral-600 flex-shrink-0" />
-                        <span className="text-sm font-medium text-neutral-600 truncate">
-                          Cash Offer
-                        </span>
-                      </div>
-                      <p className="text-base sm:text-lg font-bold text-neutral-900 truncate">
-                        {vehicle.cashOffer}
-                      </p>
-                    </div>
                     <div className="flex items-center justify-between p-2 sm:p-3 border border-neutral-200 rounded-lg hover:border-green-300 transition-colors duration-300 min-w-0">
                       <div className="flex items-center min-w-0 flex-1 mr-2">
                         <DollarSign className="w-4 h-4 mr-2 text-green-600 flex-shrink-0" />
@@ -153,28 +142,38 @@ const WonAuctionsContainer = ({
                       <div className="flex items-center min-w-0 flex-1 mr-2">
                         <Trophy className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
                         <span className="text-sm font-medium text-neutral-600 truncate">
-                          Sold To
+                          Sold By
                         </span>
                       </div>
                       <p className="text-sm font-semibold text-green-700 truncate">
-                        {userRole === 'dealer' 
-                          ? (vehicle.customer?.name || 'N/A') 
-                          : vehicle.wonBy
-                        }
+                        {userRole === "dealer"
+                          ? vehicle.customer?.name || "N/A"
+                          : vehicle.wonBy}
                       </p>
                     </div>
                     {/* Bidder Display Name - Only show for dealer role */}
-                    {userRole === 'dealer' && (
-                      <div className="flex items-center justify-between p-2 sm:p-3 border border-neutral-200 rounded-lg hover:border-purple-300 transition-colors duration-300 min-w-0">
-                        <div className="flex items-center min-w-0 flex-1 mr-2">
-                          <User className="w-4 h-4 mr-2 text-purple-600 flex-shrink-0" />
-                          <span className="text-sm font-medium text-neutral-600 truncate">
-                            Bidder
-                          </span>
+                    {userRole === "dealer" && (
+                      <div className="p-2 sm:p-3 border border-neutral-200 rounded-lg hover:border-purple-300 transition-colors duration-300 min-w-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center min-w-0 flex-1 mr-2">
+                            <User className="w-4 h-4 mr-2 text-purple-600 flex-shrink-0" />
+                            <span className="text-sm font-medium text-neutral-600 truncate">
+                              Bidder
+                            </span>
+                          </div>
                         </div>
-                        <p className="text-sm font-semibold text-purple-700 truncate">
-                          {vehicle.bidderDisplayName || 'N/A'}
-                        </p>
+                        <div className="space-y-2">
+                          <p className="text-sm font-semibold text-purple-700 truncate">
+                            {vehicle.winning_bid?.bidder_display_name || "N/A"}
+                          </p>
+                          {vehicle.winning_bid?.dealership_name && (
+                            <div className="inline-block">
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">
+                                {vehicle.winning_bid.dealership_name}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                     <div className="flex items-center justify-between p-2 sm:p-3 border border-neutral-200 rounded-lg hover:border-orange-300 transition-colors duration-300 min-w-0">
@@ -196,7 +195,12 @@ const WonAuctionsContainer = ({
                   <div className="flex gap-3">
                     <Button
                       variant="outline"
-                      onClick={() => handleViewCustomer(vehicle.customer?.id, vehicle.customer?.name)}
+                      onClick={() =>
+                        handleViewCustomer(
+                          vehicle.customer?.id,
+                          vehicle.customer?.name
+                        )
+                      }
                       className="flex-1 border-2 border-neutral-200 hover:border-blue-300 hover:bg-blue-50 text-neutral-700 hover:text-blue-600 font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
                     >
                       <User className="w-4 h-4 mr-2" />
@@ -324,7 +328,64 @@ const WonAuctionsContainer = ({
                 </div>
 
                 {/* Auction Details Grid - Bottom */}
-                <div className={`grid gap-2 xl:gap-3 ${userRole === 'dealer' ? 'grid-cols-2 lg:grid-cols-3 xl:grid-cols-6' : 'grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'}`}>
+                <div
+                  className={`grid gap-2 xl:gap-3 ${
+                    userRole === "dealer"
+                      ? "grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
+                      : "grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+                  }`}
+                >
+                  
+                  <div className="flex flex-col p-2 lg:p-3 rounded-lg transition-all duration-200 min-w-0">
+                    <div className="flex items-center mb-1">
+                      <Trophy className="w-3.5 h-3.5 mr-1 text-green-500 flex-shrink-0" />
+                      <span className="text-xs font-normal text-neutral-500 truncate">
+                        Sold To
+                      </span>
+                    </div>
+                    <p className="text-sm lg:text-base font-semibold text-green-700 truncate">
+                      {userRole === "dealer"
+                        ? vehicle.customer?.name || "N/A"
+                        : vehicle.wonBy}
+                    </p>
+                  </div>
+                  {/* Bidder Display Name - Only show for dealer role */}
+                  {userRole === "dealer" && (
+                    <div className="flex flex-col p-2 lg:p-3 rounded-lg transition-all duration-200 min-w-0">
+                      <div className="flex items-center mb-1">
+                        <User className="w-3.5 h-3.5 mr-1 text-purple-400 flex-shrink-0" />
+                        <span className="text-xs font-normal text-neutral-500 truncate">
+                          Sold to
+                        </span>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm lg:text-base font-semibold text-purple-700 truncate">
+                          {vehicle?.bidderDisplayName || "N/A"}
+                        </p>
+                        {console.log(vehicle)}
+                        {vehicle?.dealershipName && (
+                          <div className="inline-block">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">
+                              {vehicle?.dealershipName}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex flex-col p-2 lg:p-3 rounded-lg transition-all duration-200 min-w-0">
+                    <div className="flex items-center mb-1">
+                      <span className="text-xs font-normal text-neutral-500 truncate">
+                        VIN
+                      </span>
+                    </div>
+                    <p
+                      className="text-sm lg:text-base font-semibold truncate"
+                      title={vehicle.VIN}
+                    >
+                      {vehicle.VIN}
+                    </p>
+                  </div>
                   <div className="flex flex-col p-2 lg:p-3 rounded-lg transition-all duration-200 min-w-0">
                     <div className="flex items-center mb-1">
                       <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400 flex-shrink-0" />
@@ -334,45 +395,6 @@ const WonAuctionsContainer = ({
                     </div>
                     <p className="text-sm lg:text-base font-semibold truncate">
                       {vehicle.cashOffer}
-                    </p>
-                  </div>
-                  <div className="flex flex-col p-2 lg:p-3 rounded-lg transition-all duration-200 min-w-0">
-                    <div className="flex items-center mb-1">
-                      <Trophy className="w-3.5 h-3.5 mr-1 text-green-500 flex-shrink-0" />
-                      <span className="text-xs font-normal text-neutral-500 truncate">
-                        Sold To
-                      </span>
-                    </div>
-                    <p className="text-sm lg:text-base font-semibold text-green-700 truncate">
-                      {userRole === 'dealer' 
-                        ? (vehicle.customer?.name || 'N/A') 
-                        : vehicle.wonBy
-                      }
-                    </p>
-                  </div>
-                  {/* Bidder Display Name - Only show for dealer role */}
-                  {userRole === 'dealer' && (
-                    <div className="flex flex-col p-2 lg:p-3 rounded-lg transition-all duration-200 min-w-0">
-                      <div className="flex items-center mb-1">
-                        <User className="w-3.5 h-3.5 mr-1 text-purple-400 flex-shrink-0" />
-                        <span className="text-xs font-normal text-neutral-500 truncate">
-                          Bidder
-                        </span>
-                      </div>
-                      <p className="text-sm lg:text-base font-semibold text-purple-700 truncate">
-                        {vehicle.bidderDisplayName || 'N/A'}
-                      </p>
-                    </div>
-                  )}
-                  <div className="flex flex-col p-2 lg:p-3 rounded-lg transition-all duration-200 min-w-0">
-                    <div className="flex items-center mb-1">
-                      <DollarSign className="w-3.5 h-3.5 mr-1 text-neutral-400 flex-shrink-0" />
-                      <span className="text-xs font-normal text-neutral-500 truncate">
-                        VIN
-                      </span>
-                    </div>
-                    <p className="text-sm lg:text-base font-semibold truncate" title={vehicle.VIN}>
-                      {vehicle.VIN}
                     </p>
                   </div>
                   <div className="flex flex-col items-end p-2 lg:p-3 rounded-lg transition-all duration-200 min-w-0">
