@@ -463,8 +463,7 @@ const PaymentSetup = ({ formData, updateFormData, errors, isInvitedUser, invitat
         );
         console.log(
           "Using publishable key:",
-          import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
-            "pk_live_51POSsaDUuzIKcsNTdDSbfxoDF5K4KMlD4wQPPTAmCS92kHrbsWZucm7cYgZTEcZSCboE8NlBW6UgB8aR6PkzjZaO00ZHXvRJGV"
+          import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
         );
 
         if (response.data.client_secret) {
@@ -487,9 +486,7 @@ const PaymentSetup = ({ formData, updateFormData, errors, isInvitedUser, invitat
           console.log("Account ID from client secret:", accountId);
 
           // Extract account ID from publishable key for debugging
-          const pubKey =
-            import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY ||
-            "pk_live_51POSsaDUuzIKcsNTdDSbfxoDF5K4KMlD4wQPPTAmCS92kHrbsWZucm7cYgZTEcZSCboE8NlBW6UgB8aR6PkzjZaO00ZHXvRJGV";
+          const pubKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
           // const pubKey = "pk_test_511SFyPQDUuzIKcsNT7wrDuDxd";
           const pubKeyParts = pubKey.split("_");
           const pubKeyAccountId = pubKeyParts[1];
@@ -499,8 +496,7 @@ const PaymentSetup = ({ formData, updateFormData, errors, isInvitedUser, invitat
 
           // Create the correct publishable key based on the account ID from client secret
           // const correctPublishableKey = `pk_test_51${accountId}`;
-          const correctPublishableKey =
-            "pk_live_51POSsaDUuzIKcsNTdDSbfxoDF5K4KMlD4wQPPTAmCS92kHrbsWZucm7cYgZTEcZSCboE8NlBW6UgB8aR6PkzjZaO00ZHXvRJGV";
+          const correctPublishableKey =import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
           console.log(
             "Correct publishable key should be:",
             correctPublishableKey

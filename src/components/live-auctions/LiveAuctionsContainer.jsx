@@ -195,7 +195,7 @@ const LiveAuctionsContainer = ({
                         </span>
                       </div>
                       <p className="text-sm font-semibold text-green-700">
-                        {vehicle.highestBid}
+                        {vehicle.highestBid?.amount ? vehicle.highestBid?.amount : "No highest bid"}
                       </p>
                     </div>
                   </div>

@@ -68,9 +68,7 @@ const LiveAuctions = () => {
       mileage: parseInt(auction.mileage),
       VIN: auction.vin,
       cashOffer: `$${auction.cash_offer?.toLocaleString() || "0"}`,
-      highestBid: auction.highest_bid
-        ? `$${auction.highest_bid.toLocaleString()}`
-        : "No bids",
+      highestBid: auction.highest_bid,
       endsAt: new Date(auction.ends_at).toLocaleString("en-US", {
         month: "short",
         day: "numeric",

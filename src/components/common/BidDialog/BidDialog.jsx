@@ -80,15 +80,18 @@ const BidDialog = ({
     }
     
     // Check if bid meets minimum increment requirement
-    const highestBidAmount = parseCurrencyString(vehicle.highestBid || vehicle.highest_bid);
-    const minimumBidAmount = highestBidAmount + 100;
+    const highestBidAmount = parseCurrencyString(vehicle.highestBid?.amount || vehicle.highest_bid);
+    const minimumBidAmount = highestBidAmount > 0 ? highestBidAmount + 100 : cashOfferAmount + 100;
     if (numericAmount < minimumBidAmount) {
-      return `Bid amount must be at least ${formatBidAmount(minimumBidAmount)} (highest bid + $100)`;
+      const bidSource = highestBidAmount > 0 ? "highest bid" : "cash offer";
+      return `Bid amount must be at least ${formatBidAmount(minimumBidAmount)} (${bidSource} + $100)`;
     }
     
     return null;
   };
-
+useEffect(() => {
+  console.log("vehicle", vehicle)
+}, [vehicle])
   const handleSubmit = async () => {
     const validation = validateBid(bidAmount);
     if (validation) {
@@ -332,10 +335,17 @@ const BidDialog = ({
                     <p className="text-sm font-medium text-blue-800">
                       Minimum Bid Required
                     </p>
+                    
                     <p className="text-sm text-blue-700">
-                      {formatBidAmount(
-                        parseCurrencyString(vehicle.highestBid || vehicle.highest_bid) + 100
-                      )} (highest bid + $100)
+                      {(() => {
+                        const highestBidAmount = parseCurrencyString(vehicle.highestBid?.amount || vehicle.highest_bid);
+                        const cashOfferAmount = parseCurrencyString(
+                          vehicle?.cash_offer?.offer_amount || vehicle?.cashOffer
+                        );
+                        const minimumBidAmount = highestBidAmount > 0 ? highestBidAmount + 100 : cashOfferAmount + 100;
+                        const bidSource = highestBidAmount > 0 ? "highest bid" : "cash offer";
+                        return `${formatBidAmount(minimumBidAmount)} (${bidSource} + $100)`;
+                      })()}
                     </p>
                   </div>
                 </div>

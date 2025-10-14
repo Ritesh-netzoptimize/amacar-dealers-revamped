@@ -35,12 +35,17 @@ import DealershipAgreement from "./pages/dealership-agreement/DealershipAgreemen
 import PrivateRoute from "./components/auth/PrivateRoute";
 import RegisterRoute from "./components/auth/RegisterRoute";
 import UnauthorizedPage from "./components/auth/Unauthorized";
+import { useEffect } from "react";
 
 function App() {
   const { user } = useSelector((state) => state.user);
   const expiration = localStorage.getItem("authExpiration");
   const isExpired = expiration && Date.now() > parseInt(expiration);
   const isLoggedIn = user && !isExpired;
+
+  useEffect(() => {
+    console.log(import.meta.env.VITE_ENV)
+  }, [])
 
   return (
     <SearchProvider>
