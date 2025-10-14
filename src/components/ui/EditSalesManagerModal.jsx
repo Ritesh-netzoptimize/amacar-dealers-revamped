@@ -115,6 +115,15 @@ const EditSalesManagerModal = ({
       [name]: type === "checkbox" ? checked : value,
     }));
 
+    // Clear city and state when zip code is empty
+    if (name === "zip" && (!value || value.trim() === "")) {
+      setFormData((prev) => ({
+        ...prev,
+        city: "",
+        state: "",
+      }));
+    }
+
     // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
