@@ -313,7 +313,7 @@ const ActDeActModalDealershipUsers = ({
               variant="outline"
               onClick={handleClose}
               disabled={loading}
-              className="flex-1 sm:flex-none"
+              className="cursor-pointer flex-1 sm:flex-none"
             >
               Cancel
             </Button>
@@ -323,7 +323,7 @@ const ActDeActModalDealershipUsers = ({
               type="button"
               onClick={handleConfirm}
               disabled={loading}
-              className={`flex-1 sm:flex-none ${getButtonColor()} disabled:opacity-70 disabled:cursor-not-allowed`}
+              className={`cursor-pointer flex-1 sm:flex-none ${getButtonColor()} disabled:opacity-70 disabled:cursor-not-allowed`}
             >
               {loading ? (
                 <motion.div

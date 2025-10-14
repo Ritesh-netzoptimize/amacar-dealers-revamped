@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Mail, Phone, MapPin, Calendar, Shield, Building, AlertCircle } from 'lucide-react';
 import { getCustomerDetails } from '../../../lib/api';
@@ -13,14 +13,7 @@ const CustomerDetailsModal = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch customer details when modal opens
-  useEffect(() => {
-    if (isOpen && customerId) {
-      fetchCustomerDetails();
-    }
-  }, [isOpen, customerId]);
-
-  const fetchCustomerDetails = async () => {
+  const fetchCustomerDetails = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -38,7 +31,16 @@ const CustomerDetailsModal = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [customerId])
+
+  // Fetch customer details when modal opens
+  useEffect(() => {
+    if (isOpen && customerId) {
+      fetchCustomerDetails();
+    }
+  }, [isOpen, customerId, fetchCustomerDetails]);
+
+  
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -280,7 +282,7 @@ const CustomerDetailsModal = ({
             <div className="flex items-center justify-end space-x-3 p-6 border-t border-neutral-200 bg-neutral-50">
               <button
                 onClick={onClose}
-                className="px-6 py-2 text-neutral-600 hover:text-neutral-800 hover:bg-neutral-100 rounded-lg transition-colors duration-200"
+                className="cursor-pointer px-6 py-2 text-neutral-600 hover:text-neutral-800 hover:bg-neutral-100 rounded-lg transition-colors duration-200"
               >
                 Close
               </button>

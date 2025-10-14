@@ -221,7 +221,7 @@ const LiveAuctionsContainer = ({
                   <Button
                     variant="outline"
                     onClick={() => handleViewVehicle(vehicle)}
-                    className="flex-1 h-9 text-xs border-neutral-200 hover:border-blue-300 hover:bg-blue-50 text-neutral-600 hover:text-blue-600 font-medium rounded-lg transition-all duration-200"
+                    className="cursor-pointer flex-1 h-9 text-xs border-neutral-200 hover:border-blue-300 hover:bg-blue-50 text-neutral-600 hover:text-blue-600 font-medium rounded-lg transition-all duration-200"
                   >
                     <Eye className="w-3.5 h-3.5 mr-1" />
                     View
@@ -232,7 +232,7 @@ const LiveAuctionsContainer = ({
                     <Button
                       variant="outline"
                       onClick={() => handleUnpassVehicle(vehicle)}
-                      className="flex-1 h-9 text-xs border-green-200 hover:border-green-300 hover:bg-green-50 text-green-600 hover:text-green-700 font-medium rounded-lg transition-all duration-200"
+                      className="cursor-pointer flex-1 h-9 text-xs border-green-200 hover:border-green-300 hover:bg-green-50 text-green-600 hover:text-green-700 font-medium rounded-lg transition-all duration-200"
                     >
                       <CheckCircle className="w-3.5 h-3.5 mr-1" />
                       Unpass
@@ -242,7 +242,7 @@ const LiveAuctionsContainer = ({
                       <Button
                         variant="outline"
                         onClick={() => handlePassVehicle(vehicle)}
-                        className="flex-1 h-9 text-xs border-neutral-200 hover:border-red-300 hover:bg-red-50 text-neutral-600 hover:text-red-600 font-medium rounded-lg transition-all duration-200"
+                        className="cursor-pointer flex-1 h-9 text-xs border-neutral-200 hover:border-red-300 hover:bg-red-50 text-neutral-600 hover:text-red-600 font-medium rounded-lg transition-all duration-200"
                       >
                         <X className="w-3.5 h-3.5 mr-1" />
                         Pass
