@@ -75,7 +75,7 @@ const ImageCarouselAndKeyInfo = ({
                           original={image.url}
                           thumbnail={image.url}
                           width="1200"
-                          height="800"
+                          height="900"
                           alt={image.name || `Vehicle image ${index + 1}`}
                         >
                           {({ ref, open }) => (

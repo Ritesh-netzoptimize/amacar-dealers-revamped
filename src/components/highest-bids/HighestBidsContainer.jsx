@@ -186,9 +186,10 @@ const HighestBidsContainer = ({ auctions = [] }) => {
                 <PhotoSwipeGallery
                   images={vehicle.images}
                   vehicleName={vehicle.name}
-                  className="w-full h-full"
+                  className="w-full h-full "
                   imageClassName="w-full h-full rounded-xl"
                   showOverlay={true}
+                  
                   // onImageClick={() => handleViewVehicle(vehicle.id)}
                 />
               </div>

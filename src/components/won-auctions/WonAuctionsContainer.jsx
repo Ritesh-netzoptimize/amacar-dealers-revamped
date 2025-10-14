@@ -229,7 +229,7 @@ const WonAuctionsContainer = ({
                 <PhotoSwipeGallery
                   images={vehicle.images}
                   vehicleName={vehicle.name}
-                  className="w-full h-full"
+                  className="w-full h-full rounded-l-xl"
                   imageClassName="w-full h-full rounded-xl"
                   showOverlay={true}
                   // onImageClick={() => handleViewVehicle(vehicle.id)}
