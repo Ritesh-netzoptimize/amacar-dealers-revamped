@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Plus, Minus, HelpCircle } from 'lucide-react';
 import { AnimatedSection } from "../common/AnimatedSection/AnimatedSection";
 
 export default function FAQ ()  {
@@ -17,35 +17,57 @@ export default function FAQ ()  {
     ];
   
     return (
-      <section id="faq" className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AnimatedSection className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 mb-4">
+      <section id="faq" className="py-18 bg-gradient-to-br from-[#F8F9FA] to-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection className="text-center mb-20">
+            <div className="inline-block px-4 py-2 bg-[#28A745]/10 rounded-full mb-6">
+              <span className="text-[#28A745] font-semibold text-sm">FAQ</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2C3E50] mb-6 leading-tight">
               Dealer FAQ: Quick Answers
             </h2>
-            <p className="text-xl text-neutral-600">
-              Everything you need to know about joining Amacar
+            <p className="text-xl text-[#2C3E50]/70 max-w-3xl mx-auto leading-relaxed">
+              Everything you need to know about joining Amacar and maximizing your success
             </p>
           </AnimatedSection>
   
-          <div className="space-y-4">
+          <div className="space-y-6">
             {faqs.map((faq, index) => (
               <AnimatedSection key={index}>
                 <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ scale: 1.01 }}
-                  className="border border-neutral-200 rounded-xl overflow-hidden"
+                  className="group bg-white rounded-2xl border border-[#E9ECEF] shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden"
                 >
                   <button
                     onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                    className="w-full p-6 text-left flex justify-between items-center bg-white hover:bg-neutral-50 transition-colors"
+                    className="w-full p-8 text-left flex justify-between items-center hover:bg-gradient-to-r hover:from-[#2B5A8E]/5 hover:to-[#FF8A3D]/5 transition-all duration-300 group"
                   >
-                    <span className="font-semibold text-neutral-900">{faq.question}</span>
-                    <motion.span
-                      animate={{ rotate: openIndex === index ? 180 : 0 }}
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 bg-gradient-to-r from-[#2B5A8E] to-[#1E3A5F] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <HelpCircle className="w-5 h-5" />
+                      </div>
+                      <span className="font-bold text-[#2C3E50] text-lg group-hover:text-[#2B5A8E] transition-colors duration-300">
+                        {faq.question}
+                      </span>
+                    </div>
+                    <motion.div
+                      animate={{ 
+                        rotate: openIndex === index ? 180 : 0,
+                        scale: openIndex === index ? 1.1 : 1
+                      }}
                       transition={{ duration: 0.3 }}
+                      className="w-10 h-10 bg-gradient-to-r from-[#FF8A3D] to-[#FFB366] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300"
                     >
-                      <ChevronDown className="w-5 h-5 text-neutral-500" />
-                    </motion.span>
+                      {openIndex === index ? (
+                        <Minus className="w-5 h-5" />
+                      ) : (
+                        <Plus className="w-5 h-5" />
+                      )}
+                    </motion.div>
                   </button>
                   <motion.div
                     initial={false}
@@ -53,11 +75,13 @@ export default function FAQ ()  {
                       height: openIndex === index ? 'auto' : 0,
                       opacity: openIndex === index ? 1 : 0
                     }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
                     className="overflow-hidden"
                   >
-                    <div className="p-6 pt-0 text-neutral-600">
-                      {faq.answer}
+                    <div className="px-8 pb-8 text-[#2C3E50]/80 leading-relaxed border-t border-[#E9ECEF] bg-gradient-to-r from-[#F8F9FA] to-white">
+                      <div className="pt-6">
+                        {faq.answer}
+                      </div>
                     </div>
                   </motion.div>
                 </motion.div>

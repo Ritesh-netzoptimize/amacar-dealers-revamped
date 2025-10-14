@@ -1,6 +1,6 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ChevronDown, Play, X } from 'lucide-react';
+import { ChevronDown, Play, X, ArrowRight, Shield, Zap, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import LoginModal from '../ui/LoginUI/LoginModal';
@@ -19,37 +19,30 @@ export default function Hero () {
     };
     return (
       <div className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-        {/* Video Background */}
+        {/* Professional Background */}
         <div className="absolute inset-0 z-0">
-          {/* <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover"
-          >
-            <source src="https://dealer.amacar.ai/wp-content/uploads/2025/10/6537414-uhd_3840_2160_30fps.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video> */}
+          {/* High-quality background with professional overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1E3A5F] via-[#2B5A8E] to-[#1E3A5F]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
           
-          {/* Modern Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-          
-          {/* Animated gradient overlays for modern effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 via-transparent to-blue-500/20 animate-pulse" />
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-transparent via-orange-500/10 to-transparent" />
+          {/* Subtle geometric patterns */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-20 left-20 w-32 h-32 border border-white/20 rounded-full" />
+            <div className="absolute top-40 right-32 w-24 h-24 border border-white/20 rounded-full" />
+            <div className="absolute bottom-32 left-32 w-40 h-40 border border-white/20 rounded-full" />
+            <div className="absolute bottom-20 right-20 w-28 h-28 border border-white/20 rounded-full" />
+          </div>
         </div>
 
         <motion.div
           style={{ y }}
           className="absolute inset-0 z-0"
         >
-          <div className="absolute top-20 right-10 w-72 h-72 bg-orange-200/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 left-10 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl" />
+          <div className="absolute top-20 right-10 w-72 h-72 bg-[#FF8A3D]/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 left-10 w-96 h-96 bg-[#2B5A8E]/10 rounded-full blur-3xl" />
         </motion.div>
   
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Column - Text Content */}
             <motion.div
@@ -62,45 +55,101 @@ export default function Hero () {
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                className="inline-block mb-6 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full"
+                className="inline-block mb-4 px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full shadow-lg"
               >
-                <span className="text-white font-semibold text-sm drop-shadow-lg">
-                  🚀 Trusted by 500+ Dealers
-                </span>
+                <div className="flex items-center space-x-2">
+                  <Shield className="w-4 h-4 text-white" />
+                  <span className="text-white font-semibold text-xs sm:text-sm">
+                    Trusted by 500+ Dealers Nationwide
+                  </span>
+                </div>
               </motion.div>
     
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-2xl">
-                <span className="bg-gradient-to-r from-orange-400 to-orange-300 bg-clip-text text-transparent drop-shadow-lg">
-                  Real Leads. Real-Time Bidding.
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight">
+                <span className="block mb-2">
+                  <span className="bg-gradient-to-r from-[#FF8A3D] to-[#FFB366] bg-clip-text text-transparent">
+                    Real Leads.
+                  </span>
                 </span>
-                <br />
-                <span className="text-white drop-shadow-2xl">Real Profit.</span>
+                <span className="block mb-2">
+                  <span className="bg-gradient-to-r from-[#FF8A3D] to-[#FFB366] bg-clip-text text-transparent">
+                    Real-Time Bidding.
+                  </span>
+                </span>
+                <span className="block text-white">
+                  Real Profit.
+                </span>
               </h1>
     
-              <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto lg:mx-0 mb-10 leading-relaxed drop-shadow-lg">
-                Get instant access to pre-qualified seller listings — with zero per-unit auction fees. 
-                Plus, unlock advanced dealer tools that help you source quality inventory and close more deals, faster.
+              <p className="text-xl sm:text-2xl text-white/90 max-w-2xl mx-auto lg:mx-0 mb-12 leading-relaxed font-light">
+                Get instant access to pre-qualified seller listings with zero per-unit auction fees. 
+                Unlock advanced dealer tools that help you source quality inventory and close more deals, faster.
               </p>
+
+              {/* Key Benefits */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-[#FF8A3D]/20 rounded-xl flex items-center justify-center">
+                    <Zap className="w-6 h-6 text-[#FF8A3D]" />
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold">Zero Fees</p>
+                    <p className="text-white/70 text-sm">No per-unit charges</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-[#FF8A3D]/20 rounded-xl flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-[#FF8A3D]" />
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold">Real-Time</p>
+                    <p className="text-white/70 text-sm">Live bidding platform</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-[#FF8A3D]/20 rounded-xl flex items-center justify-center">
+                    <Shield className="w-6 h-6 text-[#FF8A3D]" />
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold">Verified</p>
+                    <p className="text-white/70 text-sm">Pre-qualified leads</p>
+                  </div>
+                </div>
+              </div>
     
-              {user ? (
+              <div className="flex flex-col sm:flex-row gap-4">
+                {user ? (
+                  <motion.button
+                    onClick={() => navigate("/dashboard")}
+                    whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(43, 90, 142, 0.4)" }}
+                    whileTap={{ scale: 0.95 }}
+                    className="group px-8 py-4 bg-gradient-to-r from-[#2B5A8E] to-[#1E3A5F] text-white text-lg font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center space-x-2"
+                  >
+                    <span>Go to Dashboard</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </motion.button>
+                ) : (
+                  <motion.button
+                    onClick={() => setLoginModalOpen(true)}
+                    whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(43, 90, 142, 0.4)" }}
+                    whileTap={{ scale: 0.95 }}
+                    className="group px-8 py-4 bg-gradient-to-r from-[#2B5A8E] to-[#1E3A5F] text-white text-lg font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center space-x-2"
+                  >
+                    <span>Login</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </motion.button>
+                )}
+                
                 <motion.button
-                onClick={() => navigate("/dashboard")}
-                  whileHover={{ scale: 1.05, boxShadow: "0 10px 40px rgba(246, 133, 31, 0.5)" }}
+                  onClick={() => setShowVideo(true)}
+                  whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="cursor-pointer px-8 py-4 bg-[var(--brand-orange)] text-white text-lg font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all backdrop-blur-sm border border-orange-400/30"
+                  className="group px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white text-lg font-semibold rounded-xl hover:bg-white/20 transition-all duration-300 flex items-center justify-center space-x-2"
                 >
-                  Dashboard →
+                  <Play className="w-5 h-5" />
+                  <span>Watch Demo</span>
                 </motion.button>
-              ) : (
-                <motion.button
-                onClick={() => setLoginModalOpen(true)}
-                  whileHover={{ scale: 1.05, boxShadow: "0 10px 40px rgba(246, 133, 31, 0.5)" }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 bg-[var(--brand-orange)] text-white text-lg font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all backdrop-blur-sm border border-orange-400/30"
-                >
-                  Login →
-                </motion.button>
-              )}
+              </div>
             </motion.div>
 
             {/* Right Column - Video Thumbnail */}
@@ -111,62 +160,73 @@ export default function Hero () {
               className="relative"
             >
               <div 
-                className="relative rounded-2xl overflow-hidden shadow-2xl bg-white/10 backdrop-blur-md border border-white/20 p-2 cursor-pointer group hover:bg-white/20 transition-all duration-300"
+                className="relative rounded-3xl overflow-hidden shadow-2xl bg-white/5 backdrop-blur-md border border-white/10 p-3 cursor-pointer group hover:bg-white/10 transition-all duration-500 hover:scale-105"
                 onClick={() => setShowVideo(true)}
               >
-                <div className="relative w-full h-64 sm:h-80 lg:h-96 bg-gradient-to-br from-orange-500/20 to-orange-600/30 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                  {/* Thumbnail placeholder - you can replace this with an actual thumbnail image */}
+                <div className="relative w-full h-80 sm:h-96 lg:h-[500px] bg-gradient-to-br from-[#2B5A8E]/30 to-[#1E3A5F]/40 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                  {/* Professional video thumbnail */}
                   <div className="text-center">
-                    <div className="w-20 h-20 bg-orange-500/80 backdrop-blur-sm rounded-full flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-2xl">
-                      <Play className="w-8 h-8 text-white ml-1" />
+                    <div className="w-24 h-24 bg-gradient-to-r from-[#FF8A3D] to-[#FFB366] rounded-full flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+                      <Play className="w-10 h-10 text-white ml-1" />
                     </div>
-                    <p className="text-white font-semibold text-lg drop-shadow-lg">Watch</p>
-                    <p className="text-white/80 text-sm mt-1 drop-shadow-md">See how Amacar.ai works</p>
+                    <h3 className="text-white font-bold text-2xl mb-2">See Amacar in Action</h3>
+                    <p className="text-white/80 text-lg mb-4">Watch our 2-minute demo</p>
+                    <div className="flex items-center justify-center space-x-4 text-white/60 text-sm">
+                      <span>• Real-time bidding</span>
+                      <span>• Zero fees</span>
+                      <span>• Instant access</span>
+                    </div>
                   </div>
+                  
+                  {/* Subtle overlay for depth */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
                 </div>
               </div>
             </motion.div>
           </div>
   
-          {/* Scroll indicator */}
+          {/* Professional scroll indicator */}
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="mt-16 text-center"
+            className="mt-10 text-center"
           >
-            <ChevronDown className="w-8 h-8 text-white/70 mx-auto drop-shadow-lg" />
+            <div className="inline-flex flex-col items-center space-y-2">
+              <span className="text-white/60 text-sm font-medium">Scroll to explore</span>
+              <ChevronDown className="w-6 h-6 text-white/60" />
+            </div>
           </motion.div>
         </div>
 
-        {/* Video Modal Overlay */}
+        {/* Professional Video Modal */}
         {showVideo && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4"
             onClick={() => setShowVideo(false)}
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              className="relative w-full max-w-5xl"
+              className="relative w-full max-w-6xl"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Close button */}
+              {/* Professional close button */}
               <button
                 onClick={() => setShowVideo(false)}
-                className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-white transition-colors"
+                className="absolute -top-4 -right-4 z-10 w-12 h-12 bg-gradient-to-r from-[#2B5A8E] to-[#1E3A5F] hover:from-[#1E3A5F] hover:to-[#2B5A8E] rounded-full flex items-center justify-center text-white transition-all duration-300 shadow-2xl hover:scale-110"
               >
                 <X className="w-6 h-6" />
               </button>
               
-              {/* Video */}
-              <div className="relative w-full" style={{ paddingBottom: '75%' }}> {/* Taller aspect ratio */}
+              {/* Video container with professional styling */}
+              <div className="relative w-full bg-black rounded-2xl overflow-hidden shadow-2xl" style={{ paddingBottom: '56.25%' }}>
                 <iframe
                   src="https://player.vimeo.com/video/1112370692?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1"
-                  className="absolute top-0 left-0 w-full h-full rounded-xl"
+                  className="absolute top-0 left-0 w-full h-full"
                   frameBorder="0"
                   allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"

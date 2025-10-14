@@ -1,41 +1,118 @@
 import { AnimatedSection } from "../common/AnimatedSection/AnimatedSection";
-import {motion} from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
+import { ArrowRight, CheckCircle, Star, Users, TrendingUp } from 'lucide-react';
 
 export default function CTA () {
     const {user} = useSelector((state) => state.user);
     const navigate = useNavigate();
     return (
-      <section className="py-20 bg-gradient-to-br from-orange-500 to-orange-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="py-12 bg-gradient-to-br from-[#2B5A8E] via-[#1E3A5F] to-[#2B5A8E] relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-32 h-32 border border-white/20 rounded-full" />
+          <div className="absolute top-40 right-32 w-24 h-24 border border-white/20 rounded-full" />
+          <div className="absolute bottom-32 left-32 w-40 h-40 border border-white/20 rounded-full" />
+          <div className="absolute bottom-20 right-20 w-28 h-28 border border-white/20 rounded-full" />
+        </div>
+        
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <AnimatedSection>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-              Join as a Dealer
-            </h2>
-            <p className="text-xl text-white/90 mb-10 leading-relaxed">
-              Start winning auctions and growing your inventory today. Join hundreds of successful 
-              dealers who trust Amacar for quality vehicle acquisitions.
-            </p>
-            {user ? (
-              <motion.button
-              onClick={() => navigate("/dashboard")}
-                whileHover={{ scale: 1.05, boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}
-                whileTap={{ scale: 0.95 }}
-                className="cursor-pointer px-10 py-5 bg-white text-orange-600 text-lg font-bold rounded-xl shadow-2xl hover:shadow-3xl transition-all"
-              >
-                Dashboard 
-              </motion.button>
-            ) : (
-              <motion.button
-                onClick={() => navigate('/register')}
-                whileHover={{ scale: 1.05, boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}
-                whileTap={{ scale: 0.95 }}
-                className="cursor-pointer w-[50%] h-12 cursor-pointer  px-6 py-2.5 text-md text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white"
-              >
-                Join as dealer
-              </motion.button>
-            )}
+            <div className="text-center mb-16">
+              <div className="inline-block px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full mb-6">
+                <span className="text-white font-semibold text-sm">Ready to Get Started?</span>
+              </div>
+              
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                Join as a Dealer
+              </h2>
+              
+              <p className="text-xl sm:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-12">
+                Start winning auctions and growing your inventory today. Join hundreds of successful 
+                dealers who trust Amacar for quality vehicle acquisitions.
+              </p>
+              
+              {/* Key Benefits */}
+              <div className="grid md:grid-cols-3 gap-8 mb-12">
+                {[
+                  { icon: <CheckCircle className="w-6 h-6" />, text: "Zero Per-Unit Fees" },
+                  { icon: <TrendingUp className="w-6 h-6" />, text: "Real-Time Bidding" },
+                  { icon: <Users className="w-6 h-6" />, text: "500+ Trusted Dealers" }
+                ].map((benefit, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="flex items-center justify-center space-x-3 text-white/90"
+                  >
+                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                      {benefit.icon}
+                    </div>
+                    <span className="font-medium">{benefit.text}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+            
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+              {user ? (
+                <motion.button
+                  onClick={() => navigate("/dashboard")}
+                  whileHover={{ 
+                    scale: 1.05, 
+                    boxShadow: "0 25px 50px rgba(255, 138, 61, 0.4)" 
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  className="group px-10 py-5 bg-gradient-to-r from-[#FF8A3D] to-[#FFB366] text-white text-lg font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center space-x-3"
+                >
+                  <span>Go to Dashboard</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </motion.button>
+              ) : (
+                <>
+                  <motion.button
+                    onClick={() => navigate('/register')}
+                    whileHover={{ 
+                      scale: 1.05, 
+                      boxShadow: "0 25px 50px rgba(255, 255, 255, 0.3)" 
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    className="group px-10 py-5 bg-white text-[#2B5A8E] text-lg font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center space-x-3"
+                  >
+                    <span>Join as Dealer</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </motion.button>
+                </>
+              )}
+            </div>
+            
+            {/* Trust Indicators */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-center mt-16"
+            >
+              <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-12 text-white/80">
+                <div className="flex items-center space-x-2">
+                  <Star className="w-5 h-5 fill-[#FF8A3D] text-[#FF8A3D]" />
+                  <span className="font-medium">4.9/5 Rating</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Users className="w-5 h-5" />
+                  <span className="font-medium">500+ Active Dealers</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-5 h-5" />
+                  <span className="font-medium">100% Secure Platform</span>
+                </div>
+              </div>
+            </motion.div>
           </AnimatedSection>
         </div>
       </section>

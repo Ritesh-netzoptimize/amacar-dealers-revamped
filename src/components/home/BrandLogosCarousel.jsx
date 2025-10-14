@@ -158,65 +158,75 @@ const BrandLogosCarousel = ({ className = "", pauseOnHover = true }) => {
   }, []);
 
   return (
-    <div className={cn("w-full py-[2rem] px-[1rem] lg:p-[3.5rem]", className)}>
-      <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-neutral-800 mb-2">
-          Trusted by Leading Brands
-        </h2>
-        <p className="text-neutral-600 text-sm md:text-base">
-          We work with the most reputable automotive brands
-        </p>
-      </div>
+    <section className="py-18 bg-gradient-to-br from-[#F8F9FA] to-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <div className="inline-block px-4 py-2 bg-[#2B5A8E]/10 rounded-full mb-6">
+            <span className="text-[#2B5A8E] font-semibold text-sm">Trusted Partners</span>
+          </div>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2C3E50] mb-6 leading-tight">
+            Trusted by Leading Brands
+          </h2>
+          <p className="text-xl text-[#2C3E50]/70 max-w-3xl mx-auto leading-relaxed">
+            We work with the most reputable automotive brands to bring you quality vehicles from trusted sources
+          </p>
+        </div>
 
-      {/* Continuous scrolling container */}
-      <div 
-        className="relative overflow-hidden"
-        // onMouseEnter={() => pauseOnHover && setIsPaused(true)}
-        // onMouseLeave={() => pauseOnHover && setIsPaused(false)}
-      >
+        {/* Modern scrolling container */}
         <div 
-          className={cn(
-            "flex gap-6 md:gap-8 lg:gap-12",
-            isPaused ? "animate-pause" : "animate-scroll"
-          )}
-          style={{
-            animationDuration: '45s', // Adjust speed here (lower = faster)
-            animationTimingFunction: 'linear',
-            animationIterationCount: 'infinite',
-            animationDirection: 'normal',
-            width: 'max-content'
-          }}
+          className="relative overflow-hidden bg-white/50 backdrop-blur-sm rounded-3xl p-8 border border-[#E9ECEF] shadow-lg"
         >
-          {duplicatedLogos.map((brand, index) => (
-            <motion.div
-              key={`${brand.name}-${index}`}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ 
-                duration: 0.5, 
-                delay: index * 0.05 
-              }}
-              className="group flex-shrink-0"
-            >
-              <div className={cn(
-                "bg-white rounded-xl p-3 sm:p-4 md:p-6 shadow-sm border border-neutral-200 hover:shadow-md transition-all duration-300 group-hover:scale-105 flex items-center justify-center",
-                logoSize
-              )}>
-                <img
-                  src={brand.logo}
-                  alt={brand.alt}
-                  className="max-h-10 sm:max-h-12 md:max-h-16 w-auto object-contain filter-none"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
-                />
-              </div>
-            </motion.div>
-          ))}
+          <div 
+            className={cn(
+              "flex gap-8 md:gap-12 lg:gap-16",
+              isPaused ? "animate-pause" : "animate-scroll"
+            )}
+            style={{
+              animationDuration: '60s',
+              animationTimingFunction: 'linear',
+              animationIterationCount: 'infinite',
+              animationDirection: 'normal',
+              width: 'max-content'
+            }}
+          >
+            {duplicatedLogos.map((brand, index) => (
+              <motion.div
+                key={`${brand.name}-${index}`}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ 
+                  duration: 0.6, 
+                  delay: index * 0.03 
+                }}
+                className="group flex-shrink-0"
+              >
+                <div className={cn(
+                  "bg-white rounded-2xl p-6 shadow-lg border border-[#E9ECEF] hover:shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:border-[#2B5A8E]/20 flex items-center justify-center relative overflow-hidden",
+                  logoSize
+                )}>
+                  {/* Subtle gradient overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#2B5A8E]/5 to-[#FF8A3D]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  <img
+                    src={brand.logo}
+                    alt={brand.alt}
+                    className="max-h-12 sm:max-h-14 md:max-h-16 w-auto object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500 relative z-10"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          
+          {/* Gradient fade edges */}
+          <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#F8F9FA] to-transparent pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#F8F9FA] to-transparent pointer-events-none" />
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
