@@ -44,7 +44,7 @@ export default function FAQ ()  {
                 >
                   <button
                     onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                    className="w-full p-8 text-left flex justify-between items-center hover:bg-gradient-to-r hover:from-[#2B5A8E]/5 hover:to-[#FF8A3D]/5 transition-all duration-300 group"
+                    className="cursor-pointer w-full p-8 text-left flex justify-between items-center hover:bg-gradient-to-r hover:from-[#2B5A8E]/5 hover:to-[#FF8A3D]/5 transition-all duration-300 group"
                   >
                     <div className="flex items-center space-x-4">
                       <div className="w-10 h-10 bg-gradient-to-r from-[#2B5A8E] to-[#1E3A5F] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300">

@@ -254,7 +254,7 @@ const ActiveCustomersContainer = ({
                               <Car className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                               <span>View Vehicle</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group">
+                            {/* <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group">
                               <a
                                 onClick={(e) => e.stopPropagation()}
                                 href={`tel:${customer.phone}`} // replace with the dealer's phone number
@@ -263,7 +263,7 @@ const ActiveCustomersContainer = ({
                                 <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                                 <span>Contact</span>
                               </a>
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -382,13 +382,13 @@ const ActiveCustomersContainer = ({
                         <Car className="w-4 h-4 mr-3 text-neutral-500" />
                         <span className="font-medium">View Vehicle</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem
+                      {/* <DropdownMenuItem
                         onClick={() => handleContact(customer.id)}
                         className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-colors duration-150 focus:bg-neutral-50 focus:text-neutral-900 focus:outline-none"
                       >
                         <Phone className="w-4 h-4 mr-3 text-neutral-500" />
                         <span className="font-medium">Contact</span>
-                      </DropdownMenuItem>
+                      </DropdownMenuItem> */}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

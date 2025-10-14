@@ -227,7 +227,7 @@ const ImageCarouselAndKeyInfo = ({
               {auction?.is_active && canBidPass && (
                 <Button 
                   onClick={handleBidNow}
-                  className="bg-orange-500 hover:bg-orange-600 text-white text-sm px-3 py-1.5"
+                  className="cursor-pointer bg-orange-500 hover:bg-orange-600 text-white text-sm px-3 py-1.5"
                 >
                   Bid now
                 </Button>

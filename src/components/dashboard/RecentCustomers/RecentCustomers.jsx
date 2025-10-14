@@ -418,9 +418,9 @@ const RecentCustomers = () => {
           variant="outline"
           size="sm"
           className="cursor-pointer p-6 text-sm font-medium hover:bg-neutral-50 transition-colors duration-200"
-          onClick={() => navigate("/new-customers")}
+          onClick={() => navigate("/active-customers")}
         >
-          View All Customers
+          View recent customers
         </Button>
       </motion.div>
 
