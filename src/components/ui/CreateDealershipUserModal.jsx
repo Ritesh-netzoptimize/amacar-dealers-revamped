@@ -60,7 +60,7 @@ const CreateDealershipUserModal = ({
   const [success, setSuccess] = useState(false);
 
   const debouncedZipcode = useDebounce(formData.zip, 500);
-  const totalSteps = 4;
+  const totalSteps = 3;
 
   const steps = [
     {
@@ -75,7 +75,12 @@ const CreateDealershipUserModal = ({
       description: "Contact information and location",
       icon: MapPin,
     },
-
+    // {
+    //   number: 3,
+    //   title: "Dealership Details",
+    //   description: "Business information",
+    //   icon: Building2,
+    // },
     {
       number: 3,
       title: "Account Setup",
@@ -237,22 +242,30 @@ const CreateDealershipUserModal = ({
         }
         break;
 
-      case 3: // Business Details
-        if (!formData.dealership_name.trim()) {
-          newErrors.dealership_name = "Dealership name is required";
-          hasErrors = true;
-        }
+      // case 3: // Dealership Details - COMMENTED OUT FOR FUTURE USE
+      //   if (!formData.dealership_name.trim()) {
+      //     newErrors.dealership_name = "Dealership name is required";
+      //     hasErrors = true;
+      //   }
 
-        if (formData.website && formData.website.trim()) {
-          const websiteRegex = /^https?:\/\/.+\..+/;
-          if (!websiteRegex.test(formData.website)) {
-            newErrors.website = "Please enter a valid website URL (e.g., https://example.com)";
-            hasErrors = true;
-          }
-        }
-        break;
+      //   if (!formData.dealer_code.trim()) {
+      //     newErrors.dealer_code = "Dealer code is required";
+      //     hasErrors = true;
+      //   } else if (formData.dealer_code.length < 3 || formData.dealer_code.length > 20) {
+      //     newErrors.dealer_code = "Dealer code must be 3-20 characters";
+      //     hasErrors = true;
+      //   }
 
-      case 4: // Account Setup
+      //   if (formData.website && formData.website.trim()) {
+      //     const websiteRegex = /^https?:\/\/.+\..+/;
+      //     if (!websiteRegex.test(formData.website)) {
+      //       newErrors.website = "Please enter a valid website URL (e.g., https://example.com)";
+      //       hasErrors = true;
+      //     }
+      //   }
+      //   break;
+
+      case 3: // Account Setup
         if (!formData.password.trim()) {
           newErrors.password = "Password is required";
           hasErrors = true;
@@ -592,7 +605,98 @@ const CreateDealershipUserModal = ({
           </div>
         );
 
-        
+      // case 3: // Dealership Details - COMMENTED OUT FOR FUTURE USE
+      //   return (
+      //     <div className="space-y-4">
+      //       <div className="space-y-2">
+      //         <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+      //           <Building2 className="w-4 h-4" />
+      //           Dealership Name *
+      //         </label>
+      //         <input
+      //           type="text"
+      //           name="dealership_name"
+      //           value={formData.dealership_name}
+      //           onChange={handleInputChange}
+      //           placeholder="ABC Auto Group"
+      //           className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+      //             errors.dealership_name ? 'border-red-500' : 'border-neutral-300'
+      //           }`}
+      //           disabled={loading}
+      //         />
+      //         {errors.dealership_name && (
+      //           <p className="text-sm text-red-500">{errors.dealership_name}</p>
+      //         )}
+      //       </div>
+
+      //       <div className="space-y-2">
+      //         <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+      //           <Hash className="w-4 h-4" />
+      //           Dealer Code *
+      //         </label>
+      //         <input
+      //           type="text"
+      //           name="dealer_code"
+      //           value={formData.dealer_code}
+      //           onChange={handleInputChange}
+      //           placeholder="ABC123"
+      //           className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+      //             errors.dealer_code ? 'border-red-500' : 'border-neutral-300'
+      //           }`}
+      //           disabled={loading}
+      //         />
+      //         {errors.dealer_code && (
+      //           <p className="text-sm text-red-500">{errors.dealer_code}</p>
+      //         )}
+      //         <p className="text-xs text-neutral-500">
+      //           Unique identifier for the dealership (3-20 characters, alphanumeric only)
+      //         </p>
+      //       </div>
+
+      //       <div className="space-y-2">
+      //         <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+      //           <Globe className="w-4 h-4" />
+      //           Website
+      //         </label>
+      //         <input
+      //           type="url"
+      //           name="website"
+      //           value={formData.website}
+      //           onChange={handleInputChange}
+      //           placeholder="https://www.example.com"
+      //           className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
+      //             errors.website ? 'border-red-500' : 'border-neutral-300'
+      //           }`}
+      //           disabled={loading}
+      //         />
+      //         {errors.website && (
+      //           <p className="text-sm text-red-500">{errors.website}</p>
+      //         )}
+      //         <p className="text-xs text-neutral-500">
+      //           Optional: Dealership website URL
+      //         </p>
+      //       </div>
+
+      //       <div className="space-y-2">
+      //         <label className="text-sm font-medium text-neutral-700 flex items-center gap-2">
+      //           <FileText className="w-4 h-4" />
+      //           Notes
+      //         </label>
+      //         <textarea
+      //           name="notes"
+      //           value={formData.notes}
+      //           onChange={handleInputChange}
+      //           placeholder="Additional notes about the dealership..."
+      //           rows={3}
+      //           className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 resize-none"
+      //           disabled={loading}
+      //         />
+      //         <p className="text-xs text-neutral-500">
+      //           Optional: Any additional information about the dealership
+      //         </p>
+      //       </div>
+      //     </div>
+      //   );
 
       case 3: // Account Setup
         return (
