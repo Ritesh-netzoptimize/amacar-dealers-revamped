@@ -197,3 +197,82 @@ export const hasAnyRole = (userRole, allowedRoles) => {
 export const hasAllRoles = (userRoles, requiredRoles) => {
   return requiredRoles.every((role) => userRoles.includes(role));
 };
+
+/**
+ * URL to role mapping for route-based access control
+ * Maps each protected route to the required roles
+ */
+export const ROUTE_PERMISSIONS = {
+  // Dashboard routes - accessible by all authenticated users
+  '/dashboard': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER, USER_ROLES.DEALER, USER_ROLES.DEALER_USER, USER_ROLES.DEALERSHIP_USER],
+  '/live-auctions': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER, USER_ROLES.DEALER, USER_ROLES.DEALER_USER, USER_ROLES.DEALERSHIP_USER],
+  '/won-auctions': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER, USER_ROLES.DEALER, USER_ROLES.DEALER_USER, USER_ROLES.DEALERSHIP_USER],
+  '/new-customers': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER, USER_ROLES.DEALER, USER_ROLES.DEALER_USER, USER_ROLES.DEALERSHIP_USER],
+  '/appointments': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER, USER_ROLES.DEALER, USER_ROLES.DEALER_USER, USER_ROLES.DEALERSHIP_USER],
+  '/my-bids': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER, USER_ROLES.DEALER, USER_ROLES.DEALER_USER, USER_ROLES.DEALERSHIP_USER],
+  '/highest-bids': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER, USER_ROLES.DEALER, USER_ROLES.DEALER_USER, USER_ROLES.DEALERSHIP_USER],
+  '/active-customers': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER, USER_ROLES.DEALER, USER_ROLES.DEALER_USER, USER_ROLES.DEALERSHIP_USER],
+  '/reports': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER, USER_ROLES.DEALER, USER_ROLES.DEALER_USER, USER_ROLES.DEALERSHIP_USER],
+  '/profile': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER, USER_ROLES.DEALER, USER_ROLES.DEALER_USER, USER_ROLES.DEALERSHIP_USER],
+  '/vehicle-details': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER, USER_ROLES.DEALER, USER_ROLES.DEALER_USER, USER_ROLES.DEALERSHIP_USER],
+
+  // Dealership management routes - only for admins and sales managers
+  '/dealerships': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER],
+  '/invited-dealerships': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER],
+  '/sales-managers': [USER_ROLES.ADMINISTRATOR],
+
+  // Dealership user management routes - for admins, sales managers, and dealers
+  '/dealership-users': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER, USER_ROLES.DEALER],
+
+  // Subscription management routes - only for admins and sales managers
+  '/subscription-cancellation-requests': [USER_ROLES.ADMINISTRATOR, USER_ROLES.SALES_MANAGER],
+
+  // Partner dealers routes - only for dealers
+  '/partner-dealers': [USER_ROLES.DEALER],
+};
+
+/**
+ * Check if user can access a specific route
+ * @param {string} userRole - The user's role
+ * @param {string} routePath - The route path to check
+ * @returns {boolean} - Whether user can access the route
+ */
+export const canAccessRoute = (userRole, routePath) => {
+  // Handle dynamic routes (e.g., /vehicle-details/:id)
+  const normalizedPath = routePath.replace(/\/\d+$/, ''); // Remove trailing numbers
+  const basePath = routePath.split('/').slice(0, 2).join('/'); // Get base path like /vehicle-details
+  
+  // Check exact match first
+  if (ROUTE_PERMISSIONS[routePath]) {
+    return ROUTE_PERMISSIONS[routePath].includes(userRole);
+  }
+  
+  // Check normalized path (for dynamic routes)
+  if (ROUTE_PERMISSIONS[normalizedPath]) {
+    return ROUTE_PERMISSIONS[normalizedPath].includes(userRole);
+  }
+  
+  // Check base path (for nested dynamic routes)
+  if (ROUTE_PERMISSIONS[basePath]) {
+    return ROUTE_PERMISSIONS[basePath].includes(userRole);
+  }
+  
+  // If route is not in permissions map, deny access by default
+  return false;
+};
+
+/**
+ * Get required roles for a specific route
+ * @param {string} routePath - The route path to check
+ * @returns {Array<string>} - Array of required roles for the route
+ */
+export const getRequiredRolesForRoute = (routePath) => {
+  // Handle dynamic routes
+  const normalizedPath = routePath.replace(/\/\d+$/, '');
+  const basePath = routePath.split('/').slice(0, 2).join('/');
+  
+  return ROUTE_PERMISSIONS[routePath] || 
+         ROUTE_PERMISSIONS[normalizedPath] || 
+         ROUTE_PERMISSIONS[basePath] || 
+         [];
+};

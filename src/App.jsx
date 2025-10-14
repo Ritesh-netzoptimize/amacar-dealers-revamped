@@ -2,6 +2,7 @@
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import { Route, Routes } from "react-router-dom";
+import { useSelector } from "react-redux";
 import "./App.css";
 import DashboardLayout from "./components/layout/DashboardLayout/DashboardLayout";
 import ActiveCustomers from "./pages/dashboard/ActiveCustomers";
@@ -31,18 +32,15 @@ import PartnerDealers from "./pages/dashboard/PartnerDealers";
 import PrivacyPolicy from "./pages/privacy-policy/PrivacyPolicy";
 import TermsOfService from "./pages/terms-conditions/TermsOfService";
 import DealershipAgreement from "./pages/dealership-agreement/DealershipAgreement";
+import PrivateRoute from "./components/auth/PrivateRoute";
+import RegisterRoute from "./components/auth/RegisterRoute";
+import UnauthorizedPage from "./components/auth/Unauthorized";
 
 function App() {
-  // const location = useLocation();
-  // const hideHeaderFooter =
-  // location.pathname.startsWith('/dashboard') ||
-  // location.pathname.startsWith('/auctions') ||
-  // location.pathname.startsWith('/pending-offers') ||
-  // location.pathname.startsWith('/offers') ||
-  // location.pathname.startsWith('/accepted') ||
-  // location.pathname.startsWith('/appointments') ||
-  // location.pathname.startsWith('/profile') ||
-  // location.pathname.startsWith('/car-details');
+  const { user } = useSelector((state) => state.user);
+  const expiration = localStorage.getItem("authExpiration");
+  const isExpired = expiration && Date.now() > parseInt(expiration);
+  const isLoggedIn = user && !isExpired;
 
   return (
     <SearchProvider>
@@ -82,208 +80,198 @@ function App() {
         <main className="pt-0 bg-white">
           {/* <ScrollToTop /> */}
           <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/register/:invitations" element={<Register />} />
-          {/* Public Routes */}
-          {/* <Route path="/" element={<HomePage />} /> */}
-          {/* <Route path="/unauthorized" element={<UnauthorizedPage />} /> */}
-          {/* <Route path="/terms-of-service" element={<TermsOfService />} /> */}
-          {/* <Route path="/privacy-policy" element={<PrivacyPolicy />} /> */}
-          {/* <Route path="/cookies-policy" element={<CookiesPolicy />} /> */}
-          {/* <Route path="/faq" element={<FAQ />} /> */}
-          {/* Protected Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <Dashboard />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/live-auctions"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <LiveAuctions />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/won-auctions"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <WonAuctions />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/new-customers"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <NewCustomers />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/appointments"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <Appointments />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/my-bids"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <MyBids />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/highest-bids"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <HighestBids />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/active-customers"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <ActiveCustomers />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/dealership-users"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <DealershipUsers />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/dealerships"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <DealerShips />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/invited-dealerships"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <InvitedDealerships />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/subscription-cancellation-requests"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <SubscriptionCancellationRequests />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/partner-dealers"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <PartnerDealers />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/sales-managers"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <SalesManagers />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/reports"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <Reports />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              // <PrivateRoute>
-              <DashboardLayout>
-                <Profile />
-              </DashboardLayout>
-              // </PrivateRoute>
-            }
-          />
-          <Route
-            path="/vehicle-details/:id"
-            element={
-              <DashboardLayout>
-                <VehicleDetails />
-              </DashboardLayout>
-            }
-          />
-          <Route
-            path="/privacy-policy"
-            element={
-                <PrivacyPolicy />
-            }
-          />
-          <Route
-            path="/terms-conditions"
-            element={
-                <TermsOfService />
-            }
-          />
-          <Route
-            path="/dealership-agreement"
-            element={
-                <DealershipAgreement />
-            }
-          />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-
-        </Routes>
-      </main>
+            <Route path="/" element={<Home />} />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route path="/register" element={<RegisterRoute />} />
+            <Route path="/register/:invitations" element={<RegisterRoute />} />
+            {/* Public Routes */}
+            {/* <Route path="/" element={<HomePage />} /> */}
+            {/* <Route path="/unauthorized" element={<UnauthorizedPage />} /> */}
+            {/* <Route path="/terms-of-service" element={<TermsOfService />} /> */}
+            {/* <Route path="/privacy-policy" element={<PrivacyPolicy />} /> */}
+            {/* <Route path="/cookies-policy" element={<CookiesPolicy />} /> */}
+            {/* <Route path="/faq" element={<FAQ />} /> */}
+            {/* Protected Routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <Dashboard />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/live-auctions"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <LiveAuctions />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/won-auctions"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <WonAuctions />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/new-customers"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <NewCustomers />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/appointments"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <Appointments />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/my-bids"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <MyBids />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/highest-bids"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <HighestBids />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/active-customers"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <ActiveCustomers />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/dealership-users"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <DealershipUsers />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/dealerships"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <DealerShips />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/invited-dealerships"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <InvitedDealerships />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/subscription-cancellation-requests"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <SubscriptionCancellationRequests />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/partner-dealers"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <PartnerDealers />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/sales-managers"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <SalesManagers />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <Reports />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <Profile />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/vehicle-details/:id"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <VehicleDetails />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-conditions" element={<TermsOfService />} />
+            <Route
+              path="/dealership-agreement"
+              element={<DealershipAgreement />}
+            />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
+          </Routes>
+        </main>
 
         {/* {!hideHeaderFooter && <Footer />} */}
 
