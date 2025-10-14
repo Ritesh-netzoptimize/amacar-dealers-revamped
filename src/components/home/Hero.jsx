@@ -42,7 +42,7 @@ export default function Hero () {
           <div className="absolute bottom-20 left-10 w-96 h-96 bg-[#2B5A8E]/10 rounded-full blur-3xl" />
         </motion.div>
   
-        <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Column - Text Content */}
             <motion.div
@@ -65,7 +65,7 @@ export default function Hero () {
                 </div>
               </motion.div>
     
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight">
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight">
                 <span className="block mb-2">
                   <span className="bg-gradient-to-r from-[#FF8A3D] to-[#FFB366] bg-clip-text text-transparent">
                     Real Leads.
@@ -81,7 +81,7 @@ export default function Hero () {
                 </span>
               </h1>
     
-              <p className="text-xl sm:text-2xl text-white/90 max-w-2xl mx-auto lg:mx-0 mb-12 leading-relaxed font-light">
+              <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto lg:mx-0 mb-12 leading-relaxed font-light">
                 Get instant access to pre-qualified seller listings with zero per-unit auction fees. 
                 Unlock advanced dealer tools that help you source quality inventory and close more deals, faster.
               </p>
@@ -123,7 +123,7 @@ export default function Hero () {
                     onClick={() => navigate("/dashboard")}
                     whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(43, 90, 142, 0.4)" }}
                     whileTap={{ scale: 0.95 }}
-                    className="group px-8 py-4 bg-gradient-to-r from-[#2B5A8E] to-[#1E3A5F] text-white text-lg font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center space-x-2"
+                    className="cursor-pointer group px-8 py-4 bg-gradient-to-r from-[#2B5A8E] to-[#1E3A5F] text-white text-lg font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center space-x-2"
                   >
                     <span>Go to Dashboard</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -133,7 +133,7 @@ export default function Hero () {
                     onClick={() => setLoginModalOpen(true)}
                     whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(43, 90, 142, 0.4)" }}
                     whileTap={{ scale: 0.95 }}
-                    className="group px-8 py-4 bg-gradient-to-r from-[#2B5A8E] to-[#1E3A5F] text-white text-lg font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center space-x-2"
+                    className="cursor-pointer group px-8 py-4 bg-gradient-to-r from-[#2B5A8E] to-[#1E3A5F] text-white text-lg font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center space-x-2"
                   >
                     <span>Login</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -144,10 +144,10 @@ export default function Hero () {
                   onClick={() => setShowVideo(true)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="group px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white text-lg font-semibold rounded-xl hover:bg-white/20 transition-all duration-300 flex items-center justify-center space-x-2"
+                  className="cursor-pointer group px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white text-lg font-semibold rounded-xl hover:bg-white/20 transition-all duration-300 flex items-center justify-center space-x-2"
                 >
                   <Play className="w-5 h-5" />
-                  <span>Watch Demo</span>
+                  <span>Watch</span>
                 </motion.button>
               </div>
             </motion.div>
@@ -170,10 +170,8 @@ export default function Hero () {
                       <Play className="w-10 h-10 text-white ml-1" />
                     </div>
                     <h3 className="text-white font-bold text-2xl mb-2">See Amacar in Action</h3>
-                    <p className="text-white/80 text-lg mb-4">Watch our 2-minute demo</p>
                     <div className="flex items-center justify-center space-x-4 text-white/60 text-sm">
                       <span>• Real-time bidding</span>
-                      <span>• Zero fees</span>
                       <span>• Instant access</span>
                     </div>
                   </div>
@@ -193,7 +191,7 @@ export default function Hero () {
           >
             <div className="inline-flex flex-col items-center space-y-2">
               <span className="text-white/60 text-sm font-medium">Scroll to explore</span>
-              <ChevronDown className="w-6 h-6 text-white/60" />
+              <a href="/#features"><ChevronDown className="w-6 h-6 text-white/60" /></a>
             </div>
           </motion.div>
         </div>
@@ -225,7 +223,7 @@ export default function Hero () {
               {/* Video container with professional styling */}
               <div className="relative w-full bg-black rounded-2xl overflow-hidden shadow-2xl" style={{ paddingBottom: '56.25%' }}>
                 <iframe
-                  src="https://player.vimeo.com/video/1112370692?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1"
+                  src="https://player.vimeo.com/video/1112370692?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&controls=0"
                   className="absolute top-0 left-0 w-full h-full"
                   frameBorder="0"
                   allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"

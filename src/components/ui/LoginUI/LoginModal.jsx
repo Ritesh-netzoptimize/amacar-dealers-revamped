@@ -36,6 +36,7 @@ import {
 import useAuth from "@/hooks/useAuth";
 import useEmailValidation from "@/hooks/useEmailValidation";
 import ReusableTooltip from "@/components/common/Tooltip/ReusableTooltip";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginModal({
   isOpen,
@@ -56,6 +57,8 @@ export default function LoginModal({
   const [shouldResetEmailValidation, setShouldResetEmailValidation] =
     useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const navigate = useNavigate();
 
   // Email validation hook - validate when email is not empty
   const emailValidation = useEmailValidation(
@@ -183,6 +186,7 @@ export default function LoginModal({
       }
 
       setPhase("success");
+      
     } catch (error) {
       setPhase("failed");
       toast.error(error || "An error occurred. Please try again.", {
@@ -325,7 +329,11 @@ export default function LoginModal({
     setTimeout(() => {
       onClose(false);
       resetModalToLogin();
-    }, 2000);
+      // Redirect to dashboard after successful login
+      if (phase !== "reset-password") {
+        navigate('/dashboard');
+      }
+    }, 500);
   }
 
   function handleBackToForm() {
