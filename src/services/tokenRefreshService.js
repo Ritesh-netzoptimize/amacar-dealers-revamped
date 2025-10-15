@@ -23,7 +23,10 @@ class TokenRefreshService {
     
     // Check if token is already expired
     const expTime = parseInt(expiration, 10);
-    if (Date.now() >= expTime) {
+    const now = Date.now();
+    const timeUntilExpiry = expTime - now;
+    
+    if (timeUntilExpiry <= 0) {
       console.warn('Token already expired, cannot start refresh service');
       localStorage.removeItem('authUser');
       localStorage.removeItem('authExpiration');
@@ -63,13 +66,11 @@ class TokenRefreshService {
       return;
     }
 
-    // Schedule refresh 1 minute before expiry (60 * 1000 ms)
+    // Schedule refresh 60 seconds before expiry
     const refreshTime = timeUntilExpiry - (60 * 1000);
     
-    // If less than 1 minute left, refresh immediately
+    // If less than 60 seconds left, refresh immediately
     const actualRefreshTime = Math.max(refreshTime, 0);
-
-    console.log(`Token refresh scheduled in ${Math.round(actualRefreshTime / 1000)} seconds`);
 
     this.refreshTimer = setTimeout(() => {
       this.refreshToken();
@@ -84,12 +85,10 @@ class TokenRefreshService {
     }
 
     this.isRefreshing = true;
-    console.log('Refreshing token...');
 
     this.refreshPromise = store.dispatch(refreshToken())
       .then((result) => {
-        if (refreshToken.fulfilled.match(result)) {
-          console.log('Token refreshed successfully');
+        if (result.type === 'user/refreshToken/fulfilled') {
           // Schedule the next refresh
           this.scheduleRefresh();
         } else {
@@ -135,12 +134,52 @@ class TokenRefreshService {
     const now = Date.now();
     const timeUntilExpiry = expTime - now;
 
-    // Return true if less than 1 minute left
+    // Return true if less than 60 seconds left
     return timeUntilExpiry <= (60 * 1000);
+  }
+
+  // Debug method to check current token status
+  getTokenStatus() {
+    const user = localStorage.getItem('authUser');
+    const expiration = localStorage.getItem('authExpiration');
+    const token = Cookies.get('authToken');
+    
+    if (!user || !expiration || !token) {
+      return { valid: false, reason: 'Missing session data' };
+    }
+    
+    const expTime = parseInt(expiration, 10);
+    const now = Date.now();
+    const timeUntilExpiry = expTime - now;
+    
+    return {
+      valid: timeUntilExpiry > 0,
+      timeUntilExpiry: Math.round(timeUntilExpiry / 1000),
+      expiresAt: new Date(expTime).toLocaleString(),
+      needsRefresh: this.needsRefresh(),
+      isRefreshing: this.isRefreshing,
+      isRunning: !!this.refreshTimer
+    };
+  }
+
+  // Ensure the service is running (useful for fallback)
+  ensureRunning() {
+    const user = localStorage.getItem('authUser');
+    const expiration = localStorage.getItem('authExpiration');
+    const token = Cookies.get('authToken');
+    
+    if (user && expiration && token && !this.refreshTimer) {
+      this.start();
+    }
   }
 }
 
 // Create a singleton instance
 const tokenRefreshService = new TokenRefreshService();
+
+// Make service globally available for debugging
+if (typeof window !== 'undefined') {
+  window.tokenRefreshService = tokenRefreshService;
+}
 
 export default tokenRefreshService;

@@ -330,6 +330,7 @@ export const refreshToken = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.post("/auth/refresh-token");
+      console.log("refresh token response", response);
       if (response.data.success) {
         // Update user data and expiration if provided
         if (response.data.user) {

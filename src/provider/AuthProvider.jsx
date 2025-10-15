@@ -18,11 +18,10 @@ export function AuthProvider({ children }) {
 
   // Start token refresh service when user is loaded
   useEffect(() => {
-    if (user) {
-      console.log('Starting token refresh service for user:', user.username);
+    // Only start the service when user is loaded and not in loading state
+    if (user && !loading) {
       tokenRefreshService.start();
-    } else {
-      console.log('Stopping token refresh service - no user');
+    } else if (!user && !loading) {
       tokenRefreshService.stop();
     }
 
@@ -30,7 +29,7 @@ export function AuthProvider({ children }) {
     return () => {
       tokenRefreshService.stop();
     };
-  }, [user]);
+  }, [user, loading]);
 
   // Handle token expiration (fallback for when refresh fails)
   useEffect(() => {

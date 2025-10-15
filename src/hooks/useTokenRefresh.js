@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { refreshToken } from '@/redux/slices/userSlice';
 import { getTimeUntilExpiry, isTokenExpired, needsTokenRefresh } from '@/utils/tokenUtils';
+import tokenRefreshService from '@/services/tokenRefreshService';
 import Cookies from 'js-cookie';
 
 /**
@@ -62,6 +63,18 @@ export const useTokenRefresh = () => {
   // Check if token needs refresh
   const shouldRefresh = needsTokenRefresh();
 
+  // Ensure token refresh service is running when user is present
+  useEffect(() => {
+    if (user && hasValidToken()) {
+      // Check every 5 seconds if service is running
+      const checkInterval = setInterval(() => {
+        tokenRefreshService.ensureRunning();
+      }, 5000);
+
+      return () => clearInterval(checkInterval);
+    }
+  }, [user]);
+
   return {
     timeUntilExpiry,
     isExpired: isTokenExpired(),
@@ -69,6 +82,7 @@ export const useTokenRefresh = () => {
     isRefreshing,
     refreshToken: refreshTokenManually,
     hasValidToken: hasValidToken(),
-    user
+    user,
+    ensureServiceRunning: () => tokenRefreshService.ensureRunning()
   };
 };

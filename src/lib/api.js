@@ -15,6 +15,20 @@ api.interceptors.request.use(
     const token = Cookies.get('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      
+      // Ensure token refresh service is running for protected routes
+      const isProtectedRoute = !config.url?.includes('/auth/login') && 
+                              !config.url?.includes('/auth/forgot-password') &&
+                              !config.url?.includes('/auth/verify-otp') &&
+                              !config.url?.includes('/auth/reset-password') &&
+                              !config.url?.includes('/registration/');
+      
+      if (isProtectedRoute) {
+        // Import and ensure service is running
+        import('@/services/tokenRefreshService').then(({ default: tokenRefreshService }) => {
+          tokenRefreshService.ensureRunning();
+        });
+      }
     }
     return config;
   },
