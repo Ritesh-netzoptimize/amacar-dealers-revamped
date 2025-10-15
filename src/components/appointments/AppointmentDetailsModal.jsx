@@ -352,93 +352,110 @@ export default function AppointmentDetailsModal({
                     transition={{ duration: 0.2 }}
                     className="space-y-2"
                   >
-                    {/* Management Actions */}
-                    {appointment.status !== "cancelled" && (
-                      <div className="grid grid-cols-1 gap-2">
-                        {/* Confirm Button - Only show for pending appointments */}
-                        {appointment.status === "pending" && appointment.bookedBy === "customer" && (
-                          <button
-                            onClick={handleConfirmClick}
-                            disabled={isProcessing}
-                            className="cursor-pointer flex items-center justify-center gap-2 h-9 sm:h-10 bg-blue-50 text-blue-700 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            {isProcessing && processingAction === "confirm" ? (
-                              <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
-                            ) : (
-                              <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                    {/* Only show action buttons for future appointments */}
+                    {appointment.futured_appointment && (
+                      <>
+                        {/* Management Actions */}
+                        {appointment.status !== "cancelled" && (
+                          <div className="grid grid-cols-1 gap-2">
+                            {/* Confirm Button - Only show for pending appointments */}
+                            {appointment.status === "pending" && appointment.bookedBy === "customer" && (
+                              <button
+                                onClick={handleConfirmClick}
+                                disabled={isProcessing}
+                                className="cursor-pointer flex items-center justify-center gap-2 h-9 sm:h-10 bg-blue-50 text-blue-700 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                {isProcessing && processingAction === "confirm" ? (
+                                  <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
+                                ) : (
+                                  <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                                )}
+                                <span className="text-xs sm:text-sm font-medium">
+                                  {isProcessing && processingAction === "confirm"
+                                    ? "Confirming..."
+                                    : "Confirm"}
+                                </span>
+                              </button>
                             )}
-                            <span className="text-xs sm:text-sm font-medium">
-                              {isProcessing && processingAction === "confirm"
-                                ? "Confirming..."
-                                : "Confirm"}
-                            </span>
-                          </button>
+                            
+                            {/* Already Confirmed Button - Only show for confirmed appointments */}
+                            {appointment.status === "confirmed" && (
+                              <button
+                                disabled={true}
+                                className="cursor-not-allowed flex items-center justify-center gap-2 h-9 sm:h-10 bg-green-50 text-green-700 rounded-lg border border-green-200 opacity-75"
+                              >
+                                <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                                <span className="text-xs sm:text-sm font-medium">
+                                  Already Confirmed
+                                </span>
+                              </button>
+                            )}
+                            <button
+                              onClick={handleRescheduleClick}
+                              disabled={
+                                isProcessing || appointment.can_reschedule === false
+                              }
+                              className="cursor-pointer flex items-center justify-center gap-2 h-9 sm:h-10 bg-orange-50 text-orange-700 rounded-lg border border-orange-200 hover:bg-orange-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <Edit3 className="w-3 h-3 sm:w-4 sm:h-4" />
+                              <span className="text-xs sm:text-sm font-medium">
+                                {isProcessing && processingAction === "reschedule"
+                                  ? "Processing..."
+                                  : appointment.can_reschedule === false
+                                  ? "Cannot Reschedule"
+                                  : "Reschedule"}
+                              </span>
+                            </button>
+                            {appointment.can_reschedule === false && (
+                              <p className="text-xs text-slate-500 text-center">
+                                Rescheduling not available for this appointment
+                              </p>
+                            )}
+                          </div>
                         )}
-                        
-                        {/* Already Confirmed Button - Only show for confirmed appointments */}
-                        {appointment.status === "confirmed" && (
-                          <button
-                            disabled={true}
-                            className="cursor-not-allowed flex items-center justify-center gap-2 h-9 sm:h-10 bg-green-50 text-green-700 rounded-lg border border-green-200 opacity-75"
-                          >
-                            <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                            <span className="text-xs sm:text-sm font-medium">
-                              Already Confirmed
-                            </span>
-                          </button>
-                        )}
-                        <button
-                          onClick={handleRescheduleClick}
-                          disabled={
-                            isProcessing || appointment.can_reschedule === false
-                          }
-                          className="cursor-pointer flex items-center justify-center gap-2 h-9 sm:h-10 bg-orange-50 text-orange-700 rounded-lg border border-orange-200 hover:bg-orange-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        {/* Communication Actions */}
+                        <div
+                          className={`grid gap-2 ${
+                            appointment.status === "cancelled"
+                              ? "grid-cols-1"
+                              : "grid-cols-1 sm:grid-cols-1"
+                          }`}
                         >
-                          <Edit3 className="w-3 h-3 sm:w-4 sm:h-4" />
-                          <span className="text-xs sm:text-sm font-medium">
-                            {isProcessing && processingAction === "reschedule"
-                              ? "Processing..."
-                              : appointment.can_reschedule === false
-                              ? "Cannot Reschedule"
-                              : "Reschedule"}
-                          </span>
-                        </button>
-                        {appointment.can_reschedule === false && (
-                          <p className="text-xs text-slate-500 text-center">
-                            Rescheduling not available for this appointment
+                          {/* <button
+                                onClick={() => onCall && onCall(appointment)}
+                                className="cursor-pointer flex items-center justify-center gap-2 h-10 bg-green-50 text-green-700 rounded-lg border border-green-200 hover:bg-green-100 transition-colors"
+                              >
+                                <Phone className="w-4 h-4" />
+                                <span className="text-sm font-medium">Call</span>
+                              </button> */}
+
+                          {appointment.status !== "cancelled" && (
+                            <button
+                              onClick={handleCancelClick}
+                              disabled={isProcessing || isCancelProcessing}
+                              className="cursor-pointer flex items-center justify-center gap-2 h-9 sm:h-10 bg-red-50 text-red-700 rounded-lg border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                              <span className="text-xs sm:text-sm font-medium">
+                                Cancel
+                              </span>
+                            </button>
+                          )}
+                        </div>
+                      </>
+                    )}
+
+                    {/* Show message for past appointments */}
+                    {!appointment.futured_appointment && (
+                      <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-slate-500" />
+                          <p className="text-xs sm:text-sm text-slate-600">
+                            This appointment has already passed. Management actions are not available.
                           </p>
-                        )}
+                        </div>
                       </div>
                     )}
-                    {/* Communication Actions */}
-                    <div
-                      className={`grid gap-2 ${
-                        appointment.status === "cancelled"
-                          ? "grid-cols-1"
-                          : "grid-cols-1 sm:grid-cols-1"
-                      }`}
-                    >
-                      {/* <button
-                            onClick={() => onCall && onCall(appointment)}
-                            className="cursor-pointer flex items-center justify-center gap-2 h-10 bg-green-50 text-green-700 rounded-lg border border-green-200 hover:bg-green-100 transition-colors"
-                          >
-                            <Phone className="w-4 h-4" />
-                            <span className="text-sm font-medium">Call</span>
-                          </button> */}
-
-                      {appointment.status !== "cancelled" && (
-                        <button
-                          onClick={handleCancelClick}
-                          disabled={isProcessing || isCancelProcessing}
-                          className="cursor-pointer flex items-center justify-center gap-2 h-9 sm:h-10 bg-red-50 text-red-700 rounded-lg border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                          <span className="text-xs sm:text-sm font-medium">
-                            Cancel
-                          </span>
-                        </button>
-                      )}
-                    </div>
                   </motion.div>
                 </AnimatePresence>
               </div>

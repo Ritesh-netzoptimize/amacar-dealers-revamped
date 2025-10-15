@@ -210,7 +210,7 @@ const BrandLogosCarousel = ({ className = "", pauseOnHover = true }) => {
                   <img
                     src={brand.logo}
                     alt={brand.alt}
-                    className="max-h-12 sm:max-h-14 md:max-h-16 w-auto object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500 relative z-10"
+                    className="max-h-12 sm:max-h-14 md:max-h-16 w-auto object-contain filter grayscale-0 transition-all duration-500 relative z-10"
                     loading="lazy"
                     onError={(e) => {
                       e.target.style.display = 'none';

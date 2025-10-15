@@ -57,6 +57,7 @@ const Appointments = () => {
     return apiData.map(appointment => ({
       id: appointment.id,
       bookedBy: appointment.booked_by,
+      futured_appointment: appointment.in_future,
       dealer_id: appointment.dealer_id,
       dealer_name: appointment.customer?.name || 'Unknown Customer',
       dealer_email: appointment.customer?.email || '',
@@ -99,14 +100,30 @@ const Appointments = () => {
     handleSortSelect,
   } = useAppointmentFilters(appointments);
 
-  // Calculate pagination - use API pagination for total pages
-  const totalPages = pagination.total_pages;
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedAppointments = filteredAndSortedAppointments.slice(
-    startIndex,
-    endIndex
+  // Separate appointments into upcoming and past
+  const upcomingAppointments = filteredAndSortedAppointments.filter(appointment => appointment.futured_appointment === true);
+  const pastAppointments = filteredAndSortedAppointments.filter(appointment => appointment.futured_appointment === false);
+
+  // Calculate pagination for upcoming appointments
+  const upcomingStartIndex = (currentPage - 1) * itemsPerPage;
+  const upcomingEndIndex = upcomingStartIndex + itemsPerPage;
+  const paginatedUpcomingAppointments = upcomingAppointments.slice(
+    upcomingStartIndex,
+    upcomingEndIndex
   );
+
+  // Calculate pagination for past appointments
+  const pastStartIndex = (currentPage - 1) * itemsPerPage;
+  const pastEndIndex = pastStartIndex + itemsPerPage;
+  const paginatedPastAppointments = pastAppointments.slice(
+    pastStartIndex,
+    pastEndIndex
+  );
+
+  // Calculate total pages based on the larger of the two sections
+  const upcomingTotalPages = Math.ceil(upcomingAppointments.length / itemsPerPage);
+  const pastTotalPages = Math.ceil(pastAppointments.length / itemsPerPage);
+  const totalPages = Math.max(upcomingTotalPages, pastTotalPages);
 
   // Fetch appointments from API
   const fetchAppointments = useCallback(async (page = 1) => {
@@ -158,6 +175,7 @@ const Appointments = () => {
 
   // Handle view details
   const handleViewDetails = (appointment) => {
+    console.log("appointment in appointment view details", appointment)
     setSelectedAppointment(appointment);
     setIsDetailsModalOpen(true);
   };
@@ -183,6 +201,7 @@ const Appointments = () => {
         toast.success('Appointment confirmed successfully!');
         // Refresh appointments list
         await fetchAppointments(currentPage);
+        handleCloseDetailsModal();
       } else {
         throw new Error(response.payload || 'Failed to confirm appointment');
       }
@@ -325,7 +344,7 @@ const Appointments = () => {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="space-y-6"
+            className="space-y-8"
           >
             {/* Show loading state during sorting/filtering */}
             {(isSorting || isFiltering) && (
@@ -341,10 +360,87 @@ const Appointments = () => {
 
             {/* Show appointments when not sorting/filtering */}
             {!isSorting && !isFiltering && (
-              <AppointmentList
-                appointments={paginatedAppointments}
-                onViewDetails={handleViewDetails}
-              />
+              <div className="space-y-8">
+                {/* Upcoming Appointments Section */}
+                {upcomingAppointments.length > 0 && (
+                  <motion.div
+                    variants={itemVariants}
+                    className="space-y-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-1 h-8 bg-green-500 rounded-full"></div>
+                      <h2 className="text-xl font-bold text-neutral-800">
+                        Upcoming Appointments
+                      </h2>
+                      <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                        {upcomingAppointments.length}
+                      </span>
+                    </div>
+                    <AppointmentList
+                      appointments={paginatedUpcomingAppointments}
+                      onViewDetails={handleViewDetails}
+                    />
+                  </motion.div>
+                )}
+
+                {/* Past Appointments Section */}
+                {pastAppointments.length > 0 && (
+                  <motion.div
+                    variants={itemVariants}
+                    className="space-y-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-1 h-8 bg-gray-400 rounded-full"></div>
+                      <h2 className="text-xl font-bold text-neutral-800">
+                        Past Appointments
+                      </h2>
+                      <span className="px-3 py-1 bg-gray-100 text-gray-800 text-sm font-medium rounded-full">
+                        {pastAppointments.length}
+                      </span>
+                    </div>
+                    <AppointmentList
+                      appointments={paginatedPastAppointments}
+                      onViewDetails={handleViewDetails}
+                    />
+                  </motion.div>
+                )}
+
+                {/* Show message when upcoming appointments are empty but past appointments exist */}
+                {upcomingAppointments.length === 0 && pastAppointments.length > 0 && (
+                  <motion.div
+                    variants={itemVariants}
+                    className="text-center py-8"
+                  >
+                    <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Calendar className="w-8 h-8 text-orange-500" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-neutral-800 mb-2">
+                      No Upcoming Appointments
+                    </h3>
+                    <p className="text-neutral-600">
+                      You don't have any upcoming appointments scheduled.
+                    </p>
+                  </motion.div>
+                )}
+
+                {/* Show message when past appointments are empty but upcoming appointments exist */}
+                {/* {pastAppointments.length === 0 && upcomingAppointments.length > 0 && (
+                  <motion.div
+                    variants={itemVariants}
+                    className="text-center py-8"
+                  >
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Calendar className="w-8 h-8 text-gray-500" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-neutral-800 mb-2">
+                      No Past Appointments
+                    </h3>
+                    <p className="text-neutral-600">
+                      You don't have any past appointments yet.
+                    </p>
+                  </motion.div>
+                )} */}
+              </div>
             )}
           </motion.div>
         )}
@@ -370,7 +466,7 @@ const Appointments = () => {
           )}
 
         {/* Empty State */}
-        {!loading && !error && filteredAndSortedAppointments.length === 0 && (
+        {!loading && !error && upcomingAppointments.length === 0 && pastAppointments.length === 0 && (
           <motion.div
             variants={itemVariants}
             className="flex items-center justify-center min-h-[50vh] sm:min-h-[60vh] px-4"

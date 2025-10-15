@@ -99,7 +99,7 @@ export const createAppointments = createAsyncThunk(
       try {
         const response = await api.post('/appointments/update-status', {
           appointment_id: confirmData.appointmentId,
-          status: 'confirm'
+          status: 'confirmed'
         });
         
         if (!response.data.success) {

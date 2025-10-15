@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar } from 'lucide-react';
 import AppointmentCard from './AppointmentCard';
-import { getTodaysAppointments, getUpcomingAppointments } from '@/utils/appointmentFilters';
 
 const AppointmentList = ({
   appointments=[],
@@ -10,9 +9,6 @@ const AppointmentList = ({
   className = ''
 }) => {
   console.log("appointments in appointment list", appointments);
-  const todaysAppointments = getTodaysAppointments(appointments);
-  console.log("todays Appointments in appointment list", todaysAppointments);
-  const upcomingAppointments = getUpcomingAppointments(appointments);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -41,33 +37,11 @@ const AppointmentList = ({
       animate="visible"
       className={`space-y-6 ${className}`}
     >
-      {/* Today's Appointments */}
-      {/* {todaysAppointments.length > 0 && (
-        <motion.div variants={itemVariants} className="mb-6 sm:mb-8">
-          <h2 className="text-lg sm:text-xl font-bold text-neutral-800 mb-4">
-            Today's Appointments
-          </h2>
-          <div className="space-y-3 sm:space-y-4">
-            {todaysAppointments.map((appointment) => (
-              <AppointmentCard
-                key={appointment.id}
-                appointment={appointment}
-                onViewDetails={onViewDetails}
-                isToday={true}
-              />
-            ))}
-          </div>
-        </motion.div>
-      )} */}
-
-      {/* Upcoming Appointments */}
-      {upcomingAppointments.length > 0 && (
+      {/* Render appointments passed from parent */}
+      {appointments.length > 0 && (
         <motion.div variants={itemVariants}>
-          <h2 className="text-lg sm:text-xl font-bold text-neutral-800 mb-4">
-            Upcoming Appointments
-          </h2>
           <div className="space-y-3 sm:space-y-4">
-            {upcomingAppointments.map((appointment) => (
+            {appointments.map((appointment) => (
               <AppointmentCard
                 key={appointment.id}
                 appointment={appointment}
@@ -79,11 +53,11 @@ const AppointmentList = ({
         </motion.div>
       )}
 
-      {/* Empty State */}
+      {/* Empty State - This should rarely show since parent handles empty states */}
       {appointments.length === 0 && (
         <motion.div
           variants={itemVariants}
-          className="flex items-center justify-center min-h-[50vh] sm:min-h-[60vh] px-4"
+          className="flex items-center justify-center py-8 px-4"
         >
           <div className="text-center max-w-sm sm:max-w-md mx-auto">
             <motion.div
@@ -106,7 +80,7 @@ const AppointmentList = ({
                 No Appointments
               </h3>
               <p className="text-neutral-600 text-sm sm:text-base lg:text-lg leading-relaxed">
-                You don't have any scheduled appointments at the moment.
+                You don't have any appointments in this section.
               </p>
             </motion.div>
           </div>
