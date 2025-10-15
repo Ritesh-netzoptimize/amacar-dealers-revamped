@@ -28,6 +28,7 @@ const BidDialog = ({
   onClose,
   vehicle,
   onBidSuccess,
+  onRefresh,
   formatRemainingTime,
   remainingTime,
 }) => {
@@ -47,6 +48,9 @@ const BidDialog = ({
     }
   };
 
+  useEffect(() => {
+    console.log("Vehicle product id", vehicle.basic_info?.product_id);
+  }, []);
   // Format input with commas for better readability
   const formatInputValue = (value) => {
     if (!value) return "";
@@ -78,20 +82,25 @@ const BidDialog = ({
         cashOfferAmount
       )}`;
     }
-    
+
     // Check if bid meets minimum increment requirement
-    const highestBidAmount = parseCurrencyString(vehicle.highestBid?.amount || vehicle.highest_bid);
-    const minimumBidAmount = highestBidAmount > 0 ? highestBidAmount + 100 : cashOfferAmount + 100;
+    const highestBidAmount = parseCurrencyString(
+      vehicle.highestBid?.amount || vehicle.highest_bid
+    );
+    const minimumBidAmount =
+      highestBidAmount > 0 ? highestBidAmount + 100 : cashOfferAmount + 100;
     if (numericAmount < minimumBidAmount) {
       const bidSource = highestBidAmount > 0 ? "highest bid" : "cash offer";
-      return `Bid amount must be at least ${formatBidAmount(minimumBidAmount)} (${bidSource} + $100)`;
+      return `Bid amount must be at least ${formatBidAmount(
+        minimumBidAmount
+      )} (${bidSource} + $100)`;
     }
-    
+
     return null;
   };
-useEffect(() => {
-  console.log("vehicle", vehicle)
-}, [vehicle])
+  useEffect(() => {
+    console.log("vehicle", vehicle);
+  }, [vehicle]);
   const handleSubmit = async () => {
     const validation = validateBid(bidAmount);
     if (validation) {
@@ -108,23 +117,38 @@ useEffect(() => {
       console.log("vehicle", vehicle);
       console.log("bidAmount", bidAmount);
       console.log("before api call");
-      console.log("product_id", vehicle.id);
+      console.log("product_id(vehicle.id)", vehicle.id);
+      console.log("product_id(vehicle.basic_details?.product_id)", vehicle.basic_info?.product_id);
       const bidAmountParsed = parseFloat(bidAmount);
-      const response = await api.post("/bids", {
-        product_id: vehicle.id,
-        bid_amount: bidAmountParsed,
-      });
+      let response = null;
+      if (vehicle.basic_info?.product_id) {
+        response = await api.post("/bids", {
+          product_id: vehicle.basic_info.product_id,
+          bid_amount: bidAmountParsed,
+        });
+      } else {
+        response = await api.post("/bids", {
+          product_id: vehicle.id,
+          bid_amount: bidAmountParsed,
+        });
+      }
 
       if (response.data.success === true) {
         setIsSuccess(true);
         setTimeout(() => {
           onBidSuccess?.(parseFloat(bidAmount));
+          // Call refresh function if provided
+          if (onRefresh) {
+            onRefresh();
+          }
           handleClose();
         }, 1500);
       } else {
         // Handle case where success is false but no error was thrown
         setIsError(true);
-        setErrorMessage(response.data.message || "Bid submission failed. Please try again.");
+        setErrorMessage(
+          response.data.message || "Bid submission failed. Please try again."
+        );
       }
     } catch (error) {
       setIsError(true);
@@ -335,16 +359,25 @@ useEffect(() => {
                     <p className="text-sm font-medium text-blue-800">
                       Minimum Bid Required
                     </p>
-                    
+
                     <p className="text-sm text-blue-700">
                       {(() => {
-                        const highestBidAmount = parseCurrencyString(vehicle.highestBid?.amount || vehicle.highest_bid);
-                        const cashOfferAmount = parseCurrencyString(
-                          vehicle?.cash_offer?.offer_amount || vehicle?.cashOffer
+                        const highestBidAmount = parseCurrencyString(
+                          vehicle.highestBid?.amount || vehicle.highest_bid
                         );
-                        const minimumBidAmount = highestBidAmount > 0 ? highestBidAmount + 100 : cashOfferAmount + 100;
-                        const bidSource = highestBidAmount > 0 ? "highest bid" : "cash offer";
-                        return `${formatBidAmount(minimumBidAmount)} (${bidSource} + $100)`;
+                        const cashOfferAmount = parseCurrencyString(
+                          vehicle?.cash_offer?.offer_amount ||
+                            vehicle?.cashOffer
+                        );
+                        const minimumBidAmount =
+                          highestBidAmount > 0
+                            ? highestBidAmount + 100
+                            : cashOfferAmount + 100;
+                        const bidSource =
+                          highestBidAmount > 0 ? "highest bid" : "cash offer";
+                        return `${formatBidAmount(
+                          minimumBidAmount
+                        )} (${bidSource} + $100)`;
                       })()}
                     </p>
                   </div>

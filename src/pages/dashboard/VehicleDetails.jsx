@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -78,7 +78,7 @@ const VehicleDetails = () => {
   };
 
   // Transform API data to match component expectations
-  const transformVehicleData = (vehicleData, userId) => {
+  const transformVehicleData = useCallback((vehicleData, userId) => {
     return {
       basic_info: {
         product_id: vehicleData.basic_info.product_id,
@@ -148,7 +148,7 @@ const VehicleDetails = () => {
       created_at: vehicleData.created_at,
       updated_at: vehicleData.updated_at,
     };
-  };
+  }, []);
 
   const handleBidNow = (vehicle) => {
     setSelectedVehicle(vehicle);
@@ -163,6 +163,34 @@ const VehicleDetails = () => {
   const handleBidSuccess = (bidAmount) => {
     console.log("Bid successful:", bidAmount);
     // TODO: Update the vehicle's highest bid or handle success
+  };
+
+  const handleBidRefresh = async () => {
+    console.log("Refreshing vehicle details after bid success...");
+    // Re-fetch vehicle details to get updated bid information
+    if (productId) {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await api.get(`/vehicle/details/${productId}`);
+        
+        if (response.data.success) {
+          const userId = getCurrentUserId();
+          const transformedData = transformVehicleData(
+            response.data.vehicle,
+            userId
+          );
+          setVehicleData(transformedData);
+          setRemainingTime(
+            response.data.vehicle.auction?.remaining_seconds || 0
+          );
+        }
+      } catch (err) {
+        console.error("Error refreshing vehicle details:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   // Set current user ID on component mount
@@ -217,7 +245,7 @@ const VehicleDetails = () => {
     };
 
     fetchVehicleDetails();
-  }, [productId]);
+  }, [productId, transformVehicleData]);
 
   // Countdown timer effect
   useEffect(() => {
@@ -423,6 +451,7 @@ const VehicleDetails = () => {
             remainingTime={remainingTime}
             vehicleData={vehicleData}
             onBidNow={handleBidNow}
+            onBidRefresh={handleBidRefresh}
             canBidPass={canBidPass}
           />
 
@@ -474,6 +503,7 @@ const VehicleDetails = () => {
             onClose={handleCloseBidDialog}
             vehicle={selectedVehicle}
             onBidSuccess={handleBidSuccess}
+            onRefresh={handleBidRefresh}
             formatRemainingTime={formatRemainingTime}
             remainingTime={remainingTime}
           />

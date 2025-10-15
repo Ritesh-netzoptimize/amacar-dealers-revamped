@@ -24,6 +24,7 @@ const ImageCarouselAndKeyInfo = ({
   remainingTime,
   vehicleData,
   onBidNow,
+  onBidRefresh,
   canBidPass,
 }) => {
   const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
@@ -43,6 +44,10 @@ const ImageCarouselAndKeyInfo = ({
   const handleBidSuccess = (bidAmount) => {
     console.log("Bid successful:", bidAmount);
     setIsBidDialogOpen(false);
+    // Call refresh function if provided
+    if (onBidRefresh) {
+      onBidRefresh();
+    }
   };
   return (
     <div className="px-4 sm:px-6 lg:px-8 pb-6 sm:pb-8">
@@ -279,6 +284,7 @@ const ImageCarouselAndKeyInfo = ({
           onClose={handleCloseBidDialog}
           vehicle={vehicleData}
           onBidSuccess={handleBidSuccess}
+          onRefresh={onBidRefresh}
           formatRemainingTime={formatRemainingTime}
           remainingTime={remainingTime}
         />

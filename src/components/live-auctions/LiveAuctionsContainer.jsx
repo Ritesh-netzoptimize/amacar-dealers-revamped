@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 const LiveAuctionsContainer = ({
   auctions = [],
   onPassUnpassSuccess = () => {},
+  onBidRefresh = () => {},
 }) => {
   const navigate = useNavigate();
   const [selectedVehicle, setSelectedVehicle] = useState(null);
@@ -283,6 +284,7 @@ const LiveAuctionsContainer = ({
           onClose={handleCloseBidDialog}
           vehicle={selectedVehicle}
           onBidSuccess={handleBidSuccess}
+          onRefresh={onBidRefresh}
         />
       )}
 

@@ -158,14 +158,7 @@ const HighestBidsContainer = ({ auctions = [] }) => {
                 {/* CTA Buttons - Pinned to Bottom */}
                 <div className="space-y-3 pt-5 mt-auto">
                   <div className="flex gap-3">
-                    <Button
-                      variant="outline"
-                      onClick={() => handleViewCustomer(vehicle.highestBidder)}
-                      className="flex-1 border-2 border-neutral-200 hover:border-blue-300 hover:bg-blue-50 text-neutral-700 hover:text-blue-600 font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                    >
-                      <User className="w-4 h-4 mr-2" />
-                      View Bidder
-                    </Button>
+                  
                     <Button
                       variant="outline"
                       onClick={() => handleViewVehicle(vehicle.id)}

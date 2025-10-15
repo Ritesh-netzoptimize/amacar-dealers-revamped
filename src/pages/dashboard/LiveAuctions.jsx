@@ -298,6 +298,7 @@ const LiveAuctions = () => {
                   <LiveAuctionsContainer
                     auctions={auctions}
                     onPassUnpassSuccess={handlePassUnpassSuccess}
+                    onBidRefresh={handlePassUnpassSuccess}
                   />
                 ) : (
                   /* Empty State */
