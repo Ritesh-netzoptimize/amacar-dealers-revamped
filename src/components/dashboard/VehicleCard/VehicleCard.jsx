@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Eye, Calendar } from "lucide-react";
+import { Eye, Calendar, Gavel } from "lucide-react";
+import { useState } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -11,7 +12,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { formatBidAmount, getStatusColor } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
-const VehicleCard = ({ vehicle }) => {
+import { useSelector } from "react-redux";
+import { getUserPermissions } from "@/utils/rolePermissions";
+import BidDialog from "@/components/common/BidDialog/BidDialog";
+const VehicleCard = ({ vehicle, onBidRefresh }) => {
+  const { user } = useSelector((state) => state.user);
+  const [isBidDialogOpen, setIsBidDialogOpen] = useState(false);
+
+  const userRole = user?.role;
+  const permissions = getUserPermissions(userRole, user);
+  const { canBidPass } = permissions;
+
   const navigate = useNavigate();
 
   const handleViewClick = () => {
@@ -20,6 +31,23 @@ const VehicleCard = ({ vehicle }) => {
         productId: vehicle.id,
       },
     });
+  };
+
+  const handleBidNow = () => {
+    setIsBidDialogOpen(true);
+  };
+
+  const handleCloseBidDialog = () => {
+    setIsBidDialogOpen(false);
+  };
+
+  const handleBidSuccess = (bidAmount) => {
+    console.log("Bid successful:", bidAmount);
+    setIsBidDialogOpen(false);
+    // Call refresh function if provided
+    if (onBidRefresh) {
+      onBidRefresh();
+    }
   };
 
   return (
@@ -57,9 +85,9 @@ const VehicleCard = ({ vehicle }) => {
             ))}
           </CarouselContent>
           {/* Navigation Dots */}
-    {vehicle.images.length > 1 && (
-      <CarouselDots className="absolute bottom-2 left-1/2 -translate-x-1/2" />
-    )}
+          {vehicle.images.length > 1 && (
+            <CarouselDots className="absolute bottom-2 left-1/2 -translate-x-1/2" />
+          )}
           {/* {vehicle.images.length > 1 && (
             <>
               <CarouselPrevious className="left-3 top-1/2 -translate-y-1/2 h-8 w-8 bg-white/90 hover:bg-white border-0 shadow-lg opacity-100 transition-opacity
@@ -107,20 +135,48 @@ const VehicleCard = ({ vehicle }) => {
             )}
           </div>
         </div>
+        {console.log("vehicle in dashboard page", vehicle)}
         {/* Action Buttons pinned bottom */}
-        <div className="flex gap-2 mt-auto mb-4">
+        <div className="flex gap-2 mt-auto mb-4 justify-end">
           <Button
             variant="outline"
             size="sm"
-            className="w-full h-10 cursor-pointer bg-white hover:bg-neutral-50 border-neutral-200 hover:border-neutral-300 text-neutral-700 hover:text-neutral-900 shadow-sm hover:shadow-md transition-all duration-200 font-medium"
+            className=" h-10 cursor-pointer bg-white hover:bg-neutral-50 border-neutral-200 hover:border-neutral-300 text-neutral-700 hover:text-neutral-900 shadow-sm hover:shadow-md transition-all duration-200 font-medium"
             onClick={handleViewClick}
           >
             <Eye className="w-4 h-4 mr-2" />
             View Details
           </Button>
+          {canBidPass && vehicle.isPassed === false && (
+                    <Button
+                      onClick={handleBidNow}
+                      disabled={vehicle.isPassed}
+                      className={`cursor-pointer flex-1 h-10 text-xs font-medium rounded-lg transition-all duration-200 ${
+                        vehicle.isPassed
+                          ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
+                          : "bg-orange-500 hover:bg-orange-600 text-white"
+                      }`}
+                      title={
+                        vehicle.isPassed
+                          ? "Cannot bid on passed vehicle"
+                          : "Place a bid"
+                      }
+                    >
+                      <Gavel className="w-3.5 h-3.5 mr-1" />
+                      Bid Now
+                    </Button>
+                  )}
         </div>
       </div>
 
+      {/* Bid Dialog */}
+      <BidDialog
+        isOpen={isBidDialogOpen}
+        onClose={handleCloseBidDialog}
+        vehicle={vehicle}
+        onBidSuccess={handleBidSuccess}
+        onRefresh={onBidRefresh}
+      />
     </motion.div>
   );
 };

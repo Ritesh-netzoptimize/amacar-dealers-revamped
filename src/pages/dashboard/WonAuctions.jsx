@@ -67,6 +67,7 @@ const WonAuctions = () => {
     return apiData.map(auction => ({
       id: auction.id,
       name: auction.title,
+      appointmentScheduled: auction.appointment_scheduled,
       images: auction.images?.map(img => img.url) || [],
       make: auction.make,
       model: auction.model,

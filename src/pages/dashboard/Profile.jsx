@@ -980,7 +980,7 @@ const Profile = () => {
                                         handleOpenCancelModal("request")
                                       }
                                       disabled={cancellationStatusLoading}
-                                      className={`px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2 bg-red-500 hover:bg-red-600 ${
+                                      className={`cursor-pointer px-4 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2 bg-red-500 hover:bg-red-600 ${
                                         cancellationStatusLoading
                                           ? "opacity-50 cursor-not-allowed"
                                           : ""

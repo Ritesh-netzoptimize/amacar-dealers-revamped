@@ -26,6 +26,7 @@ const RecentVehiclesSection = () => {
       const vehiclesData = response.data || response;
       
       if (vehiclesData && Array.isArray(vehiclesData)) {
+        console.log("vehiclesData", vehiclesData)
         // Transform API response to match VehicleCard expected format
         const transformedVehicles = vehiclesData.map((vehicle, index) => {
           // Ensure we're working with a proper object
@@ -44,6 +45,8 @@ const RecentVehiclesSection = () => {
           return {
             id: vehicle.id || index + 1,
             name: String(vehicle.title || `${vehicle.year || ''} ${vehicle.make || ''} ${vehicle.model || ''}`.trim() || 'Vehicle'),
+            isPassed: vehicle.is_passed,
+            highestBid: vehicle.highest_bid,
             status: String(vehicle.auction_status || vehicle.status || 'Live'),
             cashOffer: Number(vehicle.cash_offer || vehicle.current_bid || 0),
             timeLeft: String(vehicle.time_remaining || vehicle.time_left || vehicle.timeLeft || 'N/A'),
@@ -211,7 +214,7 @@ const RecentVehiclesSection = () => {
           <Button
             variant="outline"
             size="lg"
-            className="px-8 py-3 text-sm font-medium hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
+            className="cursor-pointer px-8 py-3 text-sm font-medium hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
             onClick={() => navigate('/live-auctions')}
           >
             View All Vehicles
@@ -252,7 +255,8 @@ const RecentVehiclesSection = () => {
                   }}
                 >
                   <VehicleCard 
-                    vehicle={vehicle} 
+                    vehicle={vehicle}
+                    onBidRefresh={fetchRecentVehicles}
                   />
                 </motion.div>
               ))}

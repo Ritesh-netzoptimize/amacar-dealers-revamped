@@ -86,6 +86,13 @@ const WonAuctionsContainer = ({
     onScheduleAppointment(vehicle);
   };
 
+  const handleViewAppointment = (vehicle) => {
+    console.log("handle view appointment for vehicle:", vehicle);
+    // Navigate to appointments page or show appointment details
+    // For now, we'll just log it - you can implement navigation as needed
+    navigate('/appointments');
+  };
+
   return (
     <motion.div
       className="w-full"
@@ -157,7 +164,7 @@ const WonAuctionsContainer = ({
                         <div className="flex items-center mb-3">
                           <User className="w-4 h-4 mr-2 text-purple-600 flex-shrink-0" />
                           <span className="text-sm font-medium text-neutral-600">
-                            Bidder
+                            Sold to
                           </span>
                         </div>
                         <div className="space-y-2">
@@ -224,11 +231,19 @@ const WonAuctionsContainer = ({
                     </Button>
                   </div>
                   <Button
-                    onClick={() => handleScheduleAppointment(vehicle)}
-                    className="w-full bg-[var(--brand-orange)] hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                    onClick={() => 
+                      vehicle.appointmentScheduled 
+                        ? handleViewAppointment(vehicle)
+                        : handleScheduleAppointment(vehicle)
+                    }
+                    className={`w-full font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer ${
+                      vehicle.appointmentScheduled
+                        ? "bg-green-600 hover:bg-green-700 text-white"
+                        : "bg-[var(--brand-orange)] hover:bg-orange-600 text-white"
+                    }`}
                   >
                     <Calendar className="w-4 h-4 mr-2" />
-                    Schedule Appointment
+                    {vehicle.appointmentScheduled ? "See Appointment" : "Schedule Appointment"}
                   </Button>
                 </div>
               </div>
@@ -297,11 +312,23 @@ const WonAuctionsContainer = ({
                           <span>View Vehicle</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleScheduleAppointment(vehicle)}
-                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                          onClick={() => 
+                            vehicle.appointmentScheduled 
+                              ? handleViewAppointment(vehicle)
+                              : handleScheduleAppointment(vehicle)
+                          }
+                          className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg cursor-pointer focus:outline-none transition-all duration-200 group ${
+                            vehicle.appointmentScheduled
+                              ? "text-green-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-800 focus:bg-green-50 focus:text-green-800"
+                              : "text-neutral-700 hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700"
+                          }`}
                         >
-                          <Calendar className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-                          <span>Schedule</span>
+                          <Calendar className={`w-4 h-4 transition-colors duration-200 ${
+                            vehicle.appointmentScheduled
+                              ? "text-green-500 group-hover:text-green-600 group-focus:text-green-600"
+                              : "text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600"
+                          }`} />
+                          <span>{vehicle.appointmentScheduled ? "See Appointment" : "Schedule"}</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -321,7 +348,7 @@ const WonAuctionsContainer = ({
                     <div className="flex items-center mb-1">
                       <Trophy className="w-3.5 h-3.5 mr-1 text-green-500 flex-shrink-0" />
                       <span className="text-xs font-normal text-neutral-500">
-                        Sold To
+                        Sold By
                       </span>
                     </div>
                     <p className="text-sm font-semibold text-green-700 break-words">
@@ -466,11 +493,23 @@ const WonAuctionsContainer = ({
                           <span>View Vehicle</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleScheduleAppointment(vehicle)}
-                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                          onClick={() => 
+                            vehicle.appointmentScheduled 
+                              ? handleViewAppointment(vehicle)
+                              : handleScheduleAppointment(vehicle)
+                          }
+                          className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg cursor-pointer focus:outline-none transition-all duration-200 group ${
+                            vehicle.appointmentScheduled
+                              ? "text-green-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-800 focus:bg-green-50 focus:text-green-800"
+                              : "text-neutral-700 hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700"
+                          }`}
                         >
-                          <Calendar className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-                          <span>Schedule</span>
+                          <Calendar className={`w-4 h-4 transition-colors duration-200 ${
+                            vehicle.appointmentScheduled
+                              ? "text-green-500 group-hover:text-green-600 group-focus:text-green-600"
+                              : "text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600"
+                          }`} />
+                          <span>{vehicle.appointmentScheduled ? "See Appointment" : "Schedule"}</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -490,7 +529,7 @@ const WonAuctionsContainer = ({
                     <div className="flex items-center mb-1">
                       <Trophy className="w-3.5 h-3.5 mr-1 text-green-500 flex-shrink-0" />
                       <span className="text-xs font-normal text-neutral-500">
-                        Sold To
+                        Sold By
                       </span>
                     </div>
                     <p className="text-sm lg:text-base font-semibold text-green-700 break-words">
@@ -505,7 +544,7 @@ const WonAuctionsContainer = ({
                       <div className="flex items-center mb-1">
                         <User className="w-3.5 h-3.5 mr-1 text-purple-400 flex-shrink-0" />
                         <span className="text-xs font-normal text-neutral-500">
-                          Bidder
+                          Sold to 
                         </span>
                       </div>
                       <div className="space-y-1">

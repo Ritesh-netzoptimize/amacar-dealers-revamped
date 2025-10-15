@@ -42,7 +42,7 @@ const AppointmentList = ({
       className={`space-y-6 ${className}`}
     >
       {/* Today's Appointments */}
-      {todaysAppointments.length > 0 && (
+      {/* {todaysAppointments.length > 0 && (
         <motion.div variants={itemVariants} className="mb-6 sm:mb-8">
           <h2 className="text-lg sm:text-xl font-bold text-neutral-800 mb-4">
             Today's Appointments
@@ -58,7 +58,7 @@ const AppointmentList = ({
             ))}
           </div>
         </motion.div>
-      )}
+      )} */}
 
       {/* Upcoming Appointments */}
       {upcomingAppointments.length > 0 && (

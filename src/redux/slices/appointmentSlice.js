@@ -92,6 +92,27 @@ export const createAppointments = createAsyncThunk(
     }
   );
 
+  // Async thunk to confirm appointments
+  export const confirmAppointment = createAsyncThunk(
+    'appointments/confirmAppointment',
+    async (confirmData, { rejectWithValue }) => {
+      try {
+        const response = await api.post('/appointments/update-status', {
+          appointment_id: confirmData.appointmentId,
+          status: 'confirm'
+        });
+        
+        if (!response.data.success) {
+          throw new Error(response.data.message || 'Failed to confirm appointment');
+        }
+  
+        return response.data;
+      } catch (error) {
+        return rejectWithValue(error.response?.data?.message || error.message || 'Failed to confirm appointment');
+      }
+    }
+  );
+
 
   const initialState = {
     loading: false,
@@ -216,6 +237,30 @@ export const createAppointments = createAsyncThunk(
         .addCase(rescheduleAppointment.rejected, (state, action) => {
           state.appointmentOperationLoading = false;
           state.appointmentOperationError = action.payload || 'Failed to reschedule appointment';
+          state.appointmentOperationSuccess = false;
+        })
+        // Confirm appointment
+        .addCase(confirmAppointment.pending, (state) => {
+          state.appointmentOperationLoading = true;
+          state.appointmentOperationError = null;
+          state.appointmentOperationSuccess = false;
+        })
+        .addCase(confirmAppointment.fulfilled, (state, action) => {
+          state.appointmentOperationLoading = false;
+          state.appointmentOperationError = null;
+          state.appointmentOperationSuccess = true;
+          // Update the appointment status in the appointments list
+          const confirmedAppointment = action.payload.appointment;
+          if (confirmedAppointment) {
+            const index = state.appointments.findIndex(apt => apt.id === confirmedAppointment.id);
+            if (index !== -1) {
+              state.appointments[index] = confirmedAppointment;
+            }
+          }
+        })
+        .addCase(confirmAppointment.rejected, (state, action) => {
+          state.appointmentOperationLoading = false;
+          state.appointmentOperationError = action.payload || 'Failed to confirm appointment';
           state.appointmentOperationSuccess = false;
         })
     },

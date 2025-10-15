@@ -11,7 +11,8 @@ import AppointmentsSortSkeleton from "@/components/skeletons/Appointments/Appoin
 import api from "@/lib/api";
 import AppointmentDetailsModal from "@/components/appointments/AppointmentDetailsModal";
 import { useDispatch } from "react-redux";
-import { fetchAppointmentsFromSlice } from "@/redux/slices/appointmentSlice";
+import { fetchAppointmentsFromSlice, confirmAppointment } from "@/redux/slices/appointmentSlice";
+import toast from "react-hot-toast";
 
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -55,6 +56,7 @@ const Appointments = () => {
     console.log("apiData", apiData);
     return apiData.map(appointment => ({
       id: appointment.id,
+      bookedBy: appointment.booked_by,
       dealer_id: appointment.dealer_id,
       dealer_name: appointment.customer?.name || 'Unknown Customer',
       dealer_email: appointment.customer?.email || '',
@@ -165,6 +167,32 @@ const Appointments = () => {
     setSelectedAppointment(null);
     setIsProcessing(false);
     setProcessingAction('');
+  };
+
+  // Handle confirm appointment
+  const handleConfirmAppointment = async (appointment) => {
+    try {
+      setIsProcessing(true);
+      setProcessingAction('confirm');
+      
+      const response = await dispatch(confirmAppointment({
+        appointmentId: appointment.id
+      }));
+
+      if (confirmAppointment.fulfilled.match(response)) {
+        toast.success('Appointment confirmed successfully!');
+        // Refresh appointments list
+        await fetchAppointments(currentPage);
+      } else {
+        throw new Error(response.payload || 'Failed to confirm appointment');
+      }
+    } catch (error) {
+      console.error('Error confirming appointment:', error);
+      toast.error(error.message || 'Failed to confirm appointment');
+    } finally {
+      setIsProcessing(false);
+      setProcessingAction('');
+    }
   };
 
   // Animation variants
@@ -433,6 +461,7 @@ const Appointments = () => {
         isOpen={isDetailsModalOpen}
         onClose={handleCloseDetailsModal}
         appointment={selectedAppointment}
+        onConfirm={handleConfirmAppointment}
         // onCancel={handleCancel}
         // onReschedule={handleReschedule}
         // onCall={handleCall}

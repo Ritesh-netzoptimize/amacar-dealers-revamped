@@ -255,7 +255,7 @@ const LiveAuctionsContainer = ({
                     <Button
                       onClick={() => handleBidNow(vehicle)}
                       disabled={isVehiclePassed(vehicle)}
-                      className={`flex-1 h-9 text-xs font-medium rounded-lg transition-all duration-200 ${
+                      className={`cursor-pointer flex-1 h-9 text-xs font-medium rounded-lg transition-all duration-200 ${
                         isVehiclePassed(vehicle)
                           ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
                           : "bg-orange-500 hover:bg-orange-600 text-white"

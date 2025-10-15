@@ -48,9 +48,7 @@ const BidDialog = ({
     }
   };
 
-  useEffect(() => {
-    console.log("Vehicle product id", vehicle.basic_info?.product_id);
-  }, []);
+ 
   // Format input with commas for better readability
   const formatInputValue = (value) => {
     if (!value) return "";
@@ -508,7 +506,7 @@ const BidDialog = ({
                   variant="outline"
                   onClick={handleClose}
                   disabled={isLoading}
-                  className="px-6 py-5 border-2 border-neutral-300 text-neutral-700 hover:bg-neutral-100 hover:border-neutral-400 transition-all duration-200 font-medium"
+                  className="cursor-pointer px-6 py-5 border-2 border-neutral-300 text-neutral-700 hover:bg-neutral-100 hover:border-neutral-400 transition-all duration-200 font-medium"
                 >
                   Cancel
                 </Button>
@@ -523,7 +521,7 @@ const BidDialog = ({
                   <Button
                     onClick={handleSubmit}
                     disabled={isLoading || !bidAmount || isSuccess}
-                    className={`px-8 py-5.5 font-semibold text-white rounded-lg transition-all duration-200 ${
+                    className={`cursor-pointer px-8 py-5.5 font-semibold text-white rounded-lg transition-all duration-200 ${
                       isLoading || !bidAmount || isSuccess
                         ? "opacity-50 cursor-not-allowed"
                         : "hover:shadow-xl"
