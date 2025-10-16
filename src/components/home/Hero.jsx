@@ -56,7 +56,7 @@ export default function Hero () {
                     onClick={() => navigate("/dashboard")}
                     whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(79, 70, 229, 0.4)" }}
                     whileTap={{ scale: 0.95 }}
-                    className="border-2 border-[#4F46E5] cursor-pointer w-full px-6 py-2.5 text-sm text-[#4F46E5] rounded-lg font-semibold shadow-lg bg-white hover:bg-[#4F46E5]/10 transition-colors"
+                    className="flex gap-2 border-2 border-[#4F46E5] cursor-pointer px-6 py-2.5 text-sm text-[#4F46E5] rounded-lg font-semibold shadow-lg bg-white hover:bg-[#4F46E5]/10 transition-colors"
                   >
                     <span>Go to Dashboard</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

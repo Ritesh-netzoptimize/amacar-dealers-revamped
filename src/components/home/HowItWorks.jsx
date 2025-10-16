@@ -102,7 +102,7 @@ export default function HowItWorks() {
         </div>
 
         {/* CTA Section */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -114,7 +114,7 @@ export default function HowItWorks() {
             <span>Get Started Today</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </div>
-        </motion.div>
+        </motion.div> */}
       </div>
     </section>
   );
