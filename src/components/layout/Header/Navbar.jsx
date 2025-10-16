@@ -67,7 +67,7 @@ export default function Navbar() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white/90 backdrop-blur-md shadow-md" : "bg-transparent"
+        isScrolled ? "bg-white/95 backdrop-blur-md shadow-md" : "bg-white/95 backdrop-blur-md"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -92,9 +92,7 @@ export default function Navbar() {
                 onClick={() => scrollToSection(link.id)}
                 whileHover={{ y: -2 }}
                 className={`cursor-pointer font-semibold font-medium transition-all duration-300 px-3 py-2 rounded-lg ${
-                  isScrolled 
-                    ? "text-[var(--brand-orange)] hover:text-orange-500 hover:bg-orange-50" 
-                    : "text-white hover:text-orange-300 hover:bg-white/10 backdrop-blur-sm"
+                  "text-[#4A4A4A] hover:text-[#4A90E2] hover:bg-[#4A90E2]/10"
                 }`}
               >
                 {link.name}
@@ -104,14 +102,14 @@ export default function Navbar() {
               <div className="flex gap-2">
                 <button
                   onClick={() => navigate("/dashboard")}
-                  className="cursor-pointer px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+                  className="cursor-pointer px-6 py-2.5 bg-[#4A90E2] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
                 >
                   Dashboard
                 </button>
 
                 <button
                   onClick={handleLogout}
-                  className="cursor-pointer w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white"
+                  className="cursor-pointer w-full px-6 py-2.5 text-sm text-[#FF8C42] rounded-lg font-semibold border-2 border-[#FF8C42] bg-white hover:bg-[#FF8C42]/10"
                 >
                   Logout
                 </button>
@@ -124,13 +122,13 @@ export default function Navbar() {
                     setLoginModalOpen(true);
                     setIsMobileMenuOpen(false);
                   }}
-                  className="cursor-pointer px-6 py-2.5 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+                  className="cursor-pointer px-6 py-2.5 bg-[#4A90E2] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
                 >
                   Login
                 </button>
                 <button 
                   onClick={() => navigate("/register")}
-                  className="cursor-pointer w-full px-6 py-2.5 text-sm text-orange-500 rounded-lg font-semibold shadow-lg bg-white hover:bg-orange-50 transition-colors"
+                  className="cursor-pointer w-full px-6 py-2.5 text-sm text-[#FF8C42] rounded-lg font-semibold shadow-lg bg-white hover:bg-[#FF8C42]/10 transition-colors"
                 >
                   Join as dealer
                 </button>
@@ -141,9 +139,7 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <button
             className={`cursor-pointer md:hidden p-2 rounded-lg transition-all duration-300 ${
-              isScrolled 
-                ? "text-gray-700 hover:bg-gray-100" 
-                : "text-white hover:bg-white/10 backdrop-blur-sm"
+              "text-[#4A4A4A] hover:bg-[#4A90E2]/10"
             }`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
@@ -168,7 +164,7 @@ export default function Navbar() {
                   animate={{ opacity: 1, height: "auto" }}
                   key={link.id}
                   onClick={() => scrollToSection(link.id)}
-                  className="cursor-pointer block w-full text-left py-3 px-4 text-[var(--brand-orange)] font-semibold hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-all duration-200"
+                  className="cursor-pointer block w-full text-left py-3 px-4 text-[#4A90E2] font-semibold hover:text-[#FF8C42] hover:bg-[#FF8C42]/10 rounded-lg transition-all duration-200"
                 >
                   {link.name}
                 </motion.button>
@@ -176,7 +172,7 @@ export default function Navbar() {
               {user ? (
                 <button
                   onClick={() => navigate("/dashboard")}
-                  className="cursor-pointer mt-4 w-full px-6 py-3 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+                  className="cursor-pointer mt-4 w-full px-6 py-3 bg-[#4A90E2] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
                 >
                   Dashboard
                 </button>
@@ -187,13 +183,13 @@ export default function Navbar() {
                       setLoginModalOpen(true);
                       setIsMobileMenuOpen(false);
                     }}
-                    className="cursor-pointer w-full px-6 py-3 bg-[var(--brand-orange)] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+                    className="cursor-pointer w-full px-6 py-3 bg-[#4A90E2] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
                   >
                     Login →
                   </button>
                   <button 
                     onClick={() => navigate("/register")}
-                    className="cursor-pointer w-full px-6 py-3 text-sm text-orange-500 rounded-lg font-semibold border-2 border-[var(--brand-orange)] bg-white hover:bg-orange-50 transition-all"
+                    className="cursor-pointer w-full px-6 py-3 text-sm text-[#FF8C42] rounded-lg font-semibold border-2 border-[#FF8C42] bg-white hover:bg-[#FF8C42]/10 transition-all"
                   >
                     Join as dealer
                   </button>
