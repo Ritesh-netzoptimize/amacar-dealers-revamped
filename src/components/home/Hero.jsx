@@ -18,30 +18,8 @@ export default function Hero () {
       setLoginModalOpen(true);
     };
     return (
-      <div className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 bg-white">
-        {/* Professional Background */}
-        <div className="absolute inset-0 z-0">
-          {/* Clean white background with subtle patterns */}
-          <div className="absolute inset-0 bg-white" />
-          
-          {/* Subtle geometric patterns */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute top-20 left-20 w-32 h-32 border border-[#4A90E2]/20 rounded-full" />
-            <div className="absolute top-40 right-32 w-24 h-24 border border-[#FF8C42]/20 rounded-full" />
-            <div className="absolute bottom-32 left-32 w-40 h-40 border border-[#3DD598]/20 rounded-full" />
-            <div className="absolute bottom-20 right-20 w-28 h-28 border border-[#E94E8B]/20 rounded-full" />
-          </div>
-        </div>
-
-        <motion.div
-          style={{ y }}
-          className="absolute inset-0 z-0"
-        >
-          <div className="absolute top-20 right-10 w-72 h-72 bg-[#FF8C42]/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 left-10 w-96 h-96 bg-[#4A90E2]/5 rounded-full blur-3xl" />
-        </motion.div>
-  
-        <div className="relative z-10 max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="relative min-h-[80vh] p flex items-center justify-center overflow-hidden bg-white">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Column - Text Content */}
             <motion.div
@@ -50,32 +28,19 @@ export default function Hero () {
               transition={{ duration: 0.8 }}
               className="text-center lg:text-left"
             >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="inline-block mb-4 px-6 py-3 bg-[#4A90E2]/10 backdrop-blur-md border border-[#4A90E2]/20 rounded-full shadow-lg"
-              >
-                <div className="flex items-center space-x-2">
-                  <Shield className="w-4 h-4 text-[#4A90E2]" />
-                  <span className="text-[#4A90E2] font-semibold text-xs sm:text-sm">
-                    Trusted by 500+ Dealers Nationwide
-                  </span>
-                </div>
-              </motion.div>
     
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-[#1A1A1A] mb-8 leading-tight">
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-[#1A1A1A] mb-8 leading-none">
                 <span className="block mb-2">
                   <span className="text-[#1A1A1A]">
                     Real Leads.
                   </span>
                 </span>
                 <span className="block mb-2">
-                  <span className="text-[#4A90E2]">
+                  <span className="bg-gradient-to-r from-[#4F46E5] to-[#15A9D8] bg-clip-text text-transparent">
                     Real-Time Bidding.
                   </span>
                 </span>
-                <span className="block text-[#FF8C42]">
+                <span className="block text-[#15A9D8]">
                   Real Profit.
                 </span>
               </h1>
@@ -85,44 +50,13 @@ export default function Hero () {
                 Unlock advanced dealer tools that help you source quality inventory and close more deals, faster.
               </p>
 
-              {/* Key Benefits */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-[#FF8C42]/20 rounded-xl flex items-center justify-center">
-                    <Zap className="w-6 h-6 text-[#FF8C42]" />
-                  </div>
-                  <div>
-                    <p className="text-[#1A1A1A] font-semibold">Zero Fees</p>
-                    <p className="text-[#6B6B6B] text-sm">No per-unit charges</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-[#FF8C42]/20 rounded-xl flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-[#FF8C42]" />
-                  </div>
-                  <div>
-                    <p className="text-[#1A1A1A] font-semibold">Real-Time</p>
-                    <p className="text-[#6B6B6B] text-sm">Live bidding platform</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-[#FF8C42]/20 rounded-xl flex items-center justify-center">
-                    <Shield className="w-6 h-6 text-[#FF8C42]" />
-                  </div>
-                  <div>
-                    <p className="text-[#1A1A1A] font-semibold">Verified</p>
-                    <p className="text-[#6B6B6B] text-sm">Pre-qualified leads</p>
-                  </div>
-                </div>
-              </div>
-    
               <div className="flex flex-col sm:flex-row gap-4">
                 {user ? (
                   <motion.button
                     onClick={() => navigate("/dashboard")}
-                    whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(255, 140, 66, 0.4)" }}
+                    whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(79, 70, 229, 0.4)" }}
                     whileTap={{ scale: 0.95 }}
-                    className="cursor-pointer group px-8 py-4 bg-[#FF8C42] text-white text-lg font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center space-x-2"
+                    className="border-2 border-[#4F46E5] cursor-pointer w-full px-6 py-2.5 text-sm text-[#4F46E5] rounded-lg font-semibold shadow-lg bg-white hover:bg-[#4F46E5]/10 transition-colors"
                   >
                     <span>Go to Dashboard</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -130,11 +64,11 @@ export default function Hero () {
                 ) : (
                   <motion.button
                     onClick={() => setLoginModalOpen(true)}
-                    whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(74, 144, 226, 0.4)" }}
+                    whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="cursor-pointer group px-8 py-4 bg-[#4A90E2] text-white text-lg font-semibold rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center justify-center space-x-2"
+                    className="flex gap-2 border-2 border-[#4F46E5] cursor-pointer px-6 py-2.5 text-sm text-[#4F46E5] rounded-lg font-semibold shadow-lg bg-white hover:bg-[#4F46E5] hover:text-white transition-colors"
                   >
-                    <span>Login</span>
+                    <span>Sign Up</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </motion.button>
                 )}
@@ -149,17 +83,16 @@ export default function Hero () {
               className="relative"
             >
               <div 
-                className="relative rounded-3xl overflow-hidden shadow-2xl bg-white border border-[#E5E5E5] p-3 cursor-pointer group hover:shadow-3xl transition-all duration-500 hover:scale-105"
+                className="relative h-[40vh] rounded-3xl overflow-hidden shadow-2xl bg-white border border-[#E5E5E5] p-3 cursor-pointer group hover:shadow-3xl transition-all duration-500 hover:scale-105 "
                 onClick={() => setShowVideo(true)}
               >
-                <div className="relative w-full h-80 sm:h-96 lg:h-[500px] bg-gradient-to-br from-[#E94E8B] to-[#4A90E2] rounded-2xl flex items-center justify-center">
+                <div className="relative w-full h-full bg-[#4F46E5] rounded-2xl ">
                   {/* Professional video thumbnail */}
-                  <div className="text-center">
-                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-2xl">
-                      <Play className="w-10 h-10 text-[#E94E8B] ml-1" />
+                  <div className="text-center h-full p-4 flex flex-col items-center justify-center">
+                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-2xl">
+                      <Play className="w-8 h-8 text-[#4F46E5] ml-1" />
                     </div>
-                    <h3 className="text-white font-bold text-2xl mb-2">See Amacar in Action</h3>
-                    <div className="flex items-center justify-center space-x-4 text-white/80 text-sm">
+                    <div className="flex items-center justify-center space-x-4 text-white/80 text-xs">
                       <span>• Real-time bidding</span>
                       <span>• Instant access</span>
                     </div>
@@ -204,7 +137,7 @@ export default function Hero () {
               {/* Professional close button */}
               <button
                 onClick={() => setShowVideo(false)}
-                className="absolute -top-4 -right-4 z-10 w-12 h-12 bg-[#FF8C42] hover:bg-[#E94E8B] rounded-full flex items-center justify-center text-white transition-all duration-300 shadow-2xl hover:scale-110"
+                className="absolute -top-4 -right-4 z-10 w-12 h-12 bg-[#4F46E5] hover:bg-[#2E93E1] rounded-full flex items-center justify-center text-white transition-all duration-300 shadow-2xl hover:scale-110"
               >
                 <X className="w-6 h-6" />
               </button>

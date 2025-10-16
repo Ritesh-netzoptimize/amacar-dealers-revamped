@@ -9,20 +9,27 @@ import Navbar from "@/components/layout/Header/Navbar";
 import React from "react";
 import Footer from "@/components/layout/Footer/Footer";
 import BrandLogosCarousel from "@/components/home/BrandLogosCarousel";
+import HomeNew from "../home-new/HomeNew";
+import HomeNewNew from "../home-new-new/HomeNewNew";
+import TestimonialCarousel from "@/components/home/Testimonials";
 
 const Home = () => {
   return (
-    <div className="font-sans antialiased">
+    <div className="font-sans antialiased ">
       <Navbar />
-      <Hero />
-      <Features />
-      <BrandLogosCarousel />
-      <Highlights />
-      <HowItWorks />
-      <SuccessStories />
-      <FAQ />
-      <CTA />
-      <Footer />
+      <div className="mt-4">
+        {/* <HomeNewNew /> */}
+        <Hero />
+        <Features />
+        <BrandLogosCarousel />
+        <Highlights />
+        <HowItWorks />
+        <SuccessStories />
+        <TestimonialCarousel />
+        <FAQ />
+        <CTA />
+        <Footer />
+      </div>
     </div>
   );
 };

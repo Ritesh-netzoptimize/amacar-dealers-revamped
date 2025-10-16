@@ -1,14 +1,15 @@
 import { Star, TrendingUp, Users, Award, Quote, CheckCircle } from "lucide-react";
 import { AnimatedSection } from "../common/AnimatedSection/AnimatedSection";
 import { motion } from 'framer-motion';
+import TestimonialCarousel from "./Testimonials";
 
 export default function SuccessStories ()  {
     return (
       <section id="success-stories" className="py-18 bg-gradient-to-br from-white to-[#F8F9FA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="text-center mb-20">
-            <div className="inline-block px-4 py-2 bg-[#FF8C42]/10 rounded-full mb-6">
-              <span className="text-[#FF8C42] font-semibold text-sm">Success Stories</span>
+            <div className="inline-block px-4 py-2 bg-[#4F46E5]/10 rounded-full mb-6">
+              <span className="text-[#4F46E5] font-semibold text-sm">Success Stories</span>
             </div>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1A1A1A] mb-6 leading-tight">
               Stay Ahead. Win More Deals.
@@ -25,19 +26,19 @@ export default function SuccessStories ()  {
                 icon: <TrendingUp className="w-8 h-8" />,
                 title: "Boost Profit with Smarter Bidding",
                 description: "Learn advanced bidding strategies that help maximize your ROI while securing quality inventory at competitive prices.",
-                gradient: "from-[#E94E8B] to-[#4A90E2]"
+                gradient: "from-[#4F46E5] to-[#2E93E1]"
               },
               {
                 icon: <Users className="w-8 h-8" />,
                 title: "Digital Tools to Scale Inventory",
                 description: "Discover how technology can streamline your operations and scale your dealership efficiently with our integrated platform.",
-                gradient: "from-[#FF8C42] to-[#3DD598]"
+                gradient: "from-[#15A9D8] to-[#2E93E1]"
               },
               {
                 icon: <Award className="w-8 h-8" />,
                 title: "Dealers Achieving Real Results",
                 description: "Read success stories from dealers who have transformed their business using our platform and increased their profits.",
-                gradient: "from-[#3DD598] to-[#3DD598]"
+                gradient: "from-[#2E93E1] to-[#2E93E1]"
               }
             ].map((item, index) => (
               <AnimatedSection key={index}>
@@ -45,22 +46,21 @@ export default function SuccessStories ()  {
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
                   whileHover={{ 
                     y: -8, 
                     scale: 1.02,
-                    boxShadow: "0 25px 50px rgba(74, 144, 226, 0.15)" 
+                    boxShadow: "0 25px 50px rgba(79, 70, 229, 0.15)" 
                   }}
-                  className="group p-8 bg-white rounded-2xl border border-[#E5E5E5] shadow-lg hover:shadow-2xl transition-all duration-500 relative overflow-hidden"
+                  className="group p-8 bg-white rounded-2xl border border-[#E5E5E5] shadow-lg hover:shadow-2xl transition-all duration-200 relative overflow-hidden"
                 >
                   {/* Subtle background gradient */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-200`} />
                   
-                  <div className={`w-16 h-16 bg-gradient-to-r ${item.gradient} rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                  <div className={`w-16 h-16 bg-gradient-to-r ${item.gradient} rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110  duration-100 shadow-lg`}>
                     {item.icon}
                   </div>
                   
-                  <h3 className="text-xl font-bold text-[#1A1A1A] mb-4 group-hover:text-[#4A90E2] transition-colors duration-300">
+                  <h3 className="text-xl font-bold text-[#1A1A1A] mb-4 group-hover:text-[#4F46E5] transition-colors duration-300">
                     {item.title}
                   </h3>
                   
@@ -75,46 +75,6 @@ export default function SuccessStories ()  {
             ))}
           </div>
   
-          {/* Professional Testimonial */}
-          <AnimatedSection>
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              whileHover={{ scale: 1.02 }}
-              className="relative p-12 bg-gradient-to-br from-[#4A90E2] to-[#1E3A5F] rounded-3xl shadow-2xl text-white overflow-hidden"
-            >
-              {/* Background pattern */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-8 right-8 w-32 h-32 border border-white/20 rounded-full" />
-                <div className="absolute bottom-8 left-8 w-24 h-24 border border-white/20 rounded-full" />
-              </div>
-              
-              <div className="relative z-10">
-                <div className="flex items-center justify-center mb-6">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} className="w-6 h-6 fill-[#FF8C42] text-[#FF8C42] mx-1" />
-                  ))}
-                </div>
-                
-                <Quote className="w-12 h-12 text-[#FF8C42] mx-auto mb-6" />
-                
-                <blockquote className="text-2xl sm:text-3xl font-bold text-center mb-8 leading-relaxed">
-                  "We've acquired 50+ cars weekly since joining Amacar."
-                </blockquote>
-                
-                <div className="text-center">
-                  <p className="text-xl font-semibold mb-2">
-                    Mike Rodriguez
-                  </p>
-                  <p className="text-[#FF8C42] font-medium">
-                    Owner, Rodriguez Auto Group
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatedSection>
   
           {/* Statistics */}
           <motion.div
@@ -125,7 +85,7 @@ export default function SuccessStories ()  {
             className="grid md:grid-cols-2 gap-8 mt-16"
           >
             <div className="text-center p-8 bg-white rounded-2xl border border-[#E5E5E5] shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#4A90E2] to-[#4A90E2] rounded-2xl flex items-center justify-center text-white mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-r from-[#4F46E5] to-[#4F46E5] rounded-2xl flex items-center justify-center text-white mx-auto mb-4">
                 <Users className="w-8 h-8" />
               </div>
               <p className="text-4xl font-bold text-[#1A1A1A] mb-2">500+</p>
@@ -133,7 +93,7 @@ export default function SuccessStories ()  {
             </div>
             
             <div className="text-center p-8 bg-white rounded-2xl border border-[#E5E5E5] shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#FF8C42] to-[#FF8C42] rounded-2xl flex items-center justify-center text-white mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-r from-[#15A9D8] to-[#15A9D8] rounded-2xl flex items-center justify-center text-white mx-auto mb-4">
                 <Star className="w-8 h-8" />
               </div>
               <p className="text-4xl font-bold text-[#1A1A1A] mb-2">4.9/5</p>

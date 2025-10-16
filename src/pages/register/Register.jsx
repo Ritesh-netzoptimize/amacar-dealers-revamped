@@ -352,9 +352,20 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-primary-50">
+      {/* Custom breakpoint for very small screens */}
+      <style jsx>{`
+        @media (max-width: 375px) {
+          .xs\\:block { display: block !important; }
+          .xs\\:hidden { display: none !important; }
+        }
+        @media (min-width: 376px) {
+          .xs\\:block { display: block !important; }
+          .xs\\:hidden { display: none !important; }
+        }
+      `}</style>
       {/* Mobile Header */}
       <div className="lg:hidden bg-white shadow-sm border-b border-neutral-200 sticky top-0 z-40">
-        <div className="px-4 py-4">
+        <div className="px-2 xs:px-3 sm:px-4 py-2 xs:py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -364,16 +375,19 @@ const Register = () => {
               <img 
                 src="https://dealer.amacar.ai/wp-content/uploads/2024/10/logo-4-2048x680.png"
                 alt="Amacar Logo"
-                className="h-8 w-auto"
+                className="h-6 sm:h-8 w-auto"
               />
             </motion.div>
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-white" />
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
+                <CheckCircle className="w-3 h-3 sm:w-5 sm:h-5 text-white" />
               </div>
-              <div>
-                <h1 className="text-lg font-bold text-neutral-900">Dealer Registration</h1>
+              <div className="hidden xs:block">
+                <h1 className="text-sm sm:text-lg font-bold text-neutral-900">Dealer Registration</h1>
                 <p className="text-xs text-neutral-600">Step {currentStep} of {steps.length}</p>
+              </div>
+              <div className="xs:hidden">
+                <h1 className="text-sm font-bold text-neutral-900">Step {currentStep}/{steps.length}</h1>
               </div>
             </div>
           </div>
@@ -383,22 +397,21 @@ const Register = () => {
       {/* Invitation Status Banner */}
       {invitationLoading && (
         <div className="bg-blue-50 border-b border-blue-200">
-          <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="max-w-7xl mx-auto px-2 xs:px-3 sm:px-4 py-2 xs:py-2 sm:py-3">
             <div className="flex items-center justify-center space-x-2">
               <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-              <span className="text-blue-700 text-sm font-medium">Loading invitation details...</span>
+              <span className="text-blue-700 text-xs sm:text-sm font-medium">Loading invitation details...</span>
             </div>
           </div>
         </div>
       )}
 
-
       {isInvitedUser && invitationData && (
         <div className="bg-green-50 border-b border-green-200">
-          <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="max-w-7xl mx-auto px-2 xs:px-3 sm:px-4 py-2 xs:py-2 sm:py-3">
             <div className="flex items-center justify-center space-x-2">
               <UserPlus className="w-4 h-4 text-green-500" />
-              <span className="text-green-700 text-sm font-medium">
+              <span className="text-green-700 text-xs sm:text-sm font-medium">
                 You were invited by <strong>Amacar sales manager</strong>
               </span>
             </div>
@@ -406,7 +419,7 @@ const Register = () => {
         </div>
       )}
 
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen flex-col lg:flex-row">
         {/* Left Column - Image */}
         <div className="hidden lg:flex lg:w-2/5 relative overflow-hidden">
           <motion.div
@@ -428,13 +441,13 @@ const Register = () => {
               </div>
 
               {/* Content Overlay */}
-              <div className="relative z-10 h-full flex flex-col justify-center items-center text-white p-12">
+              <div className="relative z-10 h-full flex flex-col justify-center items-center text-white p-8 xl:p-12">
                 {/* Logo at the top */}
                 <motion.div
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
-                  className="absolute top-8 left-8"
+                  className="absolute top-6 xl:top-8 left-6 xl:left-8"
                 >
                   
                 </motion.div>
@@ -445,66 +458,66 @@ const Register = () => {
                   transition={{ duration: 0.8, delay: 0.4 }}
                   className="text-center max-w-[150vh]"
                 >
-                  <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
-                    <CheckCircle className="w-10 h-10" />
+                  <div className="w-16 xl:w-20 h-16 xl:h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 xl:mb-6 backdrop-blur-sm">
+                    <CheckCircle className="w-8 xl:w-10 h-8 xl:h-10" />
                   </div>
                   
-                  <h2 className="text-4xl font-bold mb-4">Join Amacar</h2>
-                  <p className="text-xl text-primary-100 mb-8 leading-relaxed">
+                  <h2 className="text-3xl xl:text-4xl font-bold mb-3 xl:mb-4">Join Amacar</h2>
+                  <p className="text-lg xl:text-xl text-primary-100 mb-6 xl:mb-8 leading-relaxed">
                     Connect with the future of automotive auctions
                   </p>
 
                   {/* Features in 2x2 Grid */}
-                  <div className="grid grid-cols-2 gap-4 mb-8 ">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                        <CheckCircle className="w-4 h-4" />
+                  <div className="grid grid-cols-2 gap-3 xl:gap-4 mb-6 xl:mb-8">
+                    <div className="flex items-center space-x-2 xl:space-x-3">
+                      <div className="w-5 xl:w-6 h-5 xl:h-6 rounded-full bg-white/20 flex items-center justify-center">
+                        <CheckCircle className="w-3 xl:w-4 h-3 xl:h-4" />
                       </div>
-                      <span className="text-primary-100 text-sm">Premium vehicle auctions</span>
+                      <span className="text-primary-100 text-xs xl:text-sm">Premium vehicle auctions</span>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                        <CheckCircle className="w-4 h-4" />
+                    <div className="flex items-center space-x-2 xl:space-x-3">
+                      <div className="w-5 xl:w-6 h-5 xl:h-6 rounded-full bg-white/20 flex items-center justify-center">
+                        <CheckCircle className="w-3 xl:w-4 h-3 xl:h-4" />
                       </div>
-                      <span className="text-primary-100 text-sm">Real-time bidding platform</span>
+                      <span className="text-primary-100 text-xs xl:text-sm">Real-time bidding platform</span>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                        <CheckCircle className="w-4 h-4" />
+                    <div className="flex items-center space-x-2 xl:space-x-3">
+                      <div className="w-5 xl:w-6 h-5 xl:h-6 rounded-full bg-white/20 flex items-center justify-center">
+                        <CheckCircle className="w-3 xl:w-4 h-3 xl:h-4" />
                       </div>
-                      <span className="text-primary-100 text-sm">Advanced analytics & insights</span>
+                      <span className="text-primary-100 text-xs xl:text-sm">Advanced analytics & insights</span>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                        <CheckCircle className="w-4 h-4" />
+                    <div className="flex items-center space-x-2 xl:space-x-3">
+                      <div className="w-5 xl:w-6 h-5 xl:h-6 rounded-full bg-white/20 flex items-center justify-center">
+                        <CheckCircle className="w-3 xl:w-4 h-3 xl:h-4" />
                       </div>
-                      <span className="text-primary-100 text-sm">24/7 expert support</span>
+                      <span className="text-primary-100 text-xs xl:text-sm">24/7 expert support</span>
                     </div>
                   </div>
 
                   {/* Progress Indicator */}
-                  <div className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm">
-                    <h3 className="font-semibold mb-4 text-center">Registration Progress</h3>
-                    <div className="space-y-3">
+                  <div className="bg-white/10 rounded-2xl p-4 xl:p-6 backdrop-blur-sm">
+                    <h3 className="font-semibold mb-3 xl:mb-4 text-center text-sm xl:text-base">Registration Progress</h3>
+                    <div className="space-y-2 xl:space-y-3">
                       {steps.map((step, index) => (
                         <motion.div
                           key={step.id}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.6 + index * 0.1 }}
-                          className="flex items-center space-x-3"
+                          className="flex items-center space-x-2 xl:space-x-3"
                         >
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
+                          <div className={`w-6 xl:w-8 h-6 xl:h-8 rounded-full flex items-center justify-center text-xs xl:text-sm font-semibold transition-all duration-300 ${
                             currentStep > step.id 
                               ? 'bg-white text-primary-600 scale-110' 
                               : currentStep === step.id 
                               ? 'bg-primary-300 text-white scale-105' 
                               : 'bg-white/20 text-white/60'
                           }`}>
-                            {currentStep > step.id ? <CheckCircle className="w-5 h-5" /> : step.id}
+                            {currentStep > step.id ? <CheckCircle className="w-4 xl:w-5 h-4 xl:h-5" /> : step.id}
                           </div>
                           <div className="flex-1">
-                            <div className={`text-sm font-medium transition-colors ${
+                            <div className={`text-xs xl:text-sm font-medium transition-colors ${
                               currentStep >= step.id ? 'text-white' : 'text-white/60'
                             }`}>
                               {step.title}
@@ -526,9 +539,9 @@ const Register = () => {
         </div>
 
         {/* Right Column - Form */}
-        <div className="w-full lg:w-3/5 flex flex-col bg-[#fffcf8]">
+        <div className="w-full lg:w-3/5 flex flex-col bg-[#fffcf8] min-h-screen lg:min-h-0">
           {/* Desktop Logo */}
-          <div className="hidden lg:block absolute top-8 right-8 z-10">
+          <div className="hidden lg:block absolute top-6 xl:top-8 right-6 xl:right-8 z-10">
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="cursor-pointer"
@@ -537,22 +550,22 @@ const Register = () => {
               <img 
                 src="https://dealer.amacar.ai/wp-content/uploads/2024/10/logo-4-2048x680.png"
                 alt="Amacar Logo"
-                className="h-8 w-auto"
+                className="h-6 xl:h-8 w-auto"
               />
             </motion.div>
           </div>
 
-          <div className="flex-1 flex items-center justify-center p-4 lg:p-8">
+          <div className="flex-1 flex items-center justify-center p-2 xs:p-3 sm:p-4 lg:p-6 xl:p-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="w-full max-w-4xl"
+              className="w-full max-w-4xl mx-auto"
             >
               {/* Form Card */}
-              <div className="bg-[#fffcf8] overflow-hidden min-h-[800px] max-h-[900px] flex flex-col">
+              <div className="bg-[#fffcf8] overflow-hidden min-h-[500px] sm:min-h-[600px] lg:min-h-[800px] max-h-[820px] sm:max-h-[800px] lg:max-h-[900px] flex flex-col">
                 {/* Mobile Progress Stepper */}
-                <div className="lg:hidden p-4 border-b border-neutral-200 flex-shrink-0">
+                <div className="lg:hidden p-3 sm:p-4 border-b border-neutral-200 flex-shrink-0">
                   <ProgressStepper 
                     steps={steps} 
                     currentStep={currentStep} 
@@ -560,7 +573,7 @@ const Register = () => {
                 </div>
 
                 {/* Form Content */}
-                <div className="flex-1 p-6 lg:p-8 overflow-y-auto overflow-x-hidden">
+                <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto overflow-x-hidden">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={currentStep}
@@ -576,18 +589,18 @@ const Register = () => {
                 </div>
 
                 {/* Navigation Buttons - Below Form */}
-                <div className="flex-shrink-0 p-6 lg:p-8 ">
-                  <div className="flex justify-between items-center">
+                <div className="flex-shrink-0 p-4 sm:p-6 lg:p-8">
+                  <div className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
                     <button
                       onClick={handlePrevious}
                       disabled={currentStep === 1}
-                      className="flex items-center space-x-2 px-6 py-3 text-neutral-600 hover:text-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:bg-white rounded-xl border border-neutral-200"
+                      className="flex items-center space-x-2 px-4 sm:px-6 py-2.5 sm:py-3 text-neutral-600 hover:text-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:bg-white rounded-xl border border-neutral-200 w-full sm:w-auto justify-center sm:justify-start"
                     >
-                      <ChevronLeft className="w-5 h-5" />
-                      <span>Previous</span>
+                      <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="text-sm sm:text-base">Previous</span>
                     </button>
 
-                    <div className="flex space-x-3">
+                    <div className="flex space-x-2 sm:space-x-3 w-full sm:w-auto">
                       {currentStep < steps.length ? (
                         <motion.button
                           onClick={handleNext}
@@ -599,7 +612,7 @@ const Register = () => {
                           whileTap={isStepValid(currentStep) ? { 
                             scale: 0.98 
                           } : {}}
-                          className={`flex items-center space-x-2 px-8 py-3 font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 ${
+                          className={`flex items-center space-x-2 px-6 sm:px-8 py-2.5 sm:py-3 font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 w-full sm:w-auto justify-center ${
                             isStepValid(currentStep)
                               ? 'bg-primary-500 hover:bg-primary-600 text-white focus:ring-primary-200'
                               : 'bg-neutral-300 text-neutral-500 cursor-not-allowed'
@@ -616,12 +629,14 @@ const Register = () => {
                             }}
                             className="flex items-center space-x-2"
                           >
-                            {currentStep === 2 && formData.talkToSales 
-                              ? 'Submit to Sales Team' 
-                              : currentStep === 2 && !formData.talkToSales 
-                              ? 'Continue to Payment' 
-                              : 'Next'
-                            }
+                            <span className="text-sm sm:text-base">
+                              {currentStep === 2 && formData.talkToSales 
+                                ? 'Submit to Sales Team' 
+                                : currentStep === 2 && !formData.talkToSales 
+                                ? 'Continue to Payment' 
+                                : 'Next'
+                              }
+                            </span>
                           </motion.span>
                           <motion.div
                             animate={{ 
@@ -635,11 +650,11 @@ const Register = () => {
                               repeatDelay: 2
                             }}
                           >
-                            <ChevronRight className="w-5 h-5" />
+                            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                           </motion.div>
                         </motion.button>
                       ) : (
-                        <div className="text-center text-neutral-500 text-sm">
+                        <div className="text-center text-neutral-500 text-xs sm:text-sm w-full">
                           Registration will be completed after payment setup
                         </div>
                       )}

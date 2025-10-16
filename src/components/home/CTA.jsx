@@ -8,7 +8,7 @@ export default function CTA () {
     const {user} = useSelector((state) => state.user);
     const navigate = useNavigate();
     return (
-      <section className="py-12 bg-gradient-to-br from-[#1E3A5F] via-[#2C4B6B] to-[#1E3A5F] relative overflow-hidden">
+      <section  className="py-12 bg-gradient-to-r from-[#1F274D] to-[#1A2436] relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-32 h-32 border border-white/20 rounded-full" />
@@ -64,10 +64,10 @@ export default function CTA () {
                     onClick={() => navigate("/dashboard")}
                     whileHover={{ 
                       scale: 1.05, 
-                      boxShadow: "0 25px 50px rgba(255, 140, 66, 0.4)" 
+                      boxShadow: "0 25px 50px rgba(79, 70, 229, 0.4)" 
                     }}
                     whileTap={{ scale: 0.95 }}
-                    className="cursor-pointer group px-10 py-5 bg-[#FF8C42] text-white text-lg font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center space-x-3"
+                    className="cursor-pointer group px-10 py-5 bg-[#4F46E5] text-white text-lg font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center space-x-3"
                   >
                     <span>Go to Dashboard</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -81,7 +81,7 @@ export default function CTA () {
                       boxShadow: "0 25px 50px rgba(255, 255, 255, 0.3)" 
                     }}
                     whileTap={{ scale: 0.95 }}
-                    className="cursor-pointer group px-10 py-5 bg-white text-[#1E3A5F] text-lg font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center space-x-3"
+                    className="cursor-pointer group px-10 py-5 bg-white text-[#4F46E5] text-lg font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center space-x-3"
                   >
                     <span>Join as Dealer</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -100,7 +100,7 @@ export default function CTA () {
             >
               <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-12 text-white/80">
                 <div className="flex items-center space-x-2">
-                  <Star className="w-5 h-5 fill-[#FF8C42] text-[#FF8C42]" />
+                  <Star className="w-5 h-5 fill-[#15A9D8] text-[#15A9D8]" />
                   <span className="font-medium">4.9/5 Rating</span>
                 </div>
                 <div className="flex items-center space-x-2">
