@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUp } from 'lucide-react';
 import { Button } from './button';
 
-const BackToTop = () => {
+const   BackToTop = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   // Show button when page is scrolled down past window height
@@ -48,7 +48,7 @@ const BackToTop = () => {
           <Button
             onClick={scrollToTop}
             size="icon"
-            className="h-12 w-12 cursor-pointer  rounded-full shadow-lg hover:shadow-xl transition-all duration-200 bg-primary-500 hover:bg-primary-600 text-white border-0"
+            className="h-12 w-12 cursor-pointer  rounded-full shadow-lg hover:shadow-xl transition-all duration-200 bg-[#1E3A5F] hover:bg-[#1E3A5F]/80 text-white border-0"
             aria-label="Back to top"
           >
             <ArrowUp className="h-5 w-5" />

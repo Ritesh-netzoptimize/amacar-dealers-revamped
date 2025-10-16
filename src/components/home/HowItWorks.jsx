@@ -27,7 +27,7 @@ export default function HowItWorks() {
       number: "3",
       title: "Bid & Win Instantly",
       description:
-        "Participate in real-time auctions with unlimited bidding. Win quality vehicles at competitive prices with zero per-unit fees.",
+        "Participate in real-time auctions with unlimited bidding. Win quality vehicles at competitive prices.",
       icon: <Gavel className="w-8 h-8" />,
       gradient: "from-[#2E93E1] to-[#2E93E1]",
     },
@@ -76,18 +76,12 @@ export default function HowItWorks() {
                   <div
                     className={`w-12 h-12 bg-gradient-to-r ${step.gradient} rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-2xl group-hover:scale-110 transition-transform duration-300`}
                   >
-                    {step.icon}
+                    {step.number}
                   </div>
                 </div>
 
                 {/* Card */}
                 <div className="relative p-8 pt-12 bg-white rounded-2xl border border-[#E5E5E5] shadow-lg hover:shadow-2xl transition-all duration-500 group-hover:border-[#4F46E5]/20">
-                  {/* Icon */}
-                  <div
-                    className={`w-12 h-12 bg-gradient-to-r ${step.gradient} rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
-                  >
-                    {step.number}
-                  </div>
 
                   <h3 className="text-2xl font-bold text-[#1A1A1A] mb-4 group-hover:text-[#4F46E5] transition-colors duration-300">
                     {step.title}

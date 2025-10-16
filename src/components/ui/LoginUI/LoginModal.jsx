@@ -784,7 +784,7 @@ export default function LoginModal({
                     <button
                       type="submit"
                       disabled={isDisabled}
-                      className="cursor-pointer w-full h-11 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white text-sm font-semibold shadow-lg shadow-orange-500/20 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="cursor-pointer w-full h-11 rounded-xl bg-gradient-to-r from-[var(--brand-purple)] to-[var(--brand-purple)] text-white text-sm font-semibold shadow-lg shadow-[var(--brand-purple)]-500/20 transition hover:from-[var(--brand-purple)]-600 hover:to-[var(--brand-purple)]-600 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {status === "loading" ? (
                         <div className="flex items-center justify-center gap-2">
@@ -904,7 +904,7 @@ export default function LoginModal({
                     <div className="grid place-items-center rounded-2xl border border-green-200 bg-gradient-to-b from-white to-emerald-50 p-4 shadow-sm">
                       <CheckCircle2 className="h-14 w-14 text-green-500" />
                     </div>
-                    <Sparkles className="absolute -right-2 -top-2 h-4 w-4 text-amber-500" />
+                    <Sparkles className="absolute -right-2 -top-2 h-4 w-4 text-[var(--brand-purple)]-500" />
                   </motion.div>
                   <div className="space-y-1">
                     <h3 className="text-lg font-semibold text-slate-900">
@@ -948,7 +948,7 @@ export default function LoginModal({
                   </div>
                   <button
                     onClick={handleBackToForm}
-                    className="cursor-pointer w-full max-w-[200px] h-11 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white text-sm font-semibold shadow-lg shadow-orange-500/20 transition hover:from-orange-600 hover:to-amber-600"
+                    className="cursor-pointer w-full max-w-[200px] h-11 rounded-xl bg-gradient-to-r from-[var(--brand-purple)] to-[var(--brand-purple)] text-white text-sm font-semibold shadow-lg shadow-[var(--brand-purple)] transition hover:from-[var(--brand-purple)] hover:to-[var(--brand-purple)]"
                   >
                     Try Again
                   </button>
@@ -1028,7 +1028,7 @@ export default function LoginModal({
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="cursor-pointer w-full h-11 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white text-sm font-semibold shadow-lg shadow-orange-500/20 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="cursor-pointer w-full h-11 rounded-xl bg-gradient-to-r from-[var(--brand-purple)] to-[var(--brand-purple)] text-white text-sm font-semibold shadow-lg shadow-[var(--brand-purple)] transition hover:from-[var(--brand-purple)] hover:to-[var(--brand-purple)] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {status === "loading" ? (
                   <div className="flex items-center justify-center gap-2">

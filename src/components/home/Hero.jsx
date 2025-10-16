@@ -40,7 +40,7 @@ export default function Hero () {
                     Real-Time Bidding.
                   </span>
                 </span>
-                <span className="block text-[#15A9D8]">
+                <span className="block text-black">
                   Real Profit.
                 </span>
               </h1>

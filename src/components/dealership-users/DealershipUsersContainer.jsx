@@ -279,7 +279,7 @@ const DealershipUsersContainer = ({
                     <span>Edit User</span>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem
+                {/* <DropdownMenuItem
                   //   onClick={() => onContactUser(row.original.id)}
                   onClick={(e) => e.stopPropagation()}
                   href={`tel:${row.original.phone}`}
@@ -287,7 +287,7 @@ const DealershipUsersContainer = ({
                 >
                   <MessageSquare className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                   <span>Contact</span>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 {row.original.status.account_status === "active" && canDeleteUpdateDealershipUsers ? (
                   <DropdownMenuItem
                     onClick={() => handleDeactivateUser(row.original.id)}
@@ -639,7 +639,7 @@ const DealershipUsersContainer = ({
                         <Edit className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                         <span>Edit User</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem
+                      {/* <DropdownMenuItem
                         // onClick={() => onContactUser(row.original.id)}
                         onClick={(e) => e.stopPropagation()}
                         href={`tel:${row.original.phone}`}
@@ -647,7 +647,7 @@ const DealershipUsersContainer = ({
                       >
                         <MessageSquare className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
                         <span>Contact</span>
-                      </DropdownMenuItem>
+                      </DropdownMenuItem> */}
                       {row.original.status.account_status === "active" ? (
                         <DropdownMenuItem
                           onClick={() => handleDeactivateUser(row.original.id)}

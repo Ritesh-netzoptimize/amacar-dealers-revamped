@@ -81,7 +81,7 @@ export default function CTA () {
                       boxShadow: "0 25px 50px rgba(255, 255, 255, 0.3)" 
                     }}
                     whileTap={{ scale: 0.95 }}
-                    className="cursor-pointer group px-10 py-5 bg-white text-[#4F46E5] text-lg font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center space-x-3"
+                    className="cursor-pointer group px-10 py-5 bg-white text-[#1F274D] text-lg font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 flex items-center space-x-3"
                   >
                     <span>Join as Dealer</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
