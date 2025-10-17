@@ -10,6 +10,22 @@ import UserActivityChart from "@/components/reports/UserActivityChart";
 import SubscriptionRevenueChart from "@/components/reports/SubscriptionRevenueChart";
 import DynamicSmartInsights from "@/components/reports/DynamicSmartInsights";
 import ReportsGlobalFilter from "@/components/filters/ReportsGlobalFilter";
+import { useSelector } from "react-redux";
+import { 
+  canAccessDealerReports, 
+  canAccessSalesManagerReports, 
+  canAccessAdminReports,
+  canAccessAuctionActivityReport,
+  canAccessBidPerformanceReport,
+  canAccessCustomerEngagementReport,
+  canAccessAppointmentsReport,
+  canAccessDashboardSummaryReport,
+  canAccessDealerPerformanceReport,
+  canAccessUserActivityReport,
+  canAccessSubscriptionRevenueReport,
+  canAccessSystemPerformanceReport,
+  canAccessFeatureUsageReport
+} from "@/utils/rolePermissions";
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -22,6 +38,10 @@ const ReportsContent = () => {
       startDate: null,
       endDate: null,
     });
+    
+    // Get user role from Redux store
+    const { user } = useSelector((state) => state.user);
+    const userRole = user?.role;
     
     // Use the updated hook
     const {
@@ -169,6 +189,9 @@ const ReportsContent = () => {
             <ReportKPICards 
               startDate={dateRange.startDate}
               endDate={dateRange.endDate}
+              onKPIClick={handleKPIClickWrapper}
+              isChartLoading={isChartLoading}
+              activeKPI={activeKPI}
             />
           </motion.div>
   
@@ -182,88 +205,157 @@ const ReportsContent = () => {
               isLoading={isFilterLoading}
             />
           </motion.div>
+
+          {/* Chart Loading Indicator */}
+          {isChartLoading && (
+            <motion.div 
+              className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#4F46E5]"></div>
+              <div>
+                <p className="text-sm font-medium text-[#4F46E5]">Loading Chart Data</p>
+                <p className="text-xs text-gray-600">Please wait while we fetch the latest data...</p>
+              </div>
+            </motion.div>
+          )}
   
          
   
+          {/* Dealer Level Charts */}
+          {canAccessDealerReports(userRole) && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
+              {/* Customer Distribution Chart */}
+              {canAccessCustomerEngagementReport(userRole) && (
+                <motion.div className="mt-12" variants={statsVariants}>
+                  <CustomerDistributionChart 
+                    startDate={dateRange.startDate}
+                    endDate={dateRange.endDate}
+                  />
+                </motion.div>
+              )}
+    
+              {/* Customer Engagement Chart */}
+              {canAccessCustomerEngagementReport(userRole) && (
+                <motion.div className="mt-12" variants={statsVariants}>
+                  <CustomerEngagementChart 
+                    startDate={dateRange.startDate}
+                    endDate={dateRange.endDate}
+                  />
+                </motion.div>
+              )}
+            </div>
+          )}
+  
+          {/* Dealer Level Charts - Bid Performance & Appointments */}
+          {canAccessDealerReports(userRole) && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
+              {/* Bid Performance Chart */}
+              {canAccessBidPerformanceReport(userRole) && (
+                <motion.div className="mt-4" variants={statsVariants}>
+                  <BidPerformanceChart 
+                    startDate={dateRange.startDate}
+                    endDate={dateRange.endDate}
+                  />
+                </motion.div>
+              )}
+    
+              {/* Appointment Trends Chart */}
+              {canAccessAppointmentsReport(userRole) && (
+                <motion.div className="mt-4" variants={statsVariants}>
+                  <AppointmentTrendsChart 
+                    startDate={dateRange.startDate}
+                    endDate={dateRange.endDate}
+                  />
+                </motion.div>
+              )}
+            </div>
+          )}
+
+          {/* Mixed Level Charts - Auction Activity (Dealer) & User Activity (Sales Manager) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
-            {/* Customer Distribution Chart */}
-            <motion.div className="mt-12" variants={statsVariants}>
-              <CustomerDistributionChart 
-                startDate={dateRange.startDate}
-                endDate={dateRange.endDate}
-              />
-            </motion.div>
+            {/* Auction Activity Chart - Dealer Level */}
+            {canAccessAuctionActivityReport(userRole) && (
+              <motion.div className="mt-4" variants={statsVariants}>
+                <AuctionActivityChart 
+                  startDate={dateRange.startDate}
+                  endDate={dateRange.endDate}
+                />
+              </motion.div>
+            )}
   
-            {/* Customer Engagement Chart */}
-            <motion.div className="mt-12" variants={statsVariants}>
-              <CustomerEngagementChart 
-                startDate={dateRange.startDate}
-                endDate={dateRange.endDate}
-              />
-            </motion.div>
-          </div>
-  
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
-            {/* Bid Performance Chart */}
-            <motion.div className="mt-4" variants={statsVariants}>
-              <BidPerformanceChart 
-                startDate={dateRange.startDate}
-                endDate={dateRange.endDate}
-              />
-            </motion.div>
-  
-            {/* Appointment Trends Chart */}
-            <motion.div className="mt-4" variants={statsVariants}>
-              <AppointmentTrendsChart 
-                startDate={dateRange.startDate}
-                endDate={dateRange.endDate}
-              />
-            </motion.div>
+            {/* User Activity Chart - Sales Manager Level */}
+            {canAccessUserActivityReport(userRole) && (
+              <motion.div className="mt-4" variants={statsVariants}>
+                <UserActivityChart 
+                  startDate={dateRange.startDate}
+                  endDate={dateRange.endDate}
+                />
+              </motion.div>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
-            {/* Auction Activity Chart */}
-            <motion.div className="mt-4" variants={statsVariants}>
-              <AuctionActivityChart 
-                startDate={dateRange.startDate}
-                endDate={dateRange.endDate}
-              />
-            </motion.div>
-  
-            {/* User Activity Chart */}
-            <motion.div className="mt-4" variants={statsVariants}>
-              <UserActivityChart 
-                startDate={dateRange.startDate}
-                endDate={dateRange.endDate}
-              />
-            </motion.div>
-          </div>
+          {/* Sales Manager Level Charts */}
+          {canAccessSalesManagerReports(userRole) && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
+              {/* Dealer Performance Chart */}
+              {canAccessDealerPerformanceReport(userRole) && (
+                <motion.div className="mt-4" variants={statsVariants}>
+                  <DealerPerformanceChart 
+                    startDate={dateRange.startDate}
+                    endDate={dateRange.endDate}
+                  />
+                </motion.div>
+              )}
+    
+              {/* Subscription Revenue Chart */}
+              {canAccessSubscriptionRevenueReport(userRole) && (
+                <motion.div className="mt-4" variants={statsVariants}>
+                  <SubscriptionRevenueChart 
+                    startDate={dateRange.startDate}
+                    endDate={dateRange.endDate}
+                  />
+                </motion.div>
+              )}
+            </div>
+          )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
-            {/* Dealer Performance Chart */}
-            <motion.div className="mt-4" variants={statsVariants}>
-              <DealerPerformanceChart 
-                startDate={dateRange.startDate}
-                endDate={dateRange.endDate}
-              />
-            </motion.div>
-  
-            {/* Subscription Revenue Chart */}
-            <motion.div className="mt-4" variants={statsVariants}>
-              <SubscriptionRevenueChart 
-                startDate={dateRange.startDate}
-                endDate={dateRange.endDate}
-              />
-            </motion.div>
-          </div>
+          {/* Admin Level Charts */}
+          {canAccessAdminReports(userRole) && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 md:gap-6">
+              {/* System Performance Chart */}
+              {canAccessSystemPerformanceReport(userRole) && (
+                <motion.div className="mt-4" variants={statsVariants}>
+                  <div className="p-6 bg-white rounded-lg border border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">System Performance</h3>
+                    <p className="text-gray-600">System performance monitoring chart would go here</p>
+                    <p className="text-sm text-gray-500 mt-2">Admin access required</p>
+                  </div>
+                </motion.div>
+              )}
+    
+              {/* Feature Usage Chart */}
+              {canAccessFeatureUsageReport(userRole) && (
+                <motion.div className="mt-4" variants={statsVariants}>
+                  <div className="p-6 bg-white rounded-lg border border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Feature Usage</h3>
+                    <p className="text-gray-600">Feature usage analytics chart would go here</p>
+                    <p className="text-sm text-gray-500 mt-2">Admin access required</p>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          )}
 
-          {/* Smart Insights */}
-          <motion.div className="mt-8" variants={statsVariants}>
+          {/* Smart Insights - Available to all users */}
+          {/* <motion.div className="mt-8" variants={statsVariants}>
             <DynamicSmartInsights 
               startDate={dateRange.startDate}
               endDate={dateRange.endDate}
             />
-          </motion.div>
+          </motion.div> */}
   
         </div>
       </motion.div>

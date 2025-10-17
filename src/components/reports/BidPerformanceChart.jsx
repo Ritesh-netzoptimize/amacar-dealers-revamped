@@ -1,6 +1,8 @@
 import { TrendingUp } from "lucide-react"
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
 import { useState, useEffect } from "react"
+import { useSelector } from "react-redux"
+import { canAccessBidPerformanceReport } from "@/utils/rolePermissions"
 
 import {
   Card,
@@ -33,6 +35,8 @@ const chartConfig = {
 export default function BidPerformanceChart({ startDate, endDate }) {
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useSelector((state) => state.user);
+  const userRole = user?.role;
 
   useEffect(() => {
     const fetchBidsData = async () => {
@@ -65,16 +69,41 @@ export default function BidPerformanceChart({ startDate, endDate }) {
 
     fetchBidsData();
   }, [startDate, endDate]);
+
+  // Check if user has access to this chart
+  if (!canAccessBidPerformanceReport(userRole)) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Bid Performance Trend</CardTitle>
+          <CardDescription>Access Denied</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-[300px] text-gray-500">
+            <div className="text-center">
+              <div className="text-4xl mb-2">🔒</div>
+              <p>You don't have permission to view this report</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
   
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Bids Trend</CardTitle>
+          <CardTitle>Bid Performance Trend</CardTitle>
           <CardDescription>Loading bid data...</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
+          <div className="h-[300px] bg-gray-100 animate-pulse rounded flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4F46E5] mx-auto mb-2"></div>
+              <p className="text-sm text-gray-600">Loading chart data...</p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     );

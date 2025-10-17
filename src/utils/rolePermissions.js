@@ -157,6 +157,209 @@ export const canAccessSubscriptionCancellationRequest = (userRole) => {
   );
 };
 
+// ===== REPORT API ACCESS CONTROL FUNCTIONS =====
+
+/**
+ * Check if user can access dealer-level reports
+ * @param {string} userRole - The user's role
+ * @returns {boolean} - Whether user can access dealer reports
+ */
+export const canAccessDealerReports = (userRole) => {
+  return (
+    userRole === USER_ROLES.DEALER ||
+    userRole === USER_ROLES.DEALER_USER ||
+    userRole === USER_ROLES.DEALERSHIP_USER ||
+    userRole === USER_ROLES.ADMINISTRATOR ||
+    userRole === USER_ROLES.SALES_MANAGER
+  );
+};
+
+/**
+ * Check if user can access sales manager & admin reports
+ * @param {string} userRole - The user's role
+ * @returns {boolean} - Whether user can access sales manager reports
+ */
+export const canAccessSalesManagerReports = (userRole) => {
+  return (
+    userRole === USER_ROLES.ADMINISTRATOR ||
+    userRole === USER_ROLES.SALES_MANAGER
+  );
+};
+
+/**
+ * Check if user can access admin-only reports
+ * @param {string} userRole - The user's role
+ * @returns {boolean} - Whether user can access admin reports
+ */
+export const canAccessAdminReports = (userRole) => {
+  return userRole === USER_ROLES.ADMINISTRATOR;
+};
+
+// ===== SPECIFIC REPORT API PERMISSIONS =====
+
+/**
+ * Check if user can access auction activity report
+ * @param {string} userRole - The user's role
+ * @returns {boolean} - Whether user can access auction activity report
+ */
+export const canAccessAuctionActivityReport = (userRole) => {
+  return canAccessDealerReports(userRole);
+};
+
+/**
+ * Check if user can access bid performance report
+ * @param {string} userRole - The user's role
+ * @returns {boolean} - Whether user can access bid performance report
+ */
+export const canAccessBidPerformanceReport = (userRole) => {
+  return canAccessDealerReports(userRole);
+};
+
+/**
+ * Check if user can access customer engagement report
+ * @param {string} userRole - The user's role
+ * @returns {boolean} - Whether user can access customer engagement report
+ */
+export const canAccessCustomerEngagementReport = (userRole) => {
+  return canAccessDealerReports(userRole);
+};
+
+/**
+ * Check if user can access appointments report
+ * @param {string} userRole - The user's role
+ * @returns {boolean} - Whether user can access appointments report
+ */
+export const canAccessAppointmentsReport = (userRole) => {
+  return canAccessDealerReports(userRole);
+};
+
+/**
+ * Check if user can access dashboard summary report
+ * @param {string} userRole - The user's role
+ * @returns {boolean} - Whether user can access dashboard summary report
+ */
+export const canAccessDashboardSummaryReport = (userRole) => {
+  return canAccessDealerReports(userRole);
+};
+
+/**
+ * Check if user can access dealer performance report
+ * @param {string} userRole - The user's role
+ * @returns {boolean} - Whether user can access dealer performance report
+ */
+export const canAccessDealerPerformanceReport = (userRole) => {
+  return canAccessSalesManagerReports(userRole);
+};
+
+/**
+ * Check if user can access user activity report
+ * @param {string} userRole - The user's role
+ * @returns {boolean} - Whether user can access user activity report
+ */
+export const canAccessUserActivityReport = (userRole) => {
+  return canAccessSalesManagerReports(userRole);
+};
+
+/**
+ * Check if user can access subscription revenue report
+ * @param {string} userRole - The user's role
+ * @returns {boolean} - Whether user can access subscription revenue report
+ */
+export const canAccessSubscriptionRevenueReport = (userRole) => {
+  return canAccessSalesManagerReports(userRole);
+};
+
+/**
+ * Check if user can access system performance report
+ * @param {string} userRole - The user's role
+ * @returns {boolean} - Whether user can access system performance report
+ */
+export const canAccessSystemPerformanceReport = (userRole) => {
+  return canAccessAdminReports(userRole);
+};
+
+/**
+ * Check if user can access feature usage report
+ * @param {string} userRole - The user's role
+ * @returns {boolean} - Whether user can access feature usage report
+ */
+export const canAccessFeatureUsageReport = (userRole) => {
+  return canAccessAdminReports(userRole);
+};
+
+// ===== REPORT API MAPPING =====
+
+/**
+ * Report API to permission mapping
+ * Maps each report API endpoint to its permission function
+ */
+export const REPORT_API_PERMISSIONS = {
+  '/reports/auction-activity': canAccessAuctionActivityReport,
+  '/reports/bid-performance': canAccessBidPerformanceReport,
+  '/reports/customer-engagement': canAccessCustomerEngagementReport,
+  '/reports/appointments': canAccessAppointmentsReport,
+  '/reports/dashboard-summary': canAccessDashboardSummaryReport,
+  '/reports/dealer-performance': canAccessDealerPerformanceReport,
+  '/reports/user-activity': canAccessUserActivityReport,
+  '/reports/subscription-revenue': canAccessSubscriptionRevenueReport,
+  '/reports/system-performance': canAccessSystemPerformanceReport,
+  '/reports/feature-usage': canAccessFeatureUsageReport,
+};
+
+/**
+ * Check if user can access a specific report API
+ * @param {string} userRole - The user's role
+ * @param {string} reportEndpoint - The report API endpoint
+ * @returns {boolean} - Whether user can access the report API
+ */
+export const canAccessReportAPI = (userRole, reportEndpoint) => {
+  const permissionFunction = REPORT_API_PERMISSIONS[reportEndpoint];
+  if (!permissionFunction) {
+    console.warn(`No permission function found for report endpoint: ${reportEndpoint}`);
+    return false;
+  }
+  return permissionFunction(userRole);
+};
+
+/**
+ * Get all accessible report APIs for a user role
+ * @param {string} userRole - The user's role
+ * @returns {Array<string>} - Array of accessible report API endpoints
+ */
+export const getAccessibleReportAPIs = (userRole) => {
+  return Object.keys(REPORT_API_PERMISSIONS).filter(endpoint => 
+    canAccessReportAPI(userRole, endpoint)
+  );
+};
+
+/**
+ * Get report APIs by access level
+ * @param {string} accessLevel - The access level ('dealer', 'sales_manager', 'admin')
+ * @returns {Array<string>} - Array of report API endpoints for the access level
+ */
+export const getReportAPIsByAccessLevel = (accessLevel) => {
+  const accessLevelMap = {
+    'dealer': [
+      '/reports/auction-activity',
+      '/reports/bid-performance',
+      '/reports/customer-engagement',
+      '/reports/appointments',
+      '/reports/dashboard-summary'
+    ],
+    'sales_manager': [
+      '/reports/dealer-performance',
+      '/reports/user-activity',
+      '/reports/subscription-revenue'
+    ],
+    'admin': [
+      '/reports/system-performance',
+      '/reports/feature-usage'
+    ]
+  };
+  
+  return accessLevelMap[accessLevel] || [];
+};
+
 /**
  * Get all permissions for a user role
  * @param {string} userRole - The user's role
@@ -165,6 +368,7 @@ export const canAccessSubscriptionCancellationRequest = (userRole) => {
  */
 export const getUserPermissions = (userRole, user = null) => {
   return {
+    // Existing permissions
     canUpdateDeleteDealerships: canUpdateDeleteDealerships(userRole),
     canCreateDealershipUsers: canCreateDealershipUsers(userRole),
     canDeleteUpdateDealershipUsers: canDeleteUpdateDealershipUsers(userRole),
@@ -175,6 +379,23 @@ export const getUserPermissions = (userRole, user = null) => {
     canAccessPartnerDealers: canAccessPartnerDealers(userRole, user),
     canAccessSubscriptionCancellationRequest: canAccessSubscriptionCancellationRequest(userRole),
     canBidPass: canBidPass(userRole),
+    
+    // Report access level permissions
+    canAccessDealerReports: canAccessDealerReports(userRole),
+    canAccessSalesManagerReports: canAccessSalesManagerReports(userRole),
+    canAccessAdminReports: canAccessAdminReports(userRole),
+    
+    // Specific report API permissions
+    canAccessAuctionActivityReport: canAccessAuctionActivityReport(userRole),
+    canAccessBidPerformanceReport: canAccessBidPerformanceReport(userRole),
+    canAccessCustomerEngagementReport: canAccessCustomerEngagementReport(userRole),
+    canAccessAppointmentsReport: canAccessAppointmentsReport(userRole),
+    canAccessDashboardSummaryReport: canAccessDashboardSummaryReport(userRole),
+    canAccessDealerPerformanceReport: canAccessDealerPerformanceReport(userRole),
+    canAccessUserActivityReport: canAccessUserActivityReport(userRole),
+    canAccessSubscriptionRevenueReport: canAccessSubscriptionRevenueReport(userRole),
+    canAccessSystemPerformanceReport: canAccessSystemPerformanceReport(userRole),
+    canAccessFeatureUsageReport: canAccessFeatureUsageReport(userRole),
   };
 };
 

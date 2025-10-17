@@ -54,6 +54,25 @@ const API_MAPPING = {
   }
 };
 
+// KPI Card ID to API mapping for chart data fetching
+const KPI_TO_API_MAPPING = {
+  'auctions-joined': 'Auction Activity',
+  'win-rate': 'Auction Activity',
+  'total-customers': 'Customer Engagement',
+  'bids-placed': 'Bid Performance',
+  'appointments': 'Appointments',
+  'estimated-revenue': 'Dashboard Summary',
+  // Additional mappings for comprehensive coverage
+  'auction-activity': 'Auction Activity',
+  'bid-performance': 'Bid Performance',
+  'customer-engagement': 'Customer Engagement',
+  'appointment-trends': 'Appointments',
+  'dashboard-summary': 'Dashboard Summary',
+  'dealer-performance': 'Dealer Performance',
+  'user-activity': 'User Activity',
+  'subscription-revenue': 'Subscription Revenue'
+};
+
 // API function mapping
 const API_FUNCTIONS = {
   getAuctionActivityReport,
@@ -158,14 +177,20 @@ export const useReportData = (startDate, endDate) => {
   }, [startDate, endDate]);
 
   // Fetch chart data for specific KPI
-  const fetchChartData = useCallback(async (kpiTitle) => {
+  const fetchChartData = useCallback(async (kpiId) => {
     try {
       setIsChartLoading(true);
       setError(null);
       
-      const config = API_MAPPING[kpiTitle];
+      // Map KPI ID to API type
+      const apiType = KPI_TO_API_MAPPING[kpiId];
+      if (!apiType) {
+        throw new Error(`No API mapping found for KPI: ${kpiId}`);
+      }
+      
+      const config = API_MAPPING[apiType];
       if (!config) {
-        throw new Error(`No API mapping found for ${kpiTitle}`);
+        throw new Error(`No API configuration found for: ${apiType}`);
       }
 
       const dateFrom = startDate || '2024-01-01';
@@ -188,8 +213,8 @@ export const useReportData = (startDate, endDate) => {
         }));
       }
     } catch (error) {
-      console.error(`Error fetching chart data for ${kpiTitle}:`, error);
-      setError(`Failed to load data for ${kpiTitle}`);
+      console.error(`Error fetching chart data for KPI ${kpiId}:`, error);
+      setError(`Failed to load data for ${kpiId}`);
     } finally {
       setIsChartLoading(false);
     }
@@ -207,8 +232,8 @@ export const useReportData = (startDate, endDate) => {
         isActive: stat.id === kpiId
       })));
       
-      // Fetch chart data for this KPI
-      await fetchChartData(kpiTitle);
+      // Fetch chart data for this KPI using the ID
+      await fetchChartData(kpiId);
     } catch (error) {
       console.error('Error handling KPI click:', error);
       setError('Failed to process KPI selection');
