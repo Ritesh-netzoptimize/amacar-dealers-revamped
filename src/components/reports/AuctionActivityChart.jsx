@@ -1,12 +1,11 @@
-import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import { useState, useEffect } from "react"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { TrendingUp } from "lucide-react"
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -15,23 +14,27 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { getCustomerEngagementReport } from "@/lib/api"
+import { getAuctionActivityReport } from "@/lib/api"
 
-export const description = "Customer engagement over time"
+export const description = "Auction participation analysis"
 
 const chartConfig = {
-  total_customers: {
-    label: "Total Customers",
+  auctions_joined: {
+    label: "Auctions Joined",
     color: "#4F46E5",
   },
-} 
+  auctions_won: {
+    label: "Auctions Won",
+    color: "#15A9D8",
+  },
+}
 
-export default function CustomerEngagementChart({ startDate, endDate }) {
+export default function AuctionActivityChart({ startDate, endDate }) {
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCustomersData = async () => {
+    const fetchAuctionData = async () => {
       try {
         setIsLoading(true);
         
@@ -39,34 +42,35 @@ export default function CustomerEngagementChart({ startDate, endDate }) {
         const dateFrom = startDate || '2024-01-01';
         const dateTo = endDate || '2024-12-31';
         
-        const response = await getCustomerEngagementReport(dateFrom, dateTo);
+        const response = await getAuctionActivityReport(dateFrom, dateTo);
         
         if (response.success && response.data) {
           // Transform API data to chart format
           const transformedData = response.data.map(item => ({
             period: item.period,
-            total_customers: item.total_customers || 0
+            auctions_joined: item.auctions_joined || 0,
+            auctions_won: item.auctions_won || 0
           }));
           
           setChartData(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching customers data:', error);
+        console.error('Error fetching auction activity data:', error);
         setChartData([]);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchCustomersData();
+    fetchAuctionData();
   }, [startDate, endDate]);
 
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Customer Engagement</CardTitle>
-          <CardDescription>Loading customer data...</CardDescription>
+          <CardTitle>Auction Activity</CardTitle>
+          <CardDescription>Loading auction data...</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
@@ -78,11 +82,11 @@ export default function CustomerEngagementChart({ startDate, endDate }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Customer Engagement</CardTitle>
+        <CardTitle>Auction Activity Analysis</CardTitle>
         <CardDescription>
           {startDate && endDate 
             ? `${startDate} - ${endDate}` 
-            : 'Customer activity over time'
+            : 'Auction participation over time'
           }
         </CardDescription>
       </CardHeader>
@@ -100,22 +104,16 @@ export default function CustomerEngagementChart({ startDate, endDate }) {
                 return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
               }}
             />
+            <YAxis />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={<ChartTooltipContent />}
             />
-            <Bar dataKey="total_customers" width={10} barSize={60} fill="#4F46E5" radius={8} />
+            <Bar dataKey="auctions_joined" fill="#4F46E5" radius={8} />
+            <Bar dataKey="auctions_won" fill="#15A9D8" radius={8} />
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 leading-none font-medium">
-          Customer engagement trends <TrendingUp className="h-4 w-4 text-[#4F46E5]" />
-        </div>
-        <div className="text-muted-foreground leading-none">
-          Showing customer activity over time
-        </div>
-      </CardFooter>
     </Card>
   )
 }

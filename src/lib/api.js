@@ -218,7 +218,7 @@ export const unpassVehicle = async (productId) => {
 };
 
 // Reports API functions
-export const getBidsReport = async (dateFrom, dateTo, groupBy = 'day') => {
+export const getAuctionActivityReport = async (dateFrom, dateTo, groupBy = 'day') => {
   try {
     const params = new URLSearchParams({
       date_from: dateFrom,
@@ -226,15 +226,31 @@ export const getBidsReport = async (dateFrom, dateTo, groupBy = 'day') => {
       group_by: groupBy
     });
     
-    const response = await api.get(`/reports/bids?${params}`);
+    const response = await api.get(`/reports/auction-activity?${params}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching bids report:', error);
+    console.error('Error fetching auction activity report:', error);
     throw error;
   }
 };
 
-export const getCustomersReport = async (dateFrom, dateTo, groupBy = 'day') => {
+export const getBidPerformanceReport = async (dateFrom, dateTo, groupBy = 'day') => {
+  try {
+    const params = new URLSearchParams({
+      date_from: dateFrom,
+      date_to: dateTo,
+      group_by: groupBy
+    });
+    
+    const response = await api.get(`/reports/bid-performance?${params}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching bid performance report:', error);
+    throw error;
+  }
+};
+
+export const getCustomerEngagementReport = async (dateFrom, dateTo, groupBy = 'day') => {
   try {
     const params = new URLSearchParams({
       date_from: dateFrom,
@@ -245,12 +261,12 @@ export const getCustomersReport = async (dateFrom, dateTo, groupBy = 'day') => {
     const response = await api.get(`/reports/customer-engagement?${params}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching customers report:', error);
+    console.error('Error fetching customer engagement report:', error);
     throw error;
   }
 };
 
-export const getVehiclesReport = async (dateFrom, dateTo, groupBy = 'day') => {
+export const getAppointmentsReport = async (dateFrom, dateTo, groupBy = 'day') => {
   try {
     const params = new URLSearchParams({
       date_from: dateFrom,
@@ -258,15 +274,15 @@ export const getVehiclesReport = async (dateFrom, dateTo, groupBy = 'day') => {
       group_by: groupBy
     });
     
-    const response = await api.get(`/reports/vehicles?${params}`);
+    const response = await api.get(`/reports/appointments?${params}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching vehicles report:', error);
+    console.error('Error fetching appointments report:', error);
     throw error;
   }
 };
 
-export const getSummaryReport = async (dateFrom, dateTo, groupBy = 'day') => {
+export const getDashboardSummaryReport = async (dateFrom, dateTo, groupBy = 'day') => {
   try {
     const params = new URLSearchParams({
       date_from: dateFrom,
@@ -274,10 +290,90 @@ export const getSummaryReport = async (dateFrom, dateTo, groupBy = 'day') => {
       group_by: groupBy
     });
     
-    const response = await api.get(`/reports/summary?${params}`);
+    const response = await api.get(`/reports/dashboard-summary?${params}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching summary report:', error);
+    console.error('Error fetching dashboard summary report:', error);
+    throw error;
+  }
+};
+
+export const getDealerPerformanceReport = async (dateFrom, dateTo, groupBy = 'day') => {
+  try {
+    const params = new URLSearchParams({
+      date_from: dateFrom,
+      date_to: dateTo,
+      group_by: groupBy
+    });
+    
+    const response = await api.get(`/reports/dealer-performance?${params}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching dealer performance report:', error);
+    throw error;
+  }
+};
+
+export const getUserActivityReport = async (dateFrom, dateTo, groupBy = 'day') => {
+  try {
+    const params = new URLSearchParams({
+      date_from: dateFrom,
+      date_to: dateTo,
+      group_by: groupBy
+    });
+    
+    const response = await api.get(`/reports/user-activity?${params}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user activity report:', error);
+    throw error;
+  }
+};
+
+export const getSubscriptionRevenueReport = async (dateFrom, dateTo, groupBy = 'day') => {
+  try {
+    const params = new URLSearchParams({
+      date_from: dateFrom,
+      date_to: dateTo,
+      group_by: groupBy
+    });
+    
+    const response = await api.get(`/reports/subscription-revenue?${params}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching subscription revenue report:', error);
+    throw error;
+  }
+};
+
+export const getSystemPerformanceReport = async (dateFrom, dateTo, groupBy = 'day') => {
+  try {
+    const params = new URLSearchParams({
+      date_from: dateFrom,
+      date_to: dateTo,
+      group_by: groupBy
+    });
+    
+    const response = await api.get(`/reports/system-performance?${params}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching system performance report:', error);
+    throw error;
+  }
+};
+
+export const getFeatureUsageReport = async (dateFrom, dateTo, groupBy = 'day') => {
+  try {
+    const params = new URLSearchParams({
+      date_from: dateFrom,
+      date_to: dateTo,
+      group_by: groupBy
+    });
+    
+    const response = await api.get(`/reports/feature-usage?${params}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching feature usage report:', error);
     throw error;
   }
 };

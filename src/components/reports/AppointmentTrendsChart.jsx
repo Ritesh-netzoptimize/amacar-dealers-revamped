@@ -1,5 +1,5 @@
 import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { Bar, BarChart, XAxis, YAxis } from "recharts"
 import { useState, useEffect } from "react"
 
 import {
@@ -15,23 +15,23 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { getCustomerEngagementReport } from "@/lib/api"
+import { getAppointmentsReport } from "@/lib/api"
 
-export const description = "Customer engagement over time"
+export const description = "Appointment trends over time"
 
 const chartConfig = {
-  total_customers: {
-    label: "Total Customers",
-    color: "#4F46E5",
+  total_appointments: {
+    label: "Total Appointments",
+    color: "#15A9D8",
   },
-} 
+}
 
-export default function CustomerEngagementChart({ startDate, endDate }) {
+export default function AppointmentTrendsChart({ startDate, endDate }) {
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCustomersData = async () => {
+    const fetchAppointmentsData = async () => {
       try {
         setIsLoading(true);
         
@@ -39,34 +39,34 @@ export default function CustomerEngagementChart({ startDate, endDate }) {
         const dateFrom = startDate || '2024-01-01';
         const dateTo = endDate || '2024-12-31';
         
-        const response = await getCustomerEngagementReport(dateFrom, dateTo);
+        const response = await getAppointmentsReport(dateFrom, dateTo);
         
         if (response.success && response.data) {
           // Transform API data to chart format
           const transformedData = response.data.map(item => ({
             period: item.period,
-            total_customers: item.total_customers || 0
+            total_appointments: item.total_appointments || 0
           }));
           
           setChartData(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching customers data:', error);
+        console.error('Error fetching appointments data:', error);
         setChartData([]);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchCustomersData();
+    fetchAppointmentsData();
   }, [startDate, endDate]);
 
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Customer Engagement</CardTitle>
-          <CardDescription>Loading customer data...</CardDescription>
+          <CardTitle>Appointment Trends</CardTitle>
+          <CardDescription>Loading appointment data...</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
@@ -78,20 +78,28 @@ export default function CustomerEngagementChart({ startDate, endDate }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Customer Engagement</CardTitle>
+        <CardTitle>Appointment Trends</CardTitle>
         <CardDescription>
           {startDate && endDate 
             ? `${startDate} - ${endDate}` 
-            : 'Customer activity over time'
+            : 'Appointment activity over time'
           }
         </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
-            <CartesianGrid vertical={false} />
-            <XAxis
+          <BarChart
+            accessibilityLayer
+            data={chartData}
+            layout="vertical"
+            margin={{
+              left: -20,
+            }}
+          >
+            <XAxis type="number" dataKey="total_appointments" hide />
+            <YAxis
               dataKey="period"
+              type="category"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
@@ -104,16 +112,16 @@ export default function CustomerEngagementChart({ startDate, endDate }) {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="total_customers" width={10} barSize={60} fill="#4F46E5" radius={8} />
+            <Bar dataKey="total_appointments" fill="#15A9D8" radius={5} />
           </BarChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 leading-none font-medium">
-          Customer engagement trends <TrendingUp className="h-4 w-4 text-[#4F46E5]" />
+          Appointment trends <TrendingUp className="h-4 w-4 text-[#15A9D8]" />
         </div>
         <div className="text-muted-foreground leading-none">
-          Showing customer activity over time
+          Showing appointment activity over time
         </div>
       </CardFooter>
     </Card>

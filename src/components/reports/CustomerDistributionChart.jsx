@@ -15,7 +15,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { getCustomersReport } from "@/lib/api"
+import { getCustomerEngagementReport } from "@/lib/api"
 
 export const description = "Customer activity distribution"
 
@@ -41,7 +41,7 @@ const chartConfig = {
   },
 }
 
-export default function PieChartContainer({ startDate, endDate }) {
+export default function CustomerDistributionChart({ startDate, endDate }) {
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -54,7 +54,7 @@ export default function PieChartContainer({ startDate, endDate }) {
         const dateFrom = startDate || '2024-01-01';
         const dateTo = endDate || '2024-12-31';
         
-        const response = await getCustomersReport(dateFrom, dateTo);
+        const response = await getCustomerEngagementReport(dateFrom, dateTo);
         
         if (response.success && response.data) {
           const data = response.data;

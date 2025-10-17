@@ -120,7 +120,7 @@ const ReportsGlobalFilter = ({
       transition={{ duration: 0.5, ease: "easeOut" }}
       className={cn("mt-6 sm:mt-8", className)}
     >
-      <div className="ml-auto max-w-[70vh] bg-white rounded-lg border border-slate-200 p-4 sm:p-6 shadow-sm">
+      <div className=" bg-white rounded-lg border border-slate-200 p-4 sm:p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           {/* Filter Title */}
           <div className="flex items-center gap-2">

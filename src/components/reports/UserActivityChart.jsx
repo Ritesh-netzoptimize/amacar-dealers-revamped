@@ -1,12 +1,11 @@
-import { TrendingUp } from "lucide-react"
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
 import { useState, useEffect } from "react"
+import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { TrendingUp } from "lucide-react"
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -15,27 +14,27 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { getBidsReport } from "@/lib/api"
+import { getUserActivityReport } from "@/lib/api"
 
-export const description = "Bids trend over time"
+export const description = "User engagement monitoring"
 
 const chartConfig = {
-  count: {
-    label: "Bid Count",
-    color: "var(--brand-orange)",
+  active_users: {
+    label: "Active Users",
+    color: "#4F46E5",
   },
-  amount: {
-    label: "Total Amount",
-    color: "var(--chart-2)",
+  total_sessions: {
+    label: "Total Sessions",
+    color: "#15A9D8",
   },
-} 
+}
 
-export function MultiLineChart({ startDate, endDate }) {
+export default function UserActivityChart({ startDate, endDate }) {
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchBidsData = async () => {
+    const fetchUserData = async () => {
       try {
         setIsLoading(true);
         
@@ -43,35 +42,35 @@ export function MultiLineChart({ startDate, endDate }) {
         const dateFrom = startDate || '2024-01-01';
         const dateTo = endDate || '2024-12-31';
         
-        const response = await getBidsReport(dateFrom, dateTo);
+        const response = await getUserActivityReport(dateFrom, dateTo);
         
         if (response.success && response.data) {
           // Transform API data to chart format
           const transformedData = response.data.map(item => ({
             period: item.period,
-            count: item.count,
-            amount: Math.round(item.total_amount / 1000) // Convert to thousands for better readability
+            active_users: item.active_users || 0,
+            total_sessions: item.total_sessions || 0
           }));
           
           setChartData(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching bids data:', error);
+        console.error('Error fetching user activity data:', error);
         setChartData([]);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchBidsData();
+    fetchUserData();
   }, [startDate, endDate]);
-  
+
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Bids Trend</CardTitle>
-          <CardDescription>Loading bid data...</CardDescription>
+          <CardTitle>User Activity</CardTitle>
+          <CardDescription>Loading user data...</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
@@ -79,28 +78,21 @@ export function MultiLineChart({ startDate, endDate }) {
       </Card>
     );
   }
-
+  
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bids Trend</CardTitle>
+        <CardTitle>User Activity Monitoring</CardTitle>
         <CardDescription>
           {startDate && endDate 
             ? `${startDate} - ${endDate}` 
-            : 'Bid activity over time'
+            : 'User engagement over time'
           }
         </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <LineChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
-          >
+          <LineChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="period"
@@ -112,45 +104,28 @@ export function MultiLineChart({ startDate, endDate }) {
                 return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
               }}
             />
-            <ChartTooltip 
-              cursor={false} 
+            <YAxis />
+            <ChartTooltip
+              cursor={false}
               content={<ChartTooltipContent />}
-              formatter={(value, name) => {
-                if (name === 'amount') {
-                  return [`$${value.toLocaleString()}K`, 'Total Amount'];
-                }
-                return [value, 'Bid Count'];
-              }}
             />
             <Line
-              dataKey="count"
+              dataKey="active_users"
               type="monotone"
-              stroke="var(--brand-orange)"
+              stroke="#4F46E5"
               strokeWidth={2}
               dot={false}
             />
             <Line
-              dataKey="amount"
+              dataKey="total_sessions"
               type="monotone"
-              stroke="var(--chart-2)"
+              stroke="#15A9D8"
               strokeWidth={2}
               dot={false}
             />
           </LineChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 leading-none font-medium">
-              Bid activity trends <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="text-muted-foreground flex items-center gap-2 leading-none">
-              Showing bid count and total amount over time
-            </div>
-          </div>
-        </div>
-      </CardFooter>
     </Card>
   )
 }

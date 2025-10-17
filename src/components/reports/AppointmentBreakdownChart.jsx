@@ -15,23 +15,25 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { getCustomerEngagementReport } from "@/lib/api"
-
-export const description = "Customer engagement over time"
+import { getAppointmentsReport } from "@/lib/api"
 
 const chartConfig = {
-  total_customers: {
-    label: "Total Customers",
-    color: "#4F46E5",
+  count: {
+    label: "Vehicle Count",
+    color: "var(--brand-orange)",
+  },
+  total_amount: {
+    label: "Total Amount",
+    color: "var(--chart-2)",
   },
 } 
 
-export default function CustomerEngagementChart({ startDate, endDate }) {
+export function AppointmentBreakdownChart({ startDate, endDate }) {
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCustomersData = async () => {
+    const fetchVehiclesData = async () => {
       try {
         setIsLoading(true);
         
@@ -39,34 +41,44 @@ export default function CustomerEngagementChart({ startDate, endDate }) {
         const dateFrom = startDate || '2024-01-01';
         const dateTo = endDate || '2024-12-31';
         
-        const response = await getCustomerEngagementReport(dateFrom, dateTo);
+        const response = await getAppointmentsReport(dateFrom, dateTo);
         
-        if (response.success && response.data) {
-          // Transform API data to chart format
-          const transformedData = response.data.map(item => ({
-            period: item.period,
-            total_customers: item.total_customers || 0
-          }));
+        if (response.success && response.summary) {
+          const summary = response.summary;
+          
+          // Create bar chart data from vehicle summary
+          const transformedData = [
+            {
+              category: "Auction Vehicles",
+              count: summary.auction_vehicles || 0,
+              total_amount: 0 // Vehicles don't have amounts in this API
+            },
+            {
+              category: "Appraised Vehicles", 
+              count: summary.appraised_vehicles || 0,
+              total_amount: 0
+            }
+          ];
           
           setChartData(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching customers data:', error);
+        console.error('Error fetching vehicles data:', error);
         setChartData([]);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchCustomersData();
+    fetchVehiclesData();
   }, [startDate, endDate]);
-
+  
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Customer Engagement</CardTitle>
-          <CardDescription>Loading customer data...</CardDescription>
+          <CardTitle>Vehicle Activity</CardTitle>
+          <CardDescription>Loading vehicle data...</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
@@ -74,15 +86,15 @@ export default function CustomerEngagementChart({ startDate, endDate }) {
       </Card>
     );
   }
-  
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Customer Engagement</CardTitle>
+        <CardTitle>Vehicle Activity</CardTitle>
         <CardDescription>
           {startDate && endDate 
             ? `${startDate} - ${endDate}` 
-            : 'Customer activity over time'
+            : 'Vehicle breakdown by type'
           }
         </CardDescription>
       </CardHeader>
@@ -91,29 +103,28 @@ export default function CustomerEngagementChart({ startDate, endDate }) {
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="period"
+              dataKey="category"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-              }}
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={<ChartTooltipContent indicator="dashed" />}
+              formatter={(value, name) => {
+                return [value, 'Vehicle Count'];
+              }}
             />
-            <Bar dataKey="total_customers" width={10} barSize={60} fill="#4F46E5" radius={8} />
+            <Bar dataKey="count" fill="var(--brand-orange)" radius={4} />
           </BarChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 leading-none font-medium">
-          Customer engagement trends <TrendingUp className="h-4 w-4 text-[#4F46E5]" />
+          Vehicle activity trends <TrendingUp className="h-4 w-4" />
         </div>
         <div className="text-muted-foreground leading-none">
-          Showing customer activity over time
+          Showing vehicle breakdown by auction and appraised types
         </div>
       </CardFooter>
     </Card>

@@ -15,25 +15,23 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { getVehiclesReport } from "@/lib/api"
+import { getCustomerEngagementReport } from "@/lib/api"
+
+export const description = "Customer engagement over time"
 
 const chartConfig = {
-  count: {
-    label: "Vehicle Count",
-    color: "var(--brand-orange)",
-  },
-  total_amount: {
-    label: "Total Amount",
-    color: "var(--chart-2)",
+  total_customers: {
+    label: "Total Customers",
+    color: "#4F46E5",
   },
 } 
 
-export function MultiBarChart({ startDate, endDate }) {
+export default function CustomerEngagementChart({ startDate, endDate }) {
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchVehiclesData = async () => {
+    const fetchCustomersData = async () => {
       try {
         setIsLoading(true);
         
@@ -41,44 +39,34 @@ export function MultiBarChart({ startDate, endDate }) {
         const dateFrom = startDate || '2024-01-01';
         const dateTo = endDate || '2024-12-31';
         
-        const response = await getVehiclesReport(dateFrom, dateTo);
+        const response = await getCustomerEngagementReport(dateFrom, dateTo);
         
-        if (response.success && response.summary) {
-          const summary = response.summary;
-          
-          // Create bar chart data from vehicle summary
-          const transformedData = [
-            {
-              category: "Auction Vehicles",
-              count: summary.auction_vehicles || 0,
-              total_amount: 0 // Vehicles don't have amounts in this API
-            },
-            {
-              category: "Appraised Vehicles", 
-              count: summary.appraised_vehicles || 0,
-              total_amount: 0
-            }
-          ];
+        if (response.success && response.data) {
+          // Transform API data to chart format
+          const transformedData = response.data.map(item => ({
+            period: item.period,
+            total_customers: item.total_customers || 0
+          }));
           
           setChartData(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching vehicles data:', error);
+        console.error('Error fetching customers data:', error);
         setChartData([]);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchVehiclesData();
+    fetchCustomersData();
   }, [startDate, endDate]);
-  
+
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Vehicle Activity</CardTitle>
-          <CardDescription>Loading vehicle data...</CardDescription>
+          <CardTitle>Customer Engagement</CardTitle>
+          <CardDescription>Loading customer data...</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-[300px] bg-gray-100 animate-pulse rounded"></div>
@@ -86,15 +74,15 @@ export function MultiBarChart({ startDate, endDate }) {
       </Card>
     );
   }
-
+  
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Vehicle Activity</CardTitle>
+        <CardTitle>Customer Engagement</CardTitle>
         <CardDescription>
           {startDate && endDate 
             ? `${startDate} - ${endDate}` 
-            : 'Vehicle breakdown by type'
+            : 'Customer activity over time'
           }
         </CardDescription>
       </CardHeader>
@@ -103,28 +91,29 @@ export function MultiBarChart({ startDate, endDate }) {
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="category"
+              dataKey="period"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              tickFormatter={(value) => {
+                const date = new Date(value);
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+              }}
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent indicator="dashed" />}
-              formatter={(value, name) => {
-                return [value, 'Vehicle Count'];
-              }}
+              content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="count" fill="var(--brand-orange)" radius={4} />
+            <Bar dataKey="total_customers" width={10} barSize={60} fill="#4F46E5" radius={8} />
           </BarChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 leading-none font-medium">
-          Vehicle activity trends <TrendingUp className="h-4 w-4" />
+          Customer engagement trends <TrendingUp className="h-4 w-4 text-[#4F46E5]" />
         </div>
         <div className="text-muted-foreground leading-none">
-          Showing vehicle breakdown by auction and appraised types
+          Showing customer activity over time
         </div>
       </CardFooter>
     </Card>

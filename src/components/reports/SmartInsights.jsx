@@ -11,7 +11,7 @@ import {
   Users,
   BarChart3
 } from 'lucide-react';
-import { getSummaryReport, getBidsReport } from '@/lib/api';
+import { getDashboardSummaryReport, getBidsReport } from '@/lib/api';
 
 const SmartInsights = ({ startDate, endDate }) => {
   const [insights, setInsights] = useState([]);
@@ -27,7 +27,7 @@ const SmartInsights = ({ startDate, endDate }) => {
         const dateTo = endDate || '2024-12-31';
         
         const [summaryResponse, bidsResponse] = await Promise.all([
-          getSummaryReport(dateFrom, dateTo),
+          getDashboardSummaryReport(dateFrom, dateTo),
           getBidsReport(dateFrom, dateTo)
         ]);
         
