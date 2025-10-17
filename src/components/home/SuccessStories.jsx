@@ -76,30 +76,6 @@ export default function SuccessStories ()  {
           </div>
   
   
-          {/* Statistics */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="grid md:grid-cols-2 gap-8 mt-16"
-          >
-            <div className="text-center p-8 bg-white rounded-2xl border border-[#E5E5E5] shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#4F46E5] to-[#4F46E5] rounded-2xl flex items-center justify-center text-white mx-auto mb-4">
-                <Users className="w-8 h-8" />
-              </div>
-              <p className="text-4xl font-bold text-[#1A1A1A] mb-2">500+</p>
-              <p className="text-[#4A4A4A] font-medium">Trusted Dealers</p>
-            </div>
-            
-            <div className="text-center p-8 bg-white rounded-2xl border border-[#E5E5E5] shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-r from-[#15A9D8] to-[#15A9D8] rounded-2xl flex items-center justify-center text-white mx-auto mb-4">
-                <Star className="w-8 h-8" />
-              </div>
-              <p className="text-4xl font-bold text-[#1A1A1A] mb-2">4.9/5</p>
-              <p className="text-[#4A4A4A] font-medium">Customer Rating</p>
-            </div>
-          </motion.div>
         </div>
       </section>
     );

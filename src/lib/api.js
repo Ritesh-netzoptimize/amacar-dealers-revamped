@@ -242,7 +242,7 @@ export const getCustomersReport = async (dateFrom, dateTo, groupBy = 'day') => {
       group_by: groupBy
     });
     
-    const response = await api.get(`/reports/customers?${params}`);
+    const response = await api.get(`/reports/customer-engagement?${params}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching customers report:', error);

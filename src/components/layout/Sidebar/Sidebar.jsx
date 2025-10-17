@@ -63,25 +63,35 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
     canAccessSubscriptionCancellationRequest
   } = permissions;
 
-  // Check if user is deactivated and should show warning modal
-  const shouldShowDeactivationWarning = () => {
-    if (!user) return false;
-    
-    // Check if user is inactive
-    const isInactive = user.account_status === "inactive";
+  // Check if user should show warning modal and get warning type
+  const getWarningInfo = () => {
+    if (!user) return { show: false, type: null };
     
     // Check if user role is one of the specified roles
-    const validRoles = ['dealer', 'sales_manager', 'dealer_user', 'dealership_user'];
+    const validRoles = ['dealer', 'sales_manager', 'dealer_user', 'dealership_user', 'administrator'];
     const hasValidRole = validRoles.includes(user.role) || 
                         (user.roles && user.roles.some(role => validRoles.includes(role)));
     
-    return isInactive && hasValidRole;
+    if (!hasValidRole) return { show: false, type: null };
+    
+    // Check account status
+    const isAccountInactive = user.user_status_details?.account_status === "inactive";
+    const isSubscriptionInactive = user.subscription_status === "inactive";
+    
+    if (isAccountInactive) {
+      return { show: true, type: "account" };
+    } else if (isSubscriptionInactive) {
+      return { show: true, type: "subscription" };
+    }
+    
+    return { show: false, type: null };
   };
 
   // Handle navigation with deactivation check
   const handleNavigation = (href, e) => {
-    // If user is deactivated and trying to navigate to non-profile page
-    if (shouldShowDeactivationWarning() && href !== '/profile') {
+    // If user should show warning and trying to navigate to non-profile page
+    const warningInfo = getWarningInfo();
+    if (warningInfo.show && href !== '/profile') {
       e.preventDefault();
       setDeactivationWarningOpen(true);
       return;
@@ -413,6 +423,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
       <DeactivationWarningModal
         isOpen={deactivationWarningOpen}
         onClose={() => setDeactivationWarningOpen(false)}
+        warningType={getWarningInfo().type}
       />
     </>
   );

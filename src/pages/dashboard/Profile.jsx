@@ -110,20 +110,29 @@ const Profile = () => {
     user?.requires_2fa === true ||
     user?.requires_2fa === 1;
 
-  // Check if user is deactivated and should show warning banner
-  const shouldShowDeactivationWarning = () => {
-    if (!user) return false;
-
-    // Check if user is inactive
-    const isInactive = user.account_status === "inactive";
+  // Check if user should show warning banner and get warning type
+  const getWarningInfo = () => {
+    if (!user) return { show: false, type: null };
 
     // Check if user role is one of the specified roles
-    const validRoles = ["dealer", "sales_manager", "dealer_user", "dealership_user"];
+    const validRoles = ["dealer", "sales_manager", "dealer_user", "dealership_user", "administrator"];
     const hasValidRole =
       validRoles.includes(user.role) ||
       (user.roles && user.roles.some((role) => validRoles.includes(role)));
 
-    return isInactive && hasValidRole;
+    if (!hasValidRole) return { show: false, type: null };
+
+    // Check account status
+    const isAccountInactive = user.user_status_details?.account_status === "inactive";
+    const isSubscriptionInactive = user.subscription_status === "inactive";
+
+    if (isAccountInactive) {
+      return { show: true, type: "account" };
+    } else if (isSubscriptionInactive) {
+      return { show: true, type: "subscription" };
+    }
+
+    return { show: false, type: null };
   };
 
   // Fetch invoices
@@ -439,32 +448,68 @@ const Profile = () => {
           initial="hidden"
           animate="visible"
         >
-          {/* Deactivation Warning Banner */}
-          {shouldShowDeactivationWarning() && (
-            <motion.div
-              variants={itemVariants}
-              className="card p-4 sm:p-6 mb-6 sm:mb-8 border-l-4 border-red-500 bg-red-50"
-            >
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0">
-                  <AlertTriangle className="w-6 h-6 text-red-600" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-red-800 mb-2">
-                    Account Deactivated
-                  </h3>
-                  <p className="text-red-700 mb-3">
-                    Your account has been deactivated and you have limited
-                    access to the platform. Please contact support to reactivate
-                    your account.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    
+          {/* Warning Banner */}
+          {(() => {
+            const warningInfo = getWarningInfo();
+            if (!warningInfo.show) return null;
+
+            if (warningInfo.type === "account") {
+              return (
+                <motion.div
+                  variants={itemVariants}
+                  className="card p-4 sm:p-6 mb-6 sm:mb-8 border-l-4 border-red-500 bg-red-50"
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0">
+                      <AlertTriangle className="w-6 h-6 text-red-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-red-800 mb-2">
+                        Account Deactivated
+                      </h3>
+                      <p className="text-red-700 mb-3">
+                        Your account has been deactivated and you have limited
+                        access to the platform. Please contact support to reactivate
+                        your account.
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <button
+                          onClick={() => window.open('mailto:support@amacar.com', '_blank')}
+                          className="btn-primary text-sm py-2 px-4"
+                        >
+                          Contact Support
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
+                </motion.div>
+              );
+            } else if (warningInfo.type === "subscription") {
+              return (
+                <motion.div
+                  variants={itemVariants}
+                  className="card p-4 sm:p-6 mb-6 sm:mb-8 border-l-4 border-orange-500 bg-orange-50"
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0">
+                      <AlertTriangle className="w-6 h-6 text-orange-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-orange-800 mb-2">
+                        No Active Subscription
+                      </h3>
+                      <p className="text-orange-700 mb-3">
+                        You don't have an active subscription. Subscribe to a plan
+                        to access all platform features and continue using the service.
+                      </p>
+                    
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            }
+            return null;
+          })()}
 
           {/* Header */}
           <motion.div

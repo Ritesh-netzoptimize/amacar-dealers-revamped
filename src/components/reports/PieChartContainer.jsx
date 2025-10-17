@@ -21,19 +21,23 @@ export const description = "Customer activity distribution"
 
 const chartConfig = {
   count: {
-    label: "Customer Count",
+    label: "Count",
   },
-  active: {
-    label: "Active Customers",
+  new_customers: {
+    label: "New Customers",
     color: "var(--chart-1)",
   },
-  new: {
-    label: "New Customers",
+  repeat_customers: {
+    label: "Repeat Customers",
     color: "var(--chart-2)",
   },
-  returning: {
-    label: "Returning Customers",
+  completed_appointments: {
+    label: "Completed Appointments",
     color: "var(--chart-3)",
+  },
+  pending_appointments: {
+    label: "Pending Appointments",
+    color: "var(--chart-4)",
   },
 }
 
@@ -52,20 +56,37 @@ export default function PieChartContainer({ startDate, endDate }) {
         
         const response = await getCustomersReport(dateFrom, dateTo);
         
-        if (response.success && response.summary) {
+        if (response.success && response.data) {
+          const data = response.data;
           const summary = response.summary;
           
-          // Create pie chart data from customer summary
+          // Calculate totals from the data array
+          const totalNewCustomers = data.reduce((sum, item) => sum + (item.new_customers || 0), 0);
+          const totalRepeatCustomers = data.reduce((sum, item) => sum + ((item.total_customers || 0) - (item.new_customers || 0)), 0);
+          const totalAppointments = data.reduce((sum, item) => sum + (item.total_appointments || 0), 0);
+          const completedAppointments = data.reduce((sum, item) => sum + (item.completed_appointments || 0), 0);
+          
+          // Create pie chart data from the data array
           const transformedData = [
             { 
-              category: "With Vehicles", 
-              count: summary.customers_with_vehicles || 0, 
+              category: "New Customers", 
+              count: totalNewCustomers, 
               fill: "var(--chart-1)" 
             },
             { 
-              category: "Without Vehicles", 
-              count: summary.customers_without_vehicles || 0, 
+              category: "Repeat Customers", 
+              count: totalRepeatCustomers, 
               fill: "var(--chart-2)" 
+            },
+            { 
+              category: "Completed Appointments", 
+              count: completedAppointments, 
+              fill: "var(--chart-3)" 
+            },
+            { 
+              category: "Pending Appointments", 
+              count: totalAppointments - completedAppointments, 
+              fill: "var(--chart-4)" 
             }
           ];
           
@@ -75,8 +96,10 @@ export default function PieChartContainer({ startDate, endDate }) {
         console.error('Error fetching customers data:', error);
         // Fallback data
         setChartData([
-          { category: "With Vehicles", count: 0, fill: "var(--chart-1)" },
-          { category: "Without Vehicles", count: 0, fill: "var(--chart-2)" },
+          { category: "New Customers", count: 0, fill: "var(--chart-1)" },
+          { category: "Repeat Customers", count: 0, fill: "var(--chart-2)" },
+          { category: "Completed Appointments", count: 0, fill: "var(--chart-3)" },
+          { category: "Pending Appointments", count: 0, fill: "var(--chart-4)" },
         ]);
       } finally {
         setIsLoading(false);
@@ -119,7 +142,7 @@ export default function PieChartContainer({ startDate, endDate }) {
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
-              formatter={(value, name) => [value, 'Customers']}
+              formatter={(value, name) => [value, name]}
             />
             <Pie
               data={chartData}
@@ -143,7 +166,7 @@ export default function PieChartContainer({ startDate, endDate }) {
           Customer activity distribution <TrendingUp className="h-4 w-4" />
         </div>
         <div className="text-muted-foreground leading-none">
-          Showing customer breakdown by vehicle ownership
+          Showing customer activity and appointment distribution
         </div>
       </CardFooter>
     </Card>

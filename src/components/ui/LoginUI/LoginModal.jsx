@@ -63,7 +63,7 @@ export default function LoginModal({
     if (!user) return false;
     
     // Check if user is inactive
-    const isInactive = user.user_status_details?.account_status === "inactive";
+    const isInactive = user.user_status_details?.account_status === "inactive" || user.subscription_status === "inactive";
     
     // Check if user role is one of the specified roles
     const validRoles = ['dealer', 'sales_manager', 'dealer_user', 'dealership_user'];

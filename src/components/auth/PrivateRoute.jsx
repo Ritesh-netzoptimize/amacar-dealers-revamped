@@ -18,7 +18,7 @@ function PrivateRoute({ children }) {
     return <Navigate to="/" replace />;
   }
 
-  if(user && user.account_status === "inactive") {
+  if(user && (user.account_status === "inactive" || user.subscription_status === "inactive")) {
      // Allow inactive users to access the profile page to see their status
     if (location.pathname === "/profile") {
       return children;
