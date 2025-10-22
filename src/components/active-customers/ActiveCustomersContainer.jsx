@@ -100,10 +100,10 @@ const ActiveCustomersContainer = ({
           </div>
           <div>
             <h3 className="text-lg font-semibold text-neutral-900">
-              Active Customers
+              New Customers
             </h3>
             <p className="text-sm text-neutral-600">
-              All active customers and details
+              All new customers and details
             </p>
           </div>
         </div>
@@ -131,10 +131,10 @@ const ActiveCustomersContainer = ({
             <Users className="w-12 h-12 text-orange-600" />
           </div>
           <h3 className="text-xl font-semibold text-neutral-900 mb-2">
-            No Active Customers
+            No New Customers
           </h3>
           <p className="text-neutral-600 text-center max-w-md mb-6">
-            You don't have any active customers at the moment
+            You don't have any new customers at the moment
           </p>
           <div className="flex items-center gap-2 text-sm text-neutral-500">
             <Search className="w-4 h-4" />

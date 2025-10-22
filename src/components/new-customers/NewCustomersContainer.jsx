@@ -99,7 +99,7 @@ const NewCustomersContainer = ({
           </div>
           <div>
             <h3 className="text-lg font-semibold text-neutral-900">
-              New Customers
+              Active Customers
             </h3>
             <p className="text-sm text-neutral-600">
               All customer offers and details
