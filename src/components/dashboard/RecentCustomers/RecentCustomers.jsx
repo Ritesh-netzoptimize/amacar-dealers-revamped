@@ -114,46 +114,46 @@ const RecentCustomers = () => {
   // Loading state
   if (isLoading) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-4 sm:p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-              <User className="w-5 h-5 text-orange-600" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+              <User className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-neutral-900">
+              <h3 className="text-base sm:text-lg font-semibold text-neutral-900">
                 Recent Customers
               </h3>
-              <p className="text-sm text-neutral-600">Latest customer offers</p>
+              <p className="text-xs sm:text-sm text-neutral-600">Latest customer offers</p>
             </div>
           </div>
         </div>
 
         {/* Loading Skeleton */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {Array.from({ length: 5 }).map((_, index) => (
             <div
               key={index}
-              className="bg-neutral-50 rounded-xl p-4 animate-pulse"
+              className="bg-neutral-50 rounded-xl p-3 sm:p-4 animate-pulse"
             >
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <div className="h-4 bg-neutral-200 rounded w-1/4"></div>
-                  <div className="h-4 bg-neutral-200 rounded w-16"></div>
+                  <div className="h-3 sm:h-4 bg-neutral-200 rounded w-1/4"></div>
+                  <div className="h-3 sm:h-4 bg-neutral-200 rounded w-12 sm:w-16"></div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <div className="h-3 bg-neutral-200 rounded w-1/6"></div>
-                    <div className="h-3 bg-neutral-200 rounded w-1/3"></div>
+                    <div className="h-2 sm:h-3 bg-neutral-200 rounded w-1/6"></div>
+                    <div className="h-2 sm:h-3 bg-neutral-200 rounded w-1/3"></div>
                   </div>
                   <div className="flex justify-between items-center">
-                    <div className="h-3 bg-neutral-200 rounded w-1/6"></div>
-                    <div className="h-3 bg-neutral-200 rounded w-1/4"></div>
+                    <div className="h-2 sm:h-3 bg-neutral-200 rounded w-1/6"></div>
+                    <div className="h-2 sm:h-3 bg-neutral-200 rounded w-1/4"></div>
                   </div>
                   <div className="flex justify-between items-center">
-                    <div className="h-3 bg-neutral-200 rounded w-1/6"></div>
-                    <div className="h-4 bg-neutral-200 rounded w-1/5"></div>
+                    <div className="h-2 sm:h-3 bg-neutral-200 rounded w-1/6"></div>
+                    <div className="h-3 sm:h-4 bg-neutral-200 rounded w-1/5"></div>
                   </div>
                 </div>
               </div>
@@ -167,18 +167,18 @@ const RecentCustomers = () => {
   // Error state
   if (error) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
+      <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-4 sm:p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-              <User className="w-5 h-5 text-orange-600" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+              <User className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-neutral-900">
+              <h3 className="text-base sm:text-lg font-semibold text-neutral-900">
                 Recent Customers
               </h3>
-              <p className="text-sm text-neutral-600">Latest customer offers</p>
+              <p className="text-xs sm:text-sm text-neutral-600">Latest customer offers</p>
             </div>
           </div>
           <Button
@@ -186,20 +186,20 @@ const RecentCustomers = () => {
             size="sm"
             onClick={fetchRecentCustomers}
             disabled={isLoading}
-            className="cursor-pointer flex items-center gap-2"
+            className="cursor-pointer flex items-center gap-2 text-xs sm:text-sm"
           >
             <RefreshCw
-              className={`cursor-pointer w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+              className={`cursor-pointer w-3 h-3 sm:w-4 sm:h-4 ${isLoading ? "animate-spin" : ""}`}
             />
             {isLoading ? "Retrying..." : "Retry"}
           </Button>
         </div>
 
         {/* Error Message */}
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 sm:p-6 text-center">
           <div className="text-red-600 mb-2">
-            <h3 className="font-semibold">Failed to load customers</h3>
-            <p className="text-sm text-red-500 mt-1">{error}</p>
+            <h3 className="text-sm sm:text-base font-semibold">Failed to load customers</h3>
+            <p className="text-xs sm:text-sm text-red-500 mt-1">{error}</p>
           </div>
         </div>
       </div>
@@ -208,22 +208,22 @@ const RecentCustomers = () => {
 
   return (
     <motion.div
-      className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6"
+      className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-4 sm:p-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-            <User className="w-5 h-5 text-orange-600" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+            <User className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-neutral-900">
+            <h3 className="text-base sm:text-lg font-semibold text-neutral-900">
               Recent Customers
             </h3>
-            <p className="text-sm text-neutral-600">Latest customer offers</p>
+            <p className="text-xs sm:text-sm text-neutral-600">Latest customer offers</p>
           </div>
         </div>
         <Button
@@ -231,10 +231,10 @@ const RecentCustomers = () => {
           size="sm"
           onClick={fetchRecentCustomers}
           disabled={isLoading}
-          className="cursor-pointer flex items-center gap-2"
+          className="cursor-pointer flex items-center gap-2 text-xs sm:text-sm"
           title="Refresh customers"
         >
-          <RefreshCw className={`cursor-pointer w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+          <RefreshCw className={`cursor-pointer w-3 h-3 sm:w-4 sm:h-4 ${isLoading ? "animate-spin" : ""}`} />
           {isLoading ? "Refreshing..." : "Refresh"}
         </Button>
       </div>
@@ -242,11 +242,11 @@ const RecentCustomers = () => {
       {/* Desktop Table Layout */}
       <div className="hidden md:block overflow-x-auto">
         {recentCustomers.length === 0 ? (
-          <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-6 text-center">
+          <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 sm:p-6 text-center">
             <div className="text-neutral-600">
-              <User className="w-8 h-8 mx-auto mb-2" />
-              <h3 className="font-semibold">No customers available</h3>
-              <p className="text-sm text-neutral-500 mt-1">
+              <User className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2" />
+              <h3 className="text-sm sm:text-base font-semibold">No customers available</h3>
+              <p className="text-xs sm:text-sm text-neutral-500 mt-1">
                 Recent customers will appear here once data is available.
               </p>
             </div>
@@ -255,19 +255,19 @@ const RecentCustomers = () => {
           <Table className="w-full min-w-[600px]">
             <TableHeader>
               <TableRow className="border-neutral-200 hover:bg-transparent">
-                <TableHead className="text-neutral-600 font-medium w-[25%]">
+                <TableHead className="text-xs sm:text-sm text-neutral-600 font-medium w-[25%]">
                   Customer Name
                 </TableHead>
-                <TableHead className="text-neutral-600 font-medium w-[25%]">
+                <TableHead className="text-xs sm:text-sm text-neutral-600 font-medium w-[25%]">
                   Vehicle
                 </TableHead>
-                <TableHead className="text-neutral-600 font-medium w-[15%]">
+                <TableHead className="text-xs sm:text-sm text-neutral-600 font-medium w-[15%]">
                   Mileage
                 </TableHead>
-                <TableHead className="text-neutral-600 font-medium w-[15%]">
+                <TableHead className="text-xs sm:text-sm text-neutral-600 font-medium w-[15%]">
                   Offer Price
                 </TableHead>
-                <TableHead className="text-neutral-600 font-medium text-right w-[20%]">
+                <TableHead className="text-xs sm:text-sm text-neutral-600 font-medium text-right w-[20%]">
                   Action
                 </TableHead>
               </TableRow>
@@ -279,20 +279,20 @@ const RecentCustomers = () => {
                   className="border-neutral-100 hover:bg-neutral-50 transition-colors duration-200 cursor-pointer"
                   onClick={() => handleView(customer.id, customer.name)}
                 >
-                  <TableCell className="font-medium text-neutral-900">
+                  <TableCell className="text-xs sm:text-sm font-medium text-neutral-900">
                     {customer.name}
                   </TableCell>
-                  <TableCell className="text-neutral-700">
+                  <TableCell className="text-xs sm:text-sm text-neutral-700">
                     {customer.vehicle}
                   </TableCell>
-                  <TableCell className="text-neutral-600">
+                  <TableCell className="text-xs sm:text-sm text-neutral-600">
                     {customer.mileage}
                   </TableCell>
-                  <TableCell className="font-semibold text-green-600">
+                  <TableCell className="text-xs sm:text-sm font-semibold text-green-600">
                     {customer.offer}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex gap-2 justify-end">
+                    <div className="flex gap-1 sm:gap-2 justify-end">
                       <Button
                         variant="outline"
                         size="sm"
@@ -300,19 +300,18 @@ const RecentCustomers = () => {
                           e.stopPropagation();
                           handleView(customer.id, customer.name);
                         }}
-                        className="h-8 px-3 text-xs"
+                        className="h-6 sm:h-8 px-2 sm:px-3 text-xs"
                       >
                         <Eye className="w-3 h-3 mr-1" />
-                        View
+                        <span className="hidden sm:inline">View</span>
                       </Button>
                       <a
                         onClick={(e) => e.stopPropagation()}
                         href={`tel:${customer.phone}`} // replace with the dealer's phone number
-                        className="cursor-pointer btn-ghost flex items-center justify-center space-x-2 py-2 px-3 sm:py-2 sm:px-4 text-sm"
+                        className="cursor-pointer btn-ghost flex items-center justify-center space-x-1 sm:space-x-2 py-1 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm"
                       >
-                        <Phone className="w-4 h-4" />
+                        <Phone className="w-3 h-3 sm:w-4 sm:h-4" />
                         <span className="hidden sm:inline">Contact</span>
-                        <span className="sm:hidden">Contact</span>
                       </a>
                     </div>
                   </TableCell>
@@ -324,13 +323,13 @@ const RecentCustomers = () => {
       </div>
 
       {/* Mobile Card Layout */}
-      <div className="md:hidden space-y-4">
+      <div className="md:hidden space-y-3 sm:space-y-4">
         {recentCustomers.length === 0 ? (
-          <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-6 text-center">
+          <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 sm:p-6 text-center">
             <div className="text-neutral-600">
-              <User className="w-8 h-8 mx-auto mb-2" />
-              <h3 className="font-semibold">No customers available</h3>
-              <p className="text-sm text-neutral-500 mt-1">
+              <User className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2" />
+              <h3 className="text-sm sm:text-base font-semibold">No customers available</h3>
+              <p className="text-xs sm:text-sm text-neutral-500 mt-1">
                 Recent customers will appear here once data is available.
               </p>
             </div>
@@ -341,16 +340,16 @@ const RecentCustomers = () => {
               key={customer.id}
               variants={itemVariants}
               whileHover={{ y: -2 }}
-              className="bg-neutral-50 rounded-xl p-4 border border-neutral-200 hover:shadow-md transition-all duration-200 cursor-pointer"
+              className="bg-neutral-50 rounded-xl p-3 sm:p-4 border border-neutral-200 hover:shadow-md transition-all duration-200 cursor-pointer"
               onClick={() => handleView(customer.id, customer.name)}
             >
               <div className="space-y-3">
                 {/* Customer Name */}
                 <div className="flex items-center justify-between">
-                  <h4 className="font-semibold text-neutral-900 text-base">
+                  <h4 className="text-sm sm:text-base font-semibold text-neutral-900">
                     {customer.name}
                   </h4>
-                  <span className="text-sm text-neutral-500">
+                  <span className="text-xs sm:text-sm text-neutral-500">
                     #{customer.id}
                   </span>
                 </div>
@@ -358,22 +357,22 @@ const RecentCustomers = () => {
                 {/* Vehicle Info */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-neutral-600">Vehicle</span>
-                    <span className="text-sm font-medium text-neutral-800">
+                    <span className="text-xs sm:text-sm text-neutral-600">Vehicle</span>
+                    <span className="text-xs sm:text-sm font-medium text-neutral-800">
                       {customer.vehicle}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-neutral-600">Mileage</span>
-                    <span className="text-sm text-neutral-700">
+                    <span className="text-xs sm:text-sm text-neutral-600">Mileage</span>
+                    <span className="text-xs sm:text-sm text-neutral-700">
                       {customer.mileage}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-neutral-600">
+                    <span className="text-xs sm:text-sm text-neutral-600">
                       Offer Price
                     </span>
-                    <span className="text-lg font-bold text-green-600">
+                    <span className="text-base sm:text-lg font-bold text-green-600">
                       {customer.offer}
                     </span>
                   </div>
@@ -388,19 +387,18 @@ const RecentCustomers = () => {
                       e.stopPropagation();
                       handleView(customer.id, customer.name);
                     }}
-                    className="flex-1 h-10 text-sm"
+                    className="flex-1 h-8 sm:h-10 text-xs sm:text-sm"
                   >
-                    <Eye className="w-4 h-4 mr-2" />
+                    <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     View Details
                   </Button>
                   <a
                     onClick={(e) => e.stopPropagation()}
                     href={`tel:${customer.phone}`} // replace with the dealer's phone number
-                    className="cursor-pointer btn-ghost flex items-center justify-center space-x-2 py-2 px-3 sm:py-2 sm:px-4 text-sm"
+                    className="cursor-pointer btn-ghost flex items-center justify-center space-x-1 sm:space-x-2 py-1 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm"
                   >
-                    <Phone className="w-4 h-4" />
+                    <Phone className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span className="hidden sm:inline">Contact</span>
-                    <span className="sm:hidden">Contact</span>
                   </a>
                 </div>
               </div>
@@ -411,13 +409,13 @@ const RecentCustomers = () => {
 
       {/* View All Button */}
       <motion.div
-        className="flex justify-center mt-6 pt-4 border-t border-neutral-100"
+        className="flex justify-center mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-neutral-100"
         variants={itemVariants}
       >
         <Button
           variant="outline"
           size="sm"
-          className="cursor-pointer p-6 text-sm font-medium hover:bg-neutral-50 transition-colors duration-200"
+          className="cursor-pointer p-4 sm:p-6 text-xs sm:text-sm font-medium hover:bg-neutral-50 transition-colors duration-200"
           onClick={() => navigate("/active-customers")}
         >
           View recent customers

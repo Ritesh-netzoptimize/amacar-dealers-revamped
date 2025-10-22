@@ -105,36 +105,36 @@ const RecentVehiclesSection = () => {
   // Loading state
   if (isLoading) {
     return (
-      <div className="w-full">
+      <div className="w-full pt-4 sm:pt-6">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-neutral-900 mb-1">Recent Vehicles</h2>
-            <p className="text-neutral-600">Discover the latest auction vehicles</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-1">Recent Vehicles</h2>
+            <p className="text-sm sm:text-base text-neutral-600">Discover the latest auction vehicles</p>
           </div>
           <Button
             variant="outline"
-            size="lg"
-            className="cursor-pointer  px-8 py-3 text-sm font-medium hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
+            size="sm"
+            className="cursor-pointer px-4 sm:px-8 py-2 sm:py-3 text-xs sm:text-sm font-medium hover:bg-primary-50 hover:border-primary-300 transition-all duration-200 w-full sm:w-auto"
             onClick={() => navigate('/live-auctions')}
           >
             View All Vehicles
-            <ArrowRight className="w-4 h-4 ml-2" />
+            <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
           </Button>
         </div>
 
         {/* Loading Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
           <div className="lg:col-span-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
               {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="bg-white rounded-xl shadow-sm border border-neutral-200 p-4 animate-pulse">
+                <div key={index} className="bg-white rounded-xl shadow-sm border border-neutral-200 p-3 sm:p-4 animate-pulse">
                   <div className="space-y-3">
-                    <div className="h-48 bg-neutral-200 rounded-lg"></div>
+                    <div className="h-32 sm:h-48 bg-neutral-200 rounded-lg"></div>
                     <div className="space-y-2">
-                      <div className="h-4 bg-neutral-200 rounded w-3/4"></div>
-                      <div className="h-4 bg-neutral-200 rounded w-1/2"></div>
-                      <div className="h-6 bg-neutral-200 rounded w-1/3"></div>
+                      <div className="h-3 sm:h-4 bg-neutral-200 rounded w-3/4"></div>
+                      <div className="h-3 sm:h-4 bg-neutral-200 rounded w-1/2"></div>
+                      <div className="h-4 sm:h-6 bg-neutral-200 rounded w-1/3"></div>
                     </div>
                   </div>
                 </div>
@@ -152,41 +152,41 @@ const RecentVehiclesSection = () => {
   // Error state
   if (error) {
     return (
-      <div className="w-full">
+      <div className="w-full pt-4 sm:pt-6">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-neutral-900 mb-1">Recent Vehicles</h2>
-            <p className="text-neutral-600">Discover the latest auction vehicles</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-1">Recent Vehicles</h2>
+            <p className="text-sm sm:text-base text-neutral-600">Discover the latest auction vehicles</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               size="sm"
               onClick={fetchRecentVehicles}
               disabled={isLoading}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 text-xs sm:text-sm"
             >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${isLoading ? 'animate-spin' : ''}`} />
               {isLoading ? 'Retrying...' : 'Retry'}
             </Button>
             <Button
               variant="outline"
-              size="lg"
-              className="cursor-pointer px-8 py-3 text-sm font-medium hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
+              size="sm"
+              className="cursor-pointer px-4 sm:px-8 py-2 sm:py-3 text-xs sm:text-sm font-medium hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
               onClick={() => navigate('/live-auctions')}
             >
               View All Vehicles
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
             </Button>
           </div>
         </div>
 
         {/* Error Message */}
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 sm:p-6 text-center">
           <div className="text-red-600 mb-2">
-            <h3 className="font-semibold">Failed to load vehicles</h3>
-            <p className="text-sm text-red-500 mt-1">{error}</p>
+            <h3 className="text-sm sm:text-base font-semibold">Failed to load vehicles</h3>
+            <p className="text-xs sm:text-sm text-red-500 mt-1">{error}</p>
           </div>
         </div>
       </div>
@@ -195,50 +195,47 @@ const RecentVehiclesSection = () => {
 
   return (
     <motion.div
-      className="w-full"
+      className="w-full pt-4 sm:pt-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
       {/* Section Header */}
       <motion.div 
-        className="flex items-center justify-between mb-6"
+        className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4"
         variants={sectionVariants}
       >
         <div>
-          <h2 className="text-2xl font-bold text-neutral-900 mb-1">Recent Vehicles</h2>
-          <p className="text-neutral-600">Discover the latest auction vehicles</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 mb-1">Recent Vehicles</h2>
+          <p className="text-sm sm:text-base text-neutral-600">Discover the latest auction vehicles</p>
         </div>
-        <div className="flex gap-2">
-
-          <Button
-            variant="outline"
-            size="lg"
-            className="cursor-pointer px-8 py-3 text-sm font-medium hover:bg-primary-50 hover:border-primary-300 transition-all duration-200"
-            onClick={() => navigate('/live-auctions')}
-          >
-            View All Vehicles
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-12 cursor-pointer px-4 sm:px-8 py-2 sm:py-3 text-xs sm:text-sm font-medium hover:bg-primary-50 hover:border-primary-300 transition-all duration-200 w-full sm:w-auto"
+          onClick={() => navigate('/live-auctions')}
+        >
+          View All Vehicles
+          <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
+        </Button>
       </motion.div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
         {/* Left Section - Vehicle Cards */}
         <motion.div 
           className="lg:col-span-3"
           variants={sectionVariants}
         >
           {vehicles.length === 0 ? (
-            <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-6 text-center">
+            <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 sm:p-6 text-center">
               <div className="text-neutral-600">
-                <h3 className="font-semibold">No vehicles available</h3>
-                <p className="text-sm text-neutral-500 mt-1">Recent vehicles will appear here once data is available.</p>
+                <h3 className="text-sm sm:text-base font-semibold">No vehicles available</h3>
+                <p className="text-xs sm:text-sm text-neutral-500 mt-1">Recent vehicles will appear here once data is available.</p>
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
               {vehicles.slice(0, 6).map((vehicle, index) => (
                 <motion.div
                   key={vehicle.id}

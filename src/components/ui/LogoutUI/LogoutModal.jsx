@@ -42,7 +42,7 @@ export default function LogoutModal({ isOpen, onClose, onConfirm }) {
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.3, ease: 'easeOut' }}
                 >
-                  <CheckCircle2 className="h-16 w-16 text-orange-500" />
+                  <CheckCircle2 className="h-16 w-16 text-[#4F46E5]" />
                 </motion.div>
                 <h2 className="text-xl font-semibold text-slate-800">Logout Successful</h2>
                 <p className="text-sm text-slate-600">You have been logged out.</p>
@@ -51,7 +51,7 @@ export default function LogoutModal({ isOpen, onClose, onConfirm }) {
               <>
                 <DialogHeader>
                   <DialogTitle className="text-xl font-semibold text-slate-800 flex items-center gap-2">
-                    <LogOut className="h-5 w-5 text-orange-500" />
+                    <LogOut className="h-5 w-5 text-[#4F46E5]" />
                     Confirm Logout
                   </DialogTitle>
                   <DialogDescription className="text-sm text-slate-600">
@@ -67,7 +67,7 @@ export default function LogoutModal({ isOpen, onClose, onConfirm }) {
                     Cancel
                   </Button>
                   <Button
-                    className="cursor-pointer rounded-lg bg-orange-500 text-white hover:bg-orange-600"
+                    className="cursor-pointer rounded-lg bg-[#4F46E5] text-white hover:bg-[#4F46E5]"
                     onClick={handleConfirm}
                   >
                     Logout
