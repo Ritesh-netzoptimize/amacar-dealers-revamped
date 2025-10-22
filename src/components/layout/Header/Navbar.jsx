@@ -72,79 +72,83 @@ export default function Navbar() {
           : "bg-white/95 backdrop-blur-md"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 sm:h-20">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-14 sm:h-16 md:h-18 lg:h-20">
+          {/* Logo */}
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="flex items-center cursor-pointer"
+            className="flex items-center cursor-pointer flex-shrink-0"
             onClick={() => navigate("/")}
           >
             <img
               src="https://dealer.amacar.ai/wp-content/uploads/2024/10/logo-4-2048x680.png"
               alt="Amacar Logo"
-              className="h-8 sm:h-10 w-auto"
+              className="h-6 sm:h-7 md:h-8 lg:h-10 w-auto"
             />
           </motion.div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
             {navLinks.map((link) => (
               <motion.button
                 key={link.id}
                 onClick={() => scrollToSection(link.id)}
                 whileHover={{ y: -2 }}
-                className={`cursor-pointer font-semibold font-medium transition-all duration-300 px-3 py-2 rounded-lg ${"text-[#4A4A4A] hover:text-[#4F46E5] hover:bg-[#4F46E5]/10"}`}
+                className="cursor-pointer font-semibold font-medium transition-all duration-300 px-3 py-2 rounded-lg text-[#4A4A4A] hover:text-[#4F46E5] hover:bg-[#4F46E5]/10"
               >
                 {link.name}
               </motion.button>
             ))}
           </div>
-          {user ? (
-            <div className="flex gap-2">
-              <button
-                onClick={() => navigate("/dashboard")}
-                className="cursor-pointer px-6 py-2.5 bg-[#4F46E5] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
-              >
-                Dashboard
-              </button>
 
-              <button
-                onClick={handleLogout}
-                className="cursor-pointer w-full px-6 py-2.5 text-sm text-[#4F46E5] rounded-lg font-semibold border-2 border-[#4F46E5] bg-white hover:bg-[#4F46E5]/10"
-              >
-                Logout
-              </button>
-            </div>
-          ) : (
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  setOpen(false);
-                  setLoginModalOpen(true);
-                  setIsMobileMenuOpen(false);
-                }}
-                className="cursor-pointer px-6 py-2.5 bg-[#4F46E5] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => navigate("/register")}
-                className="border-2 border-[#4F46E5] cursor-pointer w-full px-6 py-2.5 text-sm text-[#4F46E5] rounded-lg font-semibold shadow-lg bg-white hover:bg-[#4F46E5] hover:text-white transition-colors"
-              >
-                Sign up
-              </button>
-            </div>
-          )}
+          {/* Desktop Auth Buttons */}
+          <div className="hidden md:flex items-center gap-2 lg:gap-3">
+            {user ? (
+              <>
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="cursor-pointer px-4 lg:px-6 py-2 lg:py-2.5 bg-[#4F46E5] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all text-sm lg:text-base"
+                >
+                  Dashboard
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="cursor-pointer px-4 lg:px-6 py-2 lg:py-2.5 text-sm lg:text-base text-[#4F46E5] rounded-lg font-semibold border-2 border-[#4F46E5] bg-white hover:bg-[#4F46E5]/10 transition-all"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    setLoginModalOpen(true);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="cursor-pointer px-4 lg:px-6 py-2 lg:py-2.5 bg-[#4F46E5] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all text-sm lg:text-base"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => navigate("/register")}
+                  className="cursor-pointer px-4 lg:px-6 py-2 lg:py-2.5 text-sm lg:text-base text-[#4F46E5] rounded-lg font-semibold border-2 border-[#4F46E5] bg-white hover:bg-[#4F46E5] hover:text-white transition-all"
+                >
+                  Sign up
+                </button>
+              </>
+            )}
+          </div>
 
           {/* Mobile Menu Button */}
           <button
-            className={`cursor-pointer md:hidden p-2 rounded-lg transition-all duration-300 ${"text-[#4A4A4A] hover:bg-[#4F46E5]/10"}`}
+            className="cursor-pointer md:hidden p-2 rounded-lg transition-all duration-300 text-[#4A4A4A] hover:bg-[#4F46E5]/10 flex-shrink-0"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? (
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
             ) : (
-              <Menu className="w-6 h-6" />
+              <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
             )}
           </button>
         </div>
@@ -154,45 +158,66 @@ export default function Navbar() {
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
-            className="md:hidden pb-4"
+            className="md:hidden pb-3 sm:pb-4"
           >
-            <div className="bg-white/95 backdrop-blur-md rounded-xl p-4 shadow-lg border border-white/20">
-              {navLinks.map((link) => (
-                <motion.button
-                  animate={{ opacity: 1, height: "auto" }}
-                  key={link.id}
-                  onClick={() => scrollToSection(link.id)}
-                  className="cursor-pointer block w-full text-left py-3 px-4 text-[#4F46E5] font-semibold hover:text-[#15A9D8] hover:bg-[#15A9D8]/10 rounded-lg transition-all duration-200"
-                >
-                  {link.name}
-                </motion.button>
-              ))}
-              {user ? (
-                <button
-                  onClick={() => navigate("/dashboard")}
-                  className="cursor-pointer mt-4 w-full px-6 py-3 bg-[#4A90E2] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
-                >
-                  Dashboard
-                </button>
-              ) : (
-                <div className="flex flex-col gap-3 mt-4">
-                  <button
-                    onClick={() => {
-                      setLoginModalOpen(true);
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="cursor-pointer w-full px-6 py-3 bg-[#4A90E2] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+            <div className="bg-white/95 backdrop-blur-md rounded-xl p-3 sm:p-4 shadow-lg border border-white/20 mx-1 sm:mx-0">
+              {/* Navigation Links */}
+              <div className="space-y-1 sm:space-y-2">
+                {navLinks.map((link) => (
+                  <motion.button
+                    animate={{ opacity: 1, height: "auto" }}
+                    key={link.id}
+                    onClick={() => scrollToSection(link.id)}
+                    className="cursor-pointer block w-full text-left py-2.5 sm:py-3 px-3 sm:px-4 text-[#4F46E5] font-semibold hover:text-[#15A9D8] hover:bg-[#15A9D8]/10 rounded-lg transition-all duration-200 text-sm sm:text-base"
                   >
-                    Login →
-                  </button>
-                  <button
-                    onClick={() => navigate("/register")}
-                    className="cursor-pointer w-full px-6 py-3 text-sm text-[#4F46E5] rounded-lg font-semibold border-2 border-[#4F46E5] bg-white hover:bg-[#4F46E5] hover:text-white transition-all"
-                  >
-                    Sign up
-                  </button>
-                </div>
-              )}
+                    {link.name}
+                  </motion.button>
+                ))}
+              </div>
+
+              {/* Auth Buttons */}
+              <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200/50">
+                {user ? (
+                  <div className="space-y-2 sm:space-y-3">
+                    <button
+                      onClick={() => {
+                        navigate("/dashboard");
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="cursor-pointer w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-[#4F46E5] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all text-sm sm:text-base"
+                    >
+                      Dashboard
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="cursor-pointer w-full px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base text-[#4F46E5] rounded-lg font-semibold border-2 border-[#4F46E5] bg-white hover:bg-[#4F46E5]/10 transition-all"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2 sm:space-y-3">
+                    <button
+                      onClick={() => {
+                        setLoginModalOpen(true);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="cursor-pointer w-full px-4 sm:px-6 py-2.5 sm:py-3 bg-[#4F46E5] text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all text-sm sm:text-base"
+                    >
+                      Login →
+                    </button>
+                    <button
+                      onClick={() => {
+                        navigate("/register");
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="cursor-pointer w-full px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base text-[#4F46E5] rounded-lg font-semibold border-2 border-[#4F46E5] bg-white hover:bg-[#4F46E5] hover:text-white transition-all"
+                    >
+                      Sign up
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
