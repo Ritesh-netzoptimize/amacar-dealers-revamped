@@ -406,15 +406,146 @@ const WonAuctionsContainer = ({
           ))}
         </div>
 
-        {/* Desktop Layout: Full Width Rows */}
-        <div className="hidden lg:block space-y-4">
+        {/* Medium Desktop Layout: Card Format (1024px - 1494px) */}
+        <div className="hidden lg:grid 2xl:hidden grid-cols-1 xl:grid-cols-2 gap-4">
           {auctions.map((vehicle) => (
             <motion.div
               key={vehicle.id}
               variants={cardVariants}
               className="bg-white rounded-3xl shadow-sm border border-neutral-100 hover:shadow-xl hover:border-neutral-200 transition-all duration-500 group relative"
             >
-              {/* Desktop Layout: Full Width Row */}
+              {/* Medium Desktop Layout: Card Format - Similar to Tablet */}
+              <div className="flex flex-col h-full overflow-hidden">
+                {/* Image Gallery */}
+                <div className="relative h-48 lg:h-80 xl:h-56 bg-gradient-to-br from-neutral-50 to-neutral-100">
+                  <PhotoSwipeGallery
+                    images={vehicle.images}
+                    vehicleName={vehicle.name}
+                    className="w-full h-full"
+                    imageClassName="w-full h-full object-cover lg:object-contain xl:object-cover"
+                    showOverlay={true}
+                  />
+                </div>
+
+                {/* Vehicle Information */}
+                <div className="p-3 flex flex-col flex-grow min-w-0">
+                  <div className="space-y-2">
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-bold text-neutral-900 mb-1 group-hover:text-orange-600 transition-colors duration-300 truncate">
+                        {vehicle.name}
+                      </h3>
+                      <p className="text-xs text-neutral-500 font-medium truncate">
+                        {vehicle.year} {vehicle.make} {vehicle.model}
+                      </p>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between p-2 border border-neutral-200 rounded-lg hover:border-green-300 transition-colors duration-300 min-w-0">
+                        <div className="flex items-center min-w-0 flex-1">
+                          <Trophy className="w-3 h-3 mr-1.5 text-green-600 flex-shrink-0" />
+                          <span className="text-xs font-medium text-neutral-600 truncate">
+                            Sold By
+                          </span>
+                        </div>
+                        <p className="text-xs font-bold text-green-600 truncate ml-2">
+                          {userRole === "dealer"
+                            ? vehicle.customer?.name || "N/A"
+                            : vehicle.wonBy}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between p-2 border border-neutral-200 rounded-lg hover:border-purple-300 transition-colors duration-300 min-w-0">
+                        <div className="flex items-center min-w-0 flex-1">
+                          <User className="w-3 h-3 mr-1.5 text-purple-600 flex-shrink-0" />
+                          <span className="text-xs font-medium text-neutral-600">
+                            Sold to
+                          </span>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs font-semibold text-purple-700 truncate">
+                            {vehicle.winning_bid?.bidder_display_name || "N/A"}
+                          </p>
+                          {vehicle.winning_bid?.dealership_name && (
+                            <div className="inline-block">
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200 truncate">
+                                {vehicle.winning_bid.dealership_name}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-2 border border-neutral-200 rounded-lg hover:border-orange-300 transition-colors duration-300 min-w-0">
+                        <div className="flex items-center min-w-0 flex-1">
+                          <Calendar className="w-3 h-3 mr-1.5 text-orange-600 flex-shrink-0" />
+                          <span className="text-xs font-medium text-neutral-600 truncate">
+                            Accepted On
+                          </span>
+                        </div>
+                        <p className="text-xs font-semibold text-orange-800 truncate ml-2">
+                          {vehicle.acceptedOn || vehicle.endsAt}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between p-2 border border-neutral-200 rounded-lg hover:border-blue-300 transition-colors duration-300 min-w-0">
+                        <div className="flex items-center min-w-0 flex-1">
+                          <span className="text-xs font-medium text-neutral-600 truncate">
+                            VIN
+                          </span>
+                        </div>
+                        <p className="text-xs font-semibold text-neutral-700 truncate ml-2" title={vehicle.VIN}>
+                          {vehicle.VIN}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CTA Buttons - Pinned to Bottom */}
+                  <div className="space-y-2 pt-3 mt-auto">
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          handleViewCustomer(
+                            vehicle.customer?.id,
+                            vehicle.customer?.name
+                          )
+                        }
+                        className="flex-1 h-8 border-2 border-neutral-200 hover:border-blue-300 hover:bg-blue-50 text-neutral-700 hover:text-blue-600 font-semibold px-2 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer text-xs"
+                      >
+                        <User className="w-3 h-3 mr-1" />
+                        <span className="truncate">Customer</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => handleViewVehicle(vehicle.id)}
+                        className="flex-1 h-8 border-2 border-neutral-200 hover:border-green-300 hover:bg-green-50 text-neutral-700 hover:text-green-600 font-semibold px-2 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer text-xs"
+                      >
+                        <Eye className="w-3 h-3 mr-1" />
+                        <span className="truncate">Vehicle</span>
+                      </Button>
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleViewAppointment(vehicle.id)}
+                      className="w-full h-8 border-2 border-orange-200 hover:border-orange-300 hover:bg-orange-50 text-orange-700 hover:text-orange-600 font-semibold px-2 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer text-xs"
+                    >
+                      <Calendar className="w-3 h-3 mr-1" />
+                      <span className="truncate">{vehicle.appointmentScheduled ? "See Appointment" : "Schedule"}</span>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Large Desktop Layout: Full Width Rows (1494px+) */}
+        <div className="hidden 2xl:block space-y-4">
+          {auctions.map((vehicle) => (
+            <motion.div
+              key={vehicle.id}
+              variants={cardVariants}
+              className="bg-white rounded-3xl shadow-sm border border-neutral-100 hover:shadow-xl hover:border-neutral-200 transition-all duration-500 group relative"
+            >
+              {/* Large Desktop Layout: Full Width Row */}
               <div className="flex bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-md transition-all duration-300 h-36">
               {/* Left Section - Image Gallery */}
               <div className="w-48 xl:w-56 relative rounded-xl relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden flex-shrink-0">
@@ -428,14 +559,14 @@ const WonAuctionsContainer = ({
               </div>
 
               {/* Right Section - Vehicle Information */}
-              <div className="flex-1 px-4 lg:px-6 xl:px-8 py-3 flex flex-col justify-between min-w-0">
+              <div className="flex-1 px-4 lg:px-6 xl:px-6 2xl:px-8 py-3 flex flex-col justify-between min-w-0">
                 {/* Header with Vehicle Title and CTA Buttons */}
                 <div className="flex items-start justify-between mb-3 gap-4">
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm lg:text-base font-semibold text-neutral-800 group-hover:text-orange-500 transition-colors duration-200 truncate">
+                    <h3 className="text-sm font-semibold text-neutral-800 group-hover:text-orange-500 transition-colors duration-200 truncate">
                       {vehicle.name}
                     </h3>
-                    <p className="text-xs lg:text-sm text-neutral-500 font-normal truncate">
+                    <p className="text-xs text-neutral-500 font-normal truncate">
                       {vehicle.year} {vehicle.make} {vehicle.model}
                     </p>
                   </div>
@@ -504,19 +635,19 @@ const WonAuctionsContainer = ({
                 <div
                   className={`grid gap-1 xl:gap-2 ${
                     userRole === "dealer"
-                      ? "grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
-                      : "grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+                      ? "grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6"
+                      : "grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
                   }`}
                 >
                   
-                  <div className="flex flex-col justify-center p-1.5 lg:p-2 rounded-lg transition-all duration-200 min-w-0">
+                  <div className="flex flex-col justify-center p-1.5 lg:p-2 xl:p-1.5 2xl:p-2 rounded-lg transition-all duration-200 min-w-0">
                     <div className="flex items-center mb-1">
                       <Trophy className="w-3 h-3 mr-1 text-green-500 flex-shrink-0" />
                       <span className="text-xs font-normal text-neutral-500 truncate">
                         Sold By
                       </span>
                     </div>
-                    <p className="text-xs lg:text-sm font-semibold text-green-700 truncate">
+                    <p className="text-xs font-semibold text-green-700 truncate">
                       {userRole === "dealer"
                         ? vehicle.customer?.name || "N/A"
                         : vehicle.wonBy}
@@ -524,7 +655,7 @@ const WonAuctionsContainer = ({
                   </div>
                   {/* Bidder Display Name - Only show for dealer role */}
                   {userRole === "dealer" && (
-                    <div className="flex flex-col justify-center p-1.5 lg:p-2 rounded-lg transition-all duration-200 min-w-0">
+                    <div className="flex flex-col justify-center p-1.5 lg:p-2 xl:p-1.5 2xl:p-2 rounded-lg transition-all duration-200 min-w-0">
                       <div className="flex items-center mb-1">
                         <User className="w-3 h-3 mr-1 text-purple-400 flex-shrink-0" />
                         <span className="text-xs font-normal text-neutral-500 truncate">
@@ -532,7 +663,7 @@ const WonAuctionsContainer = ({
                         </span>
                       </div>
                       <div className="space-y-1">
-                        <p className="text-xs lg:text-sm font-semibold text-purple-700 truncate">
+                        <p className="text-xs font-semibold text-purple-700 truncate">
                           {vehicle?.bidderDisplayName || "N/A"}
                         </p>
                         {vehicle?.dealershipName && (
@@ -545,49 +676,49 @@ const WonAuctionsContainer = ({
                       </div>
                     </div>
                   )}
-                  <div className="flex flex-col justify-center p-1.5 lg:p-2 rounded-lg transition-all duration-200 min-w-0">
+                  <div className="flex flex-col justify-center p-1.5 lg:p-2 xl:p-1.5 2xl:p-2 rounded-lg transition-all duration-200 min-w-0">
                     <div className="flex items-center mb-1">
                       <span className="text-xs font-normal text-neutral-500 truncate">
                         VIN
                       </span>
                     </div>
                     <p
-                      className="text-xs lg:text-sm font-semibold truncate"
+                      className="text-xs font-semibold truncate"
                       title={vehicle.VIN}
                     >
                       {vehicle.VIN}
                     </p>
                   </div>
-                  <div className="flex flex-col justify-center p-1.5 lg:p-2 rounded-lg transition-all duration-200 min-w-0">
+                  <div className="flex flex-col justify-center p-1.5 lg:p-2 xl:p-1.5 2xl:p-2 rounded-lg transition-all duration-200 min-w-0">
                     <div className="flex items-center mb-1">
                       <DollarSign className="w-3 h-3 mr-1 text-neutral-400 flex-shrink-0" />
                       <span className="text-xs font-normal text-neutral-500 truncate">
                         Original Offer
                       </span>
                     </div>
-                    <p className="text-xs lg:text-sm font-semibold truncate">
+                    <p className="text-xs font-semibold truncate">
                       {vehicle.cashOffer}
                     </p>
                   </div>
-                  <div className="flex flex-col justify-center items-end p-1.5 lg:p-2 rounded-lg transition-all duration-200 min-w-0">
+                  <div className="flex flex-col justify-center items-end p-1.5 lg:p-2 xl:p-1.5 2xl:p-2 rounded-lg transition-all duration-200 min-w-0">
                     <div className="flex items-center mb-1">
                       <DollarSign className="w-3 h-3 mr-1 text-green-500 flex-shrink-0" />
                       <span className="text-xs font-normal text-neutral-500 truncate">
                         Highest Bid
                       </span>
                     </div>
-                    <p className="text-xs lg:text-sm font-semibold truncate text-right">
+                    <p className="text-xs font-semibold truncate text-right">
                       {vehicle.highestBid}
                     </p>
                   </div>
-                  <div className="flex flex-col justify-center items-end p-1.5 lg:p-2 rounded-lg transition-all duration-200 min-w-0">
+                  <div className="flex flex-col justify-center items-end p-1.5 lg:p-2 xl:p-1.5 2xl:p-2 rounded-lg transition-all duration-200 min-w-0">
                     <div className="flex items-center mb-1">
                       <Calendar className="w-3 h-3 mr-1 text-orange-500 flex-shrink-0" />
                       <span className="text-xs font-normal text-neutral-500 truncate">
                         Accepted On
                       </span>
                     </div>
-                    <p className="text-xs lg:text-sm font-medium text-center truncate">
+                    <p className="text-xs font-medium text-center truncate">
                       {vehicle.acceptedOn || vehicle.endsAt}
                     </p>
                   </div>
