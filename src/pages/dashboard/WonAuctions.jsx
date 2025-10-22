@@ -247,7 +247,7 @@ const WonAuctions = () => {
 
   return (
     <motion.div
-      className="min-h-screen bg-gray-50 pt-10 md:pt-24 px-4 md:px-6"
+      className="min-h-screen bg-gray-50 pt-10 md:pt-24 px-4 md:px-6 pb-12"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
