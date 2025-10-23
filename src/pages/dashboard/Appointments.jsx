@@ -214,6 +214,27 @@ const Appointments = () => {
     }
   };
 
+  // Handle cancel appointment
+  const handleCancelAppointment = async (appointment, notes) => {
+    try {
+      setIsProcessing(true);
+      setProcessingAction('cancel');
+      
+      // The CancelAppointmentModal already handles the dispatch
+      // We just need to refresh the appointments list and show success
+      toast.success('Appointment cancelled successfully!');
+      // Refresh appointments list
+      await fetchAppointments(currentPage);
+      handleCloseDetailsModal();
+    } catch (error) {
+      console.error('Error cancelling appointment:', error);
+      toast.error(error.message || 'Failed to cancel appointment');
+    } finally {
+      setIsProcessing(false);
+      setProcessingAction('');
+    }
+  };
+
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -558,7 +579,7 @@ const Appointments = () => {
         onClose={handleCloseDetailsModal}
         appointment={selectedAppointment}
         onConfirm={handleConfirmAppointment}
-        // onCancel={handleCancel}
+        onCancel={handleCancelAppointment}
         // onReschedule={handleReschedule}
         // onCall={handleCall}
         // onJoin={handleJoin}

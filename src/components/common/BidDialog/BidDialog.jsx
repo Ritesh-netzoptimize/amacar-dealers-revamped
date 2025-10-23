@@ -294,7 +294,7 @@ const BidDialog = ({
                     Auction Status
                   </p>
                   <p className="text-base font-semibold text-amber-900">
-                    {vehicle?.auction?.is_active
+                    {vehicle?.auction?.is_active || vehicle.auctionStatus === 'active'
                       ? "Active - Bidding Open"
                       : "Ended - Bidding Closed"}
                   </p>

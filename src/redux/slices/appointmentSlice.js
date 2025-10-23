@@ -203,9 +203,12 @@ export const createAppointments = createAsyncThunk(
           state.appointmentOperationSuccess = true;
           // Update the appointment status in the appointments list
           const cancelledAppointment = action.payload.appointment;
+          console.log("cancelled appointment from the action.payload", action.payload.appointment)
           if (cancelledAppointment) {
+            console.log("inside if of the cancelled appointment block")
             const index = state.appointments.findIndex(apt => apt.id === cancelledAppointment.id);
             if (index !== -1) {
+              console.log("index found", index)
               state.appointments[index] = cancelledAppointment;
             }
           }
