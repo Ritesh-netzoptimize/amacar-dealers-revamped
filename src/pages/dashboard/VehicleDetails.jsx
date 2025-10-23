@@ -97,6 +97,10 @@ const VehicleDetails = () => {
         powertrain_description: vehicleData.basic_info.powertrain_description,
         features: vehicleData.basic_info.features || [],
       },
+      highestBid: {
+        amount: parseFloat(vehicleData.highest_bid?.amount),
+        bidder_id: vehicleData.highest_bid?.bidder_id,
+      },
       location: {
         city: vehicleData.location.city,
         state: vehicleData.location.state,

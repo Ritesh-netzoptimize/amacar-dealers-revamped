@@ -226,11 +226,11 @@ const ImageCarouselAndKeyInfo = ({
               <div className="h-6  sm:h-8 flex items-center justify-center gap-2 ">
                 <DollarSign className=" " />
                 <h2 className="text-base sm:text-lg font-bold text-neutral-800">
-                  Cash Offer
+                  Original offer
                 </h2>
               </div>
               {auction?.is_active && canBidPass && (
-                <Button 
+                <Button
                   onClick={handleBidNow}
                   className="cursor-pointer bg-orange-500 hover:bg-orange-600 text-white text-sm px-3 py-1.5"
                 >
@@ -240,15 +240,27 @@ const ImageCarouselAndKeyInfo = ({
             </div>
 
             <div className="space-y-3">
-              <div className="bg-white p-2 sm:p-3 rounded-lg shadow-sm">
-                <p className="text-xs font-medium text-neutral-600 mb-1">
-                  Offer Amount
-                </p>
-                <p className="text-lg sm:text-xl font-bold text-orange-600">
-                  {cash_offer?.offer_amount
-                    ? formatCurrency(cash_offer.offer_amount)
-                    : "N/A"}
-                </p>
+              <div className="flex justify-between">
+                <div className="bg-white p-2 sm:p-3 rounded-lg shadow-sm">
+                  <p className="text-xs font-medium text-neutral-600 mb-1">
+                    Offer Amount
+                  </p>
+                  <p className="text-lg sm:text-xl font-bold text-orange-600">
+                    {cash_offer?.offer_amount
+                      ? formatCurrency(cash_offer.offer_amount)
+                      : "N/A"}
+                  </p>
+                </div>
+                <div className="bg-green-50 p-2 sm:p-3 rounded-lg shadow-sm">
+                  <p className="text-xs font-medium mb-1 text-green-700">
+                    Highest bid
+                  </p>
+                  <p className="text-lg sm:text-xl font-bold text-green-600">
+                    {vehicleData?.highestBid?.amount
+                      ? formatCurrency(vehicleData?.highestBid?.amount)
+                      : "N/A"}
+                  </p>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
