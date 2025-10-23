@@ -81,7 +81,7 @@ export default function AppointmentDetailsModal({
       await onConfirm(appointment);
     }
   };
-  
+
   // Handle reschedule modal close
   const handleRescheduleModalClose = () => {
     setIsRescheduleModalOpen(false);
@@ -313,10 +313,17 @@ export default function AppointmentDetailsModal({
               {/* Notes Section */}
               {appointment.notes && (
                 <div className="bg-slate-50 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-slate-100">
-                  <h4 className="text-xs sm:text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2">
-                    <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
-                    Cancel Note
-                  </h4>
+                  {appointment.status == "cancelled" ? (
+                    <h4 className="text-xs sm:text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                      <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
+                      Cancel Notes
+                    </h4>
+                  ) : (
+                    <h4 className="text-xs sm:text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                      <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
+                      Notes
+                    </h4>
+                  )}
                   <p className="text-xs sm:text-sm text-slate-700">
                     {appointment.notes}
                   </p>
@@ -359,25 +366,28 @@ export default function AppointmentDetailsModal({
                         {appointment.status !== "cancelled" && (
                           <div className="grid grid-cols-1 gap-2">
                             {/* Confirm Button - Only show for pending appointments */}
-                            {appointment.status === "pending" && appointment.bookedBy === "customer" && (
-                              <button
-                                onClick={handleConfirmClick}
-                                disabled={isProcessing}
-                                className="cursor-pointer flex items-center justify-center gap-2 h-9 sm:h-10 bg-blue-50 text-blue-700 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                              >
-                                {isProcessing && processingAction === "confirm" ? (
-                                  <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
-                                ) : (
-                                  <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                                )}
-                                <span className="text-xs sm:text-sm font-medium">
-                                  {isProcessing && processingAction === "confirm"
-                                    ? "Confirming..."
-                                    : "Confirm"}
-                                </span>
-                              </button>
-                            )}
-                            
+                            {appointment.status === "pending" &&
+                              appointment.bookedBy === "customer" && (
+                                <button
+                                  onClick={handleConfirmClick}
+                                  disabled={isProcessing}
+                                  className="cursor-pointer flex items-center justify-center gap-2 h-9 sm:h-10 bg-blue-50 text-blue-700 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  {isProcessing &&
+                                  processingAction === "confirm" ? (
+                                    <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
+                                  ) : (
+                                    <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                                  )}
+                                  <span className="text-xs sm:text-sm font-medium">
+                                    {isProcessing &&
+                                    processingAction === "confirm"
+                                      ? "Confirming..."
+                                      : "Confirm"}
+                                  </span>
+                                </button>
+                              )}
+
                             {/* Already Confirmed Button - Only show for confirmed appointments */}
                             {appointment.status === "confirmed" && (
                               <button
@@ -393,13 +403,15 @@ export default function AppointmentDetailsModal({
                             <button
                               onClick={handleRescheduleClick}
                               disabled={
-                                isProcessing || appointment.can_reschedule === false
+                                isProcessing ||
+                                appointment.can_reschedule === false
                               }
                               className="cursor-pointer flex items-center justify-center gap-2 h-9 sm:h-10 bg-orange-50 text-orange-700 rounded-lg border border-orange-200 hover:bg-orange-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               <Edit3 className="w-3 h-3 sm:w-4 sm:h-4" />
                               <span className="text-xs sm:text-sm font-medium">
-                                {isProcessing && processingAction === "reschedule"
+                                {isProcessing &&
+                                processingAction === "reschedule"
                                   ? "Processing..."
                                   : appointment.can_reschedule === false
                                   ? "Cannot Reschedule"
@@ -451,7 +463,8 @@ export default function AppointmentDetailsModal({
                         <div className="flex items-center gap-2">
                           <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-slate-500" />
                           <p className="text-xs sm:text-sm text-slate-600">
-                            This appointment has already passed. Management actions are not available.
+                            This appointment has already passed. Management
+                            actions are not available.
                           </p>
                         </div>
                       </div>
