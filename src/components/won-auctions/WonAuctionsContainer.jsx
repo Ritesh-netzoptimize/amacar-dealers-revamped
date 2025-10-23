@@ -261,8 +261,8 @@ const WonAuctionsContainer = ({
           ))}
         </div>
 
-        {/* Tablet Layout: Card Format */}
-        <div className="hidden md:grid lg:hidden grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Tablet Layout: Card Format (768px - 1279px) */}
+        <div className="hidden md:grid 2xl:hidden grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-4">
           {auctions.map((vehicle) => (
             <motion.div
               key={vehicle.id}
@@ -286,10 +286,10 @@ const WonAuctionsContainer = ({
                 <div className="p-3 flex flex-col flex-grow min-w-0">
                   <div className="space-y-2">
                     <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-neutral-900 mb-1 group-hover:text-orange-600 transition-colors duration-300 truncate">
+                      <h3 className="text-sm font-bold text-neutral-900 mb-1 group-hover:text-orange-600 transition-colors duration-300">
                         {vehicle.name}
                       </h3>
-                      <p className="text-xs text-neutral-500 font-medium truncate">
+                      <p className="text-xs text-neutral-500 font-medium">
                         {vehicle.year} {vehicle.make} {vehicle.model}
                       </p>
                     </div>
@@ -298,22 +298,22 @@ const WonAuctionsContainer = ({
                       <div className="flex items-center justify-between p-2 border border-neutral-200 rounded-lg hover:border-green-300 transition-colors duration-300 min-w-0">
                         <div className="flex items-center min-w-0 flex-1">
                           <DollarSign className="w-3 h-3 mr-1.5 text-green-600 flex-shrink-0" />
-                          <span className="text-xs font-medium text-neutral-600 truncate">
+                          <span className="text-xs font-medium text-neutral-600">
                             Final Price
                           </span>
                         </div>
-                        <p className="text-xs font-bold text-green-600 truncate ml-2">
+                        <p className="text-xs font-bold text-green-600 ml-2">
                           {vehicle.finalPrice}
                         </p>
                       </div>
                       <div className="flex items-center justify-between p-2 border border-neutral-200 rounded-lg hover:border-purple-300 transition-colors duration-300 min-w-0">
                         <div className="flex items-center min-w-0 flex-1">
                           <Trophy className="w-3 h-3 mr-1.5 text-green-500 flex-shrink-0" />
-                          <span className="text-xs font-medium text-neutral-600 truncate">
+                          <span className="text-xs font-medium text-neutral-600">
                             Sold By
                           </span>
                         </div>
-                        <p className="text-xs font-semibold text-green-700 truncate ml-2">
+                        <p className="text-xs font-semibold text-green-700 ml-2">
                           {userRole === "dealer"
                             ? vehicle.customer?.name || "N/A"
                             : vehicle.wonBy}
@@ -334,7 +334,7 @@ const WonAuctionsContainer = ({
                             </p>
                             {vehicle?.dealershipName && (
                               <div className="inline-block">
-                                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200 truncate">
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">
                                   {vehicle?.dealershipName}
                                 </span>
                               </div>
@@ -345,22 +345,22 @@ const WonAuctionsContainer = ({
                       <div className="flex items-center justify-between p-2 border border-neutral-200 rounded-lg hover:border-orange-300 transition-colors duration-300 min-w-0">
                         <div className="flex items-center min-w-0 flex-1">
                           <Calendar className="w-3 h-3 mr-1.5 text-orange-600 flex-shrink-0" />
-                          <span className="text-xs font-medium text-neutral-600 truncate">
+                          <span className="text-xs font-medium text-neutral-600">
                             Accepted On
                           </span>
                         </div>
-                        <p className="text-xs font-semibold text-orange-800 truncate ml-2">
+                        <p className="text-xs font-semibold text-orange-800 ml-2">
                           {vehicle.acceptedOn || vehicle.endsAt}
                         </p>
                       </div>
                       <div className="flex items-center justify-between p-2 border border-neutral-200 rounded-lg hover:border-blue-300 transition-colors duration-300 min-w-0">
                         <div className="flex items-center min-w-0 flex-1">
-                          <span className="text-xs font-medium text-neutral-600 truncate">
+                          <span className="text-xs font-medium text-neutral-600">
                             VIN
                           </span>
                         </div>
                         <p
-                          className="text-xs font-semibold text-neutral-700 truncate ml-2"
+                          className="text-xs font-semibold text-neutral-700 ml-2"
                           title={vehicle.VIN}
                         >
                           {vehicle.VIN}
@@ -383,7 +383,7 @@ const WonAuctionsContainer = ({
                         className="flex-1 h-8 border-2 border-neutral-200 hover:border-blue-300 hover:bg-blue-50 text-neutral-700 hover:text-blue-600 font-semibold px-2 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer text-xs"
                       >
                         <User className="w-3 h-3 mr-1" />
-                        <span className="truncate">Customer</span>
+                        <span>Customer</span>
                       </Button>
                       <Button
                         variant="outline"
@@ -391,7 +391,7 @@ const WonAuctionsContainer = ({
                         className="flex-1 h-8 border-2 border-neutral-200 hover:border-green-300 hover:bg-green-50 text-neutral-700 hover:text-green-600 font-semibold px-2 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer text-xs"
                       >
                         <Eye className="w-3 h-3 mr-1" />
-                        <span className="truncate">Vehicle</span>
+                        <span>Vehicle</span>
                       </Button>
                     </div>
                     <Button
@@ -407,7 +407,7 @@ const WonAuctionsContainer = ({
                       }`}
                     >
                       <Calendar className="w-3 h-3 mr-1" />
-                      <span className="truncate">
+                      <span>
                         {vehicle.appointmentScheduled
                           ? "See Appointment"
                           : "Schedule"}
@@ -420,145 +420,7 @@ const WonAuctionsContainer = ({
           ))}
         </div>
 
-        {/* Medium Desktop Layout: Card Format (1024px - 1494px) */}
-        <div className="hidden lg:grid 2xl:hidden grid-cols-1 xl:grid-cols-2 gap-4">
-          {auctions.map((vehicle) => (
-            <motion.div
-              key={vehicle.id}
-              variants={cardVariants}
-              className="bg-white rounded-3xl shadow-sm border border-neutral-100 hover:shadow-xl hover:border-neutral-200 transition-all duration-500 group relative"
-            >
-              {/* Medium Desktop Layout: Card Format - Similar to Tablet */}
-              <div className="flex flex-col h-full overflow-hidden">
-                {/* Image Gallery */}
-                <div className="relative h-48 lg:h-80 xl:h-56 bg-gradient-to-br from-neutral-50 to-neutral-100">
-                  <PhotoSwipeGallery
-                    images={vehicle.images}
-                    vehicleName={vehicle.name}
-                    className="w-full h-full"
-                    imageClassName="w-full h-full object-cover lg:object-contain xl:object-cover"
-                    showOverlay={true}
-                  />
-                </div>
-
-                {/* Vehicle Information */}
-                <div className="p-3 flex flex-col flex-grow min-w-0">
-                  <div className="space-y-2">
-                    <div className="min-w-0">
-                      <h3 className="text-sm font-bold text-neutral-900 mb-1 group-hover:text-orange-600 transition-colors duration-300 truncate">
-                        {vehicle.name}
-                      </h3>
-                      <p className="text-xs text-neutral-500 font-medium truncate">
-                        {vehicle.year} {vehicle.make} {vehicle.model}
-                      </p>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between p-2 border border-neutral-200 rounded-lg hover:border-green-300 transition-colors duration-300 min-w-0">
-                        <div className="flex items-center min-w-0 flex-1">
-                          <Trophy className="w-3 h-3 mr-1.5 text-green-600 flex-shrink-0" />
-                          <span className="text-xs font-medium text-neutral-600 truncate">
-                            Sold By
-                          </span>
-                        </div>
-                        <p className="text-xs font-bold text-green-600 truncate ml-2">
-                          {userRole === "dealer"
-                            ? vehicle.customer?.name || "N/A"
-                            : vehicle.wonBy}
-                        </p>
-                      </div>
-                      <div className="flex items-center justify-between p-2 border border-neutral-200 rounded-lg hover:border-purple-300 transition-colors duration-300 min-w-0">
-                        <div className="flex items-center min-w-0 flex-1">
-                          <User className="w-3 h-3 mr-1.5 text-purple-600 flex-shrink-0" />
-                          <span className="text-xs font-medium text-neutral-600">
-                            Sold to
-                          </span>
-                        </div>
-                        <div className="flex gap-2 items-center justify-center">
-                          <p className="text-xs font-semibold text-purple-700">
-                            {vehicle?.bidderDisplayName || "N/A"}
-                          </p>
-                          {vehicle?.dealershipName && (
-                            <div className="inline-block">
-                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200 truncate">
-                                {vehicle?.dealershipName}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between p-2 border border-neutral-200 rounded-lg hover:border-orange-300 transition-colors duration-300 min-w-0">
-                        <div className="flex items-center min-w-0 flex-1">
-                          <Calendar className="w-3 h-3 mr-1.5 text-orange-600 flex-shrink-0" />
-                          <span className="text-xs font-medium text-neutral-600 truncate">
-                            Accepted On
-                          </span>
-                        </div>
-                        <p className="text-xs font-semibold text-orange-800 truncate ml-2">
-                          {vehicle.acceptedOn || vehicle.endsAt}
-                        </p>
-                      </div>
-                      <div className="flex items-center justify-between p-2 border border-neutral-200 rounded-lg hover:border-blue-300 transition-colors duration-300 min-w-0">
-                        <div className="flex items-center min-w-0 flex-1">
-                          <span className="text-xs font-medium text-neutral-600 truncate">
-                            VIN
-                          </span>
-                        </div>
-                        <p
-                          className="text-xs font-semibold text-neutral-700 truncate ml-2"
-                          title={vehicle.VIN}
-                        >
-                          {vehicle.VIN}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* CTA Buttons - Pinned to Bottom */}
-                  <div className="space-y-2 pt-3 mt-auto">
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        onClick={() =>
-                          handleViewCustomer(
-                            vehicle.customer?.id,
-                            vehicle.customer?.name
-                          )
-                        }
-                        className="flex-1 h-8 border-2 border-neutral-200 hover:border-blue-300 hover:bg-blue-50 text-neutral-700 hover:text-blue-600 font-semibold px-2 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer text-xs"
-                      >
-                        <User className="w-3 h-3 mr-1" />
-                        <span className="truncate">Customer</span>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => handleViewVehicle(vehicle.id)}
-                        className="flex-1 h-8 border-2 border-neutral-200 hover:border-green-300 hover:bg-green-50 text-neutral-700 hover:text-green-600 font-semibold px-2 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer text-xs"
-                      >
-                        <Eye className="w-3 h-3 mr-1" />
-                        <span className="truncate">Vehicle</span>
-                      </Button>
-                    </div>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleViewAppointment(vehicle.id)}
-                      className="w-full h-8 border-2 border-orange-200 hover:border-orange-300 hover:bg-orange-50 text-orange-700 hover:text-orange-600 font-semibold px-2 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer text-xs"
-                    >
-                      <Calendar className="w-3 h-3 mr-1" />
-                      <span className="truncate">
-                        {vehicle.appointmentScheduled
-                          ? "See Appointment"
-                          : "Schedule"}
-                      </span>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Large Desktop Layout: Full Width Rows (1494px+) */}
+        {/* Large Desktop Layout: Full Width Rows (1280px+) */}
         <div className="hidden 2xl:block space-y-4">
           {auctions.map((vehicle) => (
             <motion.div
