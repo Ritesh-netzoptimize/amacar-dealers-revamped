@@ -458,14 +458,7 @@ const BidDialog = ({
                   transition={{ duration: 0.3, ease: "easeOut" }}
                   className="bg-gradient-to-br from-red-50 to-rose-50 border-2 border-red-200 rounded-2xl p-4 sm:p-6 text-center"
                 >
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                    className="w-12 h-12 sm:w-16 sm:h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4"
-                  >
-                    <XCircle className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-                  </motion.div>
+                 
                   <motion.h3
                     className="text-lg sm:text-xl font-bold text-red-800 mb-2"
                     initial={{ opacity: 0, y: 10 }}
