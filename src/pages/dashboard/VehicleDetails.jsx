@@ -486,13 +486,13 @@ const VehicleDetails = () => {
               <p className="text-neutral-600 mb-4">
                 You haven't placed any bids on this vehicle yet.
               </p>
-              <Button
+              {/* <Button
                 onClick={() => handleBidNow(vehicleData)}
                 className="bg-orange-500 hover:bg-orange-600 text-white"
               >
                 <Gavel className="w-4 h-4 mr-2" />
                 Place Your First Bid
-              </Button>
+              </Button> */}
             </motion.div>
           )}
         </motion.div>

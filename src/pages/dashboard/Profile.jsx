@@ -469,17 +469,9 @@ const Profile = () => {
                       </h3>
                       <p className="text-red-700 mb-3">
                         Your account has been deactivated and you have limited
-                        access to the platform. Please contact support to reactivate
-                        your account.
+                        access to the platform. 
                       </p>
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <button
-                          onClick={() => window.open('mailto:support@amacar.com', '_blank')}
-                          className="btn-primary text-sm py-2 px-4"
-                        >
-                          Contact Support
-                        </button>
-                      </div>
+                     
                     </div>
                   </div>
                 </motion.div>
