@@ -471,7 +471,7 @@ export default function ScheduleAppointmentModal({
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: -10 }}
                             transition={{ duration: 0.15 }}
-                            className="absolute z-50 mt-2 bg-white rounded-lg border border-slate-200 shadow-lg p-2 sm:p-4 w-full max-w-[calc(100vw-0.5rem)] sm:max-w-none left-0 right-0"
+                            className="absolute z-50 mt-2 bg-white rounded-lg border border-slate-200 shadow-lg p-3 sm:p-4 w-full max-w-[320px] sm:max-w-[380px] md:max-w-[420px] left-0 right-0"
                           >
                             <div className="w-full text-center">
                               <CalendarComponent
@@ -483,24 +483,28 @@ export default function ScheduleAppointmentModal({
                                 }}
                                 disabled={isDateDisabled}
                                 className="rounded-lg w-full"
+                                style={{
+                                  width: '100%',
+                                  minWidth: '280px'
+                                }}
                                 classNames={{
-                                  months: "flex flex-col space-y-4",
-                                  month: "space-y-4",
+                                  months: "flex flex-col space-y-3 sm:space-y-4",
+                                  month: "space-y-3 sm:space-y-4",
                                   caption:
-                                    "flex justify-center pt-1 relative items-center",
-                                  caption_label: "text-sm font-medium",
+                                    "flex justify-center pt-1 relative items-center mb-2",
+                                  caption_label: "text-sm sm:text-base font-semibold",
                                   nav: "space-x-1 flex items-center",
                                   nav_button:
-                                    "h-8 w-8 bg-transparent p-0 opacity-50 hover:opacity-100",
+                                    "h-7 w-7 sm:h-8 sm:w-8 bg-transparent p-0 opacity-50 hover:opacity-100 rounded-md hover:bg-slate-100",
                                   nav_button_previous: "absolute left-1",
                                   nav_button_next: "absolute right-1",
-                                  table: "w-full border-collapse space-y-1",
-                                  head_row: "flex",
+                                  table: "w-full border-collapse",
+                                  head_row: "flex w-full",
                                   head_cell:
-                                    "text-slate-500 rounded-md w-9 font-normal text-[0.8rem] flex items-center justify-center",
-                                  row: "flex w-full mt-1",
-                                  cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-orange-500 [&:has([aria-selected])]:text-white first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                                  day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-slate-100 rounded-md ",
+                                    "text-slate-500 rounded-md font-medium text-xs sm:text-sm flex items-center justify-center flex-1 min-w-0",
+                                  row: "flex w-full",
+                                  cell: "text-center text-xs sm:text-sm p-0 relative flex-1 min-w-0 [&:has([aria-selected])]:bg-orange-500 [&:has([aria-selected])]:text-white first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                                  day: "h-8 w-8 sm:h-10 sm:w-10 p-0 font-normal aria-selected:opacity-100 hover:bg-slate-100 rounded-md text-xs sm:text-sm flex items-center justify-center mx-auto",
                                   day_selected:
                                     "bg-orange-500 text-white hover:bg-orange-600 hover:text-white focus:bg-orange-500 focus:text-white",
                                   day_today:

@@ -13,9 +13,6 @@ export const userPersistConfig = {
     'subscriptionError',
     'billingLoading',
     'billingError',
-    'uploadProfilePictureLoading',
-    'uploadProfilePictureError',
-    'removeProfilePictureLoading',
-    'removeProfilePictureError'
+    
   ] // persist all user-related state
 };

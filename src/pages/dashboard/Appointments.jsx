@@ -223,9 +223,9 @@ const Appointments = () => {
       // The CancelAppointmentModal already handles the dispatch
       // We just need to refresh the appointments list and show success
       toast.success('Appointment cancelled successfully!');
+      window.location.reload();
       // Refresh appointments list
       await fetchAppointments(currentPage);
-      handleCloseDetailsModal();
     } catch (error) {
       console.error('Error cancelling appointment:', error);
       toast.error(error.message || 'Failed to cancel appointment');
