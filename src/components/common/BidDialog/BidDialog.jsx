@@ -41,10 +41,17 @@ const BidDialog = ({
 
   const handleAmountChange = (e) => {
     const value = e.target.value;
-    // Only allow numbers and one decimal point
+    // Only allow numbers and one decimal point, max 10 digits
     if (value === "" || /^\d*\.?\d*$/.test(value)) {
-      setBidAmount(value);
-      setValidationError("");
+      // Remove commas and check if numeric part is within 10 digits
+      const numericValue = value.replace(/,/g, '');
+      const parts = numericValue.split('.');
+      const integerPart = parts[0];
+      
+      if (integerPart.length <= 10) {
+        setBidAmount(value);
+        setValidationError("");
+      }
     }
   };
 
@@ -198,7 +205,7 @@ const BidDialog = ({
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent
-        className="sm:max-w-lg p-0 overflow-hidden"
+        className="w-[95vw] max-w-lg max-h-[90vh] p-0 overflow-hidden flex flex-col"
         showCloseButton={true}
       >
         <motion.div
@@ -206,6 +213,7 @@ const BidDialog = ({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
+          className="flex flex-col h-full"
         >
           {/* Header with gradient background */}
           <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4 text-white">
@@ -219,11 +227,11 @@ const BidDialog = ({
             </DialogHeader>
           </div>
 
-          <div className="px-6 py-6 space-y-6">
+          <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 flex-1 overflow-y-auto">
             {/* Vehicle Info Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <motion.div
-                className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-4"
+                className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-3 sm:p-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
@@ -249,7 +257,7 @@ const BidDialog = ({
               </motion.div>
 
               <motion.div
-                className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4"
+                className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-3 sm:p-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
@@ -272,7 +280,7 @@ const BidDialog = ({
 
             {/* Auction Status */}
             <motion.div
-              className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4"
+              className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-3 sm:p-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
@@ -286,8 +294,7 @@ const BidDialog = ({
                     Auction Status
                   </p>
                   <p className="text-base font-semibold text-amber-900">
-                    {vehicle?.auctionStatus === "active" ||
-                    vehicle?.status === "active"
+                    {vehicle?.auction?.is_active
                       ? "Active - Bidding Open"
                       : "Ended - Bidding Closed"}
                   </p>
@@ -314,7 +321,7 @@ const BidDialog = ({
 
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <span className="text-2xl font-bold text-neutral-400 group-focus-within:text-orange-500 transition-colors">
+                  <span className="text-2xl font-bold text-neutral-400 transition-colors">
                     $
                   </span>
                 </div>
@@ -324,7 +331,8 @@ const BidDialog = ({
                   value={bidAmount}
                   onChange={handleAmountChange}
                   placeholder="Enter amount..."
-                  className={`w-full placeholder:text-neutral-400 pl-12 pr-4 py-4 text-xl font-semibold border-2 rounded-xl focus:outline-none focus:ring-4 transition-all duration-200 ${
+                  maxLength={12}
+                  className={`w-full placeholder:text-neutral-400 pl-12 pr-4 py-3 sm:py-4 text-lg sm:text-xl font-semibold border-2 rounded-xl focus:outline-none focus:ring-4 transition-all duration-200 ${
                     validationError
                       ? "border-red-300 bg-red-50 focus:ring-red-200 focus:border-red-400"
                       : "border-neutral-200 bg-neutral-50 focus:ring-orange-200 focus:border-orange-400 hover:border-orange-300"
@@ -346,7 +354,7 @@ const BidDialog = ({
 
               {/* Minimum Bid Requirement Info */}
               <motion.div
-                className="bg-blue-50 border border-blue-200 rounded-lg p-3"
+                className="bg-blue-50 border border-blue-200 rounded-lg p-2 sm:p-3"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
@@ -408,18 +416,18 @@ const BidDialog = ({
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.8, y: -20 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 text-center"
+                  className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-4 sm:p-6 text-center"
                 >
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                    className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4"
+                    className="w-12 h-12 sm:w-16 sm:h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4"
                   >
-                    <CheckCircle className="w-8 h-8 text-white" />
+                    <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                   </motion.div>
                   <motion.h3
-                    className="text-xl font-bold text-green-800 mb-2"
+                    className="text-lg sm:text-xl font-bold text-green-800 mb-2"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
@@ -427,7 +435,7 @@ const BidDialog = ({
                     Bid Submitted Successfully!
                   </motion.h3>
                   <motion.p
-                    className="text-green-700 text-base"
+                    className="text-green-700 text-sm sm:text-base"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
@@ -450,18 +458,18 @@ const BidDialog = ({
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.8, y: -20 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="bg-gradient-to-br from-red-50 to-rose-50 border-2 border-red-200 rounded-2xl p-6 text-center"
+                  className="bg-gradient-to-br from-red-50 to-rose-50 border-2 border-red-200 rounded-2xl p-4 sm:p-6 text-center"
                 >
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                    className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4"
+                    className="w-12 h-12 sm:w-16 sm:h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4"
                   >
-                    <XCircle className="w-8 h-8 text-white" />
+                    <XCircle className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                   </motion.div>
                   <motion.h3
-                    className="text-xl font-bold text-red-800 mb-2"
+                    className="text-lg sm:text-xl font-bold text-red-800 mb-2"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
@@ -469,7 +477,7 @@ const BidDialog = ({
                     Bid Submission Failed
                   </motion.h3>
                   <motion.p
-                    className="text-red-700 text-base mb-4"
+                    className="text-red-700 text-sm sm:text-base mb-3 sm:mb-4"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
@@ -496,17 +504,17 @@ const BidDialog = ({
 
             {/* Footer */}
             <motion.div
-              className="bg-neutral-50 py-4 border-t border-neutral-200"
+              className="bg-neutral-50 py-3 sm:py-4 border-t border-neutral-200 flex-shrink-0"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <div className="flex gap-3 justify-end">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-end">
                 <Button
                   variant="outline"
                   onClick={handleClose}
                   disabled={isLoading}
-                  className="cursor-pointer px-6 py-5 border-2 border-neutral-300 text-neutral-700 hover:bg-neutral-100 hover:border-neutral-400 transition-all duration-200 font-medium"
+                  className="w-full sm:w-auto cursor-pointer px-4 sm:px-6 py-3 sm:py-5 border-2 border-neutral-300 text-neutral-700 hover:bg-neutral-100 hover:border-neutral-400 transition-all duration-200 font-medium"
                 >
                   Cancel
                 </Button>
@@ -521,7 +529,7 @@ const BidDialog = ({
                   <Button
                     onClick={handleSubmit}
                     disabled={isLoading || !bidAmount || isSuccess}
-                    className={`cursor-pointer px-8 py-5.5 font-semibold text-white rounded-lg transition-all duration-200 ${
+                    className={`w-full sm:w-auto cursor-pointer px-6 sm:px-8 py-3 sm:py-5.5 font-semibold text-white rounded-lg transition-all duration-200 ${
                       isLoading || !bidAmount || isSuccess
                         ? "opacity-50 cursor-not-allowed"
                         : "hover:shadow-xl"
