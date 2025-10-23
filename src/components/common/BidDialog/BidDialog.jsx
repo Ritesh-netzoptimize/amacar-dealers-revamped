@@ -321,9 +321,7 @@ const BidDialog = ({
 
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <span className="text-2xl font-bold text-neutral-400 transition-colors">
-                    $
-                  </span>
+                  <span className="text-2xl font-bold text-neutral-400 transition-colors">$</span>
                 </div>
                 <motion.input
                   type="text"
@@ -342,7 +340,7 @@ const BidDialog = ({
                       : ""
                   }`}
                   disabled={isLoading || isSuccess}
-                  whileFocus={{ scale: 1.02 }}
+                  // whileFocus={{ scale: 1.02 }}
                   transition={{ duration: 0.2 }}
                 />
                 <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
