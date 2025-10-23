@@ -166,7 +166,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
     // 4. Not a manual toggle
     if (isMobile && !isCollapsed && prevPathRef.current !== location.pathname && !isManualToggle) {
       // Check if current path is a dashboard page
-      const dashboardPages = ['/dashboard', '/auctions', '/pending-offers', '/offers', '/accepted', '/appointments', '/profile'];
+      const dashboardPages = ['/dashboard', '/live-auctions', '/won-auctions', '/new-customers', '/active-customers', '/my-bids', '/appointments', '/highest-bids', '/dealership-users', '/partner-dealers', '/reports', '/profile', '/sales-managers', '/subscription-cancellation-requests', '/dealerships', '/invited-dealerships'];
       const isDashboardPage = dashboardPages.some(page => location.pathname.startsWith(page));
       
       if (isDashboardPage) {
@@ -206,7 +206,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
       <motion.aside
         variants={containerVariants}
         animate={isCollapsed ? 'closed' : 'open'}
-        className="fixed left-0 top-0 bottom-0 bg-white border-r border-neutral-200 z-[41] shadow-sm"
+        className="fixed left-0 top-0 bottom-0 bg-white border-r border-neutral-200 z-[41] shadow-sm overflow-y-auto"
       >
         <div className="flex flex-col h-full relative">
           {/* Toggle Button - Fixed position */}
