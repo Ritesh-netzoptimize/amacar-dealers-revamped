@@ -201,7 +201,7 @@ const Profile = () => {
         totalAuctions: user.totalAuctions || user.total_auctions || 0,
         totalEarnings: user.totalEarnings || user.total_earnings || 0,
         rating: user.rating || 0,
-        company: user.company || "",
+        dealershipName: user.dealership_name || "",
         profile_picture: user.profile_picture || null,
         user_status: user.user_status || "",
         account_status: user.account_status || "",
@@ -607,9 +607,9 @@ const Profile = () => {
                     ? `Member since ${profile.joinDate}`
                     : "New member"}
                 </p>
-                {profile.company && (
+                {profile.dealershipName && (
                   <p className="text-sm text-neutral-500 mt-1">
-                    {profile.company}
+                    {profile.dealershipName}
                   </p>
                 )}
                 {(uploadProfilePictureError || removeProfilePictureError) && (
@@ -706,12 +706,12 @@ const Profile = () => {
 
               <div className="space-y-2">
                 <label className="block text-xs sm:text-sm font-semibold text-neutral-700">
-                  Company
+                  Dealership
                 </label>
                 <div className="flex items-center space-x-2 text-sm sm:text-base text-neutral-600">
                   <User className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="truncate">
-                    {profile.company || "Not provided"}
+                    {profile.dealershipName || "Not provided"}
                   </span>
                 </div>
               </div>
