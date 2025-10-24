@@ -185,13 +185,14 @@ export default function ScheduleAppointmentModal({
 
     try {
       // Format date as YYYY-MM-DD
-      const formattedDate = selectedDate.toISOString().split("T")[0];
+      const formattedDate = selectedDate.toLocaleDateString('en-CA');
       // Format time as HH:mm
       const formattedTime = selectedTime.padStart(5, "0");
 
       // Merge into one string
       const start_time = `${formattedDate} ${formattedTime}:00`;
-
+      console.log("formatted_date", formattedDate);
+      console.log("selected_date", selectedDate);
       let response;
 
       if (isReschedule && appointmentToReschedule) {
