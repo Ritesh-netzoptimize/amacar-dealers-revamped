@@ -24,7 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const NewCustomersContainer = ({
   customers = [],
@@ -39,6 +39,19 @@ const NewCustomersContainer = ({
 }) => {
   const navigate = useNavigate();
   const itemsPerPage = 10;
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  // Handle custom breakpoint at 1404px
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= 1404);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   // Calculate pagination display
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -113,7 +126,8 @@ const NewCustomersContainer = ({
       </div>
 
       {/* Desktop Table Layout */}
-      <div className="hidden md:block overflow-x-auto">
+      {isDesktop && (
+        <div className="overflow-x-auto">
         <Table className="w-full min-w-[1000px] ">
           <TableHeader>
             <TableRow className="border-neutral-200 hover:bg-transparent">
@@ -135,7 +149,7 @@ const NewCustomersContainer = ({
               <TableHead className="text-neutral-600 font-medium w-[10%]">
                 Join Date
               </TableHead>
-              <TableHead className="text-neutral-600 font-medium text-right w-[20%]">
+              <TableHead className="text-neutral-600 font-medium text-right w-[10%]">
                 Actions
               </TableHead>
             </TableRow>
@@ -189,16 +203,7 @@ const NewCustomersContainer = ({
                   </div>
                 </TableCell>
                 <TableCell className="py-3 text-right">
-                  <div className="flex gap-4 justify-end items-center">
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => handleScheduleAppointment(customer.id)}
-                      className="h-8 px-3 text-xs bg-white border-2 border-white cursor-pointer hover:bg-white text-[var(--brand-orange)]"
-                    >
-                      <Calendar className="w-3 h-3 mr-1" />
-                      Schedule
-                    </Button>
+                  <div className="flex justify-end items-center">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
@@ -215,6 +220,13 @@ const NewCustomersContainer = ({
                         sideOffset={4}
                         className="w-56 bg-white border border-neutral-200 rounded-xl shadow-lg p-2 overflow-hidden backdrop-blur-sm bg-opacity-90 z-50 absolute top-full right-0 mt-2"
                       >
+                        <DropdownMenuItem
+                          onClick={() => handleScheduleAppointment(customer.id)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
+                        >
+                          <Calendar className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
+                          <span>Schedule</span>
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => handleViewCustomer(customer.id)}
                           className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
@@ -247,10 +259,12 @@ const NewCustomersContainer = ({
             ))}
           </TableBody>
         </Table>
-      </div>
+        </div>
+      )}
 
       {/* Mobile Card Layout */}
-      <div className="md:hidden space-y-4">
+      {!isDesktop && (
+        <div className="space-y-4">
         {customers.map((customer, index) => (
           <motion.div
             key={customer.id}
@@ -313,23 +327,15 @@ const NewCustomersContainer = ({
 
               {/* Action Buttons */}
               <div className="flex gap-2 pt-3">
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={() => handleScheduleAppointment(customer.id)}
-                  className="flex-1 h-10 text-sm bg-[var(--brand-orange)]  text-white hover:bg-orange-600"
-                >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule
-                </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-10 w-10 p-0 hover:bg-neutral-100"
+                      className="flex-1 h-10 text-sm hover:bg-neutral-100"
                     >
-                      <MoreHorizontal className="w-4 h-4" />
+                      <MoreHorizontal className="w-4 h-4 mr-2" />
+                      Actions
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
@@ -338,6 +344,13 @@ const NewCustomersContainer = ({
                     sideOffset={4}
                     className="w-52 p-1 shadow-lg border border-neutral-200 bg-white rounded-lg absolute top-full right-0 mt-2 z-50"
                   >
+                    <DropdownMenuItem
+                      onClick={() => handleScheduleAppointment(customer.id)}
+                      className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-neutral-700 hover:bg-orange-50 hover:text-orange-700 rounded-md transition-colors duration-150 focus:bg-orange-50 focus:text-orange-700 focus:outline-none"
+                    >
+                      <Calendar className="w-4 h-4 mr-3 text-neutral-500" />
+                      <span className="font-medium">Schedule</span>
+                    </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => handleViewCustomer(customer.id)}
                       className="cursor-pointer flex items-center px-3 py-2.5 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 rounded-md transition-colors duration-150 focus:bg-neutral-50 focus:text-neutral-900 focus:outline-none"
@@ -359,7 +372,8 @@ const NewCustomersContainer = ({
             </div>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </motion.div>
   );
 };

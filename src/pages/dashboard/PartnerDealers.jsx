@@ -310,7 +310,7 @@ const PartnerDealers = () => {
             </div>
           </motion.div>
 
-          {/* Search and Filter Section */}
+          {/* Search and Filter Section
           <motion.div className="mb-6" variants={statsVariants}>
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
               <div className="relative flex-1 max-w-md">
@@ -327,7 +327,7 @@ const PartnerDealers = () => {
                 {totalCount} dealership{totalCount !== 1 ? "s" : ""} found
               </div>
             </div>
-          </motion.div>
+          </motion.div> */}
 
           {/* Error State */}
           {error && (
