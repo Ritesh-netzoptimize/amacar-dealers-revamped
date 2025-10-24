@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import api from "@/lib/api";
 import { getUserPermissions } from "@/utils/rolePermissions";
 import { useSearch } from "@/context/SearchContext";
+import DealershipSkeleton from "@/components/skeletons/Dealership/DealershipSkeleton";
 
 const PartnerDealers = () => {
   const [dealerships, setDealerships] = useState([]);
@@ -268,7 +269,7 @@ const PartnerDealers = () => {
       animate="visible"
     >
       {loading ? (
-        <PartnerDealersSkeleton />
+        <DealershipSkeleton  />
       ) : (
         <div className="px-4 md:px-6">
           {/* Header Section */}
