@@ -382,7 +382,7 @@ const DealershipUsersContainer = ({
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-6"
+      className="space-y-6 mb-4"
     >
       {/* Users Table */}
       <motion.div
