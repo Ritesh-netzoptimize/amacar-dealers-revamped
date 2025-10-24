@@ -124,9 +124,10 @@ const RecentVehiclesSection = () => {
         </div>
 
         {/* Loading Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
-          <div className="lg:col-span-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+        <div className="space-y-6">
+          {/* Mobile and Tablet Layout: Stacked */}
+          <div className="block 2xl:hidden">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
               {Array.from({ length: 6 }).map((_, index) => (
                 <div key={index} className="bg-white rounded-xl shadow-sm border border-neutral-200 p-3 sm:p-4 animate-pulse">
                   <div className="space-y-3">
@@ -140,9 +141,30 @@ const RecentVehiclesSection = () => {
                 </div>
               ))}
             </div>
-          </div>
-          <div className="lg:col-span-1">
             <RecentActivity />
+          </div>
+
+          {/* Large Desktop Layout: Side by Side */}
+          <div className="hidden 2xl:grid grid-cols-4 gap-6">
+            <div className="col-span-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className="bg-white rounded-xl shadow-sm border border-neutral-200 p-3 sm:p-4 animate-pulse">
+                    <div className="space-y-3">
+                      <div className="h-32 sm:h-48 bg-neutral-200 rounded-lg"></div>
+                      <div className="space-y-2">
+                        <div className="h-3 sm:h-4 bg-neutral-200 rounded w-3/4"></div>
+                        <div className="h-3 sm:h-4 bg-neutral-200 rounded w-1/2"></div>
+                        <div className="h-4 sm:h-6 bg-neutral-200 rounded w-1/3"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="col-span-1">
+              <RecentActivity />
+            </div>
           </div>
         </div>
       </div>
@@ -221,53 +243,105 @@ const RecentVehiclesSection = () => {
       </motion.div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
-        {/* Left Section - Vehicle Cards */}
-        <motion.div 
-          className="lg:col-span-3"
-          variants={sectionVariants}
-        >
-          {vehicles.length === 0 ? (
-            <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 sm:p-6 text-center">
-              <div className="text-neutral-600">
-                <h3 className="text-sm sm:text-base font-semibold">No vehicles available</h3>
-                <p className="text-xs sm:text-sm text-neutral-500 mt-1">Recent vehicles will appear here once data is available.</p>
+      <div className="space-y-6">
+        {/* Mobile and Tablet Layout: Stacked */}
+        <div className="block 2xl:hidden">
+          {/* Vehicle Cards */}
+          <motion.div 
+            className="mb-6"
+            variants={sectionVariants}
+          >
+            {vehicles.length === 0 ? (
+              <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 sm:p-6 text-center">
+                <div className="text-neutral-600">
+                  <h3 className="text-sm sm:text-base font-semibold">No vehicles available</h3>
+                  <p className="text-xs sm:text-sm text-neutral-500 mt-1">Recent vehicles will appear here once data is available.</p>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-              {vehicles.slice(0, 6).map((vehicle, index) => (
-                <motion.div
-                  key={vehicle.id}
-                  variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    visible: {
-                      opacity: 1,
-                      y: 0,
-                      transition: {
-                        duration: 0.5,
-                        delay: index * 0.1
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                {vehicles.slice(0, 6).map((vehicle, index) => (
+                  <motion.div
+                    key={vehicle.id}
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      visible: {
+                        opacity: 1,
+                        y: 0,
+                        transition: {
+                          duration: 0.5,
+                          delay: index * 0.1
+                        }
                       }
-                    }
-                  }}
-                >
-                  <VehicleCard 
-                    vehicle={vehicle}
-                    onBidRefresh={fetchRecentVehicles}
-                  />
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </motion.div>
+                    }}
+                  >
+                    <VehicleCard 
+                      vehicle={vehicle}
+                      onBidRefresh={fetchRecentVehicles}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </motion.div>
 
-        {/* Right Section - Recent Activity */}
-        <motion.div 
-          className="lg:col-span-1"
-          variants={sectionVariants}
-        >
-          <RecentActivity />
-        </motion.div>
+          {/* Recent Activity */}
+          <motion.div 
+            variants={sectionVariants}
+          >
+            <RecentActivity />
+          </motion.div>
+        </div>
+
+        {/* Large Desktop Layout: Side by Side */}
+        <div className="hidden 2xl:grid grid-cols-4 gap-6">
+          {/* Left Section - Vehicle Cards */}
+          <motion.div 
+            className="col-span-3"
+            variants={sectionVariants}
+          >
+            {vehicles.length === 0 ? (
+              <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-4 sm:p-6 text-center">
+                <div className="text-neutral-600">
+                  <h3 className="text-sm sm:text-base font-semibold">No vehicles available</h3>
+                  <p className="text-xs sm:text-sm text-neutral-500 mt-1">Recent vehicles will appear here once data is available.</p>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                {vehicles.slice(0, 6).map((vehicle, index) => (
+                  <motion.div
+                    key={vehicle.id}
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      visible: {
+                        opacity: 1,
+                        y: 0,
+                        transition: {
+                          duration: 0.5,
+                          delay: index * 0.1
+                        }
+                      }
+                    }}
+                  >
+                    <VehicleCard 
+                      vehicle={vehicle}
+                      onBidRefresh={fetchRecentVehicles}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+
+          {/* Right Section - Recent Activity */}
+          <motion.div 
+            className="col-span-1"
+            variants={sectionVariants}
+          >
+            <RecentActivity />
+          </motion.div>
+        </div>
       </div>
     </motion.div>
   );

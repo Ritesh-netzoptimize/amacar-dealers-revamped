@@ -366,7 +366,7 @@ export default function AppointmentDetailsModal({
                         {appointment.status !== "cancelled" && (
                           <div className="grid grid-cols-1 gap-2">
                             {/* Confirm Button - Only show for pending appointments */}
-                            {appointment.status === "pending" &&
+                            {/* {appointment.status === "pending" &&
                               appointment.bookedBy === "customer" && (
                                 <button
                                   onClick={handleConfirmClick}
@@ -386,17 +386,17 @@ export default function AppointmentDetailsModal({
                                       : "Confirm"}
                                   </span>
                                 </button>
-                              )}
+                              )} */}
 
                             {/* Already Confirmed Button - Only show for confirmed appointments */}
-                            {appointment.status === "confirmed" && (
+                            {(appointment.status === "confirmed" || appointment.bookedBy === "customer")  && (
                               <button
                                 disabled={true}
                                 className="cursor-not-allowed flex items-center justify-center gap-2 h-9 sm:h-10 bg-green-50 text-green-700 rounded-lg border border-green-200 opacity-75"
                               >
                                 <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4" />
                                 <span className="text-xs sm:text-sm font-medium">
-                                  Already Confirmed
+                                  Confirmed
                                 </span>
                               </button>
                             )}
