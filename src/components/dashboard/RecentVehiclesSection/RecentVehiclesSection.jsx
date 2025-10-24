@@ -127,7 +127,7 @@ const RecentVehiclesSection = () => {
         <div className="space-y-6">
           {/* Mobile and Tablet Layout: Stacked */}
           <div className="block 2xl:hidden">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 mb-6">
               {Array.from({ length: 6 }).map((_, index) => (
                 <div key={index} className="bg-white rounded-xl shadow-sm border border-neutral-200 p-3 sm:p-4 animate-pulse">
                   <div className="space-y-3">
@@ -147,7 +147,7 @@ const RecentVehiclesSection = () => {
           {/* Large Desktop Layout: Side by Side */}
           <div className="hidden 2xl:grid grid-cols-4 gap-6">
             <div className="col-span-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
                 {Array.from({ length: 6 }).map((_, index) => (
                   <div key={index} className="bg-white rounded-xl shadow-sm border border-neutral-200 p-3 sm:p-4 animate-pulse">
                     <div className="space-y-3">
@@ -259,7 +259,7 @@ const RecentVehiclesSection = () => {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
                 {vehicles.slice(0, 6).map((vehicle, index) => (
                   <motion.div
                     key={vehicle.id}
@@ -308,7 +308,7 @@ const RecentVehiclesSection = () => {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
                 {vehicles.slice(0, 6).map((vehicle, index) => (
                   <motion.div
                     key={vehicle.id}
