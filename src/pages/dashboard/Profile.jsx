@@ -189,8 +189,8 @@ const Profile = () => {
         firstName: user.first_name || user.display_name?.split(" ")[0] || "",
         lastName: user.last_name || user.display_name?.split(" ")[1] || "",
         email: user.email || "",
-        phone: user.phone || user.meta?.phone || "",
-        zipcode: user.meta?.zip || user.meta?.zip_code || user.zip_code || "",
+        phone: user.meta?.phone || "",
+        zipcode: 143505,
         state: user.state || user.meta?.state || "",
         city: user.city || user.meta?.city || "",
         bio:

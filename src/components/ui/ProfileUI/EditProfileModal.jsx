@@ -195,6 +195,7 @@ export default function EditProfileModal({
       setPhase('success');
       setTimeout(() => {
         onClose();
+        // window.location.reload();
       }, 2000);
       return;
       

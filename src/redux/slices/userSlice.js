@@ -830,11 +830,21 @@ const userSlice = createSlice({
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.status = "succeeded";
-        // Only update user data if payload is valid
-        if (action.payload && typeof action.payload === "object") {
-          state.user = action.payload;
-          // Update localStorage with new user data
-          localStorage.setItem("authUser", JSON.stringify(action.payload));
+        // Only update specific fields that can be changed from UI
+        if (action.payload && action.payload.success && action.payload.profile) {
+          const profile = action.payload.profile;
+          if (state.user) {
+            // Update only the fields that can be changed from the UI
+            state.user.meta.phone = profile.phone || state.user.phone;
+            state.user.meta.zip = profile.zip || state.user.zip;
+            state.user.phone = profile.phone || state.user.phone;
+            state.user.zip = profile.zip || state.user.zip;
+            state.user.city = profile.city || state.user.city;
+            state.user.state = profile.state || state.user.state;
+            
+            // Update localStorage with updated user data
+            localStorage.setItem("authUser", JSON.stringify(state.user));
+          }
         }
         // If payload is invalid, keep existing user data
       })
