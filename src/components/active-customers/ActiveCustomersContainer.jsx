@@ -43,7 +43,7 @@ const ActiveCustomersContainer = ({
   const itemsPerPage = 10;
   const [isDesktop, setIsDesktop] = useState(false);
 
-  // Handle custom breakpoint at 1280px
+  // Handle custom breakpoint at 1404px
   useEffect(() => {
     const checkScreenSize = () => {
       setIsDesktop(window.innerWidth >= 1404);
