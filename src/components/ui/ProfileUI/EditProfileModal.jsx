@@ -43,7 +43,7 @@ export default function EditProfileModal({
   useEffect(() => {
     console.log("user.meta", user?.meta);
     console.log("location", location);
-  }, [user]);
+  }, [user, location]);
 
   // Initialize form data when modal opens
   useEffect(() => {
@@ -135,7 +135,7 @@ export default function EditProfileModal({
     // Phone validation
     if (!formData.phone.trim()) {
       newErrors.phone = 'Phone number is required';
-    } else if (!/^[\+]?[1-9][\d]{0,15}$/.test(formData.phone.replace(/\s/g, ''))) {
+    } else if (!/^[+]?[1-9][\d]{0,15}$/.test(formData.phone.replace(/\s/g, ''))) {
       newErrors.phone = 'Please enter a valid phone number';
     }
 
@@ -192,11 +192,17 @@ export default function EditProfileModal({
     try {
       // Call the updateProfile API
       const resultAction = await dispatch(updateProfile(formData));
-      setPhase('success');
-      setTimeout(() => {
-        onClose();
-        // window.location.reload();
-      }, 2000);
+      if (updateProfile.fulfilled.match(resultAction)) {
+        setPhase('success');
+        // Call onSave callback to update parent component
+        onSave(formData);
+        setTimeout(() => {
+          onClose();
+        }, 2000);
+      } else {
+        setPhase('failed');
+        toast.error('Failed to update profile. Please try again.', { duration: 2000 });
+      }
       return;
       
     } catch (error) {
@@ -221,7 +227,7 @@ export default function EditProfileModal({
   return (
     <Dialog open={isOpen} onOpenChange={isCloseDisabled ? undefined : handleModalClose}>
       <DialogContent
-        className="sm:max-w-xl rounded-2xl shadow-xl p-0 overflow-hidden bg-white"
+        className="sm:max-w-xl rounded-2xl shadow-xl p-0 bg-white max-h-[90vh] overflow-y-auto"
         showCloseButton={!isCloseDisabled}
       >
         <div className="bg-gradient-to-br from-white via-slate-50 to-slate-100 p-6">

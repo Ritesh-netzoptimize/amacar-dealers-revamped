@@ -190,9 +190,9 @@ const Profile = () => {
         lastName: user.last_name || user.display_name?.split(" ")[1] || "",
         email: user.email || "",
         phone: user.meta?.phone || "",
-        zipcode: 143505,
-        state: user.state || user.meta?.state || "",
-        city: user.city || user.meta?.city || "",
+        zipcode: user.meta?.zip || "",
+        state: user.meta?.state || "",
+        city: user.meta?.city || "",
         bio:
           user.bio || "Car enthusiast and frequent seller on Amacar platform.",
         joinDate: user.user_registered
@@ -663,7 +663,7 @@ const Profile = () => {
                 <div className="flex items-center space-x-2 text-sm sm:text-base text-neutral-600">
                   <Phone className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                   <span className="truncate">
-                    {user?.phone || "Not provided"}
+                    {profile.phone || "Not provided"}
                   </span>
                 </div>
               </div>

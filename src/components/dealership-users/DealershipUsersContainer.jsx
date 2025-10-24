@@ -217,18 +217,6 @@ const DealershipUsersContainer = ({
           </div>
         ),
       }),
-      columnHelper.accessor("business.dealership_name", {
-        header: "Dealership Name",
-        cell: ({ row }) => (
-          <div className="flex items-center">
-            <div className="">
-              <div className="text-sm font-medium text-neutral-900">
-                {row.original.business?.dealership_name || "N/A"}
-              </div>
-            </div>
-          </div>
-        ),
-      }),
       columnHelper.accessor("phone", {
         header: "Phone",
         cell: ({ row }) => (
@@ -613,7 +601,7 @@ const DealershipUsersContainer = ({
                   </div>
 
                   {/* Business Info - Responsive Layout */}
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <div className="text-sm font-medium text-neutral-900 truncate">
                       {row.original.business?.dealership_name || "N/A"}
                     </div>
@@ -621,8 +609,22 @@ const DealershipUsersContainer = ({
                       <div className="text-sm text-neutral-500">
                         Code: {row.original.business?.dealer_code || "N/A"}
                       </div>
+                      <div className="text-sm min-w-0">
+                        {row.original.business?.website ? (
+                          <a
+                            href={row.original.business.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline truncate block"
+                          >
+                            {row.original.business.website}
+                          </a>
+                        ) : (
+                          <span className="text-neutral-500">Website: N/A</span>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* Status */}
                   <div className="flex gap-2 items-center justify-between">
@@ -634,7 +636,7 @@ const DealershipUsersContainer = ({
                       {row.original.status?.formatted_status || "Unknown"}
                     </Badge>
 
-                    {/* Action Buttons - Responsive */}
+                  {/* Action Buttons - Responsive */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button

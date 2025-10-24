@@ -253,7 +253,7 @@ export const updateProfile = createAsyncThunk(
       const response = await api.put("/profile/info", apiData);
       if (response.data.success) {
         console.log("response.data profile", response.data)
-        return response.data.user;
+        return response.data;
       }
       return rejectWithValue(response.data.message || "Profile update failed");
     } catch (error) {
@@ -416,7 +416,7 @@ export const fetchProfileInfo = createAsyncThunk(
       if (response.data.success) {
         console.log("response.data profile", response.data)
 
-        return response.data.profile;
+        return response.data.user;
       } else {
         return rejectWithValue(
           response.data.message || "Failed to fetch profile information"
@@ -831,16 +831,22 @@ const userSlice = createSlice({
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.status = "succeeded";
         // Only update specific fields that can be changed from UI
-        if (action.payload && action.payload.success && action.payload.profile) {
-          const profile = action.payload.profile;
+        if (action.payload && action.payload.success && action.payload.user) {
+          const profile = action.payload.user;
           if (state.user) {
             // Update only the fields that can be changed from the UI
-            state.user.meta.phone = profile.phone || state.user.phone;
-            state.user.meta.zip = profile.zip || state.user.zip;
-            state.user.phone = profile.phone || state.user.phone;
-            state.user.zip = profile.zip || state.user.zip;
-            state.user.city = profile.city || state.user.city;
-            state.user.state = profile.state || state.user.state;
+            state.user.phone = profile.meta?.phone || state.user.phone;
+            state.user.zip = profile.meta?.zip || state.user.zip;
+            state.user.city = profile.meta?.city || state.user.city;
+            state.user.state = profile.meta?.state || state.user.state;
+            
+            // Update meta object if it exists
+            if (state.user.meta) {
+              state.user.meta.phone = profile.meta?.phone || state.user.meta.phone;
+              state.user.meta.zip = profile.meta?.zip || state.user.meta.zip;
+              state.user.meta.city = profile.meta?.city || state.user.meta.city;
+              state.user.meta.state = profile.meta?.state || state.user.meta.state;
+            }
             
             // Update localStorage with updated user data
             localStorage.setItem("authUser", JSON.stringify(state.user));
@@ -962,9 +968,9 @@ const userSlice = createSlice({
         state.status = "succeeded";
         // Update user data with profile information
         if (action.payload && typeof action.payload === "object") {
-          state.user = { ...state.user, ...action.payload };
+          state.user = action.payload;
           // Update localStorage with new user data
-          localStorage.setItem("authUser", JSON.stringify(state.user));
+          localStorage.setItem("authUser", JSON.stringify(action.payload));
         }
       })
       .addCase(fetchProfileInfo.rejected, (state, action) => {
