@@ -393,7 +393,7 @@ const HighestBids = () => {
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
-              className="w-full max-w-md mt-6 mb-4"
+              className="w-full max-w-md mb-4"
             />
           </motion.div>
         </div>

@@ -58,20 +58,20 @@ const ActiveCustomersSkeleton = () => {
         <Skeleton className="h-12 w-full rounded-lg" />
       </motion.div>
 
-      {/* Desktop Table Skeleton */}
-      <div className="hidden lg:block">
+      {/* Extra Large Desktop Table Skeleton (1600px+) */}
+      <div className="hidden 2xl:block overflow-x-auto">
         <motion.div 
-          className="w-full min-w-[1000px]"
+          className="w-full min-w-[1200px]"
           variants={itemVariants}
         >
           {/* Table Header Skeleton */}
-          <div className="grid grid-cols-7 gap-4 mb-6 pb-4 border-b border-neutral-200">
-            {[...Array(7)].map((_, index) => (
-              <Skeleton
-                key={index}
-                className={`h-5 ${index === 6 ? 'w-16 ml-auto' : 'w-24'}`}
-              />
-            ))}
+          <div className="grid grid-cols-6 gap-4 mb-6 pb-4 border-b border-neutral-200">
+            <Skeleton className="h-5 w-32 pl-6" />
+            <Skeleton className="h-5 w-24" />
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-5 w-16 ml-auto pr-6" />
           </div>
 
           {/* Table Rows Skeleton */}
@@ -79,102 +79,294 @@ const ActiveCustomersSkeleton = () => {
             {[...Array(6)].map((_, rowIndex) => (
               <motion.div
                 key={rowIndex}
-                className="grid grid-cols-7 gap-4 py-5"
+                className="grid grid-cols-6 gap-4 py-4"
                 variants={itemVariants}
                 transition={{ delay: rowIndex * 0.1 }}
               >
-                {/* Dealership Name Column */}
-                <div className="space-y-2">
-                  <Skeleton className="h-5 w-28" />
-                  <Skeleton className="h-4 w-36" />
+                {/* Customer Name Column */}
+                <div className="space-y-2 pl-6">
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-3 w-36" />
                 </div>
                 
-                {/* Phone Column */}
-                <Skeleton className="h-5 w-24" />
+                {/* Vehicle Column */}
+                <Skeleton className="h-4 w-24" />
                 
-                {/* City Column */}
-                <Skeleton className="h-5 w-20" />
+                {/* Offer Column */}
+                <Skeleton className="h-4 w-16" />
                 
-                {/* Status Column */}
-                <Skeleton className="h-7 w-16 rounded-full" />
+                {/* Address Column */}
+                <Skeleton className="h-4 w-32" />
                 
-                {/* Role Column */}
-                <Skeleton className="h-5 w-16" />
-                
-                {/* Sales Manager Column */}
-                <Skeleton className="h-5 w-24" />
+                {/* Join Date Column */}
+                <Skeleton className="h-4 w-20" />
                 
                 {/* Actions Column */}
-                <div className="flex justify-end">
+                <div className="flex justify-end pr-6">
                   <Skeleton className="h-8 w-8 rounded" />
                 </div>
               </motion.div>
             ))}
           </div>
         </motion.div>
+      </div>
 
-        {/* Helper Text Skeleton */}
+      {/* Large Laptop Table Skeleton (1280px - 1600px) */}
+      <div className="hidden xl:block 2xl:hidden overflow-x-auto">
         <motion.div 
-          className="mt-4 flex items-center gap-2"
+          className="w-full"
           variants={itemVariants}
         >
-          <Skeleton className="w-4 h-4 rounded" />
-          <Skeleton className="h-4 w-32" />
+          {/* Table Header Skeleton */}
+          <div className="grid grid-cols-6 gap-4 mb-6 pb-4 border-b border-neutral-200">
+            <Skeleton className="h-4 w-20 pl-3 text-xs" />
+            <Skeleton className="h-4 w-16 text-xs" />
+            <Skeleton className="h-4 w-12 text-xs" />
+            <Skeleton className="h-4 w-24 text-xs" />
+            <Skeleton className="h-4 w-12 text-xs" />
+            <Skeleton className="h-4 w-8 ml-auto pr-3 text-xs" />
+          </div>
+
+          {/* Table Rows Skeleton */}
+          <div className="space-y-4">
+            {[...Array(6)].map((_, rowIndex) => (
+              <motion.div
+                key={rowIndex}
+                className="grid grid-cols-6 gap-4 py-4"
+                variants={itemVariants}
+                transition={{ delay: rowIndex * 0.1 }}
+              >
+                {/* Customer Column */}
+                <div className="space-y-2 pl-3">
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-3 w-32" />
+                </div>
+                
+                {/* Vehicle Column */}
+                <Skeleton className="h-3 w-20" />
+                
+                {/* Offer Column */}
+                <Skeleton className="h-3 w-12" />
+                
+                {/* Address Column */}
+                <Skeleton className="h-3 w-28" />
+                
+                {/* Date Column */}
+                <Skeleton className="h-3 w-12" />
+                
+                {/* Actions Column */}
+                <div className="flex justify-end pr-3">
+                  <Skeleton className="h-6 w-6 rounded" />
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </div>
 
-      {/* Mobile Card Skeleton */}
-      <div className="lg:hidden space-y-5">
+      {/* Small Laptop Card Skeleton (1024px - 1280px) */}
+      <div className="hidden xl:block 2xl:hidden space-y-3">
         {[...Array(4)].map((_, cardIndex) => (
           <motion.div
             key={cardIndex}
-            className="bg-neutral-50 rounded-xl p-5 border border-neutral-200"
+            className="bg-neutral-50 rounded-xl p-4 border border-neutral-200"
             variants={itemVariants}
             transition={{ delay: cardIndex * 0.1 }}
           >
-            <div className="space-y-4">
-              {/* Card Header */}
+            <div className="space-y-3">
+              {/* Customer Header */}
               <div className="flex items-center justify-between">
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-4 w-8" />
-              </div>
-
-              {/* Contact Info */}
-              <div className="space-y-3">
-                <Skeleton className="h-4 w-48" />
-                <Skeleton className="h-4 w-36" />
-                <Skeleton className="h-4 w-28" />
-              </div>
-
-              {/* Status and Role */}
-              <div className="flex gap-2">
-                <Skeleton className="h-7 w-16 rounded-full" />
-                <Skeleton className="h-7 w-16 rounded-full" />
-              </div>
-
-              {/* Stats */}
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton className="h-5 w-24" />
+                <div className="flex-1 min-w-0">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-40 mt-1" />
                 </div>
-                <div className="flex justify-between items-center">
+                <Skeleton className="h-3 w-8" />
+              </div>
+
+              {/* Vehicle and Offer Row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Skeleton className="h-3 w-12 mb-1" />
                   <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-5 w-8" />
                 </div>
-                <div className="flex justify-between items-center">
-                  <Skeleton className="h-4 w-12" />
-                  <div className="flex items-center gap-1">
-                    <Skeleton className="w-4 h-4 rounded" />
-                    <Skeleton className="h-5 w-6" />
-                  </div>
+                <div>
+                  <Skeleton className="h-3 w-16 mb-1" />
+                  <Skeleton className="h-4 w-16" />
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-2 pt-4">
-                <Skeleton className="flex-1 h-10 rounded-lg" />
-                <Skeleton className="flex-1 h-10 rounded-lg" />
+              {/* Address and Date Row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="min-w-0">
+                  <Skeleton className="h-3 w-12 mb-1" />
+                  <Skeleton className="h-3 w-32" />
+                </div>
+                <div>
+                  <Skeleton className="h-3 w-16 mb-1" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <div className="flex justify-end pt-2 border-t border-neutral-200">
+                <Skeleton className="h-8 w-8 rounded" />
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Tablet Table Skeleton (768px - 1023px) */}
+      <div className="hidden lg:block xl:hidden">
+        <motion.div 
+          className="w-full table-fixed"
+          variants={itemVariants}
+        >
+          {/* Table Header Skeleton */}
+          <div className="grid grid-cols-6 gap-4 mb-6 pb-4 border-b border-neutral-200">
+            <Skeleton className="h-4 w-20 pl-4" />
+            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-4 w-12" />
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-8" />
+            <Skeleton className="h-4 w-6 ml-auto pr-4" />
+          </div>
+
+          {/* Table Rows Skeleton */}
+          <div className="space-y-4">
+            {[...Array(6)].map((_, rowIndex) => (
+              <motion.div
+                key={rowIndex}
+                className="grid grid-cols-6 gap-4 py-3"
+                variants={itemVariants}
+                transition={{ delay: rowIndex * 0.1 }}
+              >
+                {/* Customer Column */}
+                <div className="space-y-2 pl-4">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-3 w-32" />
+                </div>
+                
+                {/* Vehicle Column */}
+                <Skeleton className="h-4 w-20" />
+                
+                {/* Offer Column */}
+                <Skeleton className="h-4 w-12" />
+                
+                {/* Address Column */}
+                <Skeleton className="h-4 w-24" />
+                
+                {/* Date Column */}
+                <Skeleton className="h-4 w-8" />
+                
+                {/* Actions Column */}
+                <div className="flex justify-end pr-4">
+                  <Skeleton className="h-7 w-7 rounded" />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Small Tablet Card Skeleton (640px - 767px) */}
+      <div className="hidden sm:block lg:hidden space-y-3">
+        {[...Array(4)].map((_, cardIndex) => (
+          <motion.div
+            key={cardIndex}
+            className="bg-neutral-50 rounded-xl p-4 border border-neutral-200"
+            variants={itemVariants}
+            transition={{ delay: cardIndex * 0.1 }}
+          >
+            <div className="space-y-3">
+              {/* Customer Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-40 mt-1" />
+                </div>
+                <Skeleton className="h-3 w-8" />
+              </div>
+
+              {/* Vehicle and Offer Row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Skeleton className="h-3 w-12 mb-1" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <div>
+                  <Skeleton className="h-3 w-16 mb-1" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              </div>
+
+              {/* Address and Date Row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="min-w-0">
+                  <Skeleton className="h-3 w-12 mb-1" />
+                  <Skeleton className="h-3 w-32" />
+                </div>
+                <div>
+                  <Skeleton className="h-3 w-16 mb-1" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <div className="flex justify-end pt-2 border-t border-neutral-200">
+                <Skeleton className="h-8 w-8 rounded" />
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Mobile Card Skeleton (below 640px) */}
+      <div className="sm:hidden space-y-3">
+        {[...Array(4)].map((_, cardIndex) => (
+          <motion.div
+            key={cardIndex}
+            className="bg-neutral-50 rounded-xl p-4 border border-neutral-200"
+            variants={itemVariants}
+            transition={{ delay: cardIndex * 0.1 }}
+          >
+            <div className="space-y-3">
+              {/* Customer Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-40 mt-1" />
+                </div>
+                <Skeleton className="h-3 w-8" />
+              </div>
+
+              {/* Vehicle and Offer Row */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-3 w-12" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              </div>
+
+              {/* Address and Date Row */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-start">
+                  <Skeleton className="h-3 w-12" />
+                  <Skeleton className="h-3 w-32" />
+                </div>
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <div className="flex justify-end pt-2 border-t border-neutral-200">
+                <Skeleton className="h-8 w-8 rounded" />
               </div>
             </div>
           </motion.div>

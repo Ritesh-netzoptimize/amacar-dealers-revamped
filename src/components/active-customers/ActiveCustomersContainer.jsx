@@ -87,7 +87,7 @@ const ActiveCustomersContainer = ({
 
   return (
     <motion.div
-      className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6"
+      className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6 mb-4"
       variants={containerVariants}
       initial="hidden"
       animate="visible"

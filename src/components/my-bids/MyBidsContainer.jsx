@@ -198,7 +198,7 @@ const MyBidsContainer = ({ auctions = [], userRole = null }) => {
               {/* Tablet Card Layout - Similar to Mobile */}
               <div className="flex flex-col h-full overflow-hidden">
                 {/* Image Gallery */}
-                <div className="relative h-40 bg-gradient-to-br from-neutral-50 to-neutral-100">
+                <div className="relative h-60 bg-gradient-to-br from-neutral-50 to-neutral-100">
                   <PhotoSwipeGallery
                     images={vehicle.images}
                     vehicleName={vehicle.name}

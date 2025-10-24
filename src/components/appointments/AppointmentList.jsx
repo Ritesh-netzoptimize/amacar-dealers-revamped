@@ -35,7 +35,7 @@ const AppointmentList = ({
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className={`space-y-6 ${className}`}
+      className={`space-y-6 ${className} mb-6`}
     >
       {/* Render appointments passed from parent */}
       {appointments.length > 0 && (

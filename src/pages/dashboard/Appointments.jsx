@@ -13,6 +13,7 @@ import AppointmentDetailsModal from "@/components/appointments/AppointmentDetail
 import { useDispatch } from "react-redux";
 import { fetchAppointmentsFromSlice, confirmAppointment } from "@/redux/slices/appointmentSlice";
 import toast from "react-hot-toast";
+import {  useNavigate } from "react-router-dom";
 
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -20,6 +21,7 @@ const Appointments = () => {
   const [error, setError] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
   // Modal state
@@ -481,7 +483,7 @@ const Appointments = () => {
                 currentPage={pagination.current_page}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}
-                className="w-full max-w-md"
+                className="w-full max-w-md mb-4"
               />
             </motion.div>
           )}
@@ -542,6 +544,7 @@ const Appointments = () => {
                   className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6 sm:mt-8"
                 >
                   <motion.button
+                    onClick={() => navigate('/won-auctions')}
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
