@@ -292,7 +292,7 @@ const NewCustomers = () => {
         <AnimatePresence mode="wait">
           {!isLoading && !isSorting && !error && pagination.total_pages > 1 && (
             <motion.div
-              className="flex justify-center mt-8 pt-6 border-t border-neutral-100"
+              className="flex justify-center pt-6 border-t border-neutral-100"
               variants={paginationVariants}
               initial="initial"
               animate="animate"
