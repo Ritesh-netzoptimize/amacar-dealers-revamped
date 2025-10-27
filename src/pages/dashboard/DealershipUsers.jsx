@@ -85,6 +85,7 @@ const DealershipUsers = () => {
         id: item.id,
         username: item.username,
         email: item.email,
+        parent_dealer: item.parent_dealer,
         first_name: item.first_name,
         last_name: item.last_name,
         display_name: item.display_name,
@@ -136,8 +137,7 @@ const DealershipUsers = () => {
         ) {
           const delay = Math.pow(2, maxRetries - retries) * 1000; // Exponential backoff
           console.log(
-            `Retrying in ${delay}ms... (${
-              maxRetries - retries + 1
+            `Retrying in ${delay}ms... (${maxRetries - retries + 1
             }/${maxRetries})`
           );
 

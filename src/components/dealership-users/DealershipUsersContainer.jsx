@@ -247,6 +247,24 @@ const DealershipUsersContainer = ({
           </div>
         ),
       }),
+      columnHelper.accessor("parent_dealer", {
+        header: "Created By",
+        cell: ({ row }) => (
+          <div className="flex items-center text-sm text-neutral-900">
+            {row.original.parent_dealer && row.original.business ? (
+              <>
+                {row.original.parent_dealer.display_name}{" "}
+                <Badge className={`ml-2 border-blue-200 text-blue-800 bg-blue-100`}>
+                  {row.original.business.dealership_name || "Unknown"}
+                </Badge>
+              </>
+            ) : (
+              "N/A"
+            )}
+          </div>
+        ),
+      }),
+
       columnHelper.accessor("status", {
         header: "Status",
         cell: ({ row }) => (
@@ -300,7 +318,7 @@ const DealershipUsersContainer = ({
                   <span>Contact</span>
                 </DropdownMenuItem> */}
                 {row.original.status.account_status === "active" &&
-                canDeleteUpdateDealershipUsers ? (
+                  canDeleteUpdateDealershipUsers ? (
                   <DropdownMenuItem
                     onClick={() => handleDeactivateUser(row.original.id)}
                     className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
@@ -445,13 +463,11 @@ const DealershipUsersContainer = ({
                       return (
                         <TableHead
                           key={header.id}
-                          className={`text-neutral-600 font-medium transition-colors duration-200 ${
-                            isSortable
-                              ? "cursor-pointer hover:text-neutral-900 hover:bg-neutral-50 group"
-                              : "cursor-default"
-                          } ${
-                            header.column.id === "actions" ? "text-right" : ""
-                          }`}
+                          className={`text-neutral-600 font-medium transition-colors duration-200 ${isSortable
+                            ? "cursor-pointer hover:text-neutral-900 hover:bg-neutral-50 group"
+                            : "cursor-default"
+                            } ${header.column.id === "actions" ? "text-right" : ""
+                            }`}
                           onClick={
                             isSortable
                               ? header.column.getToggleSortingHandler()
@@ -459,11 +475,10 @@ const DealershipUsersContainer = ({
                           }
                         >
                           <div
-                            className={`flex items-center gap-2 ${
-                              header.column.id === "actions"
-                                ? "justify-end"
-                                : ""
-                            }`}
+                            className={`flex items-center gap-2 ${header.column.id === "actions"
+                              ? "justify-end"
+                              : ""
+                              }`}
                           >
                             {flexRender(
                               header.column.columnDef.header,
@@ -500,11 +515,10 @@ const DealershipUsersContainer = ({
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
-                        className={`py-4 ${
-                          cell.column.id === "actions"
-                            ? "text-right align-middle"
-                            : ""
-                        }`}
+                        className={`py-4 ${cell.column.id === "actions"
+                          ? "text-right align-middle"
+                          : ""
+                          }`}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -598,6 +612,17 @@ const DealershipUsersContainer = ({
                           : "N/A"}
                       </span>
                     </div>
+                    <div className="flex items-center min-w-0">
+                      <div className="text-sm text-neutral-600">
+                        {row.original.parent_dealer?.display_name || "Unknown"}
+                      </div>
+                      <Badge className={`ml-2 border-blue-200 text-blue-800 bg-blue-100`}>
+                        {row.original.business.dealership_name || "Unknown"}
+                      </Badge>
+                    </div>
+
+
+
                   </div>
 
                   {/* Business Info - Responsive Layout */}
@@ -636,7 +661,7 @@ const DealershipUsersContainer = ({
                       {row.original.status?.formatted_status || "Unknown"}
                     </Badge>
 
-                  {/* Action Buttons - Responsive */}
+                    {/* Action Buttons - Responsive */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
