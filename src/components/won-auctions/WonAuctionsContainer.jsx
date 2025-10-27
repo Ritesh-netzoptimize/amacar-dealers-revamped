@@ -26,7 +26,7 @@ import {
 
 const WonAuctionsContainer = ({
   auctions = [],
-  onScheduleAppointment = () => {},
+  onScheduleAppointment = () => { },
   userRole = null,
 }) => {
   const navigate = useNavigate();
@@ -118,7 +118,7 @@ const WonAuctionsContainer = ({
                     images={vehicle.images}
                     vehicleName={vehicle.name}
                     className="w-full h-full"
-                    imageClassName="w-full h-full object-cover"
+                    imageClassName="w-full h-full object-contain"
                     showOverlay={true}
                   />
                 </div>
@@ -241,11 +241,10 @@ const WonAuctionsContainer = ({
                           ? handleViewAppointment(vehicle)
                           : handleScheduleAppointment(vehicle)
                       }
-                      className={`w-full h-10 font-semibold px-3 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer text-xs sm:text-sm ${
-                        vehicle.appointmentScheduled
-                          ? "bg-green-600 hover:bg-green-700 text-white"
-                          : "bg-[var(--brand-orange)] hover:bg-orange-600 text-white"
-                      }`}
+                      className={`w-full h-10 font-semibold px-3 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer text-xs sm:text-sm ${vehicle.appointmentScheduled
+                        ? "bg-green-600 hover:bg-green-700 text-white"
+                        : "bg-[var(--brand-orange)] hover:bg-orange-600 text-white"
+                        }`}
                     >
                       <Calendar className="w-3.5 h-3.5 mr-1.5" />
                       <span className="truncate">
@@ -272,12 +271,12 @@ const WonAuctionsContainer = ({
               {/* Tablet Card Layout - Similar to Mobile */}
               <div className="flex flex-col h-full overflow-hidden">
                 {/* Image Gallery */}
-                <div className="relative h-40 bg-gradient-to-br from-neutral-50 to-neutral-100">
+                <div className="relative h-48 sm:h-52 bg-gradient-to-br from-neutral-50 to-neutral-100">
                   <PhotoSwipeGallery
                     images={vehicle.images}
                     vehicleName={vehicle.name}
                     className="w-full h-full"
-                    imageClassName="w-full h-full object-cover"
+                    imageClassName="w-full h-full object-contain"
                     showOverlay={true}
                   />
                 </div>
@@ -400,11 +399,10 @@ const WonAuctionsContainer = ({
                           ? handleViewAppointment(vehicle)
                           : handleScheduleAppointment(vehicle)
                       }
-                      className={`w-full h-8 font-semibold px-2 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer text-xs ${
-                        vehicle.appointmentScheduled
-                          ? "bg-green-600 hover:bg-green-700 text-white"
-                          : "bg-[var(--brand-orange)] hover:bg-orange-600 text-white"
-                      }`}
+                      className={`w-full h-8 font-semibold px-2 rounded-xl transition-all duration-300 transform hover:scale-105 cursor-pointer text-xs ${vehicle.appointmentScheduled
+                        ? "bg-green-600 hover:bg-green-700 text-white"
+                        : "bg-[var(--brand-orange)] hover:bg-orange-600 text-white"
+                        }`}
                     >
                       <Calendar className="w-3 h-3 mr-1" />
                       <span>
@@ -431,7 +429,7 @@ const WonAuctionsContainer = ({
               {/* Large Desktop Layout: Full Width Row */}
               <div className="flex bg-white/90 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-md transition-all duration-300 h-36">
                 {/* Left Section - Image Gallery */}
-                <div className="w-48 xl:w-56 relative rounded-xl relative bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden flex-shrink-0">
+                <div className="w-48 xl:w-56 relative rounded-xl bg-gradient-to-br from-neutral-50 to-neutral-100 group/image rounded-l-xl overflow-hidden flex-shrink-0">
                   <PhotoSwipeGallery
                     images={vehicle.images}
                     vehicleName={vehicle.name}
@@ -496,18 +494,16 @@ const WonAuctionsContainer = ({
                                 ? handleViewAppointment(vehicle)
                                 : handleScheduleAppointment(vehicle)
                             }
-                            className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg cursor-pointer focus:outline-none transition-all duration-200 group ${
-                              vehicle.appointmentScheduled
-                                ? "text-green-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-800 focus:bg-green-50 focus:text-green-800"
-                                : "text-neutral-700 hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700"
-                            }`}
+                            className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg cursor-pointer focus:outline-none transition-all duration-200 group ${vehicle.appointmentScheduled
+                              ? "text-green-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-800 focus:bg-green-50 focus:text-green-800"
+                              : "text-neutral-700 hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700"
+                              }`}
                           >
                             <Calendar
-                              className={`w-4 h-4 transition-colors duration-200 ${
-                                vehicle.appointmentScheduled
-                                  ? "text-green-500 group-hover:text-green-600 group-focus:text-green-600"
-                                  : "text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600"
-                              }`}
+                              className={`w-4 h-4 transition-colors duration-200 ${vehicle.appointmentScheduled
+                                ? "text-green-500 group-hover:text-green-600 group-focus:text-green-600"
+                                : "text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600"
+                                }`}
                             />
                             <span>
                               {vehicle.appointmentScheduled
@@ -522,11 +518,10 @@ const WonAuctionsContainer = ({
 
                   {/* Auction Details Grid - Bottom */}
                   <div
-                    className={`grid gap-1 xl:gap-2 ${
-                      userRole === "dealer"
-                        ? "grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6"
-                        : "grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
-                    }`}
+                    className={`grid gap-1 xl:gap-2 ${userRole === "dealer"
+                      ? "grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6"
+                      : "grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+                      }`}
                   >
                     <div className="flex flex-col justify-center p-1.5 lg:p-2 xl:p-1.5 2xl:p-2 rounded-lg transition-all duration-200 min-w-0">
                       <div className="flex items-center mb-1">

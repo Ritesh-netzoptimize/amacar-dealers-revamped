@@ -253,10 +253,11 @@ const DealershipUsersContainer = ({
           <div className="flex items-center text-sm text-neutral-900">
             {row.original.parent_dealer && row.original.business ? (
               <>
-                {row.original.parent_dealer.display_name}{" "}
-                <Badge className={`ml-2 border-blue-200 text-blue-800 bg-blue-100`}>
-                  {row.original.business.dealership_name || "Unknown"}
-                </Badge>
+                <div className="flex flex-col gap-2">
+                  <div className="font-semibold">{row.original.parent_dealer.display_name}</div>
+                  <Badge className={`border-blue-200 text-blue-800 bg-blue-100 hover:bg-blue-200 hover:text-blue-900`}>
+                    {row.original.business.dealership_name || "Unknown"}
+                  </Badge></div>
               </>
             ) : (
               "N/A"
@@ -272,7 +273,7 @@ const DealershipUsersContainer = ({
             <Badge
               className={`${getStatusColor(
                 row.original.status?.formatted_status
-              )} border`}
+              )} border hover:bg-green-200 hover:text-neutral-900`}
             >
               {row.original.status?.formatted_status || "Unknown"}
             </Badge>
