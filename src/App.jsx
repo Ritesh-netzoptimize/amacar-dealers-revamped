@@ -37,6 +37,7 @@ import RegisterRoute from "./components/auth/RegisterRoute";
 import UnauthorizedPage from "./components/auth/Unauthorized";
 import { useEffect } from "react";
 
+
 function App() {
   const { user } = useSelector((state) => state.user);
   const expiration = localStorage.getItem("authExpiration");
