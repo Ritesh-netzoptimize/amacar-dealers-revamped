@@ -9,11 +9,15 @@ import { sortNewCustomers } from "@/utils/newCustomersSorting";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
 import CustomerDetailsModal from "@/components/common/CustomerDetailsModal/CustomerDetailsModal";
+import ScheduleAppointmentModal from "@/components/appointments/ScheduleAppointmentModal";
 
 // current customers = paginated customers
 
 const ActiveCustomers = () => {
   const navigate = useNavigate();
+  const [selectedCustomerForAppointment, setSelectedCustomerForAppointment] = useState(null);
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState("join-date-desc");
   const [isSorting, setIsSorting] = useState(false);
@@ -38,7 +42,7 @@ const ActiveCustomers = () => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await api.get('/active-customers', {
         params: {
           page,
@@ -161,12 +165,34 @@ const ActiveCustomers = () => {
 
   const handleViewVehicle = (vehicleId) => {
     console.log("View vehicle for customer:", vehicleId);
-    navigate(`/vehicle-details/${vehicleId}`, {state: {productId: vehicleId}});
+    navigate(`/vehicle-details/${vehicleId}`, { state: { productId: vehicleId } });
   };
+
+  // const handleScheduleAppointment = (customerId) => {
+  //   console.log("Schedule appointment for customer:", customerId);
+  //   navigate(`/appointments/schedule?customerId=${customerId}`);
+  // };
 
   const handleScheduleAppointment = (customerId) => {
     console.log("Schedule appointment for customer:", customerId);
-    navigate(`/appointments/schedule?customerId=${customerId}`);
+    // Find the customer data
+    const customer = transformedCustomers.find(c => c.id === customerId);
+    if (customer) {
+      setSelectedCustomerForAppointment(customer);
+      setIsAppointmentModalOpen(true);
+    }
+  };
+
+  const handleCloseAppointmentModal = () => {
+    setIsAppointmentModalOpen(false);
+    setSelectedCustomerForAppointment(null);
+  };
+
+  const handleAppointmentSubmit = (appointmentData) => {
+    console.log("Appointment submitted:", appointmentData);
+    // Handle appointment submission success
+    toast.success("Appointment scheduled successfully!");
+    handleCloseAppointmentModal();
   };
 
   const handleContact = (customerId) => {
@@ -285,13 +311,28 @@ const ActiveCustomers = () => {
             </motion.div>
           )}
         </AnimatePresence>
-      {/* Customer Details Modal */}
-      <CustomerDetailsModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        customerId={selectedCustomerId}
-        customerName={selectedCustomerName}
-      />
+        {/* Customer Details Modal */}
+        <CustomerDetailsModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          customerId={selectedCustomerId}
+          customerName={selectedCustomerName}
+        />
+
+        {/* Schedule Appointment Modal */}
+        {selectedCustomerForAppointment && (
+          <ScheduleAppointmentModal
+            isOpen={isAppointmentModalOpen}
+            onClose={handleCloseAppointmentModal}
+            onAppointmentSubmit={handleAppointmentSubmit}
+            dealerName={selectedCustomerForAppointment.name}
+            dealerId={selectedCustomerForAppointment.id}
+            dealerEmail={selectedCustomerForAppointment.email}
+            vehicleInfo={`${selectedCustomerForAppointment.year} ${selectedCustomerForAppointment.make} ${selectedCustomerForAppointment.model}`}
+            title="Schedule Appointment"
+            description="Choose your preferred date and time to meet with this customer"
+          />
+        )}
       </div>
     </motion.div>
   );

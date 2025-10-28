@@ -139,12 +139,6 @@ const VehicleCard = ({ vehicle, onBidRefresh }) => {
           </h3>
 
           <div className="space-y-2 mb-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-neutral-600">Cash offer</span>
-              <span className="text-lg font-bold text-neutral-900">
-                {formatBidAmount(vehicle.cashOffer)}
-              </span>
-            </div>
             {/* Compact Info Grid */}
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-neutral-50 rounded-lg p-3">
@@ -155,7 +149,7 @@ const VehicleCard = ({ vehicle, onBidRefresh }) => {
                   </span>
                 </div>
                 <p className="text-sm font-semibold text-neutral-900">
-                  {vehicle.cashOffer}
+                  ${vehicle.cashOffer}
                 </p>
 
               </div>
