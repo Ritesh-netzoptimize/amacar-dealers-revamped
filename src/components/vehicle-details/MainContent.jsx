@@ -52,6 +52,14 @@ export default function MainContent({ basic_info, location, condition_assessment
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-neutral-600 text-xs sm:text-sm">
+                    VIN:
+                  </span>
+                  <span className="font-semibold text-neutral-800 text-sm sm:text-base">
+                    {basic_info?.vin || "N/A"}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-neutral-600 text-xs sm:text-sm">
                     Mileage:
                   </span>
                   <span className="font-semibold text-neutral-800 text-sm sm:text-base">
@@ -259,9 +267,9 @@ export default function MainContent({ basic_info, location, condition_assessment
                     ? Array.isArray(condition_assessment.features)
                       ? condition_assessment.features.join(", ") // normal array
                       : String(condition_assessment.features).replace(
-                          /^a:\d+:\{i:\d+;s:\d+:"([^"]+)";\}$/,
-                          "$1"
-                        ) // serialized PHP string
+                        /^a:\d+:\{i:\d+;s:\d+:"([^"]+)";\}$/,
+                        "$1"
+                      ) // serialized PHP string
                     : "N/A"}
                 </p>
               </div>
