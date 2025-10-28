@@ -11,8 +11,8 @@ import { useSelector } from "react-redux";
 
 const LiveAuctionsContainer = ({
   auctions = [],
-  onPassUnpassSuccess = () => {},
-  onBidRefresh = () => {},
+  onPassUnpassSuccess = () => { },
+  onBidRefresh = () => { },
 }) => {
   const navigate = useNavigate();
   const [selectedVehicle, setSelectedVehicle] = useState(null);
@@ -121,6 +121,26 @@ const LiveAuctionsContainer = ({
     console.log("auctions", auctions);
   }, [auctions]);
 
+  // Helper function to parse currency strings to numbers
+  const parseCurrency = (currencyString) => {
+    if (!currencyString) return 0;
+    // Remove dollar sign, commas, and convert to number
+    const cleaned = currencyString.toString().replace(/[$,]/g, "");
+    return parseFloat(cleaned) || 0;
+  };
+
+  // Calculate percentage increase
+  const calculatePercentageIncrease = (cashOffer, highestBid) => {
+    const cash = parseCurrency(cashOffer);
+    const bid = parseCurrency(highestBid?.amount);
+
+    if (!bid || bid === 0) return null;
+
+    const increase = bid - cash;
+    const percentage = (increase / bid) * 100;
+    return percentage.toFixed(1);
+  };
+
   return (
     <motion.div
       className="w-full"
@@ -134,11 +154,10 @@ const LiveAuctionsContainer = ({
           <motion.div
             key={vehicle.id}
             variants={cardVariants}
-            className={`bg-white rounded-xl border overflow-hidden transition-all duration-300 group ${
-              isVehiclePassed(vehicle)
-                ? "border-gray-300 opacity-75 hover:shadow-md hover:border-gray-400"
-                : "border-neutral-200 hover:shadow-lg hover:border-orange-200"
-            }`}
+            className={`bg-white rounded-xl border overflow-hidden transition-all duration-300 group ${isVehiclePassed(vehicle)
+              ? "border-gray-300 opacity-75 hover:shadow-md hover:border-gray-400"
+              : "border-neutral-200 hover:shadow-lg hover:border-orange-200"
+              }`}
           >
             {/* Compact Card Layout */}
             <div className="flex flex-col h-full">
@@ -153,11 +172,10 @@ const LiveAuctionsContainer = ({
                 />
                 {/* Status Badge */}
                 <div
-                  className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${
-                    isVehiclePassed(vehicle)
-                      ? "bg-gray-500 text-white"
-                      : "bg-orange-500 text-white"
-                  }`}
+                  className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${isVehiclePassed(vehicle)
+                    ? "bg-gray-500 text-white"
+                    : "bg-orange-500 text-white"
+                    }`}
                 >
                   {isVehiclePassed(vehicle) ? "Passed" : "Live"}
                 </div>
@@ -179,7 +197,7 @@ const LiveAuctionsContainer = ({
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-neutral-50 rounded-lg p-3">
                       <div className="flex items-center mb-1">
-                        <DollarSign className="w-3.5 h-3.5 mr-1.5 text-neutral-500" />
+                        {/* <DollarSign className="w-3.5 h-3.5 mr-1.5 text-neutral-500" /> */}
                         <span className="text-xs text-neutral-600">
                           Cash Offer
                         </span>
@@ -187,16 +205,24 @@ const LiveAuctionsContainer = ({
                       <p className="text-sm font-semibold text-neutral-900">
                         {vehicle.cashOffer}
                       </p>
+
                     </div>
                     <div className="bg-green-50 rounded-lg p-3">
-                      <div className="flex items-center mb-1">
-                        <DollarSign className="w-3.5 h-3.5 mr-1.5 text-green-600" />
-                        <span className="text-xs text-neutral-600">
-                          Highest Bid
-                        </span>
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center">
+                          {/* <DollarSign className="w-3.5 h-3.5 mr-1.5 text-green-600" /> */}
+                          <span className="text-xs text-neutral-600">
+                            Highest Bid
+                          </span>
+                        </div>
+                        {calculatePercentageIncrease(vehicle.cashOffer, vehicle.highestBid) && (
+                          <p className="text-sm text-emerald-600 font-medium">
+                            +{calculatePercentageIncrease(vehicle.cashOffer, vehicle.highestBid)}%
+                          </p>
+                        )}
                       </div>
                       <p className="text-sm font-semibold text-green-700">
-                        {vehicle.highestBid?.amount ? vehicle.highestBid?.amount : "No highest bid"}
+                        ${vehicle.highestBid?.amount ? vehicle.highestBid?.amount : "No highest bid"}
                       </p>
                     </div>
                   </div>
@@ -255,11 +281,10 @@ const LiveAuctionsContainer = ({
                     <Button
                       onClick={() => handleBidNow(vehicle)}
                       disabled={isVehiclePassed(vehicle)}
-                      className={`cursor-pointer flex-1 h-9 text-xs font-medium rounded-lg transition-all duration-200 ${
-                        isVehiclePassed(vehicle)
-                          ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
-                          : "bg-orange-500 hover:bg-orange-600 text-white"
-                      }`}
+                      className={`cursor-pointer flex-1 h-9 text-xs font-medium rounded-lg transition-all duration-200 ${isVehiclePassed(vehicle)
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
+                        : "bg-orange-500 hover:bg-orange-600 text-white"
+                        }`}
                       title={
                         isVehiclePassed(vehicle)
                           ? "Cannot bid on passed vehicle"

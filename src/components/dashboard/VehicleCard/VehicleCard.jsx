@@ -50,16 +50,35 @@ const VehicleCard = ({ vehicle, onBidRefresh }) => {
     }
   };
 
+  const parseCurrency = (currencyString) => {
+    if (!currencyString) return 0;
+    // Remove dollar sign, commas, and convert to number
+    const cleaned = currencyString.toString().replace(/[$,]/g, "");
+    return parseFloat(cleaned) || 0;
+  };
+
+  // Calculate percentage increase
+  const calculatePercentageIncrease = (cashOffer, highestBid) => {
+    const cash = parseCurrency(cashOffer);
+    const bid = parseCurrency(highestBid?.amount);
+
+    if (!bid || bid === 0) return null;
+
+    const increase = bid - cash;
+    const percentage = (increase / bid) * 100;
+    return percentage.toFixed(1);
+  };
+
   return (
     <motion.div
-      className="bg-white rounded-2xl shadow-sm border border-neutral-200 overflow-hidden hover:shadow-lg transition-all duration-300 group h-[420px]" // ⬅ increased height
+      className="bg-white rounded-2xl shadow-sm border border-neutral-200 overflow-hidden hover:shadow-lg transition-all duration-300 group h-full" // ⬅ increased height
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
       transition={{ duration: 0.3 }}
     >
       {/* Image Carousel */}
-      <div className="relative h-56 bg-neutral-100 group/carousel">
+      <div className="relative h-fit bg-neutral-100 group/carousel">
         {" "}
         {/* ⬅ slightly taller image */}
         <Carousel
@@ -126,6 +145,39 @@ const VehicleCard = ({ vehicle, onBidRefresh }) => {
                 {formatBidAmount(vehicle.cashOffer)}
               </span>
             </div>
+            {/* Compact Info Grid */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-neutral-50 rounded-lg p-3">
+                <div className="flex items-center mb-1">
+                  {/* <DollarSign className="w-3.5 h-3.5 mr-1.5 text-neutral-500" /> */}
+                  <span className="text-xs text-neutral-600">
+                    Cash Offer
+                  </span>
+                </div>
+                <p className="text-sm font-semibold text-neutral-900">
+                  {vehicle.cashOffer}
+                </p>
+
+              </div>
+              <div className="bg-green-50 rounded-lg p-3">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center">
+                    {/* <DollarSign className="w-3.5 h-3.5 mr-1.5 text-green-600" /> */}
+                    <span className="text-xs text-neutral-600">
+                      Highest Bid
+                    </span>
+                  </div>
+                  {calculatePercentageIncrease(vehicle.cashOffer, vehicle.highestBid) && (
+                    <p className="text-sm text-emerald-600 font-medium">
+                      +{calculatePercentageIncrease(vehicle.cashOffer, vehicle.highestBid)}%
+                    </p>
+                  )}
+                </div>
+                <p className="text-sm font-semibold text-green-700">
+                  ${vehicle.highestBid?.amount ? vehicle.highestBid?.amount : "No highest bid"}
+                </p>
+              </div>
+            </div>
 
             {vehicle.timeLeft && (
               <div className="flex items-center text-sm text-neutral-500">
@@ -148,24 +200,23 @@ const VehicleCard = ({ vehicle, onBidRefresh }) => {
             View Details
           </Button>
           {canBidPass && vehicle.isPassed === false && (
-                    <Button
-                      onClick={handleBidNow}
-                      disabled={vehicle.isPassed}
-                      className={`cursor-pointer flex-1 h-10 text-xs font-medium rounded-lg transition-all duration-200 ${
-                        vehicle.isPassed
-                          ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
-                          : "bg-orange-500 hover:bg-orange-600 text-white"
-                      }`}
-                      title={
-                        vehicle.isPassed
-                          ? "Cannot bid on passed vehicle"
-                          : "Place a bid"
-                      }
-                    >
-                      <Gavel className="w-3.5 h-3.5 mr-1" />
-                      Bid Now
-                    </Button>
-                  )}
+            <Button
+              onClick={handleBidNow}
+              disabled={vehicle.isPassed}
+              className={`cursor-pointer flex-1 h-10 text-xs font-medium rounded-lg transition-all duration-200 ${vehicle.isPassed
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
+                : "bg-orange-500 hover:bg-orange-600 text-white"
+                }`}
+              title={
+                vehicle.isPassed
+                  ? "Cannot bid on passed vehicle"
+                  : "Place a bid"
+              }
+            >
+              <Gavel className="w-3.5 h-3.5 mr-1" />
+              Bid Now
+            </Button>
+          )}
         </div>
       </div>
 
