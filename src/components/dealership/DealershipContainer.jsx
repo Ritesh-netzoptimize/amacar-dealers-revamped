@@ -327,14 +327,6 @@ const DealershipContainer = ({
                         <span>Edit Dealership</span>
                       </DropdownMenuItem>
                     )}
-                    <DropdownMenuItem
-                      onClick={(e) => e.stopPropagation()}
-                      href={`tel:${row.original.phone}`}
-                      className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-100 hover:text-orange-700 focus:bg-orange-50 focus:text-orange-700 focus:outline-none transition-all duration-200 group"
-                    >
-                      <Phone className="w-4 h-4 text-neutral-500 group-hover:text-orange-600 group-focus:text-orange-600 transition-colors duration-200" />
-                      <span>Contact</span>
-                    </DropdownMenuItem>
                     {row.original.status === "Inactive" && canUpdateDeleteDealerships ?  (
                       <DropdownMenuItem
                         onClick={() => onActivateDealership(row.original.id)}

@@ -79,6 +79,10 @@ const DealerShips = () => {
   }, []);
 
   // Transform API data to match component expectations
+   setTimeout(() => {
+    console.log(dealerships);
+    
+  }, 2000);
   const transformDealershipData = (apiData) => {
     return apiData.map((item) => {
       return {

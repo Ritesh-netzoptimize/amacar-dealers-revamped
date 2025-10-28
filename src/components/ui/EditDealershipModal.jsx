@@ -60,7 +60,7 @@ const EditDealershipModal = ({
         email: dealershipData.email || "",
         dealership_name: dealershipData.name || "",
         phone: dealershipData.phone || "",
-        address: dealershipData.address?.street || "",
+        address: dealershipData.street || "",
         zip: dealershipData.zip || "",
         city: dealershipData.city || "",
         state: dealershipData.state || "",
@@ -76,8 +76,6 @@ const EditDealershipModal = ({
   // Fetch city and state when zipcode changes
   useEffect(() => {
     console.log("dealershiop data", dealershipData)
-    console.log("address", dealershipData?.address)
-    console.log("address", formData?.address)
     const fetchLocationData = async () => {
       if (
         debouncedZipcode &&
