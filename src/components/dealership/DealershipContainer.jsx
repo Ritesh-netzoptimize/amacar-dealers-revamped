@@ -327,23 +327,23 @@ const DealershipContainer = ({
                         <span>Edit Dealership</span>
                       </DropdownMenuItem>
                     )}
-                    {row.original.status === "Inactive" && canUpdateDeleteDealerships ?  (
-                      <DropdownMenuItem
-                        onClick={() => onActivateDealership(row.original.id)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-700 focus:bg-green-50 focus:text-green-700 focus:outline-none transition-all duration-200 group"
-                      >
-                        <UserCheck className="w-4 h-4 text-neutral-500 group-hover:text-green-600 group-focus:text-green-600 transition-colors duration-200" />
-                        <span>Activate</span>
-                      </DropdownMenuItem>
-                    ) : (
-                      <DropdownMenuItem
-                        onClick={() => onDeactivateDealership(row.original.id)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
-                      >
-                        <UserX className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
-                        <span>Deactivate</span>
-                      </DropdownMenuItem>
-                    )}
+                      {row.original.status === "Inactive" && canUpdateDeleteDealerships ?  (
+                        <DropdownMenuItem
+                          onClick={() => onActivateDealership(row.original.id)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 hover:text-green-700 focus:bg-green-50 focus:text-green-700 focus:outline-none transition-all duration-200 group"
+                        >
+                          <UserCheck className="w-4 h-4 text-neutral-500 group-hover:text-green-600 group-focus:text-green-600 transition-colors duration-200" />
+                          <span>Activate</span>
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem
+                          onClick={() => onDeactivateDealership(row.original.id)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-neutral-700 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700 focus:bg-red-50 focus:text-red-700 focus:outline-none transition-all duration-200 group"
+                        >
+                          <UserX className="w-4 h-4 text-neutral-500 group-hover:text-red-600 group-focus:text-red-600 transition-colors duration-200" />
+                          <span>Deactivate</span>
+                        </DropdownMenuItem>
+                      )}
                   </>
                 )}
               </DropdownMenuContent>

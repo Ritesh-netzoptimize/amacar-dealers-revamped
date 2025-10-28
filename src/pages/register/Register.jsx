@@ -8,6 +8,7 @@ import PaymentSetup from '../../components/register/PaymentSetup';
 import InvitationErrorDialog from '../../components/ui/InvitationErrorDialog';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../../lib/api';
+import { toast } from 'react-hot-toast';
 
 const steps = [
   { id: 1, title: 'Dealership Info', description: 'Complete dealership and contact details' },
@@ -218,7 +219,7 @@ const Register = () => {
         if (!formData.mobileNumber) return false;
         // Account Setup validation (moved from step 3)
         if (!formData.password) return false;
-        if (formData.password.length < 8) return false;
+        if (formData.password.length < 4) return false;
         if (!formData.confirmPassword) return false;
         if (formData.password !== formData.confirmPassword) return false;
         if (!formData.agreementAccepted) return false;
@@ -261,8 +262,8 @@ const Register = () => {
         if (!formData.mobileNumber) newErrors.mobileNumber = 'Mobile number is required';
         // Account Setup validation (moved from step 3)
         if (!formData.password) newErrors.password = 'Password is required';
-        else if (formData.password.length < 8) {
-          newErrors.password = 'Password must be at least 8 characters';
+        else if (formData.password.length < 4) {
+          newErrors.password = 'Password must be at least 4 characters';
         }
         if (!formData.confirmPassword) newErrors.confirmPassword = 'Please confirm your password';
         else if (formData.password !== formData.confirmPassword) {
@@ -282,13 +283,63 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const validateStepAndGetErrors = (step) => {
+    const errorMessages = [];
+    
+    switch (step) {
+      case 1:
+        // Dealership Info validation
+        if (!formData.dealerCode) errorMessages.push('Dealer Code');
+        if (!formData.dealershipName) errorMessages.push('Dealership Name');
+        if (!formData.website) errorMessages.push('Website');
+        if (!formData.dealerGroup) errorMessages.push('Dealer Group');
+        // Contact Info validation (moved from step 2)
+        if (!formData.jobPosition) errorMessages.push('Job Position');
+        if (!formData.businessEmail || !/\S+@\S+\.\S+/.test(formData.businessEmail)) errorMessages.push('Business Email');
+        // Location validation (moved from step 2)
+        if (!formData.zipCode) errorMessages.push('Zip Code');
+        if (!formData.city) errorMessages.push('City');
+        if (!formData.state) errorMessages.push('State');
+        break;
+      case 2:
+        // Personal Info validation
+        if (!formData.firstName) errorMessages.push('First Name');
+        if (!formData.lastName) errorMessages.push('Last Name');
+        if (!formData.mobileNumber) errorMessages.push('Mobile Number');
+        // Account Setup validation (moved from step 3)
+        if (!formData.password || formData.password.length < 4) errorMessages.push('Password (min 4 characters)');
+        if (!formData.confirmPassword || formData.password !== formData.confirmPassword) errorMessages.push('Confirm Password');
+        if (!formData.agreementAccepted) errorMessages.push('Terms and Conditions');
+        break;
+      case 3:
+        // Payment validation only - now handled by Stripe PaymentElement
+        if (!formData.trialAccepted) errorMessages.push('Trial Terms');
+        break;
+      default:
+        break;
+    }
+    
+    return errorMessages;
+  };
+
   const handleNext = () => {
     if(currentStep === 2 && formData.talkToSales) {
       window.location.href = 'https://calendly.com/sz253500/'
       setCurrentStep(prev => Math.min(prev - 1, steps.length-1));
+      return;
     }
+    
     if (validateStep(currentStep)) {
       setCurrentStep(prev => Math.min(prev + 1, steps.length));
+    } else {
+      // Show toast with all validation errors
+      const validationErrors = validateStepAndGetErrors(currentStep);
+      if (validationErrors.length > 0) {
+        toast.error(`Please complete all required fields: ${validationErrors.join(', ')}`, {
+          duration: 5000,
+          position: 'top-right',
+        });
+      }
     }
   };
 

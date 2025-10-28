@@ -1,13 +1,17 @@
 import { motion } from 'framer-motion';
 import { Building2, Globe, Users, Hash, Briefcase, Mail, MapPin, Building, Map } from 'lucide-react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCityStateByZip, clearLocation } from '@/redux/slices/userSlice';
+import { toast } from 'react-hot-toast';
+import useDebounce from '@/hooks/useDebounce';
 
 const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invitationData }) => {
   const dispatch = useDispatch();
   const { locationStatus, locationError, location } = useSelector((state) => state.user);
   const timeoutRef = useRef(null);
+  const previousErrorsRef = useRef({});
+  const [inlineErrors, setInlineErrors] = useState({});
 
   // Debounced ZIP code lookup
   const debouncedZipLookup = useCallback((zip) => {
@@ -35,6 +39,56 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
       updateFormData('state', location.state || '');
     }
   }, [locationStatus, location, updateFormData]);
+
+  // Debounce errors with 800ms delay
+  const debouncedErrors = useDebounce(errors, 800);
+
+  // Show toast notifications for new errors
+  useEffect(() => {
+    if (!debouncedErrors) return;
+
+    const currentErrors = debouncedErrors;
+    const previousErrors = previousErrorsRef.current;
+
+    // Check each field for new errors
+    Object.keys(currentErrors).forEach((fieldName) => {
+      const currentError = currentErrors[fieldName];
+      const previousError = previousErrors[fieldName];
+
+      // Only show toast if there's a new error (wasn't there before, or changed)
+      if (currentError && currentError !== previousError) {
+        const fieldLabels = {
+          dealerCode: 'Dealer Code',
+          dealershipName: 'Dealership Name',
+          website: 'Website',
+          dealerGroup: 'Dealer Group',
+          jobPosition: 'Job Position',
+          businessEmail: 'Business Email',
+          zipCode: 'Zip Code',
+          city: 'City',
+          state: 'State'
+        };
+
+        toast.error(`${fieldLabels[fieldName] || fieldName}: ${currentError}`, {
+          duration: 4000,
+          position: 'top-right',
+        });
+      }
+    });
+
+    // Update previous errors reference
+    previousErrorsRef.current = currentErrors;
+  }, [debouncedErrors]);
+
+  // Show toast for location errors
+  useEffect(() => {
+    if (locationError && !errors.city) {
+      toast.error(locationError, {
+        duration: 4000,
+        position: 'top-right',
+      });
+    }
+  }, [locationError, errors.city]);
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -165,14 +219,31 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                   type="url"
                   value={formData.website}
                   onChange={(e) => updateFormData('website', e.target.value)}
+                  onBlur={(e) => {
+                    const value = e.target.value;
+                    // Improved validation: accepts domains like google.com, www.google.com, or https://www.google.com
+                    const domainPattern = /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+                    const urlPattern = /^https?:\/\/(([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}|localhost)/;
+                    
+                    if (value && !domainPattern.test(value) && !urlPattern.test(value)) {
+                      const errorMsg = 'Please enter a valid website (e.g., google.com or https://google.com)';
+                      toast.error(`Website: ${errorMsg}`, {
+                        duration: 4000,
+                        position: 'top-right',
+                      });
+                      setInlineErrors(prev => ({ ...prev, website: errorMsg }));
+                    } else {
+                      setInlineErrors(prev => ({ ...prev, website: '' }));
+                    }
+                  }}
                   className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                    errors.website ? 'border-error focus:ring-error/20' : 'border-neutral-200 focus:ring-primary-200'
+                    (errors.website || inlineErrors.website) ? 'border-error focus:ring-error/20' : 'border-neutral-200 focus:ring-primary-200'
                   } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300`}
                   placeholder="https://yourdealership.com"
                 />
               </div>
-              {errors.website && (
-                <p className="text-sm text-error">{errors.website}</p>
+              {(errors.website || inlineErrors.website) && (
+                <p className="text-sm text-error">{errors.website || inlineErrors.website}</p>
               )}
             </motion.div>
 
@@ -260,9 +331,22 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                   type="email"
                   value={formData.businessEmail}
                   onChange={(e) => updateFormData('businessEmail', e.target.value)}
+                  onBlur={(e) => {
+                    const value = e.target.value;
+                    if (value && !/\S+@\S+\.\S+/.test(value)) {
+                      const errorMsg = 'Please enter a valid email address (e.g., your.email@dealership.com)';
+                      toast.error(`Business Email: ${errorMsg}`, {
+                        duration: 4000,
+                        position: 'top-right',
+                      });
+                      setInlineErrors(prev => ({ ...prev, businessEmail: errorMsg }));
+                    } else {
+                      setInlineErrors(prev => ({ ...prev, businessEmail: '' }));
+                    }
+                  }}
                   disabled={isInvitedUser}
                   className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                    errors.businessEmail ? 'border-error' : 'border-neutral-200'
+                    (errors.businessEmail || inlineErrors.businessEmail) ? 'border-error' : 'border-neutral-200'
                   } ${
                     isInvitedUser 
                       ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed' 
@@ -271,8 +355,8 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                   placeholder="your.email@dealership.com"
                 />
               </div>
-              {errors.businessEmail && (
-                <p className="text-sm text-error">{errors.businessEmail}</p>
+              {(errors.businessEmail || inlineErrors.businessEmail) && (
+                <p className="text-sm text-error">{errors.businessEmail || inlineErrors.businessEmail}</p>
               )}
             </motion.div>
           </div>
@@ -297,8 +381,21 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                     updateFormData('zipCode', value);
                     debouncedZipLookup(value);
                   }}
+                  onBlur={(e) => {
+                    const value = e.target.value;
+                    if (value && value.length < 5) {
+                      const errorMsg = 'Please enter a valid 5-digit ZIP code';
+                      toast.error(`Zip Code: ${errorMsg}`, {
+                        duration: 4000,
+                        position: 'top-right',
+                      });
+                      setInlineErrors(prev => ({ ...prev, zipCode: errorMsg }));
+                    } else {
+                      setInlineErrors(prev => ({ ...prev, zipCode: '' }));
+                    }
+                  }}
                   className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                    errors.zipCode ? 'border-error' : 'border-neutral-200'
+                    (errors.zipCode || inlineErrors.zipCode) ? 'border-error' : 'border-neutral-200'
                   } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                   placeholder="12345"
                   maxLength="5"
@@ -306,8 +403,8 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                   pattern="[0-9]{5}"
                 />
               </div>
-              {errors.zipCode && (
-                <p className="text-sm text-error">{errors.zipCode}</p>
+              {(errors.zipCode || inlineErrors.zipCode) && (
+                <p className="text-sm text-error">{errors.zipCode || inlineErrors.zipCode}</p>
               )}
             </motion.div>
 

@@ -11,11 +11,15 @@ import {
   Users,
   ArrowRight,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { toast } from 'react-hot-toast';
+import useDebounce from '@/hooks/useDebounce';
 
 const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitationData }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const previousErrorsRef = useRef({});
+  const [inlineErrors, setInlineErrors] = useState({});
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -43,6 +47,43 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
     },
   ];
   const isPasswordValid = passwordRequirements.every((req) => req.met);
+
+  // Debounce errors with 800ms delay
+  const debouncedErrors = useDebounce(errors, 800);
+
+  // Show toast notifications for new errors
+  useEffect(() => {
+    if (!debouncedErrors) return;
+
+    const currentErrors = debouncedErrors;
+    const previousErrors = previousErrorsRef.current;
+
+    // Check each field for new errors
+    Object.keys(currentErrors).forEach((fieldName) => {
+      const currentError = currentErrors[fieldName];
+      const previousError = previousErrors[fieldName];
+
+      // Only show toast if there's a new error (wasn't there before, or changed)
+      if (currentError && currentError !== previousError) {
+        const fieldLabels = {
+          firstName: 'First Name',
+          lastName: 'Last Name',
+          mobileNumber: 'Mobile Number',
+          password: 'Password',
+          confirmPassword: 'Confirm Password',
+          agreementAccepted: 'Terms and Conditions'
+        };
+
+        toast.error(`${fieldLabels[fieldName] || fieldName}: ${currentError}`, {
+          duration: 4000,
+          position: 'top-right',
+        });
+      }
+    });
+
+    // Update previous errors reference
+    previousErrorsRef.current = currentErrors;
+  }, [debouncedErrors]);
 
   return (
     <motion.div
@@ -148,14 +189,27 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               type="tel"
               value={formData.mobileNumber}
               onChange={(e) => updateFormData("mobileNumber", e.target.value)}
+              onBlur={(e) => {
+                const value = e.target.value;
+                if (value && value.length < 10) {
+                  const errorMsg = 'Please enter a valid phone number';
+                  toast.error(`Mobile Number: ${errorMsg}`, {
+                    duration: 4000,
+                    position: 'top-right',
+                  });
+                  setInlineErrors(prev => ({ ...prev, mobileNumber: errorMsg }));
+                } else {
+                  setInlineErrors(prev => ({ ...prev, mobileNumber: '' }));
+                }
+              }}
               className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                errors.mobileNumber ? "border-error" : "border-neutral-200"
+                (errors.mobileNumber || inlineErrors.mobileNumber) ? "border-error" : "border-neutral-200"
               } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
               placeholder="(555) 123-4567"
             />
           </div>
-          {errors.mobileNumber && (
-            <p className="text-sm text-error">{errors.mobileNumber}</p>
+          {(errors.mobileNumber || inlineErrors.mobileNumber) && (
+            <p className="text-sm text-error">{errors.mobileNumber || inlineErrors.mobileNumber}</p>
           )}
         </motion.div>
       </div>
@@ -174,8 +228,21 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                 type={showPassword ? "text" : "password"}
                 value={formData.password}
                 onChange={(e) => updateFormData("password", e.target.value)}
+                onBlur={(e) => {
+                  const value = e.target.value;
+                  if (value && value.length < 4) {
+                    const errorMsg = 'Must be at least 4 characters';
+                    toast.error(`Password: ${errorMsg}`, {
+                      duration: 4000,
+                      position: 'top-right',
+                    });
+                    setInlineErrors(prev => ({ ...prev, password: errorMsg }));
+                  } else {
+                    setInlineErrors(prev => ({ ...prev, password: '' }));
+                  }
+                }}
                 className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
-                  errors.password ? "border-error" : "border-neutral-200"
+                  (errors.password || inlineErrors.password) ? "border-error" : "border-neutral-200"
                 } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                 placeholder="Create a strong password"
               />
@@ -191,8 +258,8 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                 )}
               </button>
             </div>
-            {errors.password && (
-              <p className="text-sm text-error">{errors.password}</p>
+            {(errors.password || inlineErrors.password) && (
+              <p className="text-sm text-error">{errors.password || inlineErrors.password}</p>
             )}
           </motion.div>
 
@@ -234,8 +301,21 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                 onChange={(e) =>
                   updateFormData("confirmPassword", e.target.value)
                 }
+                onBlur={(e) => {
+                  const value = e.target.value;
+                  if (value && formData.password && value !== formData.password) {
+                    const errorMsg = 'Passwords do not match';
+                    toast.error(`Confirm Password: ${errorMsg}`, {
+                      duration: 4000,
+                      position: 'top-right',
+                    });
+                    setInlineErrors(prev => ({ ...prev, confirmPassword: errorMsg }));
+                  } else {
+                    setInlineErrors(prev => ({ ...prev, confirmPassword: '' }));
+                  }
+                }}
                 className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
-                  errors.confirmPassword ? "border-error" : "border-neutral-200"
+                  (errors.confirmPassword || inlineErrors.confirmPassword) ? "border-error" : "border-neutral-200"
                 } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                 placeholder="Confirm your password"
               />
@@ -251,8 +331,8 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                 )}
               </button>
             </div>
-            {errors.confirmPassword && (
-              <p className="text-sm text-error">{errors.confirmPassword}</p>
+            {(errors.confirmPassword || inlineErrors.confirmPassword) && (
+              <p className="text-sm text-error">{errors.confirmPassword || inlineErrors.confirmPassword}</p>
             )}
           </motion.div>
 
