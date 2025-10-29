@@ -116,9 +116,10 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
             <input
               type="text"
+              maxLength={20}
               value={formData.firstName}
               onChange={(e) => {
-                const value = e.target.value;
+                const value = e.target.value.replace(/[^a-zA-Z]/g, '');
                 updateFormData("firstName", value);
                 // Clear inline error when input becomes valid (single word, no spaces)
                 if (value && !value.includes(' ')) {
@@ -160,9 +161,10 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
             <input
               type="text"
+              maxLength={20}
               value={formData.lastName}
               onChange={(e) => {
-                const value = e.target.value;
+                const value = e.target.value.replace(/[^a-zA-Z]/g, '');
                 updateFormData("lastName", value);
                 // Clear inline error when input becomes valid (single word, no spaces)
                 if (value && !value.includes(' ')) {
