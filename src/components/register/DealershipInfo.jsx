@@ -150,6 +150,7 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                 <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
                 <input
                   type="text"
+                  maxLength={10}
                   value={formData.dealerCode}
                   onChange={(e) => {
                     // Convert to uppercase and remove spaces/special characters (keep only A-Z and 0-9)

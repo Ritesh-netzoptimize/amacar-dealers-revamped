@@ -52,7 +52,7 @@ const Register = () => {
     confirmPassword: '',
     agreementAccepted: false,
     talkToSales: false,
-    acceptFreeTrial: false,
+    acceptFreeTrial: true,
 
     // Payment Setup
     trialAccepted: false,

@@ -400,7 +400,7 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                   onChange={(e) =>
                     updateFormData("agreementAccepted", e.target.checked)
                   }
-                  className="w-4 h-4 text-primary-600 bg-neutral-100 border-neutral-300 rounded focus:ring-primary-500 focus:ring-2"
+                  className="w-4 h-4 text-[var(--brand-orange)] bg-neutral-100 border-neutral-300 rounded focus:ring-[var(--brand-orange)] focus:ring-2"
                 />
               </div>
               <div className="text-sm">
