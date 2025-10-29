@@ -64,22 +64,7 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
       const currentError = currentErrors[fieldName];
       const previousError = previousErrors[fieldName];
 
-      // Only show toast if there's a new error (wasn't there before, or changed)
-      if (currentError && currentError !== previousError) {
-        const fieldLabels = {
-          firstName: 'First Name',
-          lastName: 'Last Name',
-          mobileNumber: 'Mobile Number',
-          password: 'Password',
-          confirmPassword: 'Confirm Password',
-          agreementAccepted: 'Terms and Conditions'
-        };
-
-        toast.error(`${fieldLabels[fieldName] || fieldName}: ${currentError}`, {
-          duration: 4000,
-          position: 'top-right',
-        });
-      }
+      // Errors are now only shown inline, no toast notifications
     });
 
     // Update previous errors reference
@@ -198,10 +183,6 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                 const value = e.target.value;
                 if (value && value.length !== 10) {
                   const errorMsg = 'Mobile number must be exactly 10 digits';
-                  toast.error(`Mobile Number: ${errorMsg}`, {
-                    duration: 4000,
-                    position: 'top-right',
-                  });
                   setInlineErrors(prev => ({ ...prev, mobileNumber: errorMsg }));
                 } else {
                   setInlineErrors(prev => ({ ...prev, mobileNumber: '' }));
@@ -232,15 +213,22 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               <input
                 type={showPassword ? "text" : "password"}
                 value={formData.password}
-                onChange={(e) => updateFormData("password", e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  updateFormData("password", value);
+                  // Clear inline error when password meets criteria (at least 4 characters)
+                  if (value.length >= 4) {
+                    setInlineErrors(prev => ({ ...prev, password: '' }));
+                  }
+                  // Clear confirm password error if passwords match
+                  if (formData.confirmPassword && value === formData.confirmPassword) {
+                    setInlineErrors(prev => ({ ...prev, confirmPassword: '' }));
+                  }
+                }}
                 onBlur={(e) => {
                   const value = e.target.value;
                   if (value && value.length < 4) {
                     const errorMsg = 'Must be at least 4 characters';
-                    toast.error(`Password: ${errorMsg}`, {
-                      duration: 4000,
-                      position: 'top-right',
-                    });
                     setInlineErrors(prev => ({ ...prev, password: errorMsg }));
                   } else {
                     setInlineErrors(prev => ({ ...prev, password: '' }));
@@ -302,17 +290,18 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 value={formData.confirmPassword}
-                onChange={(e) =>
-                  updateFormData("confirmPassword", e.target.value)
-                }
+                onChange={(e) => {
+                  const value = e.target.value;
+                  updateFormData("confirmPassword", value);
+                  // Clear inline error when passwords match
+                  if (value && formData.password && value === formData.password) {
+                    setInlineErrors(prev => ({ ...prev, confirmPassword: '' }));
+                  }
+                }}
                 onBlur={(e) => {
                   const value = e.target.value;
                   if (value && formData.password && value !== formData.password) {
                     const errorMsg = 'Passwords do not match';
-                    toast.error(`Confirm Password: ${errorMsg}`, {
-                      duration: 4000,
-                      position: 'top-right',
-                    });
                     setInlineErrors(prev => ({ ...prev, confirmPassword: errorMsg }));
                   } else {
                     setInlineErrors(prev => ({ ...prev, confirmPassword: '' }));
@@ -340,7 +329,7 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
           </motion.div>
 
           {/* Password Match Indicator */}
-          {formData.confirmPassword && (
+          {/* {formData.confirmPassword && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -366,7 +355,7 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                   : "Passwords do not match"}
               </span>
             </motion.div>
-          )}
+          )} */}
 
           {/* Agreement Checkbox */}
           <motion.div variants={itemVariants} className="space-y-2">
@@ -440,6 +429,8 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                     onChange={(e) => {
                       updateFormData("talkToSales", true);
                       updateFormData("acceptFreeTrial", false);
+                      // Clear inline error when user selects an option
+                      setInlineErrors(prev => ({ ...prev, talkToSales: '' }));
                     }}
                     whileTap={{ scale: 0.9 }}
                     className="w-5 h-5 text-[var(--brand-orange)] bg-white border-2 border-orange-200 rounded-full focus:ring-[var(--brand-orange)] focus:ring-2 transition-all duration-200"
@@ -498,6 +489,8 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                     onChange={(e) => {
                       updateFormData("acceptFreeTrial", true);
                       updateFormData("talkToSales", false);
+                      // Clear inline error when user selects an option
+                      setInlineErrors(prev => ({ ...prev, talkToSales: '' }));
                     }}
                     whileTap={{ scale: 0.9 }}
                     className="w-5 h-5 bg-white/20 border-2 border-white/40 rounded-full focus:ring-white focus:ring-2 transition-all duration-200"
@@ -530,6 +523,16 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
             </motion.div>
           </div>
 
+          {/* Radio Button Error Message */}
+          {(errors.talkToSales || inlineErrors.talkToSales) && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4"
+            >
+              <p className="text-sm text-error">{errors.talkToSales || inlineErrors.talkToSales}</p>
+            </motion.div>
+          )}
 
         </div>
       </div>

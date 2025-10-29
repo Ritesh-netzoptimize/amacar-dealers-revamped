@@ -211,6 +211,7 @@ const Register = () => {
         if (!/\S+@\S+\.\S+/.test(formData.businessEmail)) return false;
         // Location validation (moved from step 2)
         if (!formData.zipCode) return false;
+        if (!/^\d{5}$/.test(formData.zipCode)) return false;
         if (!formData.city) return false;
         if (!formData.state) return false;
         return true;
@@ -226,7 +227,8 @@ const Register = () => {
         if (!formData.confirmPassword) return false;
         if (formData.password !== formData.confirmPassword) return false;
         if (!formData.agreementAccepted) return false;
-        // Note: talkToSales is optional, so we don't check it
+        // Radio button validation - at least one must be selected
+        if (!formData.talkToSales && !formData.acceptFreeTrial) return false;
         return true;
       case 3:
         // Payment validation only - now handled by Stripe PaymentElement
@@ -267,7 +269,11 @@ const Register = () => {
           newErrors.businessEmail = 'Please enter a valid email address';
         }
         // Location validation (moved from step 2)
-        if (!formData.zipCode) newErrors.zipCode = 'Zip code is required';
+        if (!formData.zipCode) {
+          newErrors.zipCode = 'Zip code is required';
+        } else if (!/^\d{5}$/.test(formData.zipCode)) {
+          newErrors.zipCode = 'Zip code must be 5 numeric digits';
+        }
         if (!formData.city) newErrors.city = 'City is required';
         if (!formData.state) newErrors.state = 'State is required';
         break;
@@ -290,6 +296,10 @@ const Register = () => {
           newErrors.confirmPassword = 'Passwords do not match';
         }
         if (!formData.agreementAccepted) newErrors.agreementAccepted = 'You must accept the terms and conditions';
+        // Radio button validation - at least one must be selected
+        if (!formData.talkToSales && !formData.acceptFreeTrial) {
+          newErrors.talkToSales = 'Please select either "Talk to sales" or "Free 7-Day Trial"';
+        }
         break;
       case 3:
         // Payment validation only - now handled by Stripe PaymentElement
@@ -324,7 +334,7 @@ const Register = () => {
         if (!formData.jobPosition) errorMessages.push('Job Position');
         if (!formData.businessEmail || !/\S+@\S+\.\S+/.test(formData.businessEmail)) errorMessages.push('Business Email');
         // Location validation (moved from step 2)
-        if (!formData.zipCode) errorMessages.push('Zip Code');
+        if (!formData.zipCode || !/^\d{5}$/.test(formData.zipCode)) errorMessages.push('Zip Code (5 numeric digits)');
         if (!formData.city) errorMessages.push('City');
         if (!formData.state) errorMessages.push('State');
         break;
@@ -337,6 +347,7 @@ const Register = () => {
         if (!formData.password || formData.password.length < 4) errorMessages.push('Password (min 4 characters)');
         if (!formData.confirmPassword || formData.password !== formData.confirmPassword) errorMessages.push('Confirm Password');
         if (!formData.agreementAccepted) errorMessages.push('Terms and Conditions');
+        if (!formData.talkToSales && !formData.acceptFreeTrial) errorMessages.push('Please select Talk to sales or Free 7-Day Trial');
         break;
       case 3:
         // Payment validation only - now handled by Stripe PaymentElement
@@ -350,15 +361,8 @@ const Register = () => {
   };
 
   const handleNext = () => {
-    if (currentStep === 2 && formData.talkToSales) {
-      window.location.href = 'https://calendly.com/sz253500/'
-      // setCurrentStep(prev => Math.min(prev - 1, steps.length - 1));
-      return;
-    }
-
-    if (validateStep(currentStep)) {
-      setCurrentStep(prev => Math.min(prev + 1, steps.length));
-    } else {
+    // Always validate, but only proceed if validation passes
+    if (!validateStep(currentStep)) {
       // Show toast with all validation errors
       const validationErrors = validateStepAndGetErrors(currentStep);
       if (validationErrors.length > 0) {
@@ -367,7 +371,17 @@ const Register = () => {
           position: 'top-right',
         });
       }
+      return; // Don't proceed to next step
     }
+
+    // If validation passes, handle special case for talkToSales
+    if (currentStep === 2 && formData.talkToSales) {
+      window.location.href = 'https://calendly.com/sz253500/'
+      return;
+    }
+
+    // Proceed to next step
+    setCurrentStep(prev => Math.min(prev + 1, steps.length));
   };
 
   const handlePrevious = () => {
@@ -679,18 +693,14 @@ const Register = () => {
                       {currentStep < steps.length ? (
                         <motion.button
                           onClick={handleNext}
-                          disabled={!isStepValid(currentStep)}
-                          whileHover={isStepValid(currentStep) ? {
+                          whileHover={{
                             scale: 1.05,
                             boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)"
-                          } : {}}
-                          whileTap={isStepValid(currentStep) ? {
+                          }}
+                          whileTap={{
                             scale: 0.98
-                          } : {}}
-                          className={`flex items-center space-x-2 px-6 sm:px-8 py-2.5 sm:py-3 font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 w-full sm:w-auto justify-center ${isStepValid(currentStep)
-                            ? 'bg-primary-500 hover:bg-primary-600 text-white focus:ring-primary-200'
-                            : 'bg-neutral-300 text-neutral-500 cursor-not-allowed'
-                            }`}
+                          }}
+                          className="flex items-center space-x-2 px-6 sm:px-8 py-2.5 sm:py-3 font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 w-full sm:w-auto justify-center bg-primary-500 hover:bg-primary-600 text-white focus:ring-primary-200"
                         >
                           <motion.span
                             key={`${currentStep}-${formData.talkToSales}-${formData.acceptFreeTrial}`}

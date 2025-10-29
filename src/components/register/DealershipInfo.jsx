@@ -23,8 +23,8 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
       if (zip && zip.length === 5 && /^\d{5}$/.test(zip)) {
         console.log("Dispatching ZIP lookup for:", zip);
         dispatch(fetchCityStateByZip(zip));
-      } else if (zip.length === 0) {
-        // Clear location when ZIP is empty
+      } else if (zip.length === 0 || zip.length < 5) {
+        // Clear location when ZIP is empty or less than 5 digits
         dispatch(clearLocation());
         updateFormData('city', '');
         updateFormData('state', '');
@@ -37,6 +37,10 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
     if (locationStatus === 'succeeded' && location) {
       updateFormData('city', location.city || '');
       updateFormData('state', location.state || '');
+    } else if (locationStatus === 'failed' || (locationStatus === 'succeeded' && !location)) {
+      // Clear city and state if lookup failed or returned no results
+      updateFormData('city', '');
+      updateFormData('state', '');
     }
   }, [locationStatus, location, updateFormData]);
 
@@ -55,40 +59,26 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
       const currentError = currentErrors[fieldName];
       const previousError = previousErrors[fieldName];
 
-      // Only show toast if there's a new error (wasn't there before, or changed)
-      if (currentError && currentError !== previousError) {
-        const fieldLabels = {
-          dealerCode: 'Dealer Code',
-          dealershipName: 'Dealership Name',
-          website: 'Website',
-          dealerGroup: 'Dealer Group',
-          jobPosition: 'Job Position',
-          businessEmail: 'Business Email',
-          zipCode: 'Zip Code',
-          city: 'City',
-          state: 'State'
-        };
-
-        toast.error(`${fieldLabels[fieldName] || fieldName}: ${currentError}`, {
-          duration: 4000,
-          position: 'top-right',
-        });
-      }
+      // Errors are now only shown inline, no toast notifications
     });
 
     // Update previous errors reference
     previousErrorsRef.current = currentErrors;
   }, [debouncedErrors]);
 
-  // Show toast for location errors
+  // Handle location errors and clear city/state if zip code not found
   useEffect(() => {
-    if (locationError && !errors.city) {
-      toast.error(locationError, {
-        duration: 4000,
-        position: 'top-right',
-      });
+    if (locationError) {
+      // Check if error is about zip code not found
+      const errorLower = locationError.toLowerCase();
+      if (errorLower.includes('not found') || errorLower.includes('zip code not found') || errorLower.includes('invalid zip')) {
+        // Clear city and state when zip code not found
+        updateFormData('city', '');
+        updateFormData('state', '');
+      }
+      // Location error is shown inline below the city field, no toast notification
     }
-  }, [locationError, errors.city]);
+  }, [locationError, errors.city, updateFormData]);
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -174,17 +164,9 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                     const value = e.target.value;
                     if (value && !/^[A-Z0-9]+$/.test(value)) {
                       const errorMsg = 'Dealer code must contain only capital letters and digits';
-                      toast.error(`Dealer Code: ${errorMsg}`, {
-                        duration: 4000,
-                        position: 'top-right',
-                      });
                       setInlineErrors(prev => ({ ...prev, dealerCode: errorMsg }));
                     } else if (value && value.includes(' ')) {
                       const errorMsg = 'Dealer code must be a single word (no spaces)';
-                      toast.error(`Dealer Code: ${errorMsg}`, {
-                        duration: 4000,
-                        position: 'top-right',
-                      });
                       setInlineErrors(prev => ({ ...prev, dealerCode: errorMsg }));
                     } else {
                       setInlineErrors(prev => ({ ...prev, dealerCode: '' }));
@@ -251,10 +233,6 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
 
                     if (value && !domainPattern.test(value) && !urlPattern.test(value)) {
                       const errorMsg = 'Please enter a valid website (e.g., google.com or https://google.com)';
-                      toast.error(`Website: ${errorMsg}`, {
-                        duration: 4000,
-                        position: 'top-right',
-                      });
                       setInlineErrors(prev => ({ ...prev, website: errorMsg }));
                     } else {
                       setInlineErrors(prev => ({ ...prev, website: '' }));
@@ -363,10 +341,6 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                     const value = e.target.value;
                     if (value && !/\S+@\S+\.\S+/.test(value)) {
                       const errorMsg = 'Please enter a valid email address (e.g., your.email@dealership.com)';
-                      toast.error(`Business Email: ${errorMsg}`, {
-                        duration: 4000,
-                        position: 'top-right',
-                      });
                       setInlineErrors(prev => ({ ...prev, businessEmail: errorMsg }));
                     } else {
                       setInlineErrors(prev => ({ ...prev, businessEmail: '' }));
@@ -410,15 +384,16 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                     if (value.length === 5 && /^\d{5}$/.test(value)) {
                       setInlineErrors(prev => ({ ...prev, zipCode: '' }));
                     }
+                    // Clear city and state if zip code is less than 5 digits
+                    if (value.length < 5) {
+                      updateFormData('city', '');
+                      updateFormData('state', '');
+                    }
                   }}
                   onBlur={(e) => {
                     const value = e.target.value;
                     if (value && value.length < 5) {
                       const errorMsg = 'Please enter a valid 5-digit ZIP code';
-                      toast.error(`Zip Code: ${errorMsg}`, {
-                        duration: 4000,
-                        position: 'top-right',
-                      });
                       setInlineErrors(prev => ({ ...prev, zipCode: errorMsg }));
                     } else {
                       setInlineErrors(prev => ({ ...prev, zipCode: '' }));

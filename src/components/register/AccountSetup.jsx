@@ -69,9 +69,8 @@ const AccountSetup = ({ formData, updateFormData, errors }) => {
               type={showPassword ? 'text' : 'password'}
               value={formData.password}
               onChange={(e) => updateFormData('password', e.target.value)}
-              className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
-                errors.password ? 'border-error' : 'border-neutral-200'
-              } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+              className={`w-full pl-10 pr-12 py-3 rounded-xl border ${errors.password ? 'border-error' : 'border-neutral-200'
+                } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
               placeholder="Create a strong password"
             />
             <button
@@ -97,14 +96,12 @@ const AccountSetup = ({ formData, updateFormData, errors }) => {
             <h4 className="text-sm font-semibold text-neutral-700 mb-2">Password Requirements:</h4>
             {passwordRequirements.map((req, index) => (
               <div key={index} className="flex items-center space-x-2">
-                <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
-                  req.met ? 'bg-success' : 'bg-neutral-300'
-                }`}>
+                <div className={`w-4 h-4 rounded-full flex items-center justify-center ${req.met ? 'bg-success' : 'bg-neutral-300'
+                  }`}>
                   {req.met && <CheckCircle className="w-3 h-3 text-white" />}
                 </div>
-                <span className={`text-sm ${
-                  req.met ? 'text-success' : 'text-neutral-600'
-                }`}>
+                <span className={`text-sm ${req.met ? 'text-success' : 'text-neutral-600'
+                  }`}>
                   {req.text}
                 </span>
               </div>
@@ -123,9 +120,8 @@ const AccountSetup = ({ formData, updateFormData, errors }) => {
               type={showConfirmPassword ? 'text' : 'password'}
               value={formData.confirmPassword}
               onChange={(e) => updateFormData('confirmPassword', e.target.value)}
-              className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
-                errors.confirmPassword ? 'border-error' : 'border-neutral-200'
-              } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+              className={`w-full pl-10 pr-12 py-3 rounded-xl border ${errors.confirmPassword ? 'border-error' : 'border-neutral-200'
+                } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
               placeholder="Confirm your password"
             />
             <button
@@ -142,21 +138,19 @@ const AccountSetup = ({ formData, updateFormData, errors }) => {
         </motion.div>
 
         {/* Password Match Indicator */}
-        {formData.confirmPassword && (
+        {/* {formData.confirmPassword && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={`flex items-center space-x-2 text-sm ${
-              formData.password === formData.confirmPassword && formData.confirmPassword
+            className={`flex items-center space-x-2 text-sm ${formData.password === formData.confirmPassword && formData.confirmPassword
                 ? 'text-success'
                 : 'text-error'
-            }`}
+              }`}
           >
-            <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
-              formData.password === formData.confirmPassword && formData.confirmPassword
+            <div className={`w-4 h-4 rounded-full flex items-center justify-center ${formData.password === formData.confirmPassword && formData.confirmPassword
                 ? 'bg-success'
                 : 'bg-error'
-            }`}>
+              }`}>
               <CheckCircle className="w-3 h-3 text-white" />
             </div>
             <span>
@@ -166,7 +160,7 @@ const AccountSetup = ({ formData, updateFormData, errors }) => {
               }
             </span>
           </motion.div>
-        )}
+        )} */}
 
         {/* Agreement Checkbox */}
         <motion.div variants={itemVariants} className="space-y-2">
