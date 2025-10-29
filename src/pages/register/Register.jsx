@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, CheckCircle, AlertCircle, UserPlus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, AlertCircle, UserPlus, Loader2 } from 'lucide-react';
 import ProgressStepper from '../../components/register/ProgressStepper';
 import DealershipInfo from '../../components/register/DealershipInfo';
 import ContactInfo from '../../components/register/ContactInfo';
@@ -65,6 +65,7 @@ const Register = () => {
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmittingToSales, setIsSubmittingToSales] = useState(false);
 
   // Extract invitation code from URL
   const getInvitationCode = useCallback(() => {
@@ -386,7 +387,11 @@ const Register = () => {
 
     // If validation passes, handle special case for talkToSales
     if (currentStep === 2 && formData.talkToSales) {
-      window.location.href = 'https://calendly.com/sz253500/'
+      setIsSubmittingToSales(true);
+      // Small delay to show loading state before redirect
+      setTimeout(() => {
+        window.location.href = 'https://calendly.com/sz253500/';
+      }, 300);
       return;
     }
 
@@ -703,51 +708,62 @@ const Register = () => {
                       {currentStep < steps.length ? (
                         <motion.button
                           onClick={handleNext}
-                          whileHover={{
+                          disabled={isSubmittingToSales}
+                          whileHover={!isSubmittingToSales ? {
                             scale: 1.05,
                             boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)"
-                          }}
-                          whileTap={{
+                          } : {}}
+                          whileTap={!isSubmittingToSales ? {
                             scale: 0.98
-                          }}
-                          className="flex items-center space-x-2 px-6 sm:px-8 py-2.5 sm:py-3 font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 w-full sm:w-auto justify-center bg-primary-500 hover:bg-primary-600 text-white focus:ring-primary-200"
+                          } : {}}
+                          className={`flex items-center space-x-2 px-6 sm:px-8 py-2.5 sm:py-3 font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 w-full sm:w-auto justify-center bg-primary-500 hover:bg-primary-600 text-white focus:ring-primary-200 ${isSubmittingToSales ? 'opacity-75 cursor-not-allowed' : ''
+                            }`}
                         >
-                          <motion.span
-                            key={`${currentStep}-${formData.talkToSales}-${formData.acceptFreeTrial}`}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{
-                              duration: 0.3,
-                              ease: "easeInOut"
-                            }}
-                            className="flex items-center space-x-2"
-                          >
-                            <span className="text-sm sm:text-base">
-                              {currentStep === 2 && formData.talkToSales
-                                ? 'Submit to Sales Team'
-                                : currentStep === 2 && formData.acceptFreeTrial
-                                  ? 'Start Free Trial'
-                                  : currentStep === 2
-                                    ? 'Continue to Payment'
-                                    : 'Next'
-                              }
-                            </span>
-                          </motion.span>
-                          <motion.div
-                            animate={{
-                              x: isStepValid(currentStep) ? [0, 3, 0] : 0,
-                              scale: isStepValid(currentStep) ? [1, 1.1, 1] : 1
-                            }}
-                            transition={{
-                              duration: 0.6,
-                              ease: "easeInOut",
-                              repeat: isStepValid(currentStep) ? Infinity : 0,
-                              repeatDelay: 2
-                            }}
-                          >
-                            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                          </motion.div>
+                          {isSubmittingToSales ? (
+                            <>
+                              <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+                              <span className="text-sm sm:text-base">Submitting...</span>
+                            </>
+                          ) : (
+                            <>
+                              <motion.span
+                                key={`${currentStep}-${formData.talkToSales}-${formData.acceptFreeTrial}`}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{
+                                  duration: 0.3,
+                                  ease: "easeInOut"
+                                }}
+                                className="flex items-center space-x-2"
+                              >
+                                <span className="text-sm sm:text-base">
+                                  {currentStep === 2 && formData.talkToSales
+                                    ? 'Submit to Sales Team'
+                                    : currentStep === 2 && formData.acceptFreeTrial
+                                      ? 'Start Free Trial'
+                                      : currentStep === 2
+                                        ? 'Continue to Payment'
+                                        : 'Next'
+                                  }
+                                </span>
+                              </motion.span>
+                              <motion.div
+                                animate={{
+                                  x: isStepValid(currentStep) ? [0, 3, 0] : 0,
+                                  scale: isStepValid(currentStep) ? [1, 1.1, 1] : 1
+                                }}
+                                transition={{
+                                  duration: 0.6,
+                                  ease: "easeInOut",
+                                  repeat: isStepValid(currentStep) ? Infinity : 0,
+                                  repeatDelay: 2
+                                }}
+                              >
+                                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                              </motion.div>
+                            </>
+                          )}
                         </motion.button>
                       ) : (
                         <div className="text-center text-neutral-500 text-xs sm:text-sm w-full">
