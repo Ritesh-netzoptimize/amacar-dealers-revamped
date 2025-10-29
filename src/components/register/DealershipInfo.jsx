@@ -5,23 +5,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchCityStateByZip, clearLocation } from '@/redux/slices/userSlice';
 import { toast } from 'react-hot-toast';
 import useDebounce from '@/hooks/useDebounce';
-import useEmailValidation from '@/hooks/useEmailValidation';
 import ReusableTooltip from '@/components/common/Tooltip/ReusableTooltip';
 
-const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invitationData }) => {
+const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invitationData, emailValidation, shouldResetEmailValidation, setShouldResetEmailValidation }) => {
   const dispatch = useDispatch();
   const { locationStatus, locationError, location } = useSelector((state) => state.user);
   const timeoutRef = useRef(null);
   const previousErrorsRef = useRef({});
   const [inlineErrors, setInlineErrors] = useState({});
-  const [shouldResetEmailValidation, setShouldResetEmailValidation] = useState(false);
-
-  // Email validation hook - validate when email is not empty (register mode: true)
-  const emailValidation = useEmailValidation(
-    formData.businessEmail ? formData.businessEmail : "",
-    true, // Register mode - email should NOT be registered (available for registration)
-    shouldResetEmailValidation
-  );
 
   // Debounced ZIP code lookup
   const debouncedZipLookup = useCallback((zip) => {
@@ -54,12 +45,6 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
     }
   }, [locationStatus, location, updateFormData]);
 
-  // Reset the email validation reset flag after it's been used
-  useEffect(() => {
-    if (shouldResetEmailValidation) {
-      setShouldResetEmailValidation(false);
-    }
-  }, [shouldResetEmailValidation]);
 
   // Debounce errors with 800ms delay
   const debouncedErrors = useDebounce(errors, 800);
@@ -574,6 +559,19 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
       </div>
     </motion.div>
   );
+};
+
+DealershipInfo.defaultProps = {
+  emailValidation: {
+    isValidating: false,
+    isDisposable: null,
+    isEmailAvailable: null,
+    isRegistered: null,
+    error: null,
+    isValid: null
+  },
+  shouldResetEmailValidation: false,
+  setShouldResetEmailValidation: () => { }
 };
 
 export default DealershipInfo;

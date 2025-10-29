@@ -9,6 +9,7 @@ import InvitationErrorDialog from '../../components/ui/InvitationErrorDialog';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../../lib/api';
 import { toast } from 'react-hot-toast';
+import useEmailValidation from '../../hooks/useEmailValidation';
 
 const steps = [
   { id: 1, title: 'Dealership Info', description: 'Complete dealership and contact details' },
@@ -66,6 +67,21 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmittingToSales, setIsSubmittingToSales] = useState(false);
+  const [shouldResetEmailValidation, setShouldResetEmailValidation] = useState(false);
+
+  // Email validation hook - validate when email is not empty (register mode: true)
+  const emailValidation = useEmailValidation(
+    formData.businessEmail ? formData.businessEmail : "",
+    true, // Register mode - email should NOT be registered (available for registration)
+    shouldResetEmailValidation
+  );
+
+  // Reset the email validation reset flag after it's been used
+  useEffect(() => {
+    if (shouldResetEmailValidation) {
+      setShouldResetEmailValidation(false);
+    }
+  }, [shouldResetEmailValidation]);
 
   // Extract invitation code from URL
   const getInvitationCode = useCallback(() => {
@@ -210,6 +226,12 @@ const Register = () => {
         if (!formData.jobPosition) return false;
         if (!formData.businessEmail) return false;
         if (!/\S+@\S+\.\S+/.test(formData.businessEmail)) return false;
+        // Email validation checks - only allow if email is valid (not disposable, not registered, not validating)
+        if (emailValidation.isValidating) return false;
+        if (emailValidation.isDisposable === true) return false;
+        if (emailValidation.isRegistered === true) return false;
+        // Only allow if email is explicitly valid
+        if (emailValidation.isValid !== true) return false;
         // Location validation (moved from step 2)
         if (!formData.zipCode) return false;
         if (!/^\d{5}$/.test(formData.zipCode)) return false;
@@ -267,8 +289,18 @@ const Register = () => {
         }
         // Contact Info validation (moved from step 2)
         if (!formData.jobPosition) newErrors.jobPosition = 'Job position is required';
-        if (!formData.businessEmail) newErrors.businessEmail = 'Business email is required';
-        else if (!/\S+@\S+\.\S+/.test(formData.businessEmail)) {
+        if (!formData.businessEmail) {
+          newErrors.businessEmail = 'Business email is required';
+        } else if (!/\S+@\S+\.\S+/.test(formData.businessEmail)) {
+          newErrors.businessEmail = 'Please enter a valid email address';
+        } else if (emailValidation.isDisposable === true && !emailValidation.isValidating) {
+          newErrors.businessEmail = 'Disposable email addresses are not allowed';
+        } else if (emailValidation.isRegistered === true && !emailValidation.isValidating) {
+          newErrors.businessEmail = 'This email is already registered. Please use a different email.';
+        } else if (emailValidation.isValidating) {
+          // Don't allow proceeding if email is still being validated
+          newErrors.businessEmail = 'Please wait while we validate your email';
+        } else if (emailValidation.isValid === false && !emailValidation.isValidating) {
           newErrors.businessEmail = 'Please enter a valid email address';
         }
         // Location validation (moved from step 2)
@@ -343,7 +375,17 @@ const Register = () => {
         if (!formData.dealerGroup) errorMessages.push('Dealer Group');
         // Contact Info validation (moved from step 2)
         if (!formData.jobPosition) errorMessages.push('Job Position');
-        if (!formData.businessEmail || !/\S+@\S+\.\S+/.test(formData.businessEmail)) errorMessages.push('Business Email');
+        if (!formData.businessEmail || !/\S+@\S+\.\S+/.test(formData.businessEmail)) {
+          errorMessages.push('Business Email');
+        } else if (emailValidation.isDisposable === true && !emailValidation.isValidating) {
+          errorMessages.push('Business Email (disposable emails not allowed)');
+        } else if (emailValidation.isRegistered === true && !emailValidation.isValidating) {
+          errorMessages.push('Business Email (already registered)');
+        } else if (emailValidation.isValidating) {
+          errorMessages.push('Business Email (validation in progress)');
+        } else if (emailValidation.isValid === false && !emailValidation.isValidating) {
+          errorMessages.push('Business Email (invalid)');
+        }
         // Location validation (moved from step 2)
         if (!formData.zipCode || !/^\d{5}$/.test(formData.zipCode)) errorMessages.push('Zip Code (5 numeric digits)');
         if (!formData.city) errorMessages.push('City');
@@ -430,6 +472,9 @@ const Register = () => {
             errors={errors}
             isInvitedUser={isInvitedUser}
             invitationData={invitationData}
+            emailValidation={emailValidation}
+            shouldResetEmailValidation={shouldResetEmailValidation}
+            setShouldResetEmailValidation={setShouldResetEmailValidation}
           />
         );
       case 2:
