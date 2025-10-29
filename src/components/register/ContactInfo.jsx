@@ -119,14 +119,26 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               maxLength={20}
               value={formData.firstName}
               onChange={(e) => {
+                const inputValue = e.target.value;
+
+                // Check if numbers/digits were attempted (before filtering)
+                const hasNumbers = /[0-9]/.test(inputValue);
+
                 // Allow letters and spaces to be typed, but filter out numbers and special characters
-                const value = e.target.value.replace(/[^a-zA-Z ]/g, '');
+                const value = inputValue.replace(/[^a-zA-Z ]/g, '');
+
                 updateFormData("firstName", value);
-                // Show or clear inline error based on whether space is present
-                if (value && value.includes(' ')) {
+
+                // Show error if numbers were attempted
+                if (hasNumbers) {
+                  const errorMsg = "only letters are allowed";
+                  setInlineErrors(prev => ({ ...prev, firstName: errorMsg }));
+                } else if (value && value.includes(' ')) {
+                  // Show error for spaces
                   const errorMsg = "Please enter your first name as a single word (e.g., 'Mary').";
                   setInlineErrors(prev => ({ ...prev, firstName: errorMsg }));
                 } else {
+                  // Clear errors when valid input
                   setInlineErrors(prev => ({ ...prev, firstName: '' }));
                 }
               }}
@@ -135,7 +147,8 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                 if (value && value.includes(' ')) {
                   const errorMsg = "Please enter your first name as a single word (e.g., 'Mary').";
                   setInlineErrors(prev => ({ ...prev, firstName: errorMsg }));
-                } else {
+                } else if (value && !inlineErrors.firstName) {
+                  // Clear errors if we have valid input and no existing errors
                   setInlineErrors(prev => ({ ...prev, firstName: '' }));
                 }
               }}
@@ -168,14 +181,26 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               maxLength={20}
               value={formData.lastName}
               onChange={(e) => {
+                const inputValue = e.target.value;
+
+                // Check if numbers/digits were attempted (before filtering)
+                const hasNumbers = /[0-9]/.test(inputValue);
+
                 // Allow letters and spaces to be typed, but filter out numbers and special characters
-                const value = e.target.value.replace(/[^a-zA-Z ]/g, '');
+                const value = inputValue.replace(/[^a-zA-Z ]/g, '');
+
                 updateFormData("lastName", value);
-                // Show or clear inline error based on whether space is present
-                if (value && value.includes(' ')) {
+
+                // Show error if numbers were attempted
+                if (hasNumbers) {
+                  const errorMsg = "only letters are allowed";
+                  setInlineErrors(prev => ({ ...prev, lastName: errorMsg }));
+                } else if (value && value.includes(' ')) {
+                  // Show error for spaces
                   const errorMsg = "Please enter your last name as a single word (e.g., 'Smith').";
                   setInlineErrors(prev => ({ ...prev, lastName: errorMsg }));
                 } else {
+                  // Clear errors when valid input
                   setInlineErrors(prev => ({ ...prev, lastName: '' }));
                 }
               }}
@@ -184,7 +209,8 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                 if (value && value.includes(' ')) {
                   const errorMsg = "Please enter your last name as a single word (e.g., 'Smith').";
                   setInlineErrors(prev => ({ ...prev, lastName: errorMsg }));
-                } else {
+                } else if (value && !inlineErrors.lastName) {
+                  // Clear errors if we have valid input and no existing errors
                   setInlineErrors(prev => ({ ...prev, lastName: '' }));
                 }
               }}
@@ -215,23 +241,23 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               onChange={(e) => {
                 const inputValue = e.target.value;
 
-                // Check if letters were attempted
+                // Check if letters were attempted (before filtering)
                 const hasLetters = /[a-zA-Z]/.test(inputValue);
 
-                // Only allow digits and limit to 10 digits
+                // Only allow digits and limit to 10 digits (letters are blocked from input)
                 const value = inputValue.replace(/\D/g, '').slice(0, 10);
 
                 updateFormData("mobileNumber", value);
 
                 // Show error if letters were attempted
                 if (hasLetters) {
-                  const errorMsg = 'Mobile number should only contain digits (0-9)';
+                  const errorMsg = 'only digits are allowed';
                   setInlineErrors(prev => ({ ...prev, mobileNumber: errorMsg }));
                 } else {
                   // Clear letter error when user types valid digits
                   setInlineErrors(prev => {
-                    // Only clear if the error was about letters, keep length error if exists
-                    if (prev.mobileNumber && prev.mobileNumber.includes('only contain digits')) {
+                    if (prev.mobileNumber === 'only digits are allowed') {
+                      // Clear letter error, length error will be handled on blur if needed
                       return { ...prev, mobileNumber: '' };
                     }
                     return prev;
@@ -240,10 +266,12 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               }}
               onBlur={(e) => {
                 const value = e.target.value;
-                // Check for length error only (letter error is handled in onChange)
+
+                // Check for length error only if we don't have letter error
                 if (value && value.length !== 10) {
                   // Only set length error if we don't already have a letter error
-                  if (!inlineErrors.mobileNumber || !inlineErrors.mobileNumber.includes('only contain digits')) {
+                  const currentError = inlineErrors.mobileNumber;
+                  if (!currentError || currentError !== 'only digits are allowed') {
                     const errorMsg = 'Mobile number must be exactly 10 digits';
                     setInlineErrors(prev => ({ ...prev, mobileNumber: errorMsg }));
                   }
