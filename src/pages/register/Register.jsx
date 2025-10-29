@@ -218,7 +218,9 @@ const Register = () => {
       case 2:
         // Personal Info validation
         if (!formData.firstName) return false;
+        if (formData.firstName.includes(' ')) return false;
         if (!formData.lastName) return false;
+        if (formData.lastName.includes(' ')) return false;
         if (!formData.mobileNumber) return false;
         if (!/^\d{10}$/.test(formData.mobileNumber)) return false;
         // Account Setup validation (moved from step 3)
@@ -279,8 +281,16 @@ const Register = () => {
         break;
       case 2:
         // Personal Info validation
-        if (!formData.firstName) newErrors.firstName = 'First name is required';
-        if (!formData.lastName) newErrors.lastName = 'Last name is required';
+        if (!formData.firstName) {
+          newErrors.firstName = 'First name is required';
+        } else if (formData.firstName.includes(' ')) {
+          newErrors.firstName = "Please enter your first name as a single word (e.g., 'Mary').";
+        }
+        if (!formData.lastName) {
+          newErrors.lastName = 'Last name is required';
+        } else if (formData.lastName.includes(' ')) {
+          newErrors.lastName = "Please enter your last name as a single word (e.g., 'Smith').";
+        }
         if (!formData.mobileNumber) {
           newErrors.mobileNumber = 'Mobile number is required';
         } else if (!/^\d{10}$/.test(formData.mobileNumber)) {
@@ -340,8 +350,8 @@ const Register = () => {
         break;
       case 2:
         // Personal Info validation
-        if (!formData.firstName) errorMessages.push('First Name');
-        if (!formData.lastName) errorMessages.push('Last Name');
+        if (!formData.firstName || formData.firstName.includes(' ')) errorMessages.push('First Name (single word)');
+        if (!formData.lastName || formData.lastName.includes(' ')) errorMessages.push('Last Name (single word)');
         if (!formData.mobileNumber || !/^\d{10}$/.test(formData.mobileNumber)) errorMessages.push('Mobile Number (exactly 10 digits)');
         // Account Setup validation (moved from step 3)
         if (!formData.password || formData.password.length < 4) errorMessages.push('Password (min 4 characters)');

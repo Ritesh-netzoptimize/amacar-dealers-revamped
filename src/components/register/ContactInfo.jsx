@@ -117,9 +117,25 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
             <input
               type="text"
               value={formData.firstName}
-              onChange={(e) => updateFormData("firstName", e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                updateFormData("firstName", value);
+                // Clear inline error when input becomes valid (single word, no spaces)
+                if (value && !value.includes(' ')) {
+                  setInlineErrors(prev => ({ ...prev, firstName: '' }));
+                }
+              }}
+              onBlur={(e) => {
+                const value = e.target.value;
+                if (value && value.includes(' ')) {
+                  const errorMsg = "Please enter your first name as a single word (e.g., 'Mary').";
+                  setInlineErrors(prev => ({ ...prev, firstName: errorMsg }));
+                } else {
+                  setInlineErrors(prev => ({ ...prev, firstName: '' }));
+                }
+              }}
               disabled={isInvitedUser}
-              className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.firstName ? "border-error" : "border-neutral-200"
+              className={`w-full pl-10 pr-4 py-3 rounded-xl border ${(errors.firstName || inlineErrors.firstName) ? "border-error" : "border-neutral-200"
                 } ${isInvitedUser
                   ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed'
                   : 'bg-white text-neutral-900'
@@ -127,8 +143,8 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               placeholder="Enter your first name"
             />
           </div>
-          {errors.firstName && (
-            <p className="text-sm text-error">{errors.firstName}</p>
+          {(errors.firstName || inlineErrors.firstName) && (
+            <p className="text-sm text-error">{errors.firstName || inlineErrors.firstName}</p>
           )}
         </motion.div>
 
@@ -145,9 +161,25 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
             <input
               type="text"
               value={formData.lastName}
-              onChange={(e) => updateFormData("lastName", e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                updateFormData("lastName", value);
+                // Clear inline error when input becomes valid (single word, no spaces)
+                if (value && !value.includes(' ')) {
+                  setInlineErrors(prev => ({ ...prev, lastName: '' }));
+                }
+              }}
+              onBlur={(e) => {
+                const value = e.target.value;
+                if (value && value.includes(' ')) {
+                  const errorMsg = "Please enter your last name as a single word (e.g., 'Smith').";
+                  setInlineErrors(prev => ({ ...prev, lastName: errorMsg }));
+                } else {
+                  setInlineErrors(prev => ({ ...prev, lastName: '' }));
+                }
+              }}
               disabled={isInvitedUser}
-              className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.lastName ? "border-error" : "border-neutral-200"
+              className={`w-full pl-10 pr-4 py-3 rounded-xl border ${(errors.lastName || inlineErrors.lastName) ? "border-error" : "border-neutral-200"
                 } ${isInvitedUser
                   ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed'
                   : 'bg-white text-neutral-900'
@@ -155,8 +187,8 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               placeholder="Enter your last name"
             />
           </div>
-          {errors.lastName && (
-            <p className="text-sm text-error">{errors.lastName}</p>
+          {(errors.lastName || inlineErrors.lastName) && (
+            <p className="text-sm text-error">{errors.lastName || inlineErrors.lastName}</p>
           )}
         </motion.div>
 
