@@ -201,6 +201,8 @@ const Register = () => {
       case 1:
         // Dealership Info validation
         if (!formData.dealerCode) return false;
+        if (!/^[A-Z0-9]+$/.test(formData.dealerCode)) return false;
+        if (formData.dealerCode.includes(' ')) return false;
         if (!formData.dealershipName) return false;
         if (!formData.website) return false;
         if (!formData.dealerGroup) return false;
@@ -241,7 +243,13 @@ const Register = () => {
     switch (step) {
       case 1:
         // Dealership Info validation
-        if (!formData.dealerCode) newErrors.dealerCode = 'Dealer code is required';
+        if (!formData.dealerCode) {
+          newErrors.dealerCode = 'Dealer code is required';
+        } else if (!/^[A-Z0-9]+$/.test(formData.dealerCode)) {
+          newErrors.dealerCode = 'Dealer code must contain only capital letters and digits';
+        } else if (formData.dealerCode.includes(' ')) {
+          newErrors.dealerCode = 'Dealer code must be a single word (no spaces)';
+        }
         if (!formData.dealershipName) newErrors.dealershipName = 'Dealership name is required';
         if (!formData.website) newErrors.website = 'Website is required';
         if (!formData.dealerGroup) newErrors.dealerGroup = 'Dealer group is required';

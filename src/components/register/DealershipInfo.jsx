@@ -18,7 +18,7 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    
+
     timeoutRef.current = setTimeout(() => {
       if (zip && zip.length === 5 && /^\d{5}$/.test(zip)) {
         console.log("Dispatching ZIP lookup for:", zip);
@@ -105,9 +105,9 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
 
   const itemVariants = {
     hidden: { opacity: 0, y: 15, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
+    visible: {
+      opacity: 1,
+      y: 0,
       scale: 1,
       transition: {
         duration: 0.4,
@@ -161,20 +161,46 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                 <input
                   type="text"
                   value={formData.dealerCode}
-                  onChange={(e) => updateFormData('dealerCode', e.target.value)}
+                  onChange={(e) => {
+                    // Convert to uppercase and remove spaces/special characters (keep only A-Z and 0-9)
+                    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                    updateFormData('dealerCode', value);
+                    // Clear inline error when user starts typing
+                    if (inlineErrors.dealerCode) {
+                      setInlineErrors(prev => ({ ...prev, dealerCode: '' }));
+                    }
+                  }}
+                  onBlur={(e) => {
+                    const value = e.target.value;
+                    if (value && !/^[A-Z0-9]+$/.test(value)) {
+                      const errorMsg = 'Dealer code must contain only capital letters and digits';
+                      toast.error(`Dealer Code: ${errorMsg}`, {
+                        duration: 4000,
+                        position: 'top-right',
+                      });
+                      setInlineErrors(prev => ({ ...prev, dealerCode: errorMsg }));
+                    } else if (value && value.includes(' ')) {
+                      const errorMsg = 'Dealer code must be a single word (no spaces)';
+                      toast.error(`Dealer Code: ${errorMsg}`, {
+                        duration: 4000,
+                        position: 'top-right',
+                      });
+                      setInlineErrors(prev => ({ ...prev, dealerCode: errorMsg }));
+                    } else {
+                      setInlineErrors(prev => ({ ...prev, dealerCode: '' }));
+                    }
+                  }}
                   disabled={isInvitedUser}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                    errors.dealerCode ? 'border-error focus:ring-error/20' : 'border-neutral-200 focus:ring-primary-200'
-                  } ${
-                    isInvitedUser 
-                      ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed' 
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${(errors.dealerCode || inlineErrors.dealerCode) ? 'border-error focus:ring-error/20' : 'border-neutral-200 focus:ring-primary-200'
+                    } ${isInvitedUser
+                      ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed'
                       : 'bg-white text-neutral-900'
-                  } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300`}
-                  placeholder="Enter your dealer code"
+                    } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300`}
+                  placeholder="ABC123"
                 />
               </div>
-              {errors.dealerCode && (
-                <p className="text-sm text-error">{errors.dealerCode}</p>
+              {(errors.dealerCode || inlineErrors.dealerCode) && (
+                <p className="text-sm text-error">{errors.dealerCode || inlineErrors.dealerCode}</p>
               )}
             </motion.div>
 
@@ -193,13 +219,11 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                   value={formData.dealershipName}
                   onChange={(e) => updateFormData('dealershipName', e.target.value)}
                   disabled={isInvitedUser}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                    errors.dealershipName ? 'border-error focus:ring-error/20' : 'border-neutral-200 focus:ring-primary-200'
-                  } ${
-                    isInvitedUser 
-                      ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed' 
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.dealershipName ? 'border-error focus:ring-error/20' : 'border-neutral-200 focus:ring-primary-200'
+                    } ${isInvitedUser
+                      ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed'
                       : 'bg-white text-neutral-900'
-                  } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300`}
+                    } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300`}
                   placeholder="Enter dealership name"
                 />
               </div>
@@ -224,7 +248,7 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                     // Improved validation: accepts domains like google.com, www.google.com, or https://www.google.com
                     const domainPattern = /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
                     const urlPattern = /^https?:\/\/(([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}|localhost)/;
-                    
+
                     if (value && !domainPattern.test(value) && !urlPattern.test(value)) {
                       const errorMsg = 'Please enter a valid website (e.g., google.com or https://google.com)';
                       toast.error(`Website: ${errorMsg}`, {
@@ -236,9 +260,8 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                       setInlineErrors(prev => ({ ...prev, website: '' }));
                     }
                   }}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                    (errors.website || inlineErrors.website) ? 'border-error focus:ring-error/20' : 'border-neutral-200 focus:ring-primary-200'
-                  } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${(errors.website || inlineErrors.website) ? 'border-error focus:ring-error/20' : 'border-neutral-200 focus:ring-primary-200'
+                    } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300`}
                   placeholder="https://yourdealership.com"
                 />
               </div>
@@ -257,9 +280,8 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                 <select
                   value={formData.dealerGroup}
                   onChange={(e) => updateFormData('dealerGroup', e.target.value)}
-                  className={`w-full pl-10 pr-10 py-3 rounded-xl border ${
-                    errors.dealerGroup ? 'border-error focus:ring-error/20' : 'border-neutral-200 focus:ring-primary-200'
-                  } bg-white text-neutral-900 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300 appearance-none`}
+                  className={`w-full pl-10 pr-10 py-3 rounded-xl border ${errors.dealerGroup ? 'border-error focus:ring-error/20' : 'border-neutral-200 focus:ring-primary-200'
+                    } bg-white text-neutral-900 focus:outline-none focus:ring-4 focus:border-primary-500 transition-all duration-300 hover:border-neutral-300 appearance-none`}
                 >
                   <option value="">Select dealer group</option>
                   <option value="independent">Independent Dealer</option>
@@ -294,9 +316,8 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                 <select
                   value={formData.jobPosition}
                   onChange={(e) => updateFormData('jobPosition', e.target.value)}
-                  className={`w-full pl-10 pr-10 py-3 rounded-xl border ${
-                    errors.jobPosition ? 'border-error' : 'border-neutral-200'
-                  } bg-white text-neutral-900 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 appearance-none`}
+                  className={`w-full pl-10 pr-10 py-3 rounded-xl border ${errors.jobPosition ? 'border-error' : 'border-neutral-200'
+                    } bg-white text-neutral-900 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 appearance-none`}
                 >
                   <option value="">Select your position</option>
                   <option value="owner">Owner</option>
@@ -345,13 +366,11 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                     }
                   }}
                   disabled={isInvitedUser}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                    (errors.businessEmail || inlineErrors.businessEmail) ? 'border-error' : 'border-neutral-200'
-                  } ${
-                    isInvitedUser 
-                      ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed' 
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${(errors.businessEmail || inlineErrors.businessEmail) ? 'border-error' : 'border-neutral-200'
+                    } ${isInvitedUser
+                      ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed'
                       : 'bg-white text-neutral-900'
-                  } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+                    } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                   placeholder="your.email@dealership.com"
                 />
               </div>
@@ -394,9 +413,8 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                       setInlineErrors(prev => ({ ...prev, zipCode: '' }));
                     }
                   }}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                    (errors.zipCode || inlineErrors.zipCode) ? 'border-error' : 'border-neutral-200'
-                  } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${(errors.zipCode || inlineErrors.zipCode) ? 'border-error' : 'border-neutral-200'
+                    } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                   placeholder="12345"
                   maxLength="5"
                   inputMode="numeric"
@@ -419,9 +437,8 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                   type="text"
                   value={formData.city}
                   disabled={true}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                    errors.city ? 'border-error' : 'border-neutral-200'
-                  } bg-neutral-50 text-neutral-600 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 cursor-not-allowed`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.city ? 'border-error' : 'border-neutral-200'
+                    } bg-neutral-50 text-neutral-600 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 cursor-not-allowed`}
                   placeholder="Auto-filled from ZIP"
                 />
                 {locationStatus === 'loading' && (
@@ -449,9 +466,8 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                   type="text"
                   value={formData.state}
                   disabled={true}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                    errors.state ? 'border-error' : 'border-neutral-200'
-                  } bg-neutral-50 text-neutral-600 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 cursor-not-allowed`}
+                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.state ? 'border-error' : 'border-neutral-200'
+                    } bg-neutral-50 text-neutral-600 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200 cursor-not-allowed`}
                   placeholder="Auto-filled from ZIP"
                 />
                 {locationStatus === 'loading' && (
