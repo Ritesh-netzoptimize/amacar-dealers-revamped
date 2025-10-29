@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import LoginModal from "@/components/ui/LoginUI/LoginModal";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import LogoutModal from "@/components/ui/LogoutUI/LogoutModal";
 import { logoutUser } from "@/redux/slices/userSlice";
 
@@ -16,6 +16,7 @@ export default function Navbar() {
     { name: "FAQ", id: "faq" },
   ];
   const navigate = useNavigate();
+  const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -44,15 +45,65 @@ export default function Navbar() {
   };
 
   const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
     setIsMobileMenuOpen(false);
+
+    // Check if we're on the home page
+    if (location.pathname === "/") {
+      // We're already on home page, scroll directly
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    } else {
+      // Not on home page, store section ID and navigate
+      sessionStorage.setItem("scrollToSection", sectionId);
+      navigate("/");
+    }
   };
+
+  // Handle scrolling when navigating to home page
+  useEffect(() => {
+    if (location.pathname === "/") {
+      // Check if there's a section to scroll to in sessionStorage
+      const sectionId = sessionStorage.getItem("scrollToSection");
+      if (sectionId) {
+        sessionStorage.removeItem("scrollToSection");
+        // Use a more reliable method to wait for DOM
+        const scrollToElement = () => {
+          const element = document.getElementById(sectionId);
+          if (element) {
+            element.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          } else {
+            // If element not found yet, try again after a short delay
+            setTimeout(scrollToElement, 50);
+          }
+        };
+        // Small delay to ensure DOM is ready
+        setTimeout(scrollToElement, 100);
+      } else if (location.hash) {
+        // Also handle hash-based navigation
+        const sectionId = location.hash.substring(1);
+        const scrollToElement = () => {
+          const element = document.getElementById(sectionId);
+          if (element) {
+            element.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          } else {
+            setTimeout(scrollToElement, 50);
+          }
+        };
+        setTimeout(scrollToElement, 100);
+      }
+    }
+  }, [location]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -66,11 +117,10 @@ export default function Navbar() {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-white/95 backdrop-blur-md shadow-md"
-          : "bg-white/95 backdrop-blur-md"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+        ? "bg-white/95 backdrop-blur-md shadow-md"
+        : "bg-white/95 backdrop-blur-md"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16 md:h-18 lg:h-20">
@@ -94,7 +144,7 @@ export default function Navbar() {
                 key={link.id}
                 onClick={() => scrollToSection(link.id)}
                 whileHover={{ y: -2 }}
-                className="cursor-pointer font-semibold font-medium transition-all duration-300 px-3 py-2 rounded-lg text-[#4A4A4A] hover:text-[#4F46E5] hover:bg-[#4F46E5]/10"
+                className="cursor-pointer font-semibold transition-all duration-300 px-3 py-2 rounded-lg text-[#4A4A4A] hover:text-[#4F46E5] hover:bg-[#4F46E5]/10"
               >
                 {link.name}
               </motion.button>
