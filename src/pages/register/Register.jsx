@@ -69,6 +69,47 @@ const Register = () => {
   const [isSubmittingToSales, setIsSubmittingToSales] = useState(false);
   const [shouldResetEmailValidation, setShouldResetEmailValidation] = useState(false);
 
+  const resetFormState = useCallback(() => {
+    setFormData({
+      // Dealership Info
+      dealerCode: '',
+      dealershipName: '',
+      website: '',
+      dealerGroup: '',
+
+      // Contact Info
+      jobPosition: '',
+      firstName: '',
+      lastName: '',
+      mobileNumber: '',
+      businessEmail: '',
+
+      // Location
+      zipCode: '',
+      city: '',
+      state: '',
+
+      // Account Setup
+      password: '',
+      confirmPassword: '',
+      agreementAccepted: false,
+      talkToSales: false,
+      acceptFreeTrial: true,
+
+      // Payment Setup
+      trialAccepted: false,
+      paymentCompleted: false,
+      setupIntentId: '',
+      customerId: '',
+      registrationCompleted: false,
+      registrationData: null,
+    });
+    setErrors({});
+    setCurrentStep(1);
+    setIsSubmittingToSales(false);
+    setShouldResetEmailValidation(true);
+  }, []);
+
   // Email validation hook - validate when email is not empty (register mode: true)
   const emailValidation = useEmailValidation(
     formData.businessEmail ? formData.businessEmail : "",
@@ -175,6 +216,47 @@ const Register = () => {
     }
   }, [fetchInvitationData, getInvitationCode]);
 
+  // Check if user returned from Calendly and reset form
+  useEffect(() => {
+    const redirectedToCalendly = sessionStorage.getItem('redirectedToCalendly');
+    if (redirectedToCalendly === 'true') {
+      // Reset the form state
+      resetFormState();
+      // Clear the flag
+      sessionStorage.removeItem('redirectedToCalendly');
+      // Show a message to user
+      toast.success('Welcome back! Please start a new registration.', {
+        duration: 3000,
+        position: 'top-right',
+      });
+    }
+  }, [resetFormState]);
+
+  // Also check on page visibility change (when user returns to tab)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        const redirectedToCalendly = sessionStorage.getItem('redirectedToCalendly');
+        if (redirectedToCalendly === 'true') {
+          // Reset the form state
+          resetFormState();
+          // Clear the flag
+          sessionStorage.removeItem('redirectedToCalendly');
+          // Show a message to user
+          // toast.success('Welcome back! Please start a new registration.', {
+          //   duration: 3000,
+          //   position: 'top-right',
+          // });
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [resetFormState]);
+
   // Handle successful registration completion
   const handleRegistrationComplete = useCallback(() => {
     if (formData.registrationCompleted) {
@@ -190,6 +272,9 @@ const Register = () => {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   }, [errors]);
+
+  // Reset form to initial state
+
 
   // Dialog handlers
   const handleCloseErrorDialog = () => {
@@ -430,6 +515,8 @@ const Register = () => {
     // If validation passes, handle special case for talkToSales
     if (currentStep === 2 && formData.talkToSales) {
       setIsSubmittingToSales(true);
+      // Set flag in sessionStorage to detect return from Calendly
+      sessionStorage.setItem('redirectedToCalendly', 'true');
       // Small delay to show loading state before redirect
       setTimeout(() => {
         window.location.href = 'https://calendly.com/sz253500/';
