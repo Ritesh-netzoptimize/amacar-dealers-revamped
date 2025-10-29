@@ -220,6 +220,7 @@ const Register = () => {
         if (!formData.firstName) return false;
         if (!formData.lastName) return false;
         if (!formData.mobileNumber) return false;
+        if (!/^\d{10}$/.test(formData.mobileNumber)) return false;
         // Account Setup validation (moved from step 3)
         if (!formData.password) return false;
         if (formData.password.length < 4) return false;
@@ -268,7 +269,11 @@ const Register = () => {
         // Personal Info validation
         if (!formData.firstName) newErrors.firstName = 'First name is required';
         if (!formData.lastName) newErrors.lastName = 'Last name is required';
-        if (!formData.mobileNumber) newErrors.mobileNumber = 'Mobile number is required';
+        if (!formData.mobileNumber) {
+          newErrors.mobileNumber = 'Mobile number is required';
+        } else if (!/^\d{10}$/.test(formData.mobileNumber)) {
+          newErrors.mobileNumber = 'Mobile number must be exactly 10 digits';
+        }
         // Account Setup validation (moved from step 3)
         if (!formData.password) newErrors.password = 'Password is required';
         else if (formData.password.length < 4) {
@@ -314,7 +319,7 @@ const Register = () => {
         // Personal Info validation
         if (!formData.firstName) errorMessages.push('First Name');
         if (!formData.lastName) errorMessages.push('Last Name');
-        if (!formData.mobileNumber) errorMessages.push('Mobile Number');
+        if (!formData.mobileNumber || !/^\d{10}$/.test(formData.mobileNumber)) errorMessages.push('Mobile Number (exactly 10 digits)');
         // Account Setup validation (moved from step 3)
         if (!formData.password || formData.password.length < 4) errorMessages.push('Password (min 4 characters)');
         if (!formData.confirmPassword || formData.password !== formData.confirmPassword) errorMessages.push('Confirm Password');

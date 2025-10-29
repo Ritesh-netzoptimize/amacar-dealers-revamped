@@ -185,11 +185,19 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
             <input
               type="tel"
               value={formData.mobileNumber}
-              onChange={(e) => updateFormData("mobileNumber", e.target.value)}
+              onChange={(e) => {
+                // Only allow digits and limit to 10 digits
+                const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                updateFormData("mobileNumber", value);
+                // Clear inline error when user starts typing
+                if (inlineErrors.mobileNumber) {
+                  setInlineErrors(prev => ({ ...prev, mobileNumber: '' }));
+                }
+              }}
               onBlur={(e) => {
                 const value = e.target.value;
-                if (value && value.length < 10) {
-                  const errorMsg = 'Please enter a valid phone number';
+                if (value && value.length !== 10) {
+                  const errorMsg = 'Mobile number must be exactly 10 digits';
                   toast.error(`Mobile Number: ${errorMsg}`, {
                     duration: 4000,
                     position: 'top-right',
@@ -201,7 +209,8 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               }}
               className={`w-full pl-10 pr-4 py-3 rounded-xl border ${(errors.mobileNumber || inlineErrors.mobileNumber) ? "border-error" : "border-neutral-200"
                 } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
-              placeholder="(555) 123-4567"
+              placeholder="1234567890"
+              maxLength="10"
             />
           </div>
           {(errors.mobileNumber || inlineErrors.mobileNumber) && (
