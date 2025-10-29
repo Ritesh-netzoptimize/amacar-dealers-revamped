@@ -204,7 +204,6 @@ const Register = () => {
         if (!/^[A-Z0-9]+$/.test(formData.dealerCode)) return false;
         if (formData.dealerCode.includes(' ')) return false;
         if (!formData.dealershipName) return false;
-        if (!formData.website) return false;
         if (!formData.dealerGroup) return false;
         // Contact Info validation (moved from step 2)
         if (!formData.jobPosition) return false;
@@ -252,8 +251,15 @@ const Register = () => {
           newErrors.dealerCode = 'Dealer code must be a single word (no spaces)';
         }
         if (!formData.dealershipName) newErrors.dealershipName = 'Dealership name is required';
-        if (!formData.website) newErrors.website = 'Website is required';
         if (!formData.dealerGroup) newErrors.dealerGroup = 'Dealer group is required';
+        // Website validation (optional - only validate format if provided)
+        if (formData.website && formData.website.trim() !== '') {
+          const domainPattern = /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+          const urlPattern = /^https?:\/\/(([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}|localhost)/;
+          if (!domainPattern.test(formData.website) && !urlPattern.test(formData.website)) {
+            newErrors.website = 'Please enter a valid website (e.g., google.com or https://google.com)';
+          }
+        }
         // Contact Info validation (moved from step 2)
         if (!formData.jobPosition) newErrors.jobPosition = 'Job position is required';
         if (!formData.businessEmail) newErrors.businessEmail = 'Business email is required';
@@ -305,7 +311,14 @@ const Register = () => {
         // Dealership Info validation
         if (!formData.dealerCode) errorMessages.push('Dealer Code');
         if (!formData.dealershipName) errorMessages.push('Dealership Name');
-        if (!formData.website) errorMessages.push('Website');
+        // Website is optional but validate format if provided
+        if (formData.website && formData.website.trim() !== '') {
+          const domainPattern = /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+          const urlPattern = /^https?:\/\/(([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}|localhost)/;
+          if (!domainPattern.test(formData.website) && !urlPattern.test(formData.website)) {
+            errorMessages.push('Website (invalid format)');
+          }
+        }
         if (!formData.dealerGroup) errorMessages.push('Dealer Group');
         // Contact Info validation (moved from step 2)
         if (!formData.jobPosition) errorMessages.push('Job Position');

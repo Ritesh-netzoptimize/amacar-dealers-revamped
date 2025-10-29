@@ -235,7 +235,7 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
             {/* Website */}
             <motion.div variants={itemVariants} className="space-y-2">
               <label className="block text-sm font-semibold text-neutral-700">
-                Website *
+                Website <span className="text-neutral-400 font-normal">(Optional)</span>
               </label>
               <div className="relative">
                 <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
@@ -351,7 +351,14 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                 <input
                   type="email"
                   value={formData.businessEmail}
-                  onChange={(e) => updateFormData('businessEmail', e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    updateFormData('businessEmail', value);
+                    // Clear inline error when user types and email becomes valid
+                    if (value && /\S+@\S+\.\S+/.test(value)) {
+                      setInlineErrors(prev => ({ ...prev, businessEmail: '' }));
+                    }
+                  }}
                   onBlur={(e) => {
                     const value = e.target.value;
                     if (value && !/\S+@\S+\.\S+/.test(value)) {
@@ -399,6 +406,10 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                     const value = e.target.value.replace(/\D/g, '').slice(0, 5);
                     updateFormData('zipCode', value);
                     debouncedZipLookup(value);
+                    // Clear inline error when zip code becomes valid (exactly 5 digits)
+                    if (value.length === 5 && /^\d{5}$/.test(value)) {
+                      setInlineErrors(prev => ({ ...prev, zipCode: '' }));
+                    }
                   }}
                   onBlur={(e) => {
                     const value = e.target.value;
