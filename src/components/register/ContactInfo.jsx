@@ -213,20 +213,42 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               type="tel"
               value={formData.mobileNumber}
               onChange={(e) => {
+                const inputValue = e.target.value;
+
+                // Check if letters were attempted
+                const hasLetters = /[a-zA-Z]/.test(inputValue);
+
                 // Only allow digits and limit to 10 digits
-                const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                const value = inputValue.replace(/\D/g, '').slice(0, 10);
+
                 updateFormData("mobileNumber", value);
-                // Clear inline error when user starts typing
-                if (inlineErrors.mobileNumber) {
-                  setInlineErrors(prev => ({ ...prev, mobileNumber: '' }));
+
+                // Show error if letters were attempted
+                if (hasLetters) {
+                  const errorMsg = 'Mobile number should only contain digits (0-9)';
+                  setInlineErrors(prev => ({ ...prev, mobileNumber: errorMsg }));
+                } else {
+                  // Clear letter error when user types valid digits
+                  setInlineErrors(prev => {
+                    // Only clear if the error was about letters, keep length error if exists
+                    if (prev.mobileNumber && prev.mobileNumber.includes('only contain digits')) {
+                      return { ...prev, mobileNumber: '' };
+                    }
+                    return prev;
+                  });
                 }
               }}
               onBlur={(e) => {
                 const value = e.target.value;
+                // Check for length error only (letter error is handled in onChange)
                 if (value && value.length !== 10) {
-                  const errorMsg = 'Mobile number must be exactly 10 digits';
-                  setInlineErrors(prev => ({ ...prev, mobileNumber: errorMsg }));
-                } else {
+                  // Only set length error if we don't already have a letter error
+                  if (!inlineErrors.mobileNumber || !inlineErrors.mobileNumber.includes('only contain digits')) {
+                    const errorMsg = 'Mobile number must be exactly 10 digits';
+                    setInlineErrors(prev => ({ ...prev, mobileNumber: errorMsg }));
+                  }
+                } else if (value.length === 10) {
+                  // Clear all errors if we have 10 digits
                   setInlineErrors(prev => ({ ...prev, mobileNumber: '' }));
                 }
               }}
