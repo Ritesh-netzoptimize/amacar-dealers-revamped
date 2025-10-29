@@ -227,7 +227,16 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
                 <input
                   type="url"
                   value={formData.website}
-                  onChange={(e) => updateFormData('website', e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    updateFormData('website', value);
+                    // Clear inline error when input becomes valid
+                    const domainPattern = /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+                    const urlPattern = /^https?:\/\/(([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}|localhost)/;
+                    if (!value || value.trim() === '' || domainPattern.test(value) || urlPattern.test(value)) {
+                      setInlineErrors(prev => ({ ...prev, website: '' }));
+                    }
+                  }}
                   onBlur={(e) => {
                     const value = e.target.value;
                     // Improved validation: accepts domains like google.com, www.google.com, or https://www.google.com
