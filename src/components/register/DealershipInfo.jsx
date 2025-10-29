@@ -1,10 +1,12 @@
 import { motion } from 'framer-motion';
-import { Building2, Globe, Users, Hash, Briefcase, Mail, MapPin, Building, Map } from 'lucide-react';
+import { Building2, Globe, Users, Hash, Briefcase, Mail, MapPin, Building, Map, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCityStateByZip, clearLocation } from '@/redux/slices/userSlice';
 import { toast } from 'react-hot-toast';
 import useDebounce from '@/hooks/useDebounce';
+import useEmailValidation from '@/hooks/useEmailValidation';
+import ReusableTooltip from '@/components/common/Tooltip/ReusableTooltip';
 
 const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invitationData }) => {
   const dispatch = useDispatch();
@@ -12,6 +14,14 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
   const timeoutRef = useRef(null);
   const previousErrorsRef = useRef({});
   const [inlineErrors, setInlineErrors] = useState({});
+  const [shouldResetEmailValidation, setShouldResetEmailValidation] = useState(false);
+
+  // Email validation hook - validate when email is not empty (register mode: true)
+  const emailValidation = useEmailValidation(
+    formData.businessEmail ? formData.businessEmail : "",
+    true, // Register mode - email should NOT be registered (available for registration)
+    shouldResetEmailValidation
+  );
 
   // Debounced ZIP code lookup
   const debouncedZipLookup = useCallback((zip) => {
@@ -43,6 +53,13 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
       updateFormData('state', '');
     }
   }, [locationStatus, location, updateFormData]);
+
+  // Reset the email validation reset flag after it's been used
+  useEffect(() => {
+    if (shouldResetEmailValidation) {
+      setShouldResetEmailValidation(false);
+    }
+  }, [shouldResetEmailValidation]);
 
   // Debounce errors with 800ms delay
   const debouncedErrors = useDebounce(errors, 800);
@@ -321,44 +338,129 @@ const DealershipInfo = ({ formData, updateFormData, errors, isInvitedUser, invit
             <motion.div variants={itemVariants} className="space-y-2">
               <label className="block text-sm font-semibold text-neutral-700">
                 Business Email *
+                {emailValidation.isValidating && (
+                  <span className="ml-2 text-xs text-neutral-500">
+                    (Validating...)
+                  </span>
+                )}
                 {isInvitedUser && (
                   <span className="text-xs text-green-600 ml-2">(Pre-filled from invitation)</span>
                 )}
               </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
-                <input
-                  type="email"
-                  value={formData.businessEmail}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    updateFormData('businessEmail', value);
-                    // Clear inline error when user types and email becomes valid
-                    if (value && /\S+@\S+\.\S+/.test(value)) {
-                      setInlineErrors(prev => ({ ...prev, businessEmail: '' }));
-                    }
-                  }}
-                  onBlur={(e) => {
-                    const value = e.target.value;
-                    if (value && !/\S+@\S+\.\S+/.test(value)) {
-                      const errorMsg = 'Please enter a valid email address (e.g., your.email@dealership.com)';
-                      setInlineErrors(prev => ({ ...prev, businessEmail: errorMsg }));
-                    } else {
-                      setInlineErrors(prev => ({ ...prev, businessEmail: '' }));
-                    }
-                  }}
-                  disabled={isInvitedUser}
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border ${(errors.businessEmail || inlineErrors.businessEmail) ? 'border-error' : 'border-neutral-200'
-                    } ${isInvitedUser
-                      ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed'
-                      : 'bg-white text-neutral-900'
-                    } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
-                  placeholder="your.email@dealership.com"
-                />
-              </div>
-              {(errors.businessEmail || inlineErrors.businessEmail) && (
-                <p className="text-sm text-error">{errors.businessEmail || inlineErrors.businessEmail}</p>
-              )}
+              <ReusableTooltip
+                content={
+                  errors.businessEmail ||
+                  inlineErrors.businessEmail ||
+                  (emailValidation.isDisposable === true &&
+                    !emailValidation.isValidating &&
+                    "Disposable email addresses are not allowed") ||
+                  (emailValidation.isRegistered === true &&
+                    !emailValidation.isValidating &&
+                    "This email is already registered. Please use a different email.") ||
+                  (emailValidation.error &&
+                    !emailValidation.isValidating &&
+                    "Unable to verify email. Please try again.")
+                }
+                variant="error"
+                side="top"
+              >
+                <div className="relative">
+                  <div
+                    className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 ${
+                      // Only show green if explicitly valid and not validating
+                      emailValidation.isValid === true &&
+                        !emailValidation.isValidating &&
+                        formData.businessEmail
+                        ? "text-green-500"
+                        : // Only show red if explicitly invalid and not validating
+                        (emailValidation.isDisposable === true ||
+                          emailValidation.isRegistered === true) &&
+                          !emailValidation.isValidating &&
+                          formData.businessEmail
+                          ? "text-red-500"
+                          : // Default neutral state
+                          "text-neutral-400"
+                      }`}
+                  >
+                    <Mail className="h-5 w-5" />
+                  </div>
+                  <input
+                    type="email"
+                    value={formData.businessEmail}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      updateFormData('businessEmail', value);
+                      // Clear inline error when user types
+                      if (inlineErrors.businessEmail) {
+                        setInlineErrors(prev => ({ ...prev, businessEmail: '' }));
+                      }
+                      // Reset email validation when email changes
+                      if (!value || value.trim() === "") {
+                        setShouldResetEmailValidation(true);
+                      }
+                    }}
+                    onBlur={(e) => {
+                      const value = e.target.value;
+                      if (value && !/\S+@\S+\.\S+/.test(value)) {
+                        const errorMsg = 'Please enter a valid email address (e.g., your.email@dealership.com)';
+                        setInlineErrors(prev => ({ ...prev, businessEmail: errorMsg }));
+                      } else {
+                        setInlineErrors(prev => ({ ...prev, businessEmail: '' }));
+                      }
+                    }}
+                    disabled={isInvitedUser}
+                    className={`w-full pl-10 pr-10 py-3 rounded-xl border ${
+                      // Only show green if explicitly valid and not validating
+                      emailValidation.isValid === true &&
+                        !emailValidation.isValidating &&
+                        formData.businessEmail
+                        ? "border-green-300 bg-green-50 focus:shadow-[0_0_0_4px_rgba(34,197,94,0.08)]"
+                        : // Only show red if explicitly invalid and not validating
+                        (emailValidation.isDisposable === true ||
+                          emailValidation.isRegistered === true) &&
+                          !emailValidation.isValidating &&
+                          formData.businessEmail
+                          ? "border-red-300 bg-red-50 focus:shadow-[0_0_0_4px_rgba(239,68,68,0.08)]"
+                          : // Show red for form validation errors
+                          (errors.businessEmail || inlineErrors.businessEmail) && !emailValidation.isValidating
+                            ? "border-red-300 bg-red-50 focus:shadow-[0_0_0_4px_rgba(239,68,68,0.08)]"
+                            : // Default neutral state
+                            "border-neutral-200 focus:shadow-[0_0_0_4px_rgba(15,23,42,0.08)]"
+                      } ${isInvitedUser
+                        ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed'
+                        : 'bg-white text-neutral-900'
+                      } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+                    placeholder="your.email@dealership.com"
+                  />
+                  {/* Validation status indicator */}
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    {emailValidation.isValidating && (
+                      <Loader2 className="h-4 w-4 animate-spin text-neutral-400" />
+                    )}
+                    {!emailValidation.isValidating &&
+                      emailValidation.isValid === true && (
+                        <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      )}
+                    {!emailValidation.isValidating &&
+                      (emailValidation.isDisposable === true ||
+                        emailValidation.isRegistered === true) && (
+                        <XCircle className="h-4 w-4 text-red-500" />
+                      )}
+                  </div>
+                </div>
+              </ReusableTooltip>
+              {(errors.businessEmail || inlineErrors.businessEmail ||
+                (emailValidation.isDisposable === true && !emailValidation.isValidating) ||
+                (emailValidation.isRegistered === true && !emailValidation.isValidating) ||
+                (emailValidation.error && !emailValidation.isValidating)) && (
+                  <p className="text-sm text-error">
+                    {errors.businessEmail ||
+                      inlineErrors.businessEmail ||
+                      (emailValidation.isDisposable === true && !emailValidation.isValidating && "Disposable email addresses are not allowed") ||
+                      (emailValidation.isRegistered === true && !emailValidation.isValidating && "This email is already registered. Please use a different email.") ||
+                      (emailValidation.error && !emailValidation.isValidating && "Unable to verify email. Please try again.")}
+                  </p>
+                )}
             </motion.div>
           </div>
         </div>

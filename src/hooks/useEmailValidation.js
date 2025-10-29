@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 const useEmailValidation = (email, isRegisterMode, shouldReset = false) => {
   const [validationState, setValidationState] = useState({
     isValidating: false,
-    // isDisposable: null,
+    isDisposable: null,
     isEmailAvailable: null,
     isRegistered: null,
     error: null,
@@ -32,14 +32,14 @@ const useEmailValidation = (email, isRegisterMode, shouldReset = false) => {
   const checkEmailAvailability = useCallback(async (emailToCheck) => {
     try {
       const response = await api.post('/auth/check-email', { email: emailToCheck });
-      
+
       if (!response.data.success) {
         // console.warn('⚠️ [EmailValidation] API returned success: false');
         throw new Error('Failed to check email availability');
       }
-      
+      console.log("check email response", response.data);
       const data = await response.data;
-      const isRegistered = data.user_id !== false;
+      const isRegistered = data.exists === true;
       return isRegistered;
     } catch (error) {
       // console.error('❌ [EmailValidation] Email availability check failed:', error);
@@ -47,96 +47,94 @@ const useEmailValidation = (email, isRegisterMode, shouldReset = false) => {
     }
   }, []);
 
-  // const checkDisposableEmail = useCallback(async (emailToCheck) => {
-    
+  const checkDisposableEmail = useCallback(async (emailToCheck) => {
 
-  //   if (!emailToCheck || !isEmailFormatValid) {
-  //     setValidationState({
-  //       isValidating: false,
-  //       isDisposable: null,
-  //       isEmailAvailable: null,
-  //       isRegistered: null,
-  //       error: null,
-  //       isValid: null
-  //     });
-  //     return;
-  //   }
 
-  //   setValidationState(prev => ({
-  //     ...prev,
-  //     isValidating: true,
-  //     error: null
-  //   }));
+    if (!emailToCheck || !isEmailFormatValid) {
+      setValidationState({
+        isValidating: false,
+        isDisposable: null,
+        isEmailAvailable: null,
+        isRegistered: null,
+        error: null,
+        isValid: null
+      });
+      return;
+    }
 
-  //   try {
-  //     // Random delay between 0-1000ms
-  //     const randomDelay = Math.random() * 1000;
-  //     await new Promise(resolve => setTimeout(resolve, randomDelay));
+    setValidationState(prev => ({
+      ...prev,
+      isValidating: true,
+      error: null
+    }));
 
-  //     const response = await fetch(`https://disposable.debounce.io/?email=${encodeURIComponent(emailToCheck)}`);
-      
-  //     if (!response.ok) {
-  //       throw new Error('Failed to validate email');
-  //     }
+    try {
+      // Random delay between 0-1000ms
+      const randomDelay = Math.random() * 1000;
+      await new Promise(resolve => setTimeout(resolve, randomDelay));
 
-  //     const data = await response.json();
-  //     const isDisposable = data.disposable === 'true';
-      
+      const response = await fetch(`https://disposable.debounce.io/?email=${encodeURIComponent(emailToCheck)}`);
 
-  //     // If email is disposable, stop here and show error
-  //     if (isDisposable) {
-  //       setValidationState({
-  //         isValidating: false,
-  //         isDisposable: true,
-  //         isEmailAvailable: null,
-  //         isRegistered: null,
-  //         error: null,
-  //         isValid: false
-  //       });
-  //       return;
-  //     }
+      if (!response.ok) {
+        throw new Error('Failed to validate email');
+      }
 
-  //     // If not disposable, check email registration status
-  //     const isRegistered = await checkEmailAvailability(emailToCheck);
-      
-  //     // Determine validation result based on mode
-  //     let isValid;
-  //     if (isRegisterMode) {
-  //       // In register mode: valid if email is NOT registered (available for registration)
-  //       isValid = !isRegistered;
-  //     } else {
-  //       // In login mode: valid if email IS registered (can login)
-  //       isValid = isRegistered;
-  //     }
-      
-      
-      
-  //     setValidationState({
-  //       isValidating: false,
-  //       isDisposable: false,
-  //       isEmailAvailable: null,
-  //       isRegistered,
-  //       error: null,
-  //       isValid
-  //     });
-  //   } catch (error) {
-  //     setValidationState({
-  //       isValidating: false,
-  //       isDisposable: null,
-  //       isEmailAvailable: null,
-  //       isRegistered: null,
-  //       error: error.message,
-  //       isValid: null
-  //     });
-  //   }
-  // }, [isRegisterMode, isEmailFormatValid, checkEmailAvailability]);
+      const data = await response.json();
+      const isDisposable = data.disposable === 'true';
+
+
+      // If email is disposable, stop here and show error
+      if (isDisposable) {
+        setValidationState({
+          isValidating: false,
+          isDisposable: true,
+          isEmailAvailable: null,
+          isRegistered: null,
+          error: null,
+          isValid: false
+        });
+        return;
+      }
+
+      // If not disposable, check email registration status
+      const isRegistered = await checkEmailAvailability(emailToCheck);
+
+      // Determine validation result based on mode
+      let isValid;
+      if (isRegisterMode) {
+        // In register mode: valid if email is NOT registered (available for registration)
+        isValid = !isRegistered;
+      } else {
+        // In login mode: valid if email IS registered (can login)
+        isValid = isRegistered;
+      }
+
+      setValidationState({
+        isValidating: false,
+        isDisposable: false,
+        isEmailAvailable: null,
+        isRegistered,
+        error: null,
+        isValid
+      });
+    } catch (error) {
+      setValidationState({
+        isValidating: false,
+        isDisposable: null,
+        isEmailAvailable: null,
+        isRegistered: null,
+        error: error.message,
+        isValid: null
+      });
+    }
+  }, [isRegisterMode, isEmailFormatValid, checkEmailAvailability]);
 
   useEffect(() => {
-    
-    
+
+
     const timeoutId = setTimeout(() => {
       if (email && isEmailFormatValid) {
-        // checkDisposableEmail(email);
+        checkDisposableEmail(email);
       } else if (email && !isEmailFormatValid) {
         // Reset validation state if email format is invalid
         setValidationState({
@@ -155,8 +153,8 @@ const useEmailValidation = (email, isRegisterMode, shouldReset = false) => {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [email, isRegisterMode, isEmailFormatValid]);
-  // }, [email, isRegisterMode, isEmailFormatValid, checkDisposableEmail]);
+    // }, [email, isRegisterMode, isEmailFormatValid]);
+  }, [email, isRegisterMode, isEmailFormatValid, checkDisposableEmail]);
 
   // Debug final validation state
   useEffect(() => {
