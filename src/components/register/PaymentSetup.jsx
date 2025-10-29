@@ -42,7 +42,7 @@ const PaymentForm = ({
   const dispatch = useDispatch();
   const stripe = useStripe();
   const elements = useElements();
-  
+
   // Get registration status from Redux
   const { registrationStatus, registrationError: reduxRegistrationError } = useSelector((state) => state.user);
 
@@ -50,7 +50,7 @@ const PaymentForm = ({
   const completeRegistration = async (setupIntentId, customerId) => {
     setIsCompletingRegistration(true);
     setRegistrationError("");
-    
+
     try {
       const registrationData = {
         setupIntentId,
@@ -75,14 +75,14 @@ const PaymentForm = ({
       };
 
       console.log("Dispatching registration with data:", registrationData);
-      
+
       const result = await dispatch(registerUser(registrationData)).unwrap();
-      
+
       console.log("Registration completed successfully:", result);
       setRegistrationSuccess(true);
       updateFormData("registrationCompleted", true);
       updateFormData("registrationData", result);
-      
+
     } catch (error) {
       console.error("Registration completion error:", error);
       setRegistrationError(error || "Failed to complete registration. Please contact support.");
@@ -106,7 +106,7 @@ const PaymentForm = ({
     console.log("client secret:", clientSecret);
     console.log("stripe object:", stripe);
     console.log("elements object:", elements);
-    
+
     try {
       // Ensure we have valid elements before proceeding
       if (!elements || typeof elements !== 'object') {
@@ -139,15 +139,15 @@ const PaymentForm = ({
         // Setup successful - update form data
         updateFormData("paymentCompleted", true);
         updateFormData("setupIntentId", setupIntent.id);
-        
+
         console.log("SetupIntent response:", setupIntent);
-        
+
         // Get customer ID from the setup intent response or form data
         // The customer ID should be available in the original API response
         const customerId = formData.customerId || setupIntent.payment_method?.customer;
-        
+
         console.log("Customer ID for registration:", customerId);
-        
+
         // Complete registration after successful payment setup
         await completeRegistration(setupIntent.id, customerId);
       }
@@ -226,7 +226,7 @@ const PaymentForm = ({
         </div>
         <p className="text-success-100 text-sm leading-relaxed mb-3">
           Start with a free 7-day trial. No charges until your trial period
-          ends. Cancel anytime during the trial with no obligations.
+          ends. Cancel anytime during the trial.
         </p>
       </motion.div>
 
@@ -337,40 +337,39 @@ const PaymentForm = ({
             type="button"
             onClick={handlePaymentSubmit}
             disabled={
-              !isStripeReady || 
-              !formData.trialAccepted || 
-              isProcessing || 
+              !isStripeReady ||
+              !formData.trialAccepted ||
+              isProcessing ||
               isCompletingRegistration ||
               registrationSuccess
             }
             className={`
               w-full py-3 px-6 rounded-lg font-semibold text-sm transition-all duration-200
               flex items-center justify-center gap-2
-              ${
-                !isStripeReady || 
-                !formData.trialAccepted || 
-                isProcessing || 
+              ${!isStripeReady ||
+                !formData.trialAccepted ||
+                isProcessing ||
                 isCompletingRegistration ||
                 registrationSuccess
-                  ? "bg-neutral-300 text-neutral-500 cursor-not-allowed"
-                  : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105"
+                ? "bg-neutral-300 text-neutral-500 cursor-not-allowed"
+                : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105"
               }
             `}
             whileHover={
-              !isStripeReady || 
-              !formData.trialAccepted || 
-              isProcessing || 
-              isCompletingRegistration ||
-              registrationSuccess
+              !isStripeReady ||
+                !formData.trialAccepted ||
+                isProcessing ||
+                isCompletingRegistration ||
+                registrationSuccess
                 ? {}
                 : { scale: 1.02 }
             }
             whileTap={
-              !isStripeReady || 
-              !formData.trialAccepted || 
-              isProcessing || 
-              isCompletingRegistration ||
-              registrationSuccess
+              !isStripeReady ||
+                !formData.trialAccepted ||
+                isProcessing ||
+                isCompletingRegistration ||
+                registrationSuccess
                 ? {}
                 : { scale: 0.98 }
             }
@@ -471,7 +470,7 @@ const PaymentSetup = ({ formData, updateFormData, errors, isInvitedUser, invitat
           console.log(
             "Client secret format check:",
             response.data.client_secret.startsWith("seti_") &&
-              response.data.client_secret.includes("_secret_")
+            response.data.client_secret.includes("_secret_")
           );
 
           // Store customer ID from the API response
@@ -496,7 +495,7 @@ const PaymentSetup = ({ formData, updateFormData, errors, isInvitedUser, invitat
 
           // Create the correct publishable key based on the account ID from client secret
           // const correctPublishableKey = `pk_test_51${accountId}`;
-          const correctPublishableKey =import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+          const correctPublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
           console.log(
             "Correct publishable key should be:",
             correctPublishableKey

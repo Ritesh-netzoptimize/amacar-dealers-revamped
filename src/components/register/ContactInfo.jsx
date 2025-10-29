@@ -119,10 +119,14 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               maxLength={20}
               value={formData.firstName}
               onChange={(e) => {
-                const value = e.target.value.replace(/[^a-zA-Z]/g, '');
+                // Allow letters and spaces to be typed, but filter out numbers and special characters
+                const value = e.target.value.replace(/[^a-zA-Z ]/g, '');
                 updateFormData("firstName", value);
-                // Clear inline error when input becomes valid (single word, no spaces)
-                if (value && !value.includes(' ')) {
+                // Show or clear inline error based on whether space is present
+                if (value && value.includes(' ')) {
+                  const errorMsg = "Please enter your first name as a single word (e.g., 'Mary').";
+                  setInlineErrors(prev => ({ ...prev, firstName: errorMsg }));
+                } else {
                   setInlineErrors(prev => ({ ...prev, firstName: '' }));
                 }
               }}
@@ -164,10 +168,14 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               maxLength={20}
               value={formData.lastName}
               onChange={(e) => {
-                const value = e.target.value.replace(/[^a-zA-Z]/g, '');
+                // Allow letters and spaces to be typed, but filter out numbers and special characters
+                const value = e.target.value.replace(/[^a-zA-Z ]/g, '');
                 updateFormData("lastName", value);
-                // Clear inline error when input becomes valid (single word, no spaces)
-                if (value && !value.includes(' ')) {
+                // Show or clear inline error based on whether space is present
+                if (value && value.includes(' ')) {
+                  const errorMsg = "Please enter your last name as a single word (e.g., 'Smith').";
+                  setInlineErrors(prev => ({ ...prev, lastName: errorMsg }));
+                } else {
                   setInlineErrors(prev => ({ ...prev, lastName: '' }));
                 }
               }}
@@ -547,7 +555,7 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                         </div>
                         <p className="text-neutral-600 text-sm mt-1">
                           Start with a free 7-day trial. No charges until your trial period
-                          ends. Cancel anytime during the trial with no obligations.
+                          ends. Cancel anytime during the trial
                         </p>
                       </motion.div>
                     </div>
