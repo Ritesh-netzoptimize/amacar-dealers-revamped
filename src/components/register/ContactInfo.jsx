@@ -10,6 +10,7 @@ import {
   MessageCircle,
   Users,
   ArrowRight,
+  Gift,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from 'react-hot-toast';
@@ -133,13 +134,11 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               value={formData.firstName}
               onChange={(e) => updateFormData("firstName", e.target.value)}
               disabled={isInvitedUser}
-              className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                errors.firstName ? "border-error" : "border-neutral-200"
-              } ${
-                isInvitedUser 
-                  ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed' 
+              className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.firstName ? "border-error" : "border-neutral-200"
+                } ${isInvitedUser
+                  ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed'
                   : 'bg-white text-neutral-900'
-              } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+                } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
               placeholder="Enter your first name"
             />
           </div>
@@ -163,13 +162,11 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               value={formData.lastName}
               onChange={(e) => updateFormData("lastName", e.target.value)}
               disabled={isInvitedUser}
-              className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                errors.lastName ? "border-error" : "border-neutral-200"
-              } ${
-                isInvitedUser 
-                  ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed' 
+              className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.lastName ? "border-error" : "border-neutral-200"
+                } ${isInvitedUser
+                  ? 'bg-neutral-50 text-neutral-600 cursor-not-allowed'
                   : 'bg-white text-neutral-900'
-              } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+                } placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
               placeholder="Enter your last name"
             />
           </div>
@@ -202,9 +199,8 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                   setInlineErrors(prev => ({ ...prev, mobileNumber: '' }));
                 }
               }}
-              className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
-                (errors.mobileNumber || inlineErrors.mobileNumber) ? "border-error" : "border-neutral-200"
-              } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+              className={`w-full pl-10 pr-4 py-3 rounded-xl border ${(errors.mobileNumber || inlineErrors.mobileNumber) ? "border-error" : "border-neutral-200"
+                } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
               placeholder="(555) 123-4567"
             />
           </div>
@@ -241,9 +237,8 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                     setInlineErrors(prev => ({ ...prev, password: '' }));
                   }
                 }}
-                className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
-                  (errors.password || inlineErrors.password) ? "border-error" : "border-neutral-200"
-                } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+                className={`w-full pl-10 pr-12 py-3 rounded-xl border ${(errors.password || inlineErrors.password) ? "border-error" : "border-neutral-200"
+                  } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                 placeholder="Create a strong password"
               />
               <button
@@ -314,9 +309,8 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                     setInlineErrors(prev => ({ ...prev, confirmPassword: '' }));
                   }
                 }}
-                className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
-                  (errors.confirmPassword || inlineErrors.confirmPassword) ? "border-error" : "border-neutral-200"
-                } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
+                className={`w-full pl-10 pr-12 py-3 rounded-xl border ${(errors.confirmPassword || inlineErrors.confirmPassword) ? "border-error" : "border-neutral-200"
+                  } bg-white text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-4 focus:ring-primary-200 focus:border-primary-500 transition-all duration-200`}
                 placeholder="Confirm your password"
               />
               <button
@@ -341,34 +335,32 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className={`flex mt-2 items-center space-x-2 text-sm ${
-                formData.password === formData.confirmPassword &&
+              className={`flex mt-2 items-center space-x-2 text-sm ${formData.password === formData.confirmPassword &&
                 formData.confirmPassword
-                  ? "text-success"
-                  : "text-error"
-              }`}
+                ? "text-success"
+                : "text-error"
+                }`}
             >
               <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center ${
-                  formData.password === formData.confirmPassword &&
+                className={`w-4 h-4 rounded-full flex items-center justify-center ${formData.password === formData.confirmPassword &&
                   formData.confirmPassword
-                    ? "bg-success"
-                    : "bg-error"
-                }`}
+                  ? "bg-success"
+                  : "bg-error"
+                  }`}
               >
                 <CheckCircle className="w-3 h-3 text-white" />
               </div>
               <span>
                 {formData.password === formData.confirmPassword &&
-                formData.confirmPassword
+                  formData.confirmPassword
                   ? "Passwords match"
                   : "Passwords do not match"}
               </span>
             </motion.div>
           )}
 
-           {/* Agreement Checkbox */}
-           <motion.div variants={itemVariants} className="space-y-2">
+          {/* Agreement Checkbox */}
+          <motion.div variants={itemVariants} className="space-y-2">
             <div className="flex items-start space-x-3 mt-4">
               <div className="flex items-center h-5">
                 <input
@@ -418,63 +410,118 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
             </div>
           </motion.div>
 
-          {/* Talk to Sales Checkbox */}
-          <motion.div variants={itemVariants} className="space-y-2">
-            <motion.div 
-              className="mt-8 p-6 bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl border border-orange-100 hover:border-orange-200 transition-all duration-300 group"
-              whileHover={{ 
-                scale: 1.02,
-                boxShadow: "0 8px 25px rgba(246, 133, 31, 0.15)"
-              }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="flex items-center space-x-4">
+          {/* Talk to Sales and Free Trial Section - Two Columns */}
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Talk to Sales Checkbox */}
+            <motion.div variants={itemVariants} className="space-y-2">
+              <motion.div
+                className="p-6 h-full bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl border border-orange-100 hover:border-orange-200 transition-all duration-300 group"
+                whileHover={{
+                  scale: 1.02,
+                  boxShadow: "0 8px 25px rgba(246, 133, 31, 0.15)"
+                }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex items-center space-x-4">
                   <motion.input
-                    type="checkbox"
+                    type="radio"
+                    name="registrationOption"
                     id="talkToSales"
                     checked={formData.talkToSales}
-                    onChange={(e) =>
-                      updateFormData("talkToSales", e.target.checked)
-                    }
+                    onChange={(e) => {
+                      updateFormData("talkToSales", true);
+                      updateFormData("acceptFreeTrial", false);
+                    }}
                     whileTap={{ scale: 0.9 }}
-                    className="w-5 h-5 text-[var(--brand-orange)] bg-white border-2 border-orange-200 rounded-md focus:ring-[var(--brand-orange)] focus:ring-2 focus:ring-orange-100 transition-all duration-200"
+                    className="w-5 h-5 text-[var(--brand-orange)] bg-white border-2 border-orange-200 rounded-full focus:ring-[var(--brand-orange)] focus:ring-2 transition-all duration-200"
                   />
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <motion.div
-                      animate={formData.talkToSales ? { 
-                        color: "var(--brand-orange)" 
-                      } : {}}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <label
-                        htmlFor="talkToSales"
-                        className="text-lg font-bold text-neutral-800 cursor-pointer group-hover:text-[var(--brand-orange)] transition-colors duration-200"
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <motion.div
+                        animate={formData.talkToSales ? {
+                          color: "var(--brand-orange)"
+                        } : {}}
+                        transition={{ duration: 0.3 }}
                       >
-                        Talk to sales
-                      </label>
-                      <p className="text-sm text-neutral-600 mt-1">
-                        Get in touch with our sales team
-                      </p>
-                    </motion.div>
-                  </div>
-
-                  <div className="flex items-center space-x-4 text-sm text-neutral-600">
-                    <div className="flex items-center space-x-2">
-                      <Users className="w-4 h-4 text-[var(--brand-orange)]" />
-                      <span>Expert consultation</span>
+                        <label
+                          htmlFor="talkToSales"
+                          className="text-lg font-bold text-neutral-800 cursor-pointer group-hover:text-[var(--brand-orange)] transition-colors duration-200"
+                        >
+                          Talk to sales
+                        </label>
+                        <p className="text-sm text-neutral-600 mt-1">
+                          Get in touch with our sales team
+                        </p>
+                      </motion.div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <ArrowRight className="w-4 h-4 text-[var(--brand-orange)]" />
-                      <span>Personalized demo</span>
+
+                    <div className="flex items-center space-x-4 text-sm text-neutral-600">
+                      <div className="flex items-center space-x-2">
+                        <Users className="w-4 h-4 text-[var(--brand-orange)]" />
+                        <span>Expert consultation</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <ArrowRight className="w-4 h-4 text-[var(--brand-orange)]" />
+                        <span>Personalized demo</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
 
-         
+            {/* Free 7-Day Trial */}
+            <motion.div variants={itemVariants} className="space-y-2">
+              <motion.div
+                className="p-6 h-full bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl border border-orange-100 hover:border-orange-200 transition-all duration-300 group"
+                whileHover={{
+                  scale: 1.02,
+                  boxShadow: "0 8px 25px rgba(246, 133, 31, 0.15)"
+                }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex items-center space-x-4">
+                  <motion.input
+                    type="radio"
+                    name="registrationOption"
+                    id="acceptFreeTrial"
+                    checked={formData.acceptFreeTrial}
+                    onChange={(e) => {
+                      updateFormData("acceptFreeTrial", true);
+                      updateFormData("talkToSales", false);
+                    }}
+                    whileTap={{ scale: 0.9 }}
+                    className="w-5 h-5 bg-white/20 border-2 border-white/40 rounded-full focus:ring-white focus:ring-2 transition-all duration-200"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <motion.div
+                        animate={formData.acceptFreeTrial ? {
+                          color: "var(--brand-orange)"
+                        } : {}}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <div className="flex items-center space-x-3 mb-2">
+                          <label
+                            htmlFor="acceptFreeTrial"
+                            className="text-lg font-bold cursor-pointer group-hover:text-[var(--brand-orange)] text-neutral-800 transition-colors duration-200"
+                          >
+                            Free 7-Day Trial
+                          </label>
+                        </div>
+                        <p className="text-neutral-600 text-sm mt-1">
+                          Start with a free 7-day trial. No charges until your trial period
+                          ends. Cancel anytime during the trial with no obligations.
+                        </p>
+                      </motion.div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+
+
         </div>
       </div>
     </motion.div>

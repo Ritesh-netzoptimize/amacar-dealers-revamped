@@ -20,39 +20,40 @@ const Register = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Invitation state
   const [invitationData, setInvitationData] = useState(null);
   const [invitationLoading, setInvitationLoading] = useState(false);
   const [invitationError, setInvitationError] = useState(null);
   const [isInvitedUser, setIsInvitedUser] = useState(false);
   const [errorContext, setErrorContext] = useState(null); // Store additional context for errors
-  
+
   const [formData, setFormData] = useState({
     // Dealership Info
     dealerCode: '',
     dealershipName: '',
     website: '',
     dealerGroup: '',
-    
+
     // Contact Info
     jobPosition: '',
     firstName: '',
     lastName: '',
     mobileNumber: '',
     businessEmail: '',
-    
+
     // Location
     zipCode: '',
     city: '',
     state: '',
-    
+
     // Account Setup
     password: '',
     confirmPassword: '',
     agreementAccepted: false,
     talkToSales: false,
-    
+    acceptFreeTrial: false,
+
     // Payment Setup
     trialAccepted: false,
     paymentCompleted: false,
@@ -67,7 +68,7 @@ const Register = () => {
 
   // Extract invitation code from URL
   const getInvitationCode = useCallback(() => {
-    console.log('location', location);  
+    console.log('location', location);
     const path = location.pathname;
     console.log("path", path)
     // path is path /register/axMZSVZ4Fq8Cs788Mznr6sW6p5ey3XUn so do accordingly
@@ -80,22 +81,22 @@ const Register = () => {
     setInvitationLoading(true);
     setInvitationError(null);
     setErrorContext(null);
-    
+
     try {
       const response = await api.get(`/invitations/${invitationCode}`);
-      
+
       if (response.data.success && response.data.invitation) {
         const invitation = response.data.invitation;
-        
+
         // Check if invitation is still pending
         if (invitation.status !== 'pending') {
           setInvitationError('This invitation has expired or is no longer valid.');
           return;
         }
-        
+
         setInvitationData(invitation);
         setIsInvitedUser(true);
-        
+
         // Prefill form data with invitation data
         setFormData(prev => ({
           ...prev,
@@ -110,11 +111,11 @@ const Register = () => {
       }
     } catch (error) {
       console.error('Error fetching invitation:', error);
-      
+
       // Handle specific error messages from API response
       if (error.response?.data?.message) {
         const errorMessage = error.response.data.message.toLowerCase();
-        
+
         if (errorMessage.includes('already been used') || errorMessage.includes('already used')) {
           setInvitationError('already_used');
           setErrorContext({ type: 'already_used', invitationCode });
@@ -236,7 +237,7 @@ const Register = () => {
 
   const validateStep = (step) => {
     const newErrors = {};
-    
+
     switch (step) {
       case 1:
         // Dealership Info validation
@@ -278,14 +279,14 @@ const Register = () => {
       default:
         break;
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const validateStepAndGetErrors = (step) => {
     const errorMessages = [];
-    
+
     switch (step) {
       case 1:
         // Dealership Info validation
@@ -318,17 +319,17 @@ const Register = () => {
       default:
         break;
     }
-    
+
     return errorMessages;
   };
 
   const handleNext = () => {
-    if(currentStep === 2 && formData.talkToSales) {
+    if (currentStep === 2 && formData.talkToSales) {
       window.location.href = 'https://calendly.com/sz253500/'
-      setCurrentStep(prev => Math.min(prev - 1, steps.length-1));
+      // setCurrentStep(prev => Math.min(prev - 1, steps.length - 1));
       return;
     }
-    
+
     if (validateStep(currentStep)) {
       setCurrentStep(prev => Math.min(prev + 1, steps.length));
     } else {
@@ -368,9 +369,9 @@ const Register = () => {
     switch (currentStep) {
       case 1:
         return (
-          <DealershipInfo 
-            formData={formData} 
-            updateFormData={updateFormData} 
+          <DealershipInfo
+            formData={formData}
+            updateFormData={updateFormData}
             errors={errors}
             isInvitedUser={isInvitedUser}
             invitationData={invitationData}
@@ -378,9 +379,9 @@ const Register = () => {
         );
       case 2:
         return (
-          <ContactInfo 
-            formData={formData} 
-            updateFormData={updateFormData} 
+          <ContactInfo
+            formData={formData}
+            updateFormData={updateFormData}
             errors={errors}
             isInvitedUser={isInvitedUser}
             invitationData={invitationData}
@@ -388,9 +389,9 @@ const Register = () => {
         );
       case 3:
         return (
-          <PaymentSetup 
-            formData={formData} 
-            updateFormData={updateFormData} 
+          <PaymentSetup
+            formData={formData}
+            updateFormData={updateFormData}
             errors={errors}
             isInvitedUser={isInvitedUser}
             invitationData={invitationData}
@@ -423,7 +424,7 @@ const Register = () => {
               className="flex items-center cursor-pointer"
               onClick={() => navigate('/')}
             >
-              <img 
+              <img
                 src="https://dealer.amacar.ai/wp-content/uploads/2024/10/logo-4-2048x680.png"
                 alt="Amacar Logo"
                 className="h-6 sm:h-8 w-auto"
@@ -482,7 +483,7 @@ const Register = () => {
             {/* Background Image */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800">
               <div className="absolute inset-0 bg-black/20"></div>
-              
+
               {/* Modern Automotive Pattern Overlay */}
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-10 left-10 w-32 h-32 border-2 border-white rounded-full"></div>
@@ -500,7 +501,7 @@ const Register = () => {
                   transition={{ duration: 0.6, delay: 0.2 }}
                   className="absolute top-6 xl:top-8 left-6 xl:left-8"
                 >
-                  
+
                 </motion.div>
 
                 <motion.div
@@ -512,7 +513,7 @@ const Register = () => {
                   <div className="w-16 xl:w-20 h-16 xl:h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 xl:mb-6 backdrop-blur-sm">
                     <CheckCircle className="w-8 xl:w-10 h-8 xl:h-10" />
                   </div>
-                  
+
                   <h2 className="text-3xl xl:text-4xl font-bold mb-3 xl:mb-4">Join Amacar</h2>
                   <p className="text-lg xl:text-xl text-primary-100 mb-6 xl:mb-8 leading-relaxed">
                     Connect with the future of automotive auctions
@@ -558,24 +559,21 @@ const Register = () => {
                           transition={{ delay: 0.6 + index * 0.1 }}
                           className="flex items-center space-x-2 xl:space-x-3"
                         >
-                          <div className={`w-6 xl:w-8 h-6 xl:h-8 rounded-full flex items-center justify-center text-xs xl:text-sm font-semibold transition-all duration-300 ${
-                            currentStep > step.id 
-                              ? 'bg-white text-primary-600 scale-110' 
-                              : currentStep === step.id 
-                              ? 'bg-primary-300 text-white scale-105' 
+                          <div className={`w-6 xl:w-8 h-6 xl:h-8 rounded-full flex items-center justify-center text-xs xl:text-sm font-semibold transition-all duration-300 ${currentStep > step.id
+                            ? 'bg-white text-primary-600 scale-110'
+                            : currentStep === step.id
+                              ? 'bg-primary-300 text-white scale-105'
                               : 'bg-white/20 text-white/60'
-                          }`}>
+                            }`}>
                             {currentStep > step.id ? <CheckCircle className="w-4 xl:w-5 h-4 xl:h-5" /> : step.id}
                           </div>
                           <div className="flex-1">
-                            <div className={`text-xs xl:text-sm font-medium transition-colors ${
-                              currentStep >= step.id ? 'text-white' : 'text-white/60'
-                            }`}>
+                            <div className={`text-xs xl:text-sm font-medium transition-colors ${currentStep >= step.id ? 'text-white' : 'text-white/60'
+                              }`}>
                               {step.title}
                             </div>
-                            <div className={`text-xs transition-colors ${
-                              currentStep >= step.id ? 'text-primary-100' : 'text-white/40'
-                            }`}>
+                            <div className={`text-xs transition-colors ${currentStep >= step.id ? 'text-primary-100' : 'text-white/40'
+                              }`}>
                               {step.description}
                             </div>
                           </div>
@@ -598,7 +596,7 @@ const Register = () => {
               className="cursor-pointer"
               onClick={() => navigate('/')}
             >
-              <img 
+              <img
                 src="https://dealer.amacar.ai/wp-content/uploads/2024/10/logo-4-2048x680.png"
                 alt="Amacar Logo"
                 className="h-6 xl:h-8 w-auto"
@@ -611,15 +609,15 @@ const Register = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="w-full max-w-4xl mx-auto"
+              className="w-full max-w-5xl mx-auto"
             >
               {/* Form Card */}
               <div className="bg-[#fffcf8] overflow-hidden min-h-[500px] sm:min-h-[600px] lg:min-h-[800px] max-h-[820px] sm:max-h-[800px] lg:max-h-[900px] flex flex-col">
                 {/* Mobile Progress Stepper */}
                 <div className="lg:hidden p-3 sm:p-4 border-b border-neutral-200 flex-shrink-0">
-                  <ProgressStepper 
-                    steps={steps} 
-                    currentStep={currentStep} 
+                  <ProgressStepper
+                    steps={steps}
+                    currentStep={currentStep}
                   />
                 </div>
 
@@ -656,45 +654,46 @@ const Register = () => {
                         <motion.button
                           onClick={handleNext}
                           disabled={!isStepValid(currentStep)}
-                          whileHover={isStepValid(currentStep) ? { 
+                          whileHover={isStepValid(currentStep) ? {
                             scale: 1.05,
                             boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)"
                           } : {}}
-                          whileTap={isStepValid(currentStep) ? { 
-                            scale: 0.98 
+                          whileTap={isStepValid(currentStep) ? {
+                            scale: 0.98
                           } : {}}
-                          className={`flex items-center space-x-2 px-6 sm:px-8 py-2.5 sm:py-3 font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 w-full sm:w-auto justify-center ${
-                            isStepValid(currentStep)
-                              ? 'bg-primary-500 hover:bg-primary-600 text-white focus:ring-primary-200'
-                              : 'bg-neutral-300 text-neutral-500 cursor-not-allowed'
-                          }`}
+                          className={`flex items-center space-x-2 px-6 sm:px-8 py-2.5 sm:py-3 font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 w-full sm:w-auto justify-center ${isStepValid(currentStep)
+                            ? 'bg-primary-500 hover:bg-primary-600 text-white focus:ring-primary-200'
+                            : 'bg-neutral-300 text-neutral-500 cursor-not-allowed'
+                            }`}
                         >
                           <motion.span
-                            key={`${currentStep}-${formData.talkToSales}`}
+                            key={`${currentStep}-${formData.talkToSales}-${formData.acceptFreeTrial}`}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            transition={{ 
+                            transition={{
                               duration: 0.3,
                               ease: "easeInOut"
                             }}
                             className="flex items-center space-x-2"
                           >
                             <span className="text-sm sm:text-base">
-                              {currentStep === 2 && formData.talkToSales 
-                                ? 'Submit to Sales Team' 
-                                : currentStep === 2 && !formData.talkToSales 
-                                ? 'Continue to Payment' 
-                                : 'Next'
+                              {currentStep === 2 && formData.talkToSales
+                                ? 'Submit to Sales Team'
+                                : currentStep === 2 && formData.acceptFreeTrial
+                                  ? 'Start Free Trial'
+                                  : currentStep === 2
+                                    ? 'Continue to Payment'
+                                    : 'Next'
                               }
                             </span>
                           </motion.span>
                           <motion.div
-                            animate={{ 
+                            animate={{
                               x: isStepValid(currentStep) ? [0, 3, 0] : 0,
                               scale: isStepValid(currentStep) ? [1, 1.1, 1] : 1
                             }}
-                            transition={{ 
+                            transition={{
                               duration: 0.6,
                               ease: "easeInOut",
                               repeat: isStepValid(currentStep) ? Infinity : 0,
