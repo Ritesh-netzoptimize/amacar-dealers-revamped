@@ -245,19 +245,32 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
                 const hasLetters = /[a-zA-Z]/.test(inputValue);
 
                 // Only allow digits and limit to 10 digits (letters are blocked from input)
-                const value = inputValue.replace(/\D/g, '').slice(0, 10);
+                const digitsOnly = inputValue.replace(/\D/g, '');
+                const value = digitsOnly.slice(0, 10);
+
+                // Check if user tried to enter more than 10 digits
+                const exceedsLimit = digitsOnly.length > 10;
 
                 updateFormData("mobileNumber", value);
 
-                // Show error if letters were attempted
+                // Show error priority: letters > length limit > valid input
                 if (hasLetters) {
+                  // Highest priority: letters error
                   const errorMsg = 'only digits are allowed';
                   setInlineErrors(prev => ({ ...prev, mobileNumber: errorMsg }));
-                } else {
-                  // Clear letter error when user types valid digits
+                } else if (exceedsLimit) {
+                  // Second priority: exceeds 10 digits
+                  const errorMsg = 'phone number is of 10 digits only';
+                  setInlineErrors(prev => ({ ...prev, mobileNumber: errorMsg }));
+                } else if (value.length === 10) {
+                  // Clear all errors if we have exactly 10 digits
+                  setInlineErrors(prev => ({ ...prev, mobileNumber: '' }));
+                } else if (value.length > 0 && value.length < 10) {
+                  // Clear errors if we're typing valid digits (not yet 10)
                   setInlineErrors(prev => {
-                    if (prev.mobileNumber === 'only digits are allowed') {
-                      // Clear letter error, length error will be handled on blur if needed
+                    // Only clear if we had a length limit error or letter error
+                    if (prev.mobileNumber === 'phone number is of 10 digits only' ||
+                      prev.mobileNumber === 'only digits are allowed') {
                       return { ...prev, mobileNumber: '' };
                     }
                     return prev;
@@ -267,16 +280,17 @@ const ContactInfo = ({ formData, updateFormData, errors, isInvitedUser, invitati
               onBlur={(e) => {
                 const value = e.target.value;
 
-                // Check for length error only if we don't have letter error
+                // Check for length error (less than 10 digits)
                 if (value && value.length !== 10) {
-                  // Only set length error if we don't already have a letter error
+                  // Only set length error if we don't already have letter or limit error
                   const currentError = inlineErrors.mobileNumber;
-                  if (!currentError || currentError !== 'only digits are allowed') {
+                  if (currentError !== 'only digits are allowed' &&
+                    currentError !== 'phone number is of 10 digits only') {
                     const errorMsg = 'Mobile number must be exactly 10 digits';
                     setInlineErrors(prev => ({ ...prev, mobileNumber: errorMsg }));
                   }
                 } else if (value.length === 10) {
-                  // Clear all errors if we have 10 digits
+                  // Clear all errors if we have exactly 10 digits
                   setInlineErrors(prev => ({ ...prev, mobileNumber: '' }));
                 }
               }}
