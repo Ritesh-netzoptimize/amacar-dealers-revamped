@@ -17,7 +17,8 @@ import {
   Home,
   BarChart,
   ArrowUp,
-  UserPlus2
+  UserPlus2,
+  TrendingDown
 } from 'lucide-react';
 import { logoutUser } from '@/redux/slices/userSlice';
 import LogoutModal from '@/components/ui/LogoutUI/LogoutModal';
@@ -104,6 +105,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Live Auctions', href: '/live-auctions', icon: TrendingUp },
+    { name: 'Live Sessions', href: '/reverse-bidding', icon: TrendingDown },
     { name: 'Won Auctions', href: '/won-auctions', icon: Award },
     { name: 'New customers', href: '/active-customers', icon: Users },
     // { name: 'New Customers', href: '/new-customers', icon: UserPlus  },
@@ -166,7 +168,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
     // 4. Not a manual toggle
     if (isMobile && !isCollapsed && prevPathRef.current !== location.pathname && !isManualToggle) {
       // Check if current path is a dashboard page
-      const dashboardPages = ['/dashboard', '/live-auctions', '/won-auctions', '/new-customers', '/active-customers', '/my-bids', '/appointments', '/highest-bids', '/dealership-users', '/partner-dealers', '/reports', '/profile', '/sales-managers', '/subscription-cancellation-requests', '/dealerships', '/invited-dealerships'];
+      const dashboardPages = ['/dashboard', '/live-sessions', '/live-auctions', '/reverse-bidding', '/won-auctions', '/new-customers', '/active-customers', '/my-bids', '/appointments', '/highest-bids', '/dealership-users', '/partner-dealers', '/reports', '/profile', '/sales-managers', '/subscription-cancellation-requests', '/dealerships', '/invited-dealerships'];
       const isDashboardPage = dashboardPages.some(page => location.pathname.startsWith(page));
 
       if (isDashboardPage) {

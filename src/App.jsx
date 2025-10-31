@@ -29,6 +29,8 @@ import SalesManagers from "./pages/dashboard/SalesManagers";
 import DealershipUsers from "./pages/dashboard/DealershipUsers";
 import SubscriptionCancellationRequests from "./pages/dashboard/SubscriptionCancellationRequests";
 import PartnerDealers from "./pages/dashboard/PartnerDealers";
+import LiveSessions from "./pages/dashboard/LiveSessions";
+import SessionLeaderboard from "./pages/dashboard/SessionLeaderboard";
 import PrivacyPolicy from "./pages/privacy-policy/PrivacyPolicy";
 import TermsOfService from "./pages/terms-conditions/TermsOfService";
 import DealershipAgreement from "./pages/dealership-agreement/DealershipAgreement";
@@ -104,6 +106,16 @@ function App() {
                 <PrivateRoute>
                   <DashboardLayout>
                     <Dashboard />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/live-sessions"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <LiveSessions />
                   </DashboardLayout>
                 </PrivateRoute>
               }
@@ -244,6 +256,26 @@ function App() {
                 <PrivateRoute>
                   <DashboardLayout>
                     <Reports />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/reverse-bidding"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <LiveSessions />
+                  </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/reverse-bidding/session/:sessionId"
+              element={
+                <PrivateRoute>
+                  <DashboardLayout>
+                    <SessionLeaderboard />
                   </DashboardLayout>
                 </PrivateRoute>
               }
